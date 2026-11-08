@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:56:17Z"
-updated = "2026-11-08T10:02:49Z"
+updated = "2026-11-08T10:03:06Z"
 scope = ["python/sadi/server/curve_source.py", "python/sadi/server/routes/export.py", "python/tests/server/test_session_replay_cache.py", "docs/server/export.md", "docs/server/plots.md", "changelog.d/01M6X9CP3SGVZ93H22ARANVN2E.changed.md"]
 
 [[acceptance]]

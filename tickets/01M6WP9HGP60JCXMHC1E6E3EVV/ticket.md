@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T04:22:31Z"
 updated = "2026-11-08T04:22:45Z"
 labels = ["creates:docs/packaging.md"]
-scope = ["python/pyproject.toml", "docs/packaging.md"]
+scope = ["python/pyproject.toml", "docs/packaging.md", "docs/index.md"]
 +++
 
 sadi_py (maturin-built PyO3 extension in crates/sadi-py) is imported by doctor and the device path but is not declared anywhere in python/pyproject.toml. Add an optional-dependencies extra 'device' (and a uv source/path note) so a fresh checkout documents how to get it, without making the pure-Python install require a Rust toolchain. Document in docs. Acceptance: pyproject declares the extra; docs page explains maturin develop; a test asserts the extra exists.

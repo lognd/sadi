@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:23:51Z"
-updated = "2026-11-08T04:23:53Z"
+updated = "2026-11-08T04:24:12Z"
+scope = ["python/tests/conftest.py"]
 +++
 
 import_all_spills scans the user data dir and the OS temp dir at app startup. The new tests in python/tests/cli/test_launcher_spill.py redirect both to empty temp dirs, but the other tests/server tests do not and so scan the real ones (nondeterministic, and could import a real spill during a test). Add an autouse fixture in python/tests/server/conftest.py (and tests/cli if missing) that redirects both locations. Acceptance: autouse fixture exists; a test plants a spill file in the real-dir stand-in and asserts create_app startup in tests/server does not see it.

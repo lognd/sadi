@@ -2,13 +2,13 @@
 id = "01M6W7RB2G5W6WPWDRKJS6PJJY"
 title = "User guide: running a test with the app (procedure, two specimens, creep)"
 type = "docs"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 3
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T05:55:53Z"
 idempotency_key = "sadi-doc1"
 labels = ["ws:docs", "model:sonnet", "creates:docs/user-guide.md", "creates:docs/img/ui/**"]
 scope = ["docs/user-guide.md", "docs/img/ui/**"]

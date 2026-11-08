@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T07:05:23Z"
+digest = "0b60af6c8d9af3cdd464ac54d9e233d51b3b6d7efc7b3738b8a143daf060189e"
+exit_code = 0
+head = "1f8d27bcaaa1e5ed2de851dbd091f5b27edc5709"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_session_points.py .                             [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-768781-0.xml ---------------
+============================== 1 passed in 2.07s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_session_points.py::test_to_captured_carries_raw_volts_and_load"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "990b5b88b889fa1b84a6fc7b7dffd138dc57bc675eeaf40106eab8a2f2e3b6e3"
+at = "2026-11-08T07:05:23Z"
+actor = "lognd"
+rev = 1

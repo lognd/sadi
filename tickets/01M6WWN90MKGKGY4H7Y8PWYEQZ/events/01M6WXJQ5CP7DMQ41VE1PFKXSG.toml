@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["src/sadi/server/**", "python/sadi/server/ws.py", "python/sadi/server/app.py", "python/tests/server/test_ws.py", "web/src/ws/messages.ts", "web/src/ws/messages.test.ts"]
+new = ["src/sadi/server/**", "python/sadi/server/ws.py", "python/sadi/server/app.py", "python/tests/server/test_ws.py", "web/src/ws/messages.ts", "web/src/ws/messages.test.ts", "web/src/screens/run/useRunLive.ts"]
+at = "2026-11-08T06:29:52Z"
+actor = "lognd"
+rev = 1

@@ -4,7 +4,8 @@ title = "Fix stale 34-column comments in lctt lab.py and test name"
 type = "chore"
 category = "todo"
 priority = "low"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T06:42:09Z"
-updated = "2026-11-08T06:42:09Z"
+updated = "2026-11-08T06:42:21Z"
 +++

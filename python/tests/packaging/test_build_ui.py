@@ -100,7 +100,7 @@ def test_run_command_success_and_failure(tmp_path: Path, monkeypatch: pytest.Mon
     assert build_ui_mod.run_command([py, "-c", "raise SystemExit(3)"], tmp_path).is_err
 
 
-# frob:ticket 1HHS4Y5
+# frob:ticket 01M6XBSN3FXGDRB56ZK1HHS4Y5
 # frob:tests packaging/build_ui.py::main
 def test_main_reports_failure_exit_code(monkeypatch: pytest.MonkeyPatch) -> None:
     """main returns 1 when the build fails and 0 when it succeeds."""

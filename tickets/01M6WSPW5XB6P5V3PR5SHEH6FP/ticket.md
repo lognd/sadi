@@ -13,7 +13,7 @@ scope = ["python/sadi/bench/**", "python/tests/bench/**", "docs/bench/ad3.md", "
 
 [[acceptance]]
 text = "Loading with no libdwf present returns a typed Err with a step-by-step fix hint; import of sadi.bench.ad3 never fails"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Backend calls marshal arguments and out-params correctly and map nonzero DWF status to Err carrying the last error message (verified with an injected fake library)"

@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:55:51Z"
+updated = "2026-11-08T05:57:01Z"
 idempotency_key = "sadi-j4"
 labels = ["ws:conc", "ws:srv", "model:sonnet", "creates:python/sadi/server/results_stream.py", "creates:python/tests/server/test_results_stream.py", "creates:docs/server/results-stream.md"]
 scope = ["python/sadi/server/results_stream.py", "python/tests/server/test_results_stream.py", "docs/server/results-stream.md"]
@@ -27,7 +27,7 @@ target = "01M6W7R3ZPY606D3MHG4QRM2GS"
 
 [[acceptance]]
 text = "Every result carries (data_version, result_version, state: analytic|refining|final|stale, progress); UI never receives a number without its version and marker"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "After each captured point the analytic result is pushed immediately (stale refinements are discarded), then MC/GP refinements stream until final"

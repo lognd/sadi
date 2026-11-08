@@ -2,7 +2,8 @@
 id = "01M6WT0G5WYA0P635SERVMGEGS"
 title = "COV001: sess.names reached by no test"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

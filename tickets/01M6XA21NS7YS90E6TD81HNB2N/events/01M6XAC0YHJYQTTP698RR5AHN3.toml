@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-08T10:13:24Z"
+digest = "67b06c71329c3e3f968bc507af22fa8d558f246d25a266286bc2472ffdb79961"
+head = "feea4c1fd3b9e3fb8f1780be7f391400a3b20c03"
+provider = "file"
+ref = "web/e2e/live-fps.spec.ts"
+size = 2210
+status = "measured"
+at = "2026-11-08T10:13:24Z"
+actor = "lognd"
+rev = 1

@@ -36,7 +36,11 @@ blocks stay ordered.
 - Bus subscriptions are bounded and drop the oldest event when full (`Subscription.dropped`
   counts them), so a slow display loses only derived events.
 
+- A block with `dropped_bytes > 0` carries junk at unknown positions, so every received byte
+  is stored verbatim as one `RAW_JUNK` record (reason 1, resync) instead of a `RAW_BLOCK`;
+  nothing is lost and the packets can be re-decoded from it. Analysis still runs from the
+  decoded volts once that record is durable.
+
 ## Not yet wired
 
-Dropped bytes are not yet written as `RAW_JUNK`, and device/API wiring plus the writing
-indicator are follow-up tickets.
+Device/API wiring and the writing indicator are follow-up tickets.

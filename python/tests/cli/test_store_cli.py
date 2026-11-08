@@ -1,9 +1,12 @@
 """Tests for the `sadi store` CLI: read-only commands, new-version recover, exclusive export."""
 
 # frob:ticket 01M6WEFGAZYBDHQGEG6D2M701Q
+# frob:ticket 01M6WEYV1HZCER8M2NVRMF702S
 from __future__ import annotations
 
 import hashlib
+import subprocess
+import sys
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,6 +14,7 @@ from pathlib import Path
 import pytest
 
 from sadi.cli.store import Exit, main
+from sadi.store.lock import LOCK_FILENAME
 from sadi.store.records import NewRecord, RecordType
 from sadi.store.session import SessionHandle, SessionMeta, create_session
 from sadi.store.wal import WalConfig, WalWriter
@@ -153,3 +157,37 @@ def test_usage_error_exits_2() -> None:
     with pytest.raises(SystemExit) as info:
         main(["bogus"])
     assert info.value.code == Exit.USAGE
+
+
+def _stale_root(root: Path) -> int:
+    """Leave a dead pid in the data-root lock file; return that pid."""
+    dead = subprocess.Popen([sys.executable, "-c", "pass"])
+    dead.wait()
+    (root / LOCK_FILENAME).write_text(f"pid={dead.pid} host=x\n")
+    return dead.pid
+
+
+# frob:tests python/sadi/cli/store.py::cmd_recover
+def test_recover_stale_lock_is_explained_then_recoverable(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A stale lock is refused with the flag named; --recover-stale then succeeds."""
+    h = _session(tmp_path)
+    pid = _stale_root(tmp_path)
+    assert main(["recover", str(h.path)]) == Exit.REFUSED
+    err = capsys.readouterr().err
+    assert "--recover-stale" in err
+    assert str(pid) in err
+    assert main(["recover", str(h.path), "--recover-stale"]) == Exit.OK
+
+
+# frob:tests python/sadi/cli/store.py::cmd_recover
+def test_recover_held_lock_is_refused(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """A live holder of the data-root lock gives a plain 'in use' refusal."""
+    from sadi.store.lock import acquire
+
+    h = _session(tmp_path)
+    with acquire(tmp_path).unwrap():
+        code = main(["recover", str(h.path)])
+    assert code == Exit.REFUSED
+    assert "in use" in capsys.readouterr().err

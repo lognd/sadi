@@ -4,9 +4,10 @@ title = "Link docs/release.md from docs/index.md"
 type = "docs"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T05:49:48Z"
-updated = "2026-11-08T05:49:48Z"
+updated = "2026-11-08T05:50:53Z"
 scope = ["docs/index.md"]
 +++
 

@@ -71,5 +71,5 @@ is mounted and the readout updates once a session is open (see server/launcher.m
 marker) so the detector can settle and the readout reaches `[Settled]`.
 The Run screen has per-phase input fields (see web/run-screens.md); `acceptWhenSettled(page, inputsFor(phase, i))`
 fills them, leaves the field (hotkeys are ignored in text inputs), marks a load change, waits for the
-marker ack and `[Settled]`, then presses Space. Known gaps (tickets): capture latency grows with WAL
+marker ack and `[Settled]`, blurs the Mark button (a focused button owns Space, which would re-mark), then presses Space. Known gaps (tickets): capture latency grows with WAL
 size so the full guided run does not finish (~2RWJ137). Each test has its own backend, so specs start at Setup (fixed in ~DKZDSBS).

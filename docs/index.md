@@ -36,6 +36,7 @@ Status: current
 - [Server export API](server/export.md)
 - [Server results API](server/results.md)
 - [Data-safety design](data-safety.md)
+- [Release process](release.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)
 - [Write-ahead log](store/wal.md)

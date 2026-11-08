@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
 updated = "2026-11-08T03:27:50Z"
-scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py"]
+scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md"]
 +++
 
 found while working ~60ZNFTD

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:14:09Z"
+digest = "176b1c14fc06735ac44e259214d95adddf1bf679e62428ec731f968fdc4c3800"
+exit_code = 0
+head = "89200b5aa620b187de5ba3f2c6b772ee4d3b0159"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_sadi_doctor.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-372573-0.xml ---------------
+============================== 1 passed in 0.32s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_real_probes_answer_the_new_facts"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "96bf2d6f7e7cbfca760bab8d75ebea5f853b4401581cd76ebb67cdfdf2d0c8f2"
+at = "2026-11-08T04:14:09Z"
+actor = "lognd"
+rev = 1

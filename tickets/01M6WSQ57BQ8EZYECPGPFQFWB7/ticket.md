@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T05:22:23Z"
-updated = "2026-11-08T05:22:26Z"
+updated = "2026-11-08T05:24:11Z"
 labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/ad3/fake.py", "creates:python/sadi/bench/inject.py", "creates:python/tests/bench/test_ad3_fake.py", "creates:docs/bench/injection.md"]
 
 [[acceptance]]
@@ -20,6 +20,10 @@ bound = false
 
 [[acceptance]]
 text = "A loopback test through FakeDwf and the SADI simulator model runs in CI"
+bound = false
+
+[[acceptance]]
+text = "Cross-platform: FakeDwf and inject behave identically on Windows, macOS and Linux (no OS-specific code paths outside sadi.bench.ad3.dll)"
 bound = false
 +++
 

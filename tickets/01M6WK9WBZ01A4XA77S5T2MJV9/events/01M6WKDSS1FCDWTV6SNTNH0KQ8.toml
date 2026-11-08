@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Near-zero denominators (1e-300) give a typed Err on numeric and mc paths with no raise and no RuntimeWarning"]
+moved = []
+at = "2026-11-08T03:32:25Z"
+actor = "lognd"
+rev = 1

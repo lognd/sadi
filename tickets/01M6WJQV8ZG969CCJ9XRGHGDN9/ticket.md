@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:26Z"
-updated = "2026-11-08T03:43:36Z"
+updated = "2026-11-08T03:43:41Z"
 scope = ["python/sadi/store/wal.py", "python/tests/store/test_wal.py", "docs/data-safety.md"]
 
 [[acceptance]]

@@ -7,7 +7,7 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:20Z"
-updated = "2026-11-08T10:33:26Z"
+updated = "2026-11-08T10:33:27Z"
 
 [[acceptance]]
 text = "COV001 count under python/sadi reduced below 10 with real tests or frob:tests markers; no test weakened"

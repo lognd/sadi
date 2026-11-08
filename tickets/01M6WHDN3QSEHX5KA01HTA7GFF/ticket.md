@@ -2,7 +2,7 @@
 id = "01M6WHDN3QSEHX5KA01HTA7GFF"
 title = "plugins CLI: show doctor findings in info and add console script"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"

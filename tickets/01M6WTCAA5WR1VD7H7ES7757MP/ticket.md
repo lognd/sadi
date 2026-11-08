@@ -8,8 +8,8 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:34:32Z"
-scope = ["python/sadi/server/service.py"]
+updated = "2026-11-08T05:36:25Z"
+scope = ["python/sadi/server/service.py", "python/tests/server/test_resume_fold.py"]
 
 [[links]]
 kind = "blocked-by"

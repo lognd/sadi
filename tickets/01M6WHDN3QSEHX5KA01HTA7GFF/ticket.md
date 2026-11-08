@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T02:57:23Z"
-updated = "2026-11-08T03:00:15Z"
+updated = "2026-11-08T03:00:19Z"
 scope = ["python/pyproject.toml", "python/tests/cli/**", "python/uv.lock", "python/sadi/cli/plugins.py", "python/changelog*/**"]
 +++
 

@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T04:05:00Z"
 updated = "2026-11-08T04:08:37Z"
 labels = ["rust"]
-scope = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml", "crates/sadi-py/python/sadi_py/__init__.py", "crates/sadi-py/python/sadi_py/__init__.pyi", "docs/device/python-binding.md", "creates:crates/sadi-py/python/sadi_py/tests/test_meta.py", "crates/sadi-py/src/meta.rs"]
+scope = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml", "crates/sadi-py/python/sadi_py/__init__.py", "crates/sadi-py/python/sadi_py/__init__.pyi", "docs/device/python-binding.md", "creates:crates/sadi-py/python/sadi_py/tests/test_meta.py", "crates/sadi-py/src/meta.rs", "crates/sadi-py/python/sadi_py/tests/test_meta.py"]
 
 [[acceptance]]
 text = "sadi_py exposes __version__, PROTOCOL_VERSION, serial_features() and selftest() with stubs and docs"

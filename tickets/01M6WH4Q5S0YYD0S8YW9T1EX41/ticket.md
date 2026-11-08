@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T02:52:30Z"
 updated = "2026-11-08T06:59:43Z"
-scope = ["python/sadi/core/models.py", "python/sadi/server/session_points.py", "python/sadi/labs/lctt/lab.py"]
+scope = ["python/sadi/core/models.py", "python/sadi/server/session_points.py", "python/sadi/labs/lctt/lab.py", "python/tests/**"]
 
 [[acceptance]]
 text = "CapturedPoint gains optional volts, volts_sd, load_kg (additive, defaults None so old WAL/session data still loads); capture paths populate them; LcttLab.recompute returns real stress/strain/modulus values from them"

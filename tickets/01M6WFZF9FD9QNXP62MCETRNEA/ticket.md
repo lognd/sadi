@@ -8,13 +8,9 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:56:04Z"
+updated = "2026-11-08T02:56:14Z"
 labels = ["plugins", "creates:python/sadi/plugins/api.py", "creates:python/sadi/server/routes_plugins.py", "creates:python/tests/plugins/test_api.py", "creates:python/tests/server/test_routes_plugins.py"]
 scope = ["python/sadi/plugins/api.py", "python/sadi/server/routes_plugins.py", "python/tests/plugins/test_api.py", "python/tests/server/test_routes_plugins.py", "python/sadi/server/__init__.py"]
-
-[[links]]
-kind = "blocked-by"
-target = "01M6W7R09P668G2VDDAWEDCSRM"
 
 [[links]]
 kind = "blocked-by"

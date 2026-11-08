@@ -23,3 +23,5 @@ Parent: [web layout](../web-layout.md), next to the [budget panel](budget-panel.
 - `components/guidance/types.ts` mirrors `GuidanceState` in `sadi/labs/lctt/guidance.py`.
 - The WS `guidance` message currently carries no payload (`parseMessage` yields
   `{kind: "guidance"}`); a host should refetch via `getGuidance` when it arrives.
+
+See also the [Results/Export screen](export-screen.md).

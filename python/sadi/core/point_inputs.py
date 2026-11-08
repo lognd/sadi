@@ -131,9 +131,7 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
     )
 
 
-def build_point(
-    inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None
-) -> PointV1:
+def build_point(inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None) -> PointV1:
     """Build the POINT payload for typed inputs (and optional settle meta); keys match parsing."""
     raw = inputs.model_dump(exclude={"phase"})
     m = meta if meta is not None else PointMeta()

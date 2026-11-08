@@ -105,15 +105,22 @@ def from_model(err: BaseModel, family: str) -> ApiProblem:
 def not_found(what: str, hint: str) -> ApiProblem:
     """A 404 for a missing resource, with the hint saying how to pick an existing one."""
     return ApiProblem(
-        type="urn:sadi:error:input:unknown_id", title="unknown id", status=404, detail=what, hint=hint
+        type="urn:sadi:error:input:unknown_id",
+        title="unknown id",
+        status=404,
+        detail=what,
+        hint=hint,
     )
 
 
 def conflict(code: str, detail: str, hint: str) -> ApiProblem:
     """A 409 for an action the current server state does not allow."""
     return ApiProblem(
-        type=f"urn:sadi:error:state:{code}", title=code.replace("_", " "), status=409,
-        detail=detail, hint=hint,
+        type=f"urn:sadi:error:state:{code}",
+        title=code.replace("_", " "),
+        status=409,
+        detail=detail,
+        hint=hint,
     )
 
 

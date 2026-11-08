@@ -84,9 +84,7 @@ def test_capture_edit_undo_redo_lose_nothing(client: TestClient, tmp_path: Path)
     assert len(pts) == 1
     target = pts[0]["point_id"]
     seq0 = cap["seq"]
-    edit = client.post(
-        f"/api/session/points/{target}/edit", json={"op": "exclude", "args": {}}
-    )
+    edit = client.post(f"/api/session/points/{target}/edit", json={"op": "exclude", "args": {}})
     assert edit.status_code == 200, edit.text
     assert edit.json()["seq"] > seq0
     undone = client.post("/api/session/undo")

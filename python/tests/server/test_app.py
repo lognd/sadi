@@ -135,3 +135,17 @@ def test_inventory_unmounted_provider_is_501() -> None:
     """Without AppSettings.inventory the inventory route exists and answers 501."""
     res = _client().get("/api/session/inventory")
     assert res.status_code == 501
+
+
+def test_device_status_uses_injected_device(tmp_path: Path) -> None:
+    """AppSettings.device (e.g. the launcher's simulator) feeds /api/device/status."""
+
+    class _Sim:
+        status = "simulated"
+        fault = None
+
+    app = create_app(AppSettings(data_root=tmp_path, device=_Sim()))
+    with TestClient(app) as c:
+        body = c.get("/api/device/status").json()
+    assert body["status"] == "simulated"
+    assert body["attached"] is True

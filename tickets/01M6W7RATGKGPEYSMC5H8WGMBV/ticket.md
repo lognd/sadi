@@ -2,16 +2,17 @@
 id = "01M6W7RATGKGPEYSMC5H8WGMBV"
 title = "Results/Export screen: report view, figure export, CSV download"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:51:13Z"
+updated = "2026-11-08T05:53:32Z"
 idempotency_key = "sadi-f15"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/export/**", "creates:docs/web/export-screen.md"]
-scope = ["web/src/screens/export/**", "docs/web/export-screen.md"]
+scope = ["web/src/screens/export/**", "docs/web/export-screen.md", "docs/web/guidance.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -31,11 +32,19 @@ target = "01M6W7R41EVGYTSV1B72ZQVKAB"
 
 [[acceptance]]
 text = "Summary of final values with U and which settle value fed E, export-all-figures (PNG/SVG at chosen DPI), CSV download in the 32-column schema"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Shows export provenance from DS7"
-bound = false
+bound = true
+
+[[acceptance]]
+text = "Empty export format list shows a clear message"
+bound = true
+
+[[acceptance]]
+text = "problem+json errors show the server hint"
+bound = true
 +++
 
 Suggested model: Sonnet.

@@ -48,9 +48,17 @@ STATS_PERIOD_S = 1.0
 def _json_of(event: BusEvent) -> dict[str, Any] | None:
     """Map a non-trace bus event to its JSON side-channel message."""
     if isinstance(event, SettleUpdate):
-        return {"kind": "state", "raw_seq": event.raw_seq, "status": event.status.model_dump(mode="json")}
+        return {
+            "kind": "state",
+            "raw_seq": event.raw_seq,
+            "status": event.status.model_dump(mode="json"),
+        }
     if isinstance(event, ResultUpdate):
-        return {"kind": "result", "raw_seq": event.raw_seq, "record": event.record.model_dump(mode="json")}
+        return {
+            "kind": "result",
+            "raw_seq": event.raw_seq,
+            "record": event.record.model_dump(mode="json"),
+        }
     if isinstance(event, AnalysisFailed):
         return {"kind": "analysis_failed", "raw_seq": event.raw_seq, "reason": event.reason}
     if isinstance(event, PipelineStopped):
@@ -155,7 +163,12 @@ class StreamHub:
             session = info.danger_ok.model_dump(mode="json") if info.is_ok else None
         with self._lock:
             latest = list(self._latest.values())
-        return {"kind": "hello", "session": session, "latest": latest, "bus_dropped": self._sub.dropped}
+        return {
+            "kind": "hello",
+            "session": session,
+            "latest": latest,
+            "bus_dropped": self._sub.dropped,
+        }
 
 
 def make_ws_router(hub: StreamHub) -> APIRouter:
@@ -180,7 +193,13 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
                     seq, f = client.frames.popleft()
                     await ws.send_bytes(
                         encode_trace(
-                            seq, f.t0_s, f.dt_s, f.channels, f.raw_seq, f.durable_seq, f.enqueued_seq
+                            seq,
+                            f.t0_s,
+                            f.dt_s,
+                            f.channels,
+                            f.raw_seq,
+                            f.durable_seq,
+                            f.enqueued_seq,
                         )
                     )
                     client.stats.sent_frames += 1

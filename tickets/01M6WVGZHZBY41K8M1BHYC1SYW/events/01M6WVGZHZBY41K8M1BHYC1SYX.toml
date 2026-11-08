@@ -1,0 +1,11 @@
+kind = "create"
+title = "Results API lacks provenance (which settle value fed E); export screen shows stand-in notes"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+labels = ["server"]
+body = "GET /api/results has no provenance field. Add per-quantity provenance (settle window, point ids, algorithm) and show it in web/src/screens/export."
+at = "2026-11-08T05:53:58Z"
+actor = "lognd"
+rev = 1

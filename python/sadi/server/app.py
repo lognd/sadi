@@ -23,9 +23,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
 from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
-from sadi.logging_setup import get_logger
 from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
+from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
 from sadi.server.routes.export import make_export_router

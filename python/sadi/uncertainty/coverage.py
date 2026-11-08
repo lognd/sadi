@@ -64,7 +64,8 @@ def effective_dof(
         if dof_i is not None and (math.isnan(dof_i) or dof_i <= 0):
             return Err(UncertaintyError.InvalidDof)
     # The ratio total^2 / denom is invariant under a common scale, so normalise by the largest
-    # contribution: r**2 and r**4 then cannot overflow for any finite u_i.  frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
+    # contribution: r**2 and r**4 then cannot overflow for any finite u_i.
+    # frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
     scale = max(u for u, _ in contributions)
     if scale == 0.0:
         return Ok(math.inf)

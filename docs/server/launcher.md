@@ -38,5 +38,10 @@ Ctrl+C: uvicorn shuts down gracefully (lifespan teardown flushes the WAL and rel
 data-root lock); the launcher then exits 0.
 
 `--selftest`: runs the simulator acquisition (`sadi.doctor.devprobe.probe_sim`) and exits
-0 on success, 4 on failure, without starting a server. `--sim` exports `SADI_SIM=1`; the
-server does not yet consume it (follow-up).
+0 on success, 4 on failure, without starting a server.
+
+Simulator: `--sim` (or `SADI_SIM=1|true|yes` in the environment, read once by the launcher via
+`sim_requested`) opens a simulator `DeviceService` (`open_sim_device`) and passes it as
+`AppSettings.device`, so `/api/device/status` reports `simulated`. If `sadi_py` is missing or the
+open fails the launcher prints the reason and exits 6; the device is closed on shutdown.
+The app never reads the environment itself. `python -m sadi` runs the same launcher.

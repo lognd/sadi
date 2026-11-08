@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:14:09Z"
+updated = "2026-11-08T06:14:13Z"
 scope = ["python/sadi/server/**"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "A failing simulator open exits EXIT_DEVICE without serving"
-bound = false
+bound = true
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

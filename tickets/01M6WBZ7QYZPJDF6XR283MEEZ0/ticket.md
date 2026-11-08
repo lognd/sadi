@@ -2,7 +2,8 @@
 id = "01M6WBZ7QYZPJDF6XR283MEEZ0"
 title = "JobManager: inject clock and executor instead of patching time/_spawn"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

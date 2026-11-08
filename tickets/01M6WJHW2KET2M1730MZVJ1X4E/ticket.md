@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:44Z"
+updated = "2026-11-08T04:32:45Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -32,7 +32,7 @@ bound = true
 
 [[acceptance]]
 text = "A crashing worker and a dependency cycle are handled (reported / raised), not lost or hung"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: runner is sequential, no budget

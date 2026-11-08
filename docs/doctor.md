@@ -531,6 +531,14 @@ JSON output and the UI's generated TypeScript (`web/src/api/schema.ts` via
 `npm run gen:api`) are exactly this. Enumerations are `StrEnum` so JSON
 carries the words, not numbers.
 
+Error-family decision (~973FKGT): failure modes are typani `ErrorSet`s
+(`DoctorError` here, `RefitError` in `sadi/server/routes_stress_strain.py`),
+used as the `E` of `Result[T, E]`. The `StrEnum`s in this module (`Layer`,
+`Severity`, `Status`, `Os`, `Shell`, `Mutates`, `StepKind`, `SkipReason`)
+are state or label values that appear on the wire, not errors, so they stay
+`StrEnum`. `SkipReason` says why a check did not run (a status detail, not a
+failure of the run), so it stays too. No wire values changed.
+
 ```python
 class Layer(StrEnum):
     """Subsystem a check belongs to; also the run order (section 9.2)."""

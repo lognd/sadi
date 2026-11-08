@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/App.tsx", "web/src/main.tsx", "web/src/screens/**", "web/src/components/wizard/**", "web/src/App*.tsx"]
+new = ["web/src/App.tsx", "web/src/main.tsx", "web/src/screens/**", "web/src/components/wizard/**", "web/src/App*.tsx", "web/e2e/**"]
+at = "2026-11-08T07:03:09Z"
+actor = "lognd"
+rev = 1

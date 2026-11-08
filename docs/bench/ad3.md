@@ -1,6 +1,8 @@
 # AD3 Digilent DWF binding
 
-Status: implemented (Linux/WSL path untested against hardware; Windows and macOS UNVERIFIED)
+Status: current
+
+Verification: Linux/WSL path is untested against hardware; Windows and macOS are UNVERIFIED without hardware.
 
 Package `sadi.bench.ad3` is a typed binding to the Digilent WaveForms runtime
 (`libdwf`). `dll.py` is the only module that touches `ctypes`; everything else

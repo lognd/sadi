@@ -83,7 +83,7 @@ class FakeLib:
             self._out(args[1]).value = 0xA5
         return 1
 
-    def names(self) -> list[str]:
+    def call_names(self) -> list[str]:
         """Return the called function names in order."""
         return [n for n, _ in self.calls]
 
@@ -237,7 +237,7 @@ def test_analog_out_marshalling() -> None:
     be.out_node_offset(dev, Channel(0), OutNode.CARRIER, -0.5)
     assert lib.last()[3].value == -0.5
     be.out_configure(dev, Channel(0), True)
-    assert lib.names()[-1] == "FDwfAnalogOutConfigure"
+    assert lib.call_names()[-1] == "FDwfAnalogOutConfigure"
     assert lib.last()[2].value == 1
 
 
@@ -258,7 +258,7 @@ def test_analog_in_marshalling() -> None:
     assert (lib.last()[1].value, lib.last()[2].value) == (1, 0)
     assert be.in_status(dev, True).unwrap() is AcqState.DONE
     assert be.in_data(dev, Channel(0), 4).unwrap() == [0.0, 0.5, 1.0, 1.5]
-    assert lib.names()[-1] == "FDwfAnalogInStatusData"
+    assert lib.call_names()[-1] == "FDwfAnalogInStatusData"
 
 
 # frob:tests python/sadi/bench/ad3/dll.py::CtypesBackend.io_node_set
@@ -369,7 +369,7 @@ def test_remaining_calls_hit_expected_functions() -> None:
     ]
     for res, fn in calls:
         assert isinstance(res, Ok), fn
-        assert fn in lib.names()
+        assert fn in lib.call_names()
     assert dev.native().unwrap() == 7
     assert "DwfError" in repr(dev) or "OpenDevice" in repr(dev)
     assert "ClosedDevice" in repr(be.close(dev).unwrap())

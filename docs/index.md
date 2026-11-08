@@ -9,6 +9,7 @@ Status: current
 - [Publishing checklist](publishing.md)
 - [Hardware-verification checklist](hardware-verification.md)
 - [sadi doctor: check catalog and remediation](doctor.md)
+- [sadi-doctor generated check catalog](doctor-checks.md)
 - [Hardware capture records](hardware/captures/README.md)
 - [sadi-proto scaffold](sadi-proto.md)
 - [sadi-proto codec](device/codec.md)

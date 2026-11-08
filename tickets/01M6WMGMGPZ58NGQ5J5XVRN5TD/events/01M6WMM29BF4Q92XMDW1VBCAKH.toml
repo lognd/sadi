@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["lctt export_csv imports only the core public API (sadi.core.export_api); boundary tests pass without loosening", "Export publish semantics (atomic, no-replace) unchanged"]
+moved = []
+at = "2026-11-08T03:53:19Z"
+actor = "lognd"
+rev = 1

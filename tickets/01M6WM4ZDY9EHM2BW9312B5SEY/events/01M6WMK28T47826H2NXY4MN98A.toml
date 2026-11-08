@@ -1,0 +1,396 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:52:45Z"
+digest = "542a8ba82d3261ce052792d6b2043fc437e23086b5445b12719f2e1eb88aa657"
+exit_code = 0
+head = "d32f575736162ad39d5340b271cb5a53457c7781"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/core/features.test.ts > label placement > never overlaps placed boxes or the legend and is deterministic
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'annotation:0', score: 0 }
+[plots.place] box placed { id: 'annotation:1', score: 0 }
+[plots.place] box placed { id: 'label:a', score: 0 }
+[plots.place] box placed { id: 'label:b', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 549.34, y: 304, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:0', x: 74.52, y: 48, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:1', x: 562.1, y: 80, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Crowded',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 2,
+  annotations: 3
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'annotation:0', score: 0 }
+[plots.place] box placed { id: 'annotation:1', score: 0 }
+[plots.place] box placed { id: 'label:a', score: 0 }
+[plots.place] box placed { id: 'label:b', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 549.34, y: 304, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:0', x: 74.52, y: 48, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:1', x: 562.1, y: 80, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Crowded',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 2,
+  annotations: 3
+}
+
+stdout | web/src/plots/core/features.test.ts > label placement > first candidate wins ties and placed boxes become obstacles
+[plots.place] box placed { id: 'a', score: 0 }
+[plots.place] box placed { id: 'b', score: 0 }
+
+stdout | web/src/plots/core/features.test.ts > log axes > produces decade ticks and log-mapped geometry
+[plots.layout] layout computed {
+  width: 400,
+  height: 300,
+  xTicks: 5,
+  yTicks: 7,
+  title: 'Log',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'log',
+  labels: 0,
+  annotations: 0
+}
+
+stdout | web/src/plots/core/features.test.ts > zoom decimation > zoomScene re-derives the draw list from full data
+[plots.layout] layout computed {
+  width: 400,
+  height: 300,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Z',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 45, series: 1 }
+[plots.layout] layout computed {
+  width: 800,
+  height: 300,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Z',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 45, series: 1 }
+
+stdout | web/src/plots/core/features.test.ts > figure panels > shares x range, aligns plot areas and splits heights
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.figure] figure split { panels: 2, plotLeft: 66.52 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+
+stdout | web/src/plots/core/features.test.ts > figure panels > renders through the shared plan to svg and canvas ops
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.figure] figure split { panels: 2, plotLeft: 66.52 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 37, series: 1 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 43, series: 1 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.figure] figure split { panels: 2, plotLeft: 66.52 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 37, series: 1 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 43, series: 1 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.figure] figure split { panels: 2, plotLeft: 66.52 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.layout] layout computed {
+  width: 600,
+  height: 125,
+  xTicks: 4,
+  yTicks: 5,
+  title: '',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.figure] figure split { panels: 2, plotLeft: 66.52 }
+[plots.layout] layout computed {
+  width: 600,
+  height: 375,
+  xTicks: 4,
+  yTicks: 6,
+  title: 'Fig',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 37, series: 1 }
+
+stdout | web/src/plots/core/features.test.ts > markers, spans and labels > emit draw ops identically for svg and draw-list goldens
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'annotation:0', score: 0 }
+[plots.place] box placed { id: 'annotation:1', score: 0 }
+[plots.place] box placed { id: 'label:a', score: 0 }
+[plots.place] box placed { id: 'label:b', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 549.34, y: 304, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:0', x: 74.52, y: 48, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:1', x: 562.1, y: 80, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Crowded',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 2,
+  annotations: 3
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'annotation:0', score: 0 }
+[plots.place] box placed { id: 'annotation:1', score: 0 }
+[plots.place] box placed { id: 'label:a', score: 0 }
+[plots.place] box placed { id: 'label:b', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 549.34, y: 304, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:0', x: 74.52, y: 48, penalty: 0 }
+[plots.layout] annotation placed { id: 'annotation:1', x: 562.1, y: 80, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Crowded',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 2,
+  annotations: 3
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+
+ \u{2713} web/src/plots/core/features.test.ts (10 tests) 50ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  22:52:45
+   Duration  791ms (transform 199ms, setup 0ms, collect 228ms, tests 50ms, environment 0ms, prepare 182ms)
+
+JSON report written to /tmp/frob-vitest-318795-0.json
+stderr | web/src/plots/core/features.test.ts > log axes > returns a PlotError for non-positive data and bounds
+[plots.figure] scene rejected {
+  title: 'Log',
+  error: 'log y axis needs positive data: series s y[1] = -2'
+}
+[plots.figure] scene rejected {
+  title: 'Log',
+  error: 'log y axis bound invalid: min = 0 must be > 0'
+}
+
+stderr | web/src/plots/core/features.test.ts > log axes > rejects export of invalid log scenes
+[plots.figure] scene rejected {
+  title: 'Log',
+  error: 'log y axis needs positive data: series s y[0] = 0'
+}
+[plots.export] export rejected { error: 'log y axis needs positive data: series s y[0] = 0' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/core/features.test.ts"
+size = 9396
+status = "measured"
+test_count = 10
+tests_digest = "d2077f2dc39f1518f00bbd09e603308c09fe30b1efbd3c7be683cd0d2bff2d3d"
+at = "2026-11-08T03:52:45Z"
+actor = "lognd"
+rev = 1

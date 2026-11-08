@@ -1,5 +1,6 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
 // frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
+// frob:ticket 01M6WM4ZDY9EHM2BW9312B5SEY
 import type { Theme } from "../theme";
 
 /** Numeric column; typed arrays are preferred for large series. */
@@ -13,6 +14,8 @@ export interface AxisSpec {
   readonly min?: number;
   /** Fixed upper bound; omit to derive from the data. */
   readonly max?: number;
+  /** "log" draws decade ticks and needs strictly positive data (see validateScene); default "linear". */
+  readonly scale?: "linear" | "log";
 }
 
 /** Marker glyph for point series (live-view.md 7.2: captured filled, live ringed, rejected cross). */
@@ -51,6 +54,33 @@ export interface FitLine {
   readonly color?: string;
 }
 
+/** A single marker glyph at a data point, optionally with a collision-avoided text label. */
+export interface PointMarker {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly kind: MarkerKind;
+  readonly color?: string;
+  readonly label?: string;
+}
+
+/** Free text label attached to a data point; placed so it avoids data, boxes and other labels. */
+export interface PointLabel {
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly text: string;
+}
+
+/** Shaded band across the whole plot on one axis (a limit, a region of interest). */
+export interface Span {
+  readonly id: string;
+  readonly axis: "x" | "y";
+  readonly from: number;
+  readonly to: number;
+  readonly color?: string;
+}
+
 /** Corner of the plot area for the annotation box; "auto" picks the corner that hides the least data. */
 export type Anchor = "tl" | "tr" | "bl" | "br" | "auto";
 
@@ -73,7 +103,16 @@ export interface Scene {
   readonly bands?: readonly Band[];
   readonly fits?: readonly FitLine[];
   readonly annotation?: AnnotationBox;
+  /** Further boxes, placed greedily in order into the corners that avoid data and earlier boxes. */
+  readonly annotations?: readonly AnnotationBox[];
+  readonly markers?: readonly PointMarker[];
+  readonly labels?: readonly PointLabel[];
+  readonly spans?: readonly Span[];
   readonly legend?: boolean;
+  /** False hides x tick labels and the x title (inner sub-panels). Default true. */
+  readonly xLabels?: boolean;
+  /** Minimum left plot edge in px, so stacked panels can align their plot areas. */
+  readonly plotLeft?: number;
   readonly theme: Theme;
 }
 

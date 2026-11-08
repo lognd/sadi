@@ -2,7 +2,8 @@
 import { getLogger } from "../../api/log";
 import { paintScene } from "./canvas";
 import type { Ctx2D } from "./canvas";
-import type { Scene } from "./scene";
+import { validateDrawable, describePlotError } from "./figure";
+import type { Drawable } from "./figure";
 import { sceneToSvg } from "./svg";
 
 const log = getLogger("plots.export");
@@ -50,7 +51,12 @@ function defaultCanvas(w: number, h: number): ExportCanvas {
 }
 
 /** Render the scene to PNG or SVG from the same layout the on-screen canvas uses. */
-export async function exportFigure(scene: Scene, opts: ExportOptions, deps: ExportDeps = {}): Promise<ExportResult> {
+export async function exportFigure(scene: Drawable, opts: ExportOptions, deps: ExportDeps = {}): Promise<ExportResult> {
+  const valid = validateDrawable(scene);
+  if (!valid.ok) {
+    log.warn("export rejected", { error: describePlotError(valid.error) });
+    return { ok: false, error: describePlotError(valid.error) };
+  }
   if (opts.format === "svg") {
     const text = sceneToSvg(scene);
     log.info("svg exported", { bytes: text.length, title: scene.title });

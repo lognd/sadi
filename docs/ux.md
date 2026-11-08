@@ -274,6 +274,12 @@ Additional header state: save indicator `Saved 12:04:11` / `Saving...` /
 section 6). A device drop shows `Disconnected` in the Source slot and a
 reconnect prompt; data already durable is untouched.
 
+The save indicator is derived read-only from the writer's enqueued and durable
+seqs (`sadi.api.save_indicator`, `GET /api/save-indicator`): `Saving...` is
+shown as soon as a record is enqueued and not yet durable, so clients polling
+every 250 ms (`poll_ms`) show it within 250 ms. `NOT SAVED` latches on writer
+failure and never clears.
+
 ## 6. Error and warning style: say what to do
 
 Format: one line of what happened in plain words, one line of what to do,

@@ -4,6 +4,8 @@ export * from "./scene";
 export * from "./ticks";
 export * from "./decimate";
 export * from "./layout";
+export * from "./place";
+export * from "./figure";
 export * from "./drawlist";
 export * from "./canvas";
 export * from "./svg";

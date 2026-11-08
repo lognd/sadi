@@ -2,9 +2,8 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions -- numeric geometry in attribute and font strings */
 import { getLogger } from "../../api/log";
 import type { DrawOp } from "./drawlist";
-import { buildDrawList } from "./drawlist";
-import { computeLayout } from "./layout";
-import type { Scene } from "./scene";
+import { renderPlan } from "./figure";
+import type { Drawable } from "./figure";
 
 const log = getLogger("plots.canvas");
 
@@ -125,7 +124,7 @@ export interface RenderOptions {
 }
 
 /** Render a scene to a canvas, sizing its backing store for the device pixel ratio. */
-export function renderToCanvas(canvas: HTMLCanvasElement, scene: Scene, opts: RenderOptions = {}): void {
+export function renderToCanvas(canvas: HTMLCanvasElement, scene: Drawable, opts: RenderOptions = {}): void {
   const dpr = opts.dpr ?? (typeof window === "undefined" ? 1 : window.devicePixelRatio || 1);
   const ctx = canvas.getContext("2d");
   if (ctx === null) {
@@ -140,11 +139,12 @@ export function renderToCanvas(canvas: HTMLCanvasElement, scene: Scene, opts: Re
 }
 
 /** Paint a scene onto an already sized context at the given pixel scale. */
-export function paintScene(ctx: Ctx2D, scene: Scene, scale: number): void {
-  const ops = buildDrawList(scene, computeLayout(scene));
+export function paintScene(ctx: Ctx2D, scene: Drawable, scale: number): void {
+  const plan = renderPlan(scene);
+  const ops = plan.ops;
   ctx.save();
   ctx.scale(scale, scale);
-  executeDrawList(ctx, ops, scene.theme.fontFamily);
+  executeDrawList(ctx, ops, plan.fontFamily);
   ctx.restore();
   log.debug("scene painted", { scale, ops: ops.length });
 }

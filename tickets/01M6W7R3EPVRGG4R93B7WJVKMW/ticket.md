@@ -2,13 +2,13 @@
 id = "01M6W7R3EPVRGG4R93B7WJVKMW"
 title = "Creep plot: strain vs log-time per hold with fit and slip markers"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T03:53:24Z"
 idempotency_key = "sadi-f7"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/creep/**", "creates:docs/web/creep-plot.md"]
 scope = ["web/src/plots/creep/**", "docs/web/creep-plot.md"]

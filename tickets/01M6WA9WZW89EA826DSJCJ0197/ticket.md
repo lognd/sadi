@@ -7,9 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T00:53:00Z"
-updated = "2026-11-08T03:33:17Z"
+updated = "2026-11-08T03:33:18Z"
 labels = ["model:sonnet", "ws:web"]
-scope = ["web/src/doctor/**", "web/src/api/client.ts", "web/src/api/schema.ts", "web/src/App.tsx"]
+scope = ["web/src/doctor/**", "web/src/api/client.ts", "web/src/api/schema.ts", "web/src/App.tsx", "docs/web/doctor-ui.md"]
 
 [[links]]
 kind = "blocked-by"

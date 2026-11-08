@@ -13,7 +13,9 @@ from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.core.errors import ComputeCode
 from sadi.core.lab import BudgetedLab, LabId, LabModule
+from sadi.core.models import Quantity
 from sadi.core.point_inputs import PHASE_CALIBRATION, PHASE_SPECIMEN, PHASE_TARE
 from sadi.core.registry import LabRegistry
 from sadi.core.results import ResultSet, make_result
@@ -175,12 +177,19 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
         )
     active = active_points(pts.danger_ok)
     analysis = lab.recompute(to_captured(active))
-    if analysis.is_err:
-        _log.warning("recompute failed for lab %s: %s", lab.id, analysis.danger_err)
-        return Err(from_sadi(analysis.danger_err))
     values = []
     notes: list[str] = []
-    for name, q in analysis.danger_ok.values.items():
+    if analysis.is_err and analysis.danger_err.code == ComputeCode.TOO_FEW_POINTS:
+        # Not enough captured input yet: an empty live panel with the reason, not a failure.
+        _log.info("recompute waiting for inputs for lab %s: %s", lab.id, analysis.danger_err)
+        notes.append(str(analysis.danger_err))
+        quantities: dict[str, Quantity] = {}
+    elif analysis.is_err:
+        _log.warning("recompute failed for lab %s: %s", lab.id, analysis.danger_err)
+        return Err(from_sadi(analysis.danger_err))
+    else:
+        quantities = analysis.danger_ok.values
+    for name, q in quantities.items():
         made = make_result(name, q.value, q.standard_uncertainty, q.unit)
         if made.is_err:
             _log.warning("result %s not reportable: %s", name, made.danger_err)

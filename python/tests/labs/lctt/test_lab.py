@@ -194,8 +194,31 @@ def test_events_from_inputs_ids_per_run() -> None:
 
 
 # frob:tests python/sadi/labs/lctt/lab.py::LcttLab.recompute
-def test_core_recompute_is_a_stub() -> None:
-    assert isinstance(LcttLab().recompute(()), Ok)
+def test_core_recompute_real_values() -> None:
+    from sadi.core.models import CapturedPoint, SettleStatus, TimeWindow
+    from sadi.labs.lctt.lab import LoadingContext
+
+    def pt(i: int, v: float | None, kg: float | None) -> CapturedPoint:
+        return CapturedPoint(
+            index=i,
+            window=TimeWindow(start=0.0, end=1.0),
+            t_since_load=1.0,
+            drift_rate=0.0,
+            status=SettleStatus.SETTLED,
+            volts=v,
+            load_kg=kg,
+        )
+
+    assert isinstance(LcttLab().recompute(()), Err)
+    assert isinstance(LcttLab().recompute((pt(0, None, None),)), Err)
+    pts = (pt(0, None, 1.0), pt(1, 2.0, 1.0))
+    res = LcttLab().recompute(pts).danger_ok
+    assert set(res.values) == {"stress"}
+    assert res.values["stress"].value > 0
+    ctx = LoadingContext(slope_m_per_v=0.01, tare_v=1.0, l0_m=0.5)
+    full = LcttLab(ctx).recompute(pts).danger_ok
+    assert set(full.values) == {"stress", "strain", "secant_modulus"}
+    assert full.values["strain"].value == pytest.approx(0.01 * 1.0 / 0.5)
 
 
 # frob:tests python/sadi/labs/lctt/specimens.py::SpecimenSpec.name

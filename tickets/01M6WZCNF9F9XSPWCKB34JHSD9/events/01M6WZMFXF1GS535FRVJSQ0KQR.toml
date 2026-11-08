@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T07:05:45Z"
+digest = "20e8acbb2ed8eca297e79c1e57250a67adfe84b54bee269c905f5e40e792c46e"
+exit_code = 0
+head = "273257b6af9babe302283adf55f22a47b385402a"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/screens/WizardHost.test.tsx (4 tests) 12ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  02:05:46
+   Duration  1.18s (transform 450ms, setup 0ms, collect 674ms, tests 12ms, environment 0ms, prepare 168ms)
+
+JSON report written to /tmp/frob-vitest-769708-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/WizardHost.test.tsx"
+size = 324
+status = "measured"
+test_count = 4
+tests_digest = "48204ddaadb21ea4a1fee362da5c7aa60d15cd8c042bdcd39ae54809aabda3f3"
+at = "2026-11-08T07:05:45Z"
+actor = "lognd"
+rev = 1

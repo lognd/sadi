@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["App mounts the wizard shell and run/review/export screens with the step rail visible, Doctor reachable"]
+moved = []
+at = "2026-11-08T07:04:43Z"
+actor = "lognd"
+rev = 1

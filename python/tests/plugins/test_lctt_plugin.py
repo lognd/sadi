@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from typani import Ok
+from typani import Err, Ok
 
 from sadi.core.lab import LabId
 from sadi.core.models import Phase
@@ -53,7 +53,7 @@ def test_register_yields_working_lab() -> None:
         "results",
         "export",
     ]
-    assert isinstance(lab.recompute(()), Ok)
+    assert isinstance(lab.recompute(()), Err)
 
 
 # frob:tests python/sadi/labs/lctt/lab.py::setup_step

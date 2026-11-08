@@ -2,7 +2,8 @@
 id = "01M6WFZF9FD9QNXP62MCETRNEA"
 title = "Server API: plugins list endpoint and response models"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

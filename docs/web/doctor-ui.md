@@ -15,4 +15,4 @@ The web app has a Doctor screen (`web/src/doctor/DoctorScreen.tsx`) that mirrors
 
 The typed client (`web/src/api/client.ts`) expects `GET /api/doctor` (a `DoctorReport`) and
 `POST /api/doctor/{check_id}/run` (a `CheckResult`). Types in `web/src/doctor/types.ts` mirror
-`python/sadi/doctor/schema.py`. The server implements both in `python/sadi/server/routes_doctor.py` (`make_doctor_router()`): checks run in a threadpool, the doctor is read-only, and an unknown check id returns HTTP 404. The app factory (not yet present) mounts it alongside the plugin routes.
+`python/sadi/doctor/schema.py`. The server implements both in `python/sadi/server/routes_doctor.py` (`make_doctor_router()`): checks run in a threadpool, the doctor is read-only, and an unknown check id returns HTTP 404. The app factory (`create_app`, see [app.md](../server/app.md)) mounts it alongside the plugin routes.

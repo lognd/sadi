@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "Blocked on contract: CapturedPoint (core/models.py) carries no readings (volts/height/force/strain) or phase, and RunState holds l0/tare, so recompute(points) cannot run fit_calibration/fit_creep. No elastic analysis module exists. Needs a design decision: widen CapturedPoint with readings+phase, or change LabModule.recompute to take RunState plus per-point readings (touches core/models.py, core/lab.py, capture path). Kept as a stub; not a plugin-system blocker."
+at = "2026-11-08T02:57:08Z"
+actor = "lognd"
+rev = 1

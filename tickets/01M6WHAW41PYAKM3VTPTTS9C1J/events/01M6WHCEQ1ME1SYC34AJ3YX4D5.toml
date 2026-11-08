@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:56:43Z"
+digest = "2021829193eb47cd6eab156ee763284c1c55a2836003e6a0d4462c1d993b72f0"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 6 items
+
+python/tests/plugins/test_local_source.py ......                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-213529-0.xml ---------------
+============================== 6 passed in 0.38s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_local_source.py::test_absent_dirs_ok python/tests/plugins/test_local_source.py::test_broken_plugin_isolated python/tests/plugins/test_local_source.py::test_default_dirs python/tests/plugins/test_local_source.py::test_env_path_wins python/tests/plugins/test_local_source.py::test_loads_without_install python/tests/plugins/test_local_source.py::test_plugins_dir_gitignored"
+size = 521
+status = "measured"
+test_count = 6
+tests_digest = "b31220ea484bf01c1f859842743ddd48ecd39927b2f3974572ef838dd69e0f80"
+at = "2026-11-08T02:56:43Z"
+actor = "lognd"
+rev = 1

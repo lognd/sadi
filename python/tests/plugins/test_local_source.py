@@ -39,6 +39,7 @@ def _plugin(root: Path, pid: str, lid: str | None = None) -> None:
 
 
 # frob:tests python/sadi/plugins/local.py::LocalDirSource.discover
+# frob:tests python/sadi/plugins/local.py::LocalDirSource.__init__
 def test_loads_without_install(tmp_path: Path) -> None:
     _plugin(tmp_path, "alpha", "alpha_lab")
     res = LocalDirSource(paths=[tmp_path]).discover()

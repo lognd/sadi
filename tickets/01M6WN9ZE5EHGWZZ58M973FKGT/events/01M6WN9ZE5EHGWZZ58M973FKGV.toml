@@ -1,0 +1,11 @@
+kind = "create"
+title = "Audit StrEnum error families in doctor/** and server/** -> typani ErrorSet (doctor/schema.py DoctorError etc)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+labels = ["python"]
+body = "From ~PYEFC79: core/store done; doctor and server were out of its lease. Convert error enums only; keep state/label enums; preserve wire values; record per-enum decision."
+at = "2026-11-08T04:05:17Z"
+actor = "lognd"
+rev = 1

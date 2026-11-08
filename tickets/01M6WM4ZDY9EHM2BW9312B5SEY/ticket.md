@@ -13,6 +13,10 @@ scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 [[acceptance]]
 text = "Label placement is greedy and deterministic: no placed box overlaps another or the legend, and results are identical across runs"
 bound = false
+
+[[acceptance]]
+text = "A log axis yields decade ticks and log-mapped geometry, and non-positive data returns a PlotError instead of drawing"
+bound = false
 +++
 
 Generic features in web/src/plots/core so every plot (calibration, stress-strain, creep) shares one backend and renders adaptively: annotation placement that avoids data and other labels, log axis scale, stacked sub-panels (residuals), re-decimation on zoom/resize, band and marker primitives. No plot-specific drawing code outside core.

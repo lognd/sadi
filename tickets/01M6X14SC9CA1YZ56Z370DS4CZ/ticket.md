@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T07:32:10Z"
-updated = "2026-11-08T07:33:33Z"
+updated = "2026-11-08T07:33:34Z"
 scope = ["web/src/api/schema.ts"]
 
 [[acceptance]]

@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/3MJNBZY; scope: web/src/plots/stressstrain/**, docs/web/stress-strain-plot.md; ttl 7200s"
+at = "2026-11-08T03:44:01Z"
+actor = "lognd"
+rev = 1

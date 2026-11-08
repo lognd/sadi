@@ -60,3 +60,5 @@ if given, then the packaged `sadi/_ui` (when it holds `index.html`), then
 Not yet verified: that a built wheel actually contains the UI (needs a wheel
 build, deferred to the release-workflow ticket) and any run on Windows or
 macOS.
+
+Release builds and the manual publish gate are described in [Release procedure](release.md).

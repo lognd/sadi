@@ -21,6 +21,10 @@ bound = false
 [[acceptance]]
 text = "A Figure stacks panels sharing one x range with aligned plot areas through the same draw path as a Scene"
 bound = false
+
+[[acceptance]]
+text = "decimateWindow and zoomScene re-derive min/max decimation for a window and width from the full data"
+bound = false
 +++
 
 Generic features in web/src/plots/core so every plot (calibration, stress-strain, creep) shares one backend and renders adaptively: annotation placement that avoids data and other labels, log axis scale, stacked sub-panels (residuals), re-decimation on zoom/resize, band and marker primitives. No plot-specific drawing code outside core.

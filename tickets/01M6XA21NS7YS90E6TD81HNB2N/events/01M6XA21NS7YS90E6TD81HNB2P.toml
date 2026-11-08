@@ -1,0 +1,9 @@
+kind = "create"
+title = "Benchmark: plot rendering sustains 60 fps on sim stream"
+type = "task"
+category = "todo"
+priority = "low"
+points = 2
+at = "2026-11-08T10:07:57Z"
+actor = "lognd"
+rev = 1

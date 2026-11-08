@@ -13,7 +13,7 @@ scope = ["python/sadi/server/app.py", "python/tests/cli/test_launcher_spill.py",
 
 [[acceptance]]
 text = "A spill present at startup is imported into a new session version after the lock is taken"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A failed import leaves the spill file intact and is reported"

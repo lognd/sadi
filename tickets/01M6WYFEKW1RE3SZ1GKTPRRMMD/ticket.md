@@ -2,7 +2,8 @@
 id = "01M6WYFEKW1RE3SZ1GKTPRRMMD"
 title = "Streaming settle detector refits whole point per push (slow at 50 kHz)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

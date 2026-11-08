@@ -7,9 +7,9 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:57:31Z"
-updated = "2026-11-08T03:59:50Z"
+updated = "2026-11-08T03:59:51Z"
 labels = ["refactor"]
-scope = ["python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py"]
+scope = ["python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "python/tests/core/test_pipeline.py"]
 +++
 
 AcquisitionDriver (python/sadi/api/acquisition.py) calls private pipeline._halt with a noqa. Add a public halt method on AcquisitionPipeline in python/sadi/core and use it.

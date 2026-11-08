@@ -2,12 +2,12 @@
 id = "01M6WSPW5XB6P5V3PR5SHEH6FP"
 title = "ad3: typed Digilent DWF binding (ctypes edge, Protocol backend, Result errors)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T05:22:14Z"
-updated = "2026-11-08T05:22:23Z"
+updated = "2026-11-08T05:22:29Z"
 labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/__init__.py", "creates:python/sadi/bench/ad3/__init__.py", "creates:python/sadi/bench/ad3/consts.py", "creates:python/sadi/bench/ad3/backend.py", "creates:python/sadi/bench/ad3/dll.py", "creates:python/tests/bench/test_ad3_binding.py", "creates:docs/bench/ad3.md"]
 
 [[acceptance]]

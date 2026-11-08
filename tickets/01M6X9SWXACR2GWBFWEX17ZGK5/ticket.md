@@ -7,9 +7,9 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:03:30Z"
-updated = "2026-11-08T10:05:44Z"
+updated = "2026-11-08T10:09:54Z"
 
 [[acceptance]]
 text = "test_curve_notes_latency is deterministic under the periodic re-verify (injected clock or relaxed trigger) and passes 10 consecutive runs"
-bound = false
+bound = true
 +++

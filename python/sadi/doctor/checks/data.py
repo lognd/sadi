@@ -3,6 +3,8 @@
 # frob:ticket 01M6WA9WYE9D71BBA7AV3H5CGF
 from __future__ import annotations
 
+import tomllib
+
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
 from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason
 from sadi.doctor.steps import action, cmd, manual
@@ -13,6 +15,12 @@ LOW_FREE_BYTES = 10 * GIB
 _NETWORK_FS = {"nfs", "nfs4", "cifs", "smb3", "smbfs", "sshfs", "fuse.sshfs", "fuse.rclone", "afs"}
 _FAT_FS = {"vfat", "exfat", "msdos", "fat32"}
 _DRVFS = {"9p", "drvfs"}
+SLOW_FSYNC_MS = 200.0
+LOG_LIMIT_BYTES = GIB
+LOG_DIR = "logs"
+CONFIG_FILE = "config.toml"
+SHARING_MARK = "DurableSharingViolation"
+EXCLUSIONS_PS = ("powershell", "-NoProfile", "-Command", "(Get-MpPreference).ExclusionPath")
 
 
 def _root(ctx: Ctx) -> str:
@@ -275,6 +283,380 @@ def _data_090_spill(ctx: Ctx, out: Outcome) -> Fix:
                 mutates=Mutates.DATA,
                 changes="Creates a recovered session from the spill files; the spill files are kept until you confirm.",
                 if_not="Keep the files; do not delete them until the import succeeds.",
+            ),
+        ),
+    )
+
+
+@check(
+    "DATA-040",
+    Layer.DATA,
+    "Flush primitive works on this volume",
+    Severity.BLOCKER,
+    {
+        "fsync-unsupported": "fsync fails on the data volume",
+        "fullfsync-fallback": "macOS F_FULLFSYNC is unavailable; fsync alone may not reach the disk",
+        "fsync-slow": "Median flush is over 200 ms (HDD, USB stick or antivirus)",
+    },
+    "creates, fsyncs 5 times and deletes one file under <root>/doctor/ (needs --allow-probe-write)",
+    depends_on=("DATA-010",),
+    opt_in_flag="allow_probe_write",
+)
+def data_040(ctx: Ctx) -> Outcome:
+    """Measure fsync on the data volume with one throwaway probe file."""
+    facts = ctx.probes.flush_facts(_root(ctx))
+    info = {"p50_ms": facts.p50_ms, "fullfsync": facts.fullfsync}
+    if facts.status == "unsupported":
+        return fail("fsync-unsupported", f"fsync failed: {facts.detail}", **info)
+    if facts.status == "error":
+        return skip(SkipReason.TOOL_MISSING, f"Probe file could not be used: {facts.detail}")
+    if ctx.os is Os.MACOS and facts.fullfsync is False:
+        return warn("fullfsync-fallback", "F_FULLFSYNC is not supported here", **info)
+    if facts.p50_ms > SLOW_FSYNC_MS:
+        return warn("fsync-slow", f"Median flush takes {facts.p50_ms:.0f} ms", **info)
+    return ok(f"Median flush takes {facts.p50_ms:.1f} ms", **info)
+
+
+@remedy("DATA-040", "fsync-unsupported")
+def _data_040_unsupported(ctx: Ctx, out: Outcome) -> Fix:
+    """Move to a filesystem with working flushes."""
+    return Fix(
+        "Use a filesystem with a working flush",
+        (
+            manual(
+                "Choose a folder on a local ext4, NTFS or APFS volume and set SADI_DATA_ROOT to it.",
+                "The doctor reports a median flush time.",
+                mutates=Mutates.DATA_DIR,
+                changes="Changes which folder holds new sessions; existing sessions are not moved.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-040", "fullfsync-fallback")
+def _data_040_fullfsync(ctx: Ctx, out: Outcome) -> Fix:
+    """Explain the macOS volume limitation."""
+    return Fix(
+        "Use an APFS or HFS+ volume",
+        (
+            manual(
+                "Put the data folder on the internal APFS disk; some external and network volumes cannot honour a full flush.",
+                "The doctor reports F_FULLFSYNC support.",
+                mutates=Mutates.DATA_DIR,
+                changes="Changes which folder holds new sessions; existing sessions are not moved.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-040", "fsync-slow")
+def _data_040_slow(ctx: Ctx, out: Outcome) -> Fix:
+    """Suggest a faster disk or an antivirus exclusion."""
+    return Fix(
+        "Use a faster disk",
+        (
+            manual(
+                "Move the data folder to an internal SSD; on Windows also exclude it from antivirus (see DATA-060).",
+                "The median flush is under 200 ms.",
+                mutates=Mutates.DATA_DIR,
+                changes="Changes which folder holds new sessions; existing sessions are not moved.",
+                if_not="USB sticks and spinning disks are often slower than 200 ms.",
+            ),
+        ),
+    )
+
+
+def _under(root: str, name: str) -> str:
+    """Join name onto root with a forward slash, ignoring a trailing separator."""
+    return root.rstrip("/\\") + "/" + name
+
+
+def _lock_target(ctx: Ctx) -> str | None:
+    """Return an existing file or directory under the root to take a read-only lock on."""
+    root = _root(ctx)
+    for name in (CONFIG_FILE, "sessions"):
+        path = _under(root, name)
+        if ctx.probes.exists(path):
+            return path
+    return None
+
+
+@check(
+    "DATA-050",
+    Layer.DATA,
+    "Lock primitive works on this volume",
+    Severity.BLOCKER,
+    {
+        "locks-unsupported": "File locking is not supported on the data volume",
+        "lock-held-by-other": "The probe target is locked: another SADI is running",
+    },
+    "non-blocking shared lock on a read-only descriptor of <root>/config.toml or <root>/sessions",
+    depends_on=("DATA-010",),
+)
+def data_050(ctx: Ctx) -> Outcome:
+    """Take and release a shared lock on an existing entry under the root."""
+    target = _lock_target(ctx)
+    if target is None:
+        return skip(SkipReason.UNVERIFIED, "No config.toml or sessions/ under the root to lock")
+    state = ctx.probes.lock_state(target)
+    if state == "unsupported":
+        return fail("locks-unsupported", f"Locking fails on {target}", target=target)
+    if state == "held":
+        return warn("lock-held-by-other", f"{target} is locked by another process", target=target)
+    if state == "error":
+        return skip(SkipReason.TOOL_MISSING, f"Could not open {target} for the lock probe")
+    return ok(f"Locking works on {target}", target=target)
+
+
+@remedy("DATA-050", "locks-unsupported")
+def _data_050_unsupported(ctx: Ctx, out: Outcome) -> Fix:
+    """Move off a volume without locks."""
+    root = _root(ctx)
+    show = "Get-PSDrive -PSProvider FileSystem" if ctx.os is Os.WINDOWS else f"df -T '{root}'"
+    return Fix(
+        "Use a local filesystem with locking",
+        (
+            action(
+                "Show which filesystem holds the data folder.",
+                "The type is a network or exotic filesystem.",
+                cmd(ctx.os, show),
+            ),
+            manual(
+                "Set SADI_DATA_ROOT to a folder on a local disk (WSL: inside the Linux home, not /mnt/c).",
+                "The doctor reports that locking works.",
+                mutates=Mutates.DATA_DIR,
+                changes="Changes which folder holds new sessions; existing sessions are not moved.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-050", "lock-held-by-other")
+def _data_050_held(ctx: Ctx, out: Outcome) -> Fix:
+    """Another SADI holds the lock; nothing is broken."""
+    return Fix(
+        "Close the other SADI",
+        (
+            manual(
+                "Another SADI instance is using this data folder. Close it, or use a different data folder for this one.",
+                "The doctor reports that locking works.",
+                if_not="Do not delete lock files by hand.",
+            ),
+        ),
+    )
+
+
+@check(
+    "DATA-060",
+    Layer.DATA,
+    "Antivirus or indexer interference",
+    Severity.WARNING,
+    {
+        "not-excluded-from-defender": "Windows Defender scans the data root (no exclusion)",
+        "indexer-scans-root": "Spotlight indexes the volume holding the data root",
+        "sharing-violations-logged": "Logs mention DurableSharingViolation in the data root",
+    },
+    "Get-MpPreference ExclusionPath (Windows); mdutil -s <root> (macOS); DurableSharingViolation in <root>/logs",
+    applies_to=frozenset({Os.WINDOWS, Os.MACOS}),
+)
+def data_060(ctx: Ctx) -> Outcome:
+    """Look for scanners that hold files open and break durable renames."""
+    root = _root(ctx)
+    logs = _log_files(ctx)
+    hits = sum((ctx.probes.read_text(f) or "").count(SHARING_MARK) for f in logs)
+    if hits:
+        return warn(
+            "sharing-violations-logged", f"{hits} sharing violation(s) in the logs", count=hits
+        )
+    if ctx.os is Os.WINDOWS:
+        res = ctx.probes.run(EXCLUSIONS_PS)
+        if res.is_err or res.unwrap().exit_code != 0:
+            return skip(SkipReason.TOOL_MISSING, "Could not read the Defender exclusions")
+        lines = [x.strip().lower().rstrip("\\") for x in res.unwrap().stdout_tail.splitlines()]
+        low = root.lower().rstrip("\\")
+        if not any(x and (low == x or low.startswith(x + "\\")) for x in lines):
+            return warn(
+                "not-excluded-from-defender",
+                "The data root is not excluded from Defender",
+                root=root,
+            )
+        return ok("The data root is excluded from Defender", root=root)
+    res = ctx.probes.run(("mdutil", "-s", root))
+    if res.is_err or res.unwrap().exit_code != 0:
+        return skip(SkipReason.TOOL_MISSING, "Could not read the Spotlight state")
+    if "indexing enabled" in res.unwrap().stdout_tail.lower():
+        return warn("indexer-scans-root", "Spotlight indexes this volume", root=root)
+    return ok("Spotlight does not index this volume", root=root)
+
+
+@remedy("DATA-060", "not-excluded-from-defender")
+def _data_060_defender(ctx: Ctx, out: Outcome) -> Fix:
+    """Exclude the root from Defender (done by the user, never the doctor)."""
+    root = _root(ctx)
+    return Fix(
+        "Exclude the data folder from Defender",
+        (
+            action(
+                "In an administrator PowerShell, add the exclusion.",
+                "No output.",
+                cmd(ctx.os, f"Add-MpPreference -ExclusionPath '{root}'"),
+                mutates=Mutates.SYSTEM,
+                changes="Defender stops scanning the data folder.",
+                if_not="Group policy may block it; ask your administrator.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-060", "indexer-scans-root")
+def _data_060_indexer(ctx: Ctx, out: Outcome) -> Fix:
+    """Keep the indexer out of the data folder."""
+    root = _root(ctx)
+    return Fix(
+        "Keep the indexer away from the data folder",
+        (
+            manual(
+                f"Open System Settings, Siri & Spotlight, Spotlight Privacy, and add {root}.",
+                "mdutil no longer reports indexing for the folder.",
+                mutates=Mutates.SYSTEM,
+                changes="Spotlight stops indexing the data folder.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-060", "sharing-violations-logged")
+def _data_060_sharing(ctx: Ctx, out: Outcome) -> Fix:
+    """Find the scanner holding files open."""
+    root = _root(ctx)
+    if ctx.os is Os.WINDOWS:
+        step = action(
+            "Exclude the data folder from Defender (administrator PowerShell).",
+            "No output.",
+            cmd(ctx.os, f"Add-MpPreference -ExclusionPath '{root}'"),
+            mutates=Mutates.SYSTEM,
+            changes="Defender stops scanning the data folder.",
+            if_not="Also exclude it from third-party antivirus and backup tools.",
+        )
+    else:
+        step = manual(
+            "Exclude the data folder from Spotlight, Time Machine and any antivirus.",
+            "No new sharing violations appear in the logs.",
+            mutates=Mutates.SYSTEM,
+            changes="Background tools stop touching the data folder.",
+        )
+    return Fix("Stop scanners from holding session files", (step,))
+
+
+@check(
+    "DATA-070",
+    Layer.DATA,
+    "Config file parses",
+    Severity.BLOCKER,
+    {"syntax-error": "config.toml is not valid TOML (line and column given)"},
+    "tomllib parse of <root>/config.toml; no pydantic Config model exists yet, so values are not validated",
+    depends_on=("DATA-010",),
+)
+def data_070(ctx: Ctx) -> Outcome:
+    """Parse the optional config file as TOML."""
+    path = _under(_root(ctx), CONFIG_FILE)
+    if not ctx.probes.exists(path):
+        return ok("No config file; defaults apply", path=path)
+    text = ctx.probes.read_text(path)
+    if text is None:
+        return skip(SkipReason.TOOL_MISSING, f"Could not read {path}", path=path)
+    try:
+        tomllib.loads(text)
+    except tomllib.TOMLDecodeError as exc:
+        return fail("syntax-error", f"{path}: {exc}", path=path)
+    return ok(f"{path} parses", path=path)
+
+
+@remedy("DATA-070", "syntax-error")
+def _data_070_syntax(ctx: Ctx, out: Outcome) -> Fix:
+    """Fix or set aside the file; the doctor never edits it."""
+    return Fix(
+        "Fix the config file",
+        (
+            manual(
+                "Open config.toml in the data folder and fix the line named above, or rename it to config.toml.bad to use defaults.",
+                "The doctor reports that the file parses.",
+                mutates=Mutates.DATA_DIR,
+                changes="Edits or renames config.toml.",
+                if_not="Rename it and start SADI to regenerate a clean file.",
+            ),
+        ),
+    )
+
+
+def _log_files(ctx: Ctx) -> list[str]:
+    """Return full paths of the files in <root>/logs (empty when absent)."""
+    logs = _under(_root(ctx), LOG_DIR)
+    return [f"{logs}/{n}" for n in ctx.probes.listdir(logs) or []]
+
+
+@check(
+    "DATA-080",
+    Layer.DATA,
+    "Log directory writable and log size",
+    Severity.WARNING,
+    {
+        "not-writable": "The log directory is not writable",
+        "oversized": "Log files total more than 1 GiB",
+    },
+    "os.access and total file size of <root>/logs (SADI writes no log files yet: absent is a pass)",
+    depends_on=("DATA-010",),
+)
+def data_080(ctx: Ctx) -> Outcome:
+    """Check the log directory is usable and not huge."""
+    logs = _under(_root(ctx), LOG_DIR)
+    if not ctx.probes.is_dir(logs):
+        return ok("No log directory yet", path=logs)
+    if not ctx.probes.writable(logs):
+        return warn("not-writable", f"{logs} is not writable", path=logs)
+    total = sum(ctx.probes.file_size(f) or 0 for f in _log_files(ctx))
+    if total > LOG_LIMIT_BYTES:
+        return warn("oversized", f"Logs use {round(total / GIB, 1)} GiB", total_bytes=total)
+    return ok(f"Logs use {round(total / GIB, 2)} GiB", total_bytes=total)
+
+
+@remedy("DATA-080", "not-writable")
+def _data_080_perm(ctx: Ctx, out: Outcome) -> Fix:
+    """Show ownership of the log directory."""
+    logs = f"{_root(ctx)}/{LOG_DIR}"
+    show = f"icacls '{logs}'" if ctx.os is Os.WINDOWS else f"ls -ld '{logs}'"
+    return Fix(
+        "Make the log folder writable",
+        (
+            action("Show who owns the folder.", "Your user can write to it.", cmd(ctx.os, show)),
+            manual(
+                "Fix the ownership, or remove the folder if it is empty and let SADI recreate it.",
+                "The doctor reports the folder as writable.",
+                mutates=Mutates.SYSTEM,
+                changes="Changes folder permissions.",
+            ),
+        ),
+    )
+
+
+@remedy("DATA-080", "oversized")
+def _data_080_big(ctx: Ctx, out: Outcome) -> Fix:
+    """Suggest pruning old logs."""
+    logs = f"{_root(ctx)}/{LOG_DIR}"
+    show = (
+        f"Get-ChildItem '{logs}' | Sort-Object Length -Descending | Select-Object -First 5 Name,Length"
+        if ctx.os is Os.WINDOWS
+        else f"ls -lS '{logs}' | head -n 6"
+    )
+    return Fix(
+        "Prune old logs",
+        (
+            action("List the biggest log files.", "A short list of files.", cmd(ctx.os, show)),
+            manual(
+                "Delete the old rotated logs you no longer need, or lower the log retention setting.",
+                "Logs use under 1 GiB.",
+                mutates=Mutates.SYSTEM,
+                changes="Deletes old log files.",
             ),
         ),
     )

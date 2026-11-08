@@ -149,3 +149,67 @@ def _res_030_fix(ctx: Ctx, out: Outcome) -> Fix:
             ),
         ),
     )
+
+
+USB_SUSPEND_GUID = "2a737441-1930-4402-8d77-b2bebba308a3"
+POWERCFG = ("powercfg", "/q", "SCHEME_CURRENT", "2a737441-1930-4402-8d77-b2bebba308a3")
+
+
+@check(
+    "RES-040",
+    Layer.RES,
+    "Power state",
+    Severity.INFO,
+    {
+        "on-battery": "Running on battery; USB power saving may suspend the FTDI",
+        "usb-selective-suspend": "Windows USB selective suspend is enabled",
+    },
+    "psutil.sensors_battery (all OS); powercfg /q USB selective suspend (Windows). Thermal state is not probed",
+)
+def res_040(ctx: Ctx) -> Outcome:
+    """Report battery power and, on Windows, USB selective suspend."""
+    if ctx.probes.on_battery():
+        return warn("on-battery", "Running on battery power")
+    if ctx.os is Os.WINDOWS:
+        res = ctx.probes.run(POWERCFG)
+        if res.is_ok and res.unwrap().exit_code == 0:
+            text = res.unwrap().stdout_tail.lower()
+            if "current ac power setting index: 0x00000001" in text:
+                return warn("usb-selective-suspend", "USB selective suspend is enabled")
+    return ok("On mains power")
+
+
+@remedy("RES-040", "on-battery")
+def _res_040_battery(ctx: Ctx, out: Outcome) -> Fix:
+    """Ask for the charger."""
+    return Fix(
+        "Plug in the charger",
+        (
+            manual(
+                "Connect the charger before measuring; battery saver can suspend the USB serial adapter.",
+                "The doctor reports mains power.",
+                if_not="On Windows also check Settings, System, Power & battery, Power mode is not Best power efficiency.",
+            ),
+        ),
+    )
+
+
+@remedy("RES-040", "usb-selective-suspend")
+def _res_040_suspend(ctx: Ctx, out: Outcome) -> Fix:
+    """Disable USB selective suspend on AC power."""
+    return Fix(
+        "Disable USB selective suspend",
+        (
+            action(
+                "In an administrator PowerShell, turn it off for the active plan.",
+                "No output.",
+                cmd(
+                    ctx.os,
+                    f"powercfg /setacvalueindex SCHEME_CURRENT SUB_USB {USB_SUSPEND_GUID} 0; powercfg /setactive SCHEME_CURRENT",
+                ),
+                mutates=Mutates.SYSTEM,
+                changes="Stops Windows suspending idle USB devices on AC power.",
+                if_not="Use Control Panel, Power Options, Change plan settings, Advanced, USB settings.",
+            ),
+        ),
+    )

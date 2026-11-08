@@ -17,6 +17,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Mapping, Sequence
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Protocol
 
@@ -25,6 +26,7 @@ from typani import Err, Ok, Result
 from sadi.doctor.devprobe import DeviceFacts, SimFacts, probe_device, probe_sim
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts, survey_sessions
+from sadi.doctor.volprobe import FlushFacts, LockState, probe_flush, probe_lock
 from sadi.doctor.workerprobe import WorkerFacts, probe_workers
 from sadi.logging_setup import get_logger
 
@@ -162,6 +164,30 @@ class Probes(Protocol):
 
     def encoding(self) -> tuple[str, bool]:
         """Return (preferred encoding, UTF-8 mode on)."""
+        ...
+
+    def flush_facts(self, data_root: str) -> FlushFacts:
+        """Create, fsync and delete one probe file under <root>/doctor/ (opt-in only)."""
+        ...
+
+    def lock_state(self, target: str) -> LockState:
+        """Try a non-blocking shared lock on a read-only descriptor of target."""
+        ...
+
+    def file_size(self, path: str) -> int | None:
+        """Return a file's size in bytes, or None when unreadable."""
+        ...
+
+    def on_battery(self) -> bool | None:
+        """Return True when running on battery, False on mains, None without a battery."""
+        ...
+
+    def monotonic_resolution(self) -> float:
+        """Return the monotonic clock resolution in seconds."""
+        ...
+
+    def tz_name(self) -> str | None:
+        """Return the local timezone name, or None when it cannot be resolved."""
         ...
 
     def user_groups(self) -> list[str]:
@@ -503,6 +529,41 @@ class RealProbes:
             return resource.getrlimit(resource.RLIMIT_NOFILE)[0]
         except (ImportError, ValueError, OSError):
             return None
+
+    def flush_facts(self, data_root: str) -> FlushFacts:
+        """Run the flush probe (the only writer, gated by --allow-probe-write in the check)."""
+        return probe_flush(data_root)
+
+    def lock_state(self, target: str) -> LockState:
+        """Probe a shared lock on target."""
+        return probe_lock(target)
+
+    def file_size(self, path: str) -> int | None:
+        """Return os.stat size, None on OSError."""
+        try:
+            return os.stat(path).st_size
+        except OSError:
+            return None
+
+    def on_battery(self) -> bool | None:
+        """Return psutil's battery state: True when discharging, None without a battery."""
+        try:
+            import psutil
+
+            battery = psutil.sensors_battery()
+        except Exception:  # noqa: BLE001 - psutil is optional evidence
+            return None
+        if battery is None or battery.power_plugged is None:
+            return None
+        return not battery.power_plugged
+
+    def monotonic_resolution(self) -> float:
+        """Return time.get_clock_info('monotonic').resolution."""
+        return time.get_clock_info("monotonic").resolution
+
+    def tz_name(self) -> str | None:
+        """Return the local tzinfo name, or None when empty."""
+        return datetime.now().astimezone().tzname() or None
 
     def encoding(self) -> tuple[str, bool]:
         """Return (preferred encoding, utf8 mode)."""

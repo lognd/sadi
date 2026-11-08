@@ -54,11 +54,11 @@ def test_handlers_respond_while_job_runs(monkeypatch: pytest.MonkeyPatch) -> Non
     release = threading.Event()
     started = threading.Event()
 
-    def blocking_run(*_a: object, **_k: object) -> Err[DoctorError]:
+    def blocking_run(*_a: object, **_k: object) -> Err[object, DoctorError]:
         """Stand-in for a CPU-heavy job: blocks its thread until released."""
         started.set()
         assert release.wait(timeout=30)
-        return Err(DoctorError.UnknownCheck)
+        return Err[object, DoctorError](DoctorError.UnknownCheck)
 
     monkeypatch.setattr(routes_doctor, "run", blocking_run)
     latencies = asyncio.run(_scenario(release, started))

@@ -82,7 +82,13 @@ def test_budgets_match_web_shape(budget_client: TestClient) -> None:
     _open(budget_client)
     (row,) = budget_client.get("/api/results/budgets").json()
     assert set(row) == {
-        "result", "label", "total_variance", "total_std_unc", "dominant", "rows", "latex"
+        "result",
+        "label",
+        "total_variance",
+        "total_std_unc",
+        "dominant",
+        "rows",
+        "latex",
     }
     assert row["dominant"]["name"] == "x"
     assert row["rows"][0]["percent"] == pytest.approx(100.0)

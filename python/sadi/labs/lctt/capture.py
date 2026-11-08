@@ -11,6 +11,11 @@ from enum import StrEnum
 from pydantic import BaseModel, Field, model_validator
 from typani import Err, ErrorSet, Ok, Result
 
+# frob:ticket 01M6WJPHV1FMFMMRZ9WXZE3GBF
+from sadi.core.events import EditV1, PointV1, PointWindow
+
+# frob:ticket 01M6WNEEBBBZVDZ6700RJDN26D
+from sadi.core.point_inputs import LoadInputs, PointMeta, build_point
 from sadi.labs.lctt.settle import SettleError
 from sadi.labs.lctt.settle_stream import (
     PointRecord,
@@ -22,10 +27,6 @@ from sadi.labs.lctt.settle_stream import (
     StreamStatus,
 )
 from sadi.logging_setup import get_logger
-# frob:ticket 01M6WJPHV1FMFMMRZ9WXZE3GBF
-from sadi.core.events import EditV1, PointV1, PointWindow
-# frob:ticket 01M6WNEEBBBZVDZ6700RJDN26D
-from sadi.core.point_inputs import LoadInputs, PointMeta, build_point
 
 _log = get_logger(__name__)
 
@@ -74,7 +75,8 @@ class CaptureConfig(BaseModel):
 class Captured(BaseModel):
     """A captured point event, its load inputs, detector record and operator-facing warnings.
 
-    Record it with `AcquisitionDriver.record_point(captured.inputs, captured.point.window, captured.meta)`.
+    Record it with
+    `AcquisitionDriver.record_point(captured.inputs, captured.point.window, captured.meta)`.
     """
 
     model_config = {"frozen": True}

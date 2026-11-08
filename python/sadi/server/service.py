@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import threading
 import uuid
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeVar
 
@@ -245,7 +245,9 @@ class SessionService:
 
     def revert(self, step: str | None) -> Result[Committed, ApiProblem]:
         """Reopen the most recently finished step."""
-        return self._act(lambda cur, rp: cur.wizard.revert(rp, None if step is None else StepId(step)))
+        return self._act(
+            lambda cur, rp: cur.wizard.revert(rp, None if step is None else StepId(step))
+        )
 
     # ---- points -----------------------------------------------------------------------
 
@@ -439,5 +441,3 @@ class SessionService:
                     history=cur.wizard.history(after.danger_ok),
                 )
             )
-
-

@@ -48,7 +48,7 @@ def _capture(c: TestClient) -> dict[str, Any]:
 # frob:tests python/sadi/server/service.py::SessionService.resume
 # frob:tests python/sadi/server/service.py::_fold_parent
 def test_resume_folds_points_and_wizard(client: TestClient, tmp_path: Path) -> None:
-    """The child sees the parent's points, edits and wizard position; the parent is byte-identical."""
+    """The child sees the parent's points, edits, wizard position; the parent is unchanged."""
     first = client.post("/api/sessions", json={"lab": "lctt", "slug": "t"}).json()
     assert client.post("/api/session/wizard/skip", json={"step": "setup"}).status_code == 200
     _capture(client)

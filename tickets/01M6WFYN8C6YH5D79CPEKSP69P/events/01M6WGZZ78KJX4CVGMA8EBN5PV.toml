@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T02:49:54Z"
+digest = "0dc8230bd6f7d6ef42a90ba161d853e9a89a2fb8f3749cb406dc4d9bb3956254"
+exit_code = 0
+head = "1f1996c16bb9cd8ab50a5ab6eeaa0e12ed133ffe"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/plugins/test_registry.py .                                  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-199783-0.xml ---------------
+============================== 1 passed in 0.21s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_registry.py::test_duplicate_and_requires_distinct"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "5ac50237ed8478a3c06d656946e0a3378db224f11dc4acb0d36f5d74f56159fd"
+at = "2026-11-08T02:49:54Z"
+actor = "lognd"
+rev = 1

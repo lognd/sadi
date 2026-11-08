@@ -66,6 +66,8 @@ def test_typani_and_sadi_names_coexist() -> None:
     assert callable(propagate) and callable(uncertain)
 
 
+# frob:ticket 1HHS4Y5
+# frob:tests tools/check_typani_collisions.py::main
 def test_main_exit_zero(capsys) -> None:
     """The CLI exits 0 and prints nothing on a clean tree."""
     assert chk.main() == 0

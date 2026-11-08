@@ -390,8 +390,8 @@ class SessionService:
                 return Err(
                     conflict(
                         "bad_phase_transition",
-                        f"cannot enter {phase.value} from {'no phase' if now is None else now.value}: "
-                        f"{refusal.reason}",
+                        f"cannot enter {phase.value} from "
+                        f"{'no phase' if now is None else now.value}: {refusal.reason}",
                         "Phases advance in order: calibrate, elastic, plastic.",
                     )
                 )

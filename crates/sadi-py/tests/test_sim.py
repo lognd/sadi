@@ -4,7 +4,6 @@ import json
 import threading
 
 import pytest
-
 import sadi_py as sp
 from sadi_py import sim
 

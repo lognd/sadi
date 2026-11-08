@@ -24,6 +24,8 @@ _CON = 1.4
 _DEPTH = 12
 # Largest acceptable relative error estimate for a central-difference derivative.
 _MAX_REL_ERR = 1e-3
+# Floor on the default initial step so 2*h and h/_CON^k stay normal floats for subnormal x.
+_MIN_STEP = 1e-100
 
 
 class NumericError(ErrorSet):
@@ -128,7 +130,11 @@ def central_difference(
     The step starts at `h0` (default 1e-2 of the argument scale) and shrinks by a constant
     factor; iteration stops when the error estimate starts to grow (step control).
     """
-    h = h0 if h0 is not None else 1e-2 * _scale(xs[i])
+    # frob:ticket 01M6WRR08HNAKHCT71WW0VNNSP
+    h = h0 if h0 is not None else max(1e-2 * _scale(xs[i]), _MIN_STEP)
+    if h == 0.0 or not math.isfinite(2.0 * h):
+        _log.warning("central difference step %g is not representable", h)
+        return Err(NumericError.NoConvergence)
     tab: list[list[float]] = [[0.0] * _DEPTH for _ in range(_DEPTH)]
     best, best_err = 0.0, math.inf
     for k in range(_DEPTH):

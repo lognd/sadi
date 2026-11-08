@@ -93,6 +93,26 @@ def test_numeric_errors_are_typed() -> None:
     assert isinstance(r2, Err) and r2.danger_err is NumericError.NumEvalFailed
 
 
+# frob:ticket 01M6WRR08HNAKHCT71WW0VNNSP
+# frob:tests python/sadi/uncertainty/numeric.py::central_difference
+def test_central_difference_subnormal_x_regression() -> None:
+    """Subnormal x (5e-324) no longer underflows the step to zero; the derivative is returned."""
+    r = central_difference(lambda t: 0.0 * t**3 + 0.0 * t, [5e-324], 0)
+    assert isinstance(r, Ok)
+    assert r.danger_ok[0] == 0.0
+    r2 = central_difference(lambda t: 2.0 * t, [5e-324], 0)
+    assert isinstance(r2, Ok)
+    assert math.isclose(r2.danger_ok[0], 2.0, rel_tol=1e-7)
+
+
+# frob:ticket 01M6WRR08HNAKHCT71WW0VNNSP
+# frob:tests python/sadi/uncertainty/numeric.py::central_difference
+def test_central_difference_unrepresentable_step_is_err() -> None:
+    """An explicit zero step gives a typed Err, not ZeroDivisionError."""
+    r = central_difference(lambda t: t, [1.0], 0, h0=0.0)
+    assert isinstance(r, Err) and r.danger_err is NumericError.NoConvergence
+
+
 # frob:tests python/sadi/uncertainty/numeric.py::central_difference
 @settings(max_examples=40, deadline=None)
 @given(

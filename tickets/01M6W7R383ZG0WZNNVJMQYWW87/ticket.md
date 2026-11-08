@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:43:14Z"
+updated = "2026-11-08T03:43:15Z"
 idempotency_key = "sadi-f3"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/core/**", "creates:web/src/plots/theme.ts", "creates:docs/web/plots.md"]
 scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md", "docs/index.md"]
@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Scene API documented so F4-F7 only supply data and annotations"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

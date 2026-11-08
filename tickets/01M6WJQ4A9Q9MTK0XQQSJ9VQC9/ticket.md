@@ -4,9 +4,10 @@ title = "numeric fallback step floor (_scale >= 1) crosses poles for SI-small in
 type = "bug"
 category = "todo"
 priority = "high"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:02Z"
-updated = "2026-11-08T03:20:02Z"
+updated = "2026-11-08T03:21:22Z"
 scope = ["python/sadi/uncertainty/numeric.py", "python/tests/uncertainty/**"]
 +++
 

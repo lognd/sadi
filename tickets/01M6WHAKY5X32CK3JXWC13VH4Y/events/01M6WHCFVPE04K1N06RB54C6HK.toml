@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/plugins/doctor.py", "python/tests/plugins/test_doctor.py"]
+at = "2026-11-08T02:56:45Z"
+actor = "lognd"
+rev = 1

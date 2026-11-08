@@ -2,7 +2,8 @@
 id = "01M6X955RB67ZV7PBVB1Z8MJ6M"
 title = "Doctor screenshot leaks host paths and shows failing checks; regenerate with redacted paths"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

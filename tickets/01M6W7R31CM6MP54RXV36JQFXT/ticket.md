@@ -2,7 +2,8 @@
 id = "01M6W7R31CM6MP54RXV36JQFXT"
 title = "store/exports: derived exports with provenance, tmp + rename"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R04QJTECCTSV9EY2JADK"

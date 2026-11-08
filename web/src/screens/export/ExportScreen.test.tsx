@@ -49,6 +49,17 @@ describe("export screen", () => {
     expect(h).toContain("Export Stress-strain as SVG");
   });
 
+  // frob:ticket 01M6XAASK3B2CWRRHQZ995FN7K
+  it("puts the CSV link before the dpi select and figure buttons even when listed after", () => {
+    const h = renderToString(<FormatList dpi={300} formats={[
+      { id: "fig", title: "Stress-strain", media_type: "application/json", download: false },
+      { id: "csv32", title: "CSV", media_type: "text/csv", download: true }]} />);
+    const link = h.indexOf("Download CSV");
+    expect(link).toBeGreaterThan(-1);
+    expect(link).toBeLessThan(h.indexOf("<select"));
+    expect(link).toBeLessThan(h.indexOf("Export Stress-strain as PNG"));
+  });
+
   it("parses problem+json and shows the hint", () => {
     const p = toProblem({ kind: "http", status: 409, body: JSON.stringify({ title: "No session", detail: "none open", hint: "Open a session" }) });
     expect(p).toMatchObject({ title: "No session", hint: "Open a session", status: 409 });

@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:34:14Z"
+digest = "d0a9ecc19458a237dbf8a26924fcaf876274e32ccdae5a61a4ee038578e70f6b"
+exit_code = 0
+head = "a94ab3fbe2ca36e8fe1c116886698c01d73858d3"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/screens/run/inputFields.test.ts (8 tests) 6ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  04:34:15
+   Duration  791ms (transform 136ms, setup 0ms, collect 128ms, tests 6ms, environment 0ms, prepare 198ms)
+
+JSON report written to /tmp/frob-vitest-1033539-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/inputFields.test.ts"
+size = 327
+status = "measured"
+test_count = 8
+tests_digest = "5a2703ede6e637a95a050eeee8543287a5f768de4b0a0b77ca0a9826a7537024"
+at = "2026-11-08T09:34:14Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:29:51Z"
+digest = "f75e8b27dfbaf69976416aff5319ba29e78f32df2f5dc7683e4e08665c8bb114"
+head = "ce159bda7748343e52af944d5c515ccbc1dceb83"
+provider = "file"
+ref = "docs/img/ui/export.png"
+size = 81265
+status = "measured"
+at = "2026-11-08T09:29:51Z"
+actor = "lognd"
+rev = 1

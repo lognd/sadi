@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md", "docs/api", "docs/architecture.md", "docs/bench", "docs/ci.md", "docs/concurrency-testing.md", "docs/concurrency.md", "docs/core", "docs/data-safety.md", "docs/device", "docs/doctor-checks.md", "docs/doctor.md", "docs/domain.md", "docs/e2e.md", "docs/hardware", "docs/hardware-verification.md", "docs/index.md", "docs/jobs", "docs/lctt", "docs/live-view.md", "docs/open-questions.md", "docs/packaging.md", "docs/plan.md", "docs/plugins.md", "docs/portability.md"]
+new = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md", "docs/api", "docs/architecture.md", "docs/bench", "docs/ci.md", "docs/concurrency-testing.md", "docs/concurrency.md", "docs/core", "docs/data-safety.md", "docs/device", "docs/doctor-checks.md", "docs/doctor.md", "docs/domain.md", "docs/e2e.md", "docs/hardware", "docs/hardware-verification.md", "docs/index.md", "docs/jobs", "docs/lctt", "docs/live-view.md", "docs/open-questions.md", "docs/packaging.md", "docs/plan.md", "docs/plugins.md", "docs/portability.md", "docs/protocol-vectors.json"]
+at = "2026-11-08T09:27:17Z"
+actor = "lognd"
+rev = 1

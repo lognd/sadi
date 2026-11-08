@@ -13,9 +13,9 @@ import type { ConnState } from "../../ws/client";
 import type { Snapshot } from "../../plots/live";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, decide, postCapture, type Confirm } from "./capture";
+import { buildBody, buildSpecimenBody, decide, postCapture, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
-import { collectInputs } from "./inputFields";
+import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunView, type PhasePlot } from "./RunView";
 import { useRunLive } from "./useRunLive";
 
@@ -74,7 +74,16 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const capture = useCallback(async (early: boolean): Promise<void> => {
     const typed = collectInputs(p.phase, fields, view.volts);
     if (!typed.ok) { setConfirm("idle"); setMessage(typed.error.join(" ")); return; }
-    const r = await postCapture(buildBody(p.phase, { ...typed.value, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
+    const { own, specimen } = splitSpecimen(p.phase, typed.value);
+    if (specimen !== null) {
+      const sp = await postCapture(buildSpecimenBody(specimen, side.rawSeq, view), p.fetchImpl);
+      if (!sp.ok) {
+        setConfirm("idle");
+        setMessage(sp.error.kind === "network" ? `Network error: ${sp.error.message}. Check the connection, then try again.` : `Specimen capture refused (HTTP ${String(sp.error.status)}). ${sp.error.body}`);
+        return;
+      }
+    }
+    const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
     setConfirm("idle");
     if (r.ok) { setMessage(`Captured: ${r.value.summary}`); p.onCaptured?.(); }
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);

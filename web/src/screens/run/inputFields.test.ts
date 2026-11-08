@@ -1,7 +1,7 @@
 // frob:ticket 01M6X241EV9Z0JS4TCJPQBZCCN
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
-import { collectInputs } from "./inputFields";
+import { collectInputs, splitSpecimen } from "./inputFields";
 
 describe("collectInputs", () => {
   it("calibration: live volts when blank, typed height in SI", () => {
@@ -26,5 +26,17 @@ describe("collectInputs", () => {
   });
   it("no live reading and no typed volts is an error", () => {
     expect(collectInputs("plastic", { mass_kg: "0.2" }, null).ok).toBe(false);
+  });
+});
+
+// frob:ticket 01M6X6PW1F4HNNFMMY5YV3QKP9
+describe("splitSpecimen", () => {
+  it("separates specimen geometry from the tare point's own inputs", () => {
+    const r = splitSpecimen("tare", { n: 100, diameter: 0.006, hanger_kg: 0.05 });
+    expect(r.own).toEqual({ n: 100 });
+    expect(r.specimen).toEqual({ diameter: 0.006, hanger_kg: 0.05 });
+  });
+  it("returns no specimen point without a diameter", () => {
+    expect(splitSpecimen("tare", { n: 100 }).specimen).toBeNull();
   });
 });

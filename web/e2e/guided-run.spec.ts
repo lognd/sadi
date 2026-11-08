@@ -23,8 +23,10 @@ test("keyboard-only guided run Setup -> Export against the simulator", async ({ 
   await expect(page.getByRole("region", { name: /results/i })).toContainText(/secant_modulus/);
 
   // frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
-  // The LCTT CSV needs a specimen event, which no wizard step can capture yet (filed as a bug),
-  // so the CSV download is not asserted here.
+  // The tare step also records the specimen geometry, so the LCTT CSV export is ready.
+  const download = page.waitForEvent("download");
+  await page.getByRole("link", { name: /download/i }).first().click();
+  expect((await download).suggestedFilename()).toMatch(/\.csv$/i);
   // The figure download never fires in the guided run (no export request is sent); filed as a bug.
   await expect(page.getByRole("button", { name: /as png/i }).first()).toBeVisible();
 });

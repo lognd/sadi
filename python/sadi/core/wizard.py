@@ -18,6 +18,7 @@ from typani import Err, ErrorSet, Ok, Result
 
 from sadi.core.lab import CaptureKind, StepId, StepSpec, needs_device
 from sadi.core.models import Phase
+from sadi.core.point_inputs import PHASE_SPECIMEN
 from sadi.logging_setup import get_logger
 from sadi.store.events import (
     ANALYSIS_TARGET,
@@ -312,7 +313,10 @@ class Wizard:
         if spec is None or not needs_device(spec.capture):
             _log.info("wizard: capture refused, current step %s", st.current)
             return Err(WizardError.NoCapture)
-        if point.phase != spec.phase.value:
+        # frob:ticket 01M6X6PW1F4HNNFMMY5YV3QKP9
+        if point.phase == PHASE_SPECIMEN:
+            _log.info("wizard: specimen point %s accepted during %s", point.point_id, spec.id)
+        elif point.phase != spec.phase.value:
             _log.warning("wizard: capture phase %s != step phase %s", point.phase, spec.phase)
             return Err(WizardError.PhaseMismatch)
         _log.info("wizard: capture point %s in %s", point.point_id, spec.id)

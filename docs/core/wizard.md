@@ -39,7 +39,8 @@ the step to finish first. `WizardState.finished` is true when nothing is current
 ## Data actions
 
 - `capture(replay, point)`: only on a device-capturing current step whose phase matches the
-  point (`NoCapture`, `PhaseMismatch` otherwise).
+  point (`NoCapture`, `PhaseMismatch` otherwise). A `specimen` point (geometry, not a step phase)
+  is accepted on any device-capturing step; the Tare screen posts one when a diameter is entered.
 - `edit(replay, target, op, args)`: `exclude`, `include`, `set_window`, `override_input` on an
   existing point, or `set_fit_window` on target `analysis`. Window args are validated first.
 

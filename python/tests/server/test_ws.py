@@ -20,7 +20,7 @@ from sadi.core.pipeline import Bus, PipelineStopped, SettleUpdate, TraceFrame
 from sadi.labs.lctt.guidance import Phase
 from sadi.server import framing
 from sadi.server.app import AppSettings, create_app
-from sadi.server.ws import CLIENT_FRAME_DEPTH, GuidancePayload
+from sadi.server.ws import CLIENT_FRAME_DEPTH, GuidancePayload, StreamHub
 
 
 def _frame(i: int, n: int = 256, t0: float | None = None) -> TraceFrame:
@@ -239,3 +239,44 @@ def test_guidance_payload_from_state() -> None:
         True,
         "met",
     )
+
+
+# frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+# frob:tests python/sadi/server/ws.py::StreamHub.refresh_guidance
+def test_guidance_deduplicated_on_hub() -> None:
+    """Identical consecutive payloads are sent once; a changed one is sent again."""
+    seq = [
+        GuidancePayload(phase=Phase.CALIBRATE, next_action="a"),
+        GuidancePayload(phase=Phase.CALIBRATE, next_action="a"),
+        GuidancePayload(phase=Phase.ELASTIC, next_action="b", stop_early=True),
+        None,
+    ]
+    it = iter(seq)
+    hub = StreamHub(Bus(), guidance=lambda: next(it))
+    c = hub.attach()
+    assert [hub.refresh_guidance() for _ in seq] == [True, False, True, False]
+    assert [m["phase"] for m in c.msgs] == ["calibrate", "elastic"]
+
+
+# frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+# frob:tests python/sadi/server/ws.py::StreamHub.poll
+def test_guidance_ws_after_state_change(monkeypatch: pytest.MonkeyPatch) -> None:
+    """End to end: a settle-state change makes the WS client receive one guidance message."""
+    from sadi.labs.lctt.settle_stream import SettleState, StreamStatus
+
+    current = GuidancePayload(phase=Phase.CALIBRATE, next_action="take a cal point")
+    monkeypatch.setattr("sadi.server.app.make_guidance_provider", lambda *_a: lambda: current)
+    bus = Bus()
+    app = create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False))
+
+    def upd(seq: int, state: SettleState) -> SettleUpdate:
+        return SettleUpdate(raw_seq=seq, status=StreamStatus(state=state, point_index=1))
+
+    with TestClient(app).websocket_connect("/api/stream") as ws:
+        ws.receive_text()
+        bus.publish(upd(1, SettleState.CREEPING))
+        kinds = [json.loads(ws.receive_text())["kind"] for _ in range(2)]
+        assert kinds == ["state", "guidance"]
+        bus.publish(upd(2, SettleState.CREEPING))
+        assert json.loads(ws.receive_text())["kind"] == "state"
+        assert [m["kind"] for m in app.state.stream_hub.hello()["latest"]].count("guidance") == 1

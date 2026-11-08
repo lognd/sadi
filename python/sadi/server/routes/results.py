@@ -4,6 +4,8 @@
 # frob:ticket 01M6WVGZHZBY41K8M1BHYC1SYW
 # frob:ticket 01M6WVADCSP63DBMYH3RNCXWTM
 
+# frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -33,6 +35,7 @@ from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze
+from sadi.server.ws import GuidancePayload
 from sadi.uncertainty.budget import Budget, BudgetRow
 
 _log = get_logger(__name__)
@@ -204,6 +207,55 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     )
 
 
+def compute_guidance(
+    svc: SessionService,
+    labs: LabRegistry,
+    phase: Phase,
+    hold: HoldState = HoldState.READY,
+    target: float | None = None,
+) -> Result[GuidanceState, ApiProblem]:
+    """Guidance for `phase` from the open session's live results (shared by REST and WS)."""
+    live = live_results(svc, labs)
+    if live.is_err:
+        return Err(live.danger_err)
+    pts = svc.points()
+    if pts.is_err:
+        return Err(pts.danger_err)
+    views = active_points(pts.danger_ok)
+    n_cal = sum(1 for p in views if p.phase == PHASE_CALIBRATION)
+    cfg = GuidanceConfig() if target is None else GuidanceConfig(target=target)
+    got = guide(phase, GuidanceInput(results=live.danger_ok, n_cal_points=n_cal, hold=hold), cfg)
+    if got.is_err:
+        problem = _guidance_problem(got.danger_err)
+        _log.warning("guidance refused: %s", problem.type)
+        return Err(problem)
+    return Ok(got.danger_ok)
+
+
+def make_guidance_provider(
+    svc: SessionService, labs: LabRegistry
+) -> Callable[[], GuidancePayload | None]:
+    """Provider of the current WS guidance, or None when there is no open session or it fails.
+
+    The phase is inferred: calibrate until a load point exists, then elastic.
+    """
+
+    def provide() -> GuidancePayload | None:
+        """Compute the payload for the open session; None when guidance is unavailable."""
+        pts = svc.points()
+        if pts.is_err:
+            return None
+        views = active_points(pts.danger_ok)
+        loaded = any(p.phase not in _NON_LOAD for p in views)
+        got = compute_guidance(svc, labs, Phase.ELASTIC if loaded else Phase.CALIBRATE)
+        if got.is_err:
+            _log.info("ws guidance unavailable: %s", got.danger_err)
+            return None
+        return GuidancePayload.from_state(got.danger_ok)
+
+    return provide
+
+
 def make_results_router(
     svc: SessionService,
     labs: LabRegistry,
@@ -231,16 +283,7 @@ def make_results_router(
         target: float | None = None,
     ) -> GuidanceState:
         """Guided-run advice for `phase` from the live results; never changes the phase."""
-        rs = unwrap(live_results(svc, labs))
-        views = active_points(unwrap(svc.points()))
-        n_cal = sum(1 for p in views if p.phase == PHASE_CALIBRATION)
-        cfg = GuidanceConfig() if target is None else GuidanceConfig(target=target)
-        got = guide(phase, GuidanceInput(results=rs, n_cal_points=n_cal, hold=hold), cfg)
-        if got.is_err:
-            raise_problem = _guidance_problem(got.danger_err)
-            _log.warning("guidance refused: %s", raise_problem.type)
-            return unwrap(Err(raise_problem))
-        return got.danger_ok
+        return unwrap(compute_guidance(svc, labs, phase, hold, target))
 
     @r.get("/device/status")
     def device_status() -> DeviceView:

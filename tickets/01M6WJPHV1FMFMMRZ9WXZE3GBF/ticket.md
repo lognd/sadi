@@ -8,7 +8,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:19:43Z"
-updated = "2026-11-08T03:23:50Z"
+updated = "2026-11-08T03:24:15Z"
 scope = ["python/sadi/labs/lctt/capture.py", "python/sadi/core/**", "python/tests/core/test_lab_registry.py", "docs/core/**"]
 
 [[acceptance]]

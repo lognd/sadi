@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:23:04Z"
+updated = "2026-11-08T04:23:07Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = false
 
 [[acceptance]]
 text = "docs/doctor.md and docs/doctor-checks.md are current"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: USB skips unverified off Linux/WSL

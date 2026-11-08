@@ -7,8 +7,24 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T03:49:09Z"
+updated = "2026-11-08T03:49:25Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
+
+[[acceptance]]
+text = "Every DEV (010..050), SIM (010, 020) and WRK (010, 020) check is implemented read-only with a remedy for every failure mode on linux, wsl, windows and macos"
+bound = false
+
+[[acceptance]]
+text = "With no board or no sadi_py the DEV and SIM checks skip informationally (no-device / tool-missing) and never crash"
+bound = false
+
+[[acceptance]]
+text = "DEV-040 and DEV-050 run only with --stream-seconds / --with-reset"
+bound = false
+
+[[acceptance]]
+text = "A spawned worker does not import sadi.store, and docs/doctor.md and docs/doctor-checks.md are current"
+bound = false
 +++
 
 found while working ~V3H5CGF: spec layers not implemented

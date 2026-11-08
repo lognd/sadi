@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Sequence
 from enum import StrEnum
 
@@ -23,6 +24,8 @@ from sadi.labs.lctt.settle_stream import (
 from sadi.logging_setup import get_logger
 # frob:ticket 01M6WJPHV1FMFMMRZ9WXZE3GBF
 from sadi.core.events import EditV1, PointV1, PointWindow
+# frob:ticket 01M6WNEEBBBZVDZ6700RJDN26D
+from sadi.core.point_inputs import LoadInputs, build_point
 
 _log = get_logger(__name__)
 
@@ -69,11 +72,15 @@ class CaptureConfig(BaseModel):
 
 
 class Captured(BaseModel):
-    """A captured point event, its detector record and any operator-facing warnings."""
+    """A captured point event, its load inputs, detector record and operator-facing warnings.
+
+    Record it with `AcquisitionDriver.record_point(captured.inputs, captured.point.window)`.
+    """
 
     model_config = {"frozen": True}
 
     point: PointV1
+    inputs: LoadInputs
     record: PointRecord
     warnings: tuple[str, ...] = ()
 
@@ -103,6 +110,8 @@ class CaptureController:
         self._resolve = resolver
         self._clock = clock
         self._started: float | None = None
+        self._mass_kg = 0.0
+        self._u_mass_kg = 0.0
 
     @classmethod
     def create(
@@ -125,11 +134,15 @@ class CaptureController:
         """The underlying streaming detector (raw samples, finalized records)."""
         return self._det
 
-    def start_point(self, t: float) -> Result[None, StreamError]:
-        """Mark a load change at data time t and start the max-wait clock."""
+    def start_point(
+        self, t: float, mass_kg: float, u_mass_kg: float = 0.0
+    ) -> Result[None, StreamError]:
+        """Mark a load change at data time t with the total hanging mass; start the clock."""
         res = self._det.mark_load_change(t)
         if isinstance(res, Err):
             return res
+        self._mass_kg = mass_kg
+        self._u_mass_kg = u_mass_kg
         self._started = self._clock()
         _log.info("point started at t=%g (clock %g)", t, self._started)
         return Ok(None)
@@ -185,6 +198,17 @@ class CaptureController:
         assert self._started is not None
         return self._clock() - self._started
 
+    def _window_volts(self, start: float, end: float) -> tuple[float, float]:
+        """Mean raw volts over [start, end] and the standard error of that mean (0 if n<2)."""
+        times, volts = self._det.raw
+        ys = [y for t, y in zip(times, volts, strict=True) if start <= t <= end]
+        n = len(ys)
+        mean = math.fsum(ys) / n
+        if n < 2:
+            return mean, 0.0
+        sd = math.sqrt(math.fsum((y - mean) ** 2 for y in ys) / (n - 1))
+        return mean, sd / math.sqrt(n)
+
     def _capture(
         self, *, forced: bool, warnings: tuple[str, ...]
     ) -> Result[Captured, StreamError | CaptureError]:
@@ -201,14 +225,21 @@ class CaptureController:
         if window is None:
             _log.error("no raw range for window [%g, %g]", rec.window_start, rec.window_end)
             return Err(CaptureError.NoRawRange)
-        point = PointV1(
+        volts, u_volts = self._window_volts(rec.window_start, rec.window_end)
+        inputs = LoadInputs(
             phase=self._cfg.phase,
-            window=window,
-            t_since_load_s=rec.time_since_load,
-            drift_rate=rec.drift_rate.value if rec.drift_rate is not None else None,
-            settled=rec.settled,
-            forced_early=rec.forced_early,
-            inputs={"mode": self._cfg.mode.value, "window_t": [rec.window_start, rec.window_end]},
+            volts=volts,
+            u_volts=u_volts,
+            mass_kg=self._mass_kg,
+            u_mass_kg=self._u_mass_kg,
+        )
+        point = build_point(inputs, window).model_copy(
+            update={
+                "t_since_load_s": rec.time_since_load,
+                "drift_rate": rec.drift_rate.value if rec.drift_rate is not None else None,
+                "settled": rec.settled,
+                "forced_early": rec.forced_early,
+            }
         )
         _log.info(
             "captured point %s settled=%s forced_early=%s seq=[%d,%d]",
@@ -218,7 +249,7 @@ class CaptureController:
             window.first_raw_seq,
             window.last_raw_seq,
         )
-        return Ok(Captured(point=point, record=rec, warnings=warnings))
+        return Ok(Captured(point=point, inputs=inputs, record=rec, warnings=warnings))
 
 
 def set_window_edit(point_id: str, window: PointWindow) -> EditV1:

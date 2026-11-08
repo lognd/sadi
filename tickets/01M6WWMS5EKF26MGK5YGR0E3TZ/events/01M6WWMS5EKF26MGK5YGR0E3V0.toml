@@ -1,0 +1,9 @@
+kind = "create"
+title = "Move LivePlot F3 listener onto the export KeyAction in keymap"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+at = "2026-11-08T06:13:31Z"
+actor = "lognd"
+rev = 1

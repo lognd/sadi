@@ -13,6 +13,10 @@ scope = ["python/sadi/server/**"]
 [[acceptance]]
 text = "Without a device the launcher injects none, so status stays honestly unattached"
 bound = false
+
+[[acceptance]]
+text = "A failing simulator open exits EXIT_DEVICE without serving"
+bound = false
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

@@ -1,0 +1,11 @@
+kind = "create"
+title = "CSV export: add elapsed-time and per-sample std dev columns"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
+acceptance = ["PointRow carries elapsed time and sample std dev; round-trip test passes"]
+body = "Found while working ~SYDV1C9. The lab reference export has an elapsed-time column and a per-sample voltage standard deviation column that PointRow lacks. Proposal: add both fields (and capture them from live samples), update reader, writer, docs."
+at = "2026-11-08T06:21:34Z"
+actor = "lognd"
+rev = 1

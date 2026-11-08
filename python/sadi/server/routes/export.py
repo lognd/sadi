@@ -11,10 +11,12 @@ from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result, propagate
 
+from sadi.core.errors import ComputeCode, ComputeError
 from sadi.core.lab import ExportFormat, LabId, LabModule
 from sadi.core.models import RunState
 from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
+from sadi.server.curve_source import session_events
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, to_captured
@@ -79,7 +81,12 @@ def render_export(
     if analysis.is_err:
         _log.warning("export %s: recompute failed: %s", format_id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))
-    run = RunState(session_id=name, points=captured)
+    # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+    events = session_events(svc.session_path().unwrap())
+    if events.is_err:
+        _log.error("export %s: session replay failed: %s", format_id, events.danger_err)
+        return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))
+    run = RunState(session_id=name, points=captured, events=tuple(events.danger_ok))
     body = fmt.writer(run, analysis.danger_ok)
     if body.is_err:
         _log.error("export %s: writer failed: %s", format_id, body.danger_err)

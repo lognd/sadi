@@ -4,9 +4,10 @@ title = "Validate LCTT loading against docs oracle (oracle moved to private)"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T03:11:09Z"
-updated = "2026-11-08T03:11:09Z"
+updated = "2026-11-08T06:21:11Z"
 scope = ["python/tests/labs/lctt/test_loading.py"]
 +++
 

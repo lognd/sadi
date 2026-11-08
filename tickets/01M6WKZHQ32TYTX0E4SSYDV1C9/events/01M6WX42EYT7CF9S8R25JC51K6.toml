@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:21:52Z"
+digest = "fa2ddce13f5dccc27c8acca5736dd05bce8a4a5681f07a76e7296efbb1bf0b15"
+head = "1f94097384ad024e90e1f29fc5e2a28db27cd47e"
+provider = "file"
+ref = "docs/lctt/export-csv.md"
+size = 3470
+status = "measured"
+at = "2026-11-08T06:21:52Z"
+actor = "lognd"
+rev = 1

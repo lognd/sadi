@@ -22,7 +22,7 @@ only at display time, in the formatter (~M27Y4NY) and the UI.
 | `PointEdit` | `field`, `old`, `new`, `at` |
 | `CapturedPoint` | `index`, `window`, `t_since_load`, `drift_rate`, `status` (`settled` / `forced_early`), `edits` |
 | `Phase` | `setup`, `calibration`, `elastic`, `plastic` |
-| `RunState` | `session_id`, `phase`, `specimen`, `tare`, `points`; `advance`, `with_point` return copies |
+| `RunState` | `session_id`, `phase`, `specimen`, `tare`, `points`, `events` (opaque raw lab events for export writers); `advance`, `with_point` return copies |
 
 Models are immutable; updates return new values so replay from the event
 log is deterministic. Constructors raise pydantic `ValidationError` for

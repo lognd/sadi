@@ -1,0 +1,11 @@
+kind = "create"
+title = "CSV export: add per-quantity uncertainty columns missing from PointRow"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
+acceptance = ["PointRow has the listed uncertainty fields; round-trip test passes"]
+body = "Found while working ~SYDV1C9. The reference carries uncertainty columns for tare, voltage difference, displacement, gauge length, hanger load, diameter and secant modulus that PointRow lacks. Proposal: add the uncertainty fields computed by the engines (propagated), update reader, writer, docs."
+at = "2026-11-08T06:21:34Z"
+actor = "lognd"
+rev = 1

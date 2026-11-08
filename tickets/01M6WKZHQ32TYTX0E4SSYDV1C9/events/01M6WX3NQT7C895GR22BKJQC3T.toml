@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:21:36Z"
+digest = "654a82fd44f5b02de54f009bef46d80ff3dffabfd638b30686f3034de159f992"
+exit_code = 0
+head = "a6ab226afd2da60ce5a08ca5a1eb8a9b5ab57af1"
+inline = """
+...                                                                      [100%]
+3 passed in 1.75s
+"""
+passed = true
+provider = "command"
+ref = "uv run -q --project ~/projects/SADI/python pytest -q ~/projects/SADI/private/final-project/python/tests/labs/lctt/test_csv_reference_mapping.py -p no:cacheprovider --rootdir=~/projects/SADI/python"
+size = 98
+status = "measured"
+at = "2026-11-08T06:21:36Z"
+actor = "lognd"
+rev = 1

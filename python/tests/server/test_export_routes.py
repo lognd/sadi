@@ -142,3 +142,18 @@ def test_export_is_read_only(client: TestClient, tmp_path: Path) -> None:
     client.get("/api/export/figure")
     after = {k: v for k, v in snap().items() if not k.endswith(".lock")}
     assert after == before
+
+
+# frob:tests python/sadi/server/routes/export.py::render_export
+def test_real_lctt_lab_lists_csv_and_refuses_empty_session(tmp_path: Path) -> None:
+    """The real lctt lab lists lctt-csv; an empty session cannot render it (problem, no file)."""
+    labs = LabRegistry()
+    assert labs.register(register()).is_ok
+    with TestClient(create_app(AppSettings(data_root=tmp_path, labs=labs))) as c:
+        assert c.post("/api/sessions", json={"lab": "lctt", "slug": "t"}).status_code == 201
+        listed = {f["id"]: f for f in c.get("/api/export").json()}
+        assert listed["lctt-csv"]["download"] is True
+        assert listed["lctt-csv"]["media_type"] == "text/csv"
+        res = c.get("/api/export/lctt-csv")
+        assert res.status_code >= 400
+        assert res.headers["content-type"].startswith("application/problem+json")

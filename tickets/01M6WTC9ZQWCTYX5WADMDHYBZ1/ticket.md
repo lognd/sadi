@@ -9,7 +9,7 @@ parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
 updated = "2026-11-08T05:39:26Z"
-scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/service.py", "python/tests/server/test_inventory_routes.py"]
+scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/service.py", "python/tests/server/test_inventory_routes.py", "docs/server/inventory.md"]
 
 [[links]]
 kind = "blocked-by"

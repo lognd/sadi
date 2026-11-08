@@ -2,7 +2,8 @@
 id = "01M6XBSMVR21Q8HD9ZBRBAANEH"
 title = "COV001 in sadi-proto (7 methods)"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -2,12 +2,12 @@
 id = "01M6WRR08HNAKHCT71WW0VNNSP"
 title = "numeric central difference raises ZeroDivisionError for subnormal step"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:05:22Z"
-updated = "2026-11-08T05:05:34Z"
+updated = "2026-11-08T05:05:35Z"
 scope = ["python/sadi/uncertainty/numeric.py"]
 +++
 

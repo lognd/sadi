@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/bench/ad3/fake.py", "python/sadi/bench/inject.py", "python/tests/bench/test_ad3_fake.py", "docs/bench/injection.md"]
+new = ["python/sadi/bench/ad3/fake.py", "python/sadi/bench/inject.py", "python/tests/bench/test_ad3_fake.py", "docs/bench/injection.md", "docs/index.md"]
+at = "2026-11-08T05:30:51Z"
+actor = "lognd"
+rev = 1

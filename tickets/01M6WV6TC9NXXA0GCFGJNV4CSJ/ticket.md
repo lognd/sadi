@@ -12,7 +12,7 @@ scope = ["web/src/keys/**", "docs/web/wizard.md"]
 
 [[acceptance]]
 text = "F3 resolves to the export KeyAction and is listed in SHORTCUTS"
-bound = false
+bound = true
 +++
 
 found while working 7KWS2S7

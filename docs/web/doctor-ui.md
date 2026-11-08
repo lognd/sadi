@@ -1,5 +1,7 @@
 # Doctor UI
 
+Status: current
+
 The web app has a Doctor screen (`web/src/doctor/DoctorScreen.tsx`) that mirrors
 `sadi doctor` (see [doctor.md](../doctor.md)).
 

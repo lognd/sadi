@@ -7,7 +7,7 @@ import { useStore } from "./state/store";
 
 const log = getLogger("App");
 
-// frob:ticket JCJ0197
+// frob:ticket 01M6WA9WZW89EA826DSJCJ0197
 // frob:accept COV001 because="vitest tests exist (src/App.test.tsx, src/api/log.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Root component: probes the backend, shows connection state and a persistent Doctor link. */
 export function App(): React.JSX.Element {

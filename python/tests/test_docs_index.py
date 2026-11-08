@@ -21,5 +21,5 @@ def test_index_links_core_wizard() -> None:
 
 def test_index_links_doctor_ui() -> None:
     """The docs index links docs/web/doctor-ui.md."""
-    # frob:ticket JCJ0197
+    # frob:ticket 01M6WA9WZW89EA826DSJCJ0197
     assert "(web/doctor-ui.md)" in (DOCS / "index.md").read_text(encoding="utf-8")

@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:19:05Z"
-updated = "2026-11-08T07:05:57Z"
-scope = ["python/sadi/labs/lctt/**"]
+updated = "2026-11-08T07:06:50Z"
+scope = ["python/sadi/labs/lctt/**", "python/sadi/core/lab.py"]
 +++
 
 found while working ~XMK16Q2: LcttLab.recompute over CapturedPoint is a stub; combine_runs is not wired into the wizard, export or export_formats.

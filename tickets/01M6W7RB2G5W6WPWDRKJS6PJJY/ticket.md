@@ -2,7 +2,8 @@
 id = "01M6W7RB2G5W6WPWDRKJS6PJJY"
 title = "User guide: running a test with the app (procedure, two specimens, creep)"
 type = "docs"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 3
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"

@@ -2,7 +2,8 @@
 id = "01M6WJT06TWZW314324QF0DHB3"
 title = "Writing indicator: show saving state within 250 ms"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

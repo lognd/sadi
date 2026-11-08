@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:56:51Z"
+digest = "31502d7ab42ccf17617632e3285457f57eb2bddb540b8c2a6d986df2cee7f3ff"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 17 items
+
+python/tests/plugins/test_doctor.py ...........                          [ 64%]
+python/tests/plugins/test_local_source.py ......                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-214607-0.xml ---------------
+============================== 17 passed in 0.31s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_doctor.py::test_each_failure_state_maps_to_numbered_fixes python/tests/plugins/test_doctor.py::test_failed_record_without_cause_and_unknown_kind_never_raise python/tests/plugins/test_doctor.py::test_healthy_registry_has_no_findings python/tests/plugins/test_doctor.py::test_local_dir_unreadable_and_source_error python/tests/plugins/test_doctor.py::test_session_plugin_ref_is_store_manifest_model python/tests/plugins/test_doctor.py::test_session_refs_missing_and_version_changed python/tests/plugins/test_local_source.py::test_absent_dirs_ok python/tests/plugins/test_local_source.py::test_broken_plugin_isolated python/tests/plugins/test_local_source.py::test_default_dirs python/tests/plugins/test_local_source.py::test_env_path_wins python/tests/plugins/test_local_source.py::test_loads_without_install python/tests/plugins/test_local_source.py::test_plugins_dir_gitignored"
+size = 602
+status = "measured"
+test_count = 17
+tests_digest = "4dd767c1fd5e596d118a1a1237e72b858507d8f540a5699c4358b236e51740f4"
+at = "2026-11-08T02:56:51Z"
+actor = "lognd"
+rev = 1

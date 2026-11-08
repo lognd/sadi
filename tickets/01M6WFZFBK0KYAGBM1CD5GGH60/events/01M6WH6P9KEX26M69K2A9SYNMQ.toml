@@ -1,0 +1,44 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T02:53:21Z"
+digest = "4d3784078a66f5f02e79d9a390d40a3fc645b0abe457ef1da1e54d000ba2ff77"
+exit_code = 0
+head = "673bad27106398189632778ba37624514e095e08"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 167 items
+
+python/tests/store/test_csv_export.py .....                              [  2%]
+python/tests/store/test_durable.py .......................s              [ 17%]
+python/tests/store/test_events.py ..................                     [ 28%]
+python/tests/store/test_failpoints.py ........                           [ 32%]
+python/tests/store/test_lock.py ......                                   [ 36%]
+python/tests/store/test_names.py ........................                [ 50%]
+python/tests/store/test_session.py ....................                  [ 62%]
+python/tests/store/test_session_plugin_provenance.py .....               [ 65%]
+python/tests/store/test_spill.py ........                                [ 70%]
+python/tests/store/test_wal.py ..........................                [ 86%]
+python/tests/store/test_writer_thread.py .......................         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-205539-0.xml ---------------
+======================= 166 passed, 1 skipped in 13.92s ========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store"
+size = 1323
+status = "measured"
+test_count = 166
+tests_digest = "9aefec1cfb58ee17bb901c7c699727bfd7eec980d3501f03212781e64aa8c7c0"
+at = "2026-11-08T02:53:21Z"
+actor = "lognd"
+rev = 1
+
+[non_passing]
+skipped = 1
+xfailed = 0
+xpassed = 0

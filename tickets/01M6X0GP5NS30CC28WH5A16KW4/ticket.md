@@ -7,10 +7,10 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T07:21:11Z"
-updated = "2026-11-08T07:31:16Z"
+updated = "2026-11-08T07:31:22Z"
 scope = ["python/pyproject.toml", "python/uv.lock"]
 
 [[acceptance]]
 text = "PUT wizard complete/skip POSTs carry the current step as a JSON body so Enter and Skip advance the wizard against the launcher-built app"
-bound = false
+bound = true
 +++

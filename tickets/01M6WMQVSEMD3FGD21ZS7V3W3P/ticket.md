@@ -2,13 +2,19 @@
 id = "01M6WMQVSEMD3FGD21ZS7V3W3P"
 title = "Backend: supply settle_band in creep payload"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:55:23Z"
-updated = "2026-11-08T03:55:23Z"
+updated = "2026-11-08T03:58:25Z"
 labels = ["feature"]
+scope = ["python/sadi/labs/lctt/creep.py", "python/tests/labs/lctt/test_creep.py", "docs/lctt/creep.md"]
+
+[[acceptance]]
+text = "CreepFit.settle_band is a lower/upper strain band derived from CreepConfig.settle_threshold, and None when unset (backward compatible)"
+bound = true
 +++
 
 buildCreepScene (web/src/plots/creep) expects settle_band (strain band for the settle threshold span); the creep analysis payload does not produce it today. Add to the creep analysis output and the API schema, with tests.

@@ -1,0 +1,11 @@
+kind = "create"
+title = "Add public halt() to AcquisitionPipeline"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+labels = ["refactor"]
+body = "AcquisitionDriver (python/sadi/api/acquisition.py) calls private pipeline._halt with a noqa. Add a public halt method on AcquisitionPipeline in python/sadi/core and use it."
+at = "2026-11-08T03:57:31Z"
+actor = "lognd"
+rev = 1

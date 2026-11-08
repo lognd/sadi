@@ -43,4 +43,4 @@ blocks stay ordered.
 
 ## Not yet wired
 
-Device/API wiring and the writing indicator are follow-up tickets.
+Device/API wiring is described in [the acquisition driver](../api/acquisition.md).

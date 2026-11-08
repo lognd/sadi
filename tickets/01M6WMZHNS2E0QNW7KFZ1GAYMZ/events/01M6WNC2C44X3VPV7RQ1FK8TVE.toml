@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["On WSL the catalog tags udev install, usbipd.exe attach and browser open as fixable system/process commands; bind, install, data and data-root commands never are."]
+moved = []
+at = "2026-11-08T04:06:25Z"
+actor = "lognd"
+rev = 1

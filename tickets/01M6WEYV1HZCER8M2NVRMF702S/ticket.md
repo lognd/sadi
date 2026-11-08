@@ -2,12 +2,12 @@
 id = "01M6WEYV1HZCER8M2NVRMF702S"
 title = "Surface RootLockFailed in sadi CLI recover and launcher startup"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T02:14:20Z"
-updated = "2026-11-08T03:25:50Z"
+updated = "2026-11-08T03:25:51Z"
 scope = ["python/sadi/cli/store.py,python/tests/cli/test_store_cli.py"]
 +++
 

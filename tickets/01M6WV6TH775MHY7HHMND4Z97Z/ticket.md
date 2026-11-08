@@ -2,7 +2,8 @@
 id = "01M6WV6TH775MHY7HHMND4Z97Z"
 title = "Real-browser 60 fps benchmark for live trace"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

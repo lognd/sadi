@@ -2,7 +2,8 @@
 id = "01M6XAASFHD7MKMQ79XRD34EXF"
 title = "Run: explain that hotkeys are ignored in text fields (U-04)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -2,7 +2,8 @@
 id = "01M6WV1BEFANVC4BZ2S63NEPH5"
 title = "lctt recompute is a stub; CapturedPoint time fields missing from PointView"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

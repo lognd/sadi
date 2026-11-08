@@ -4,9 +4,10 @@ title = "Add POST /api/stress-strain/fit refit endpoint"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:56:33Z"
-updated = "2026-11-08T03:56:33Z"
+updated = "2026-11-08T03:56:55Z"
 scope = ["python/sadi/server/**"]
 +++
 

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["test_curve_notes_latency is deterministic under the periodic re-verify (injected clock or relaxed trigger) and passes 10 consecutive runs"]
+moved = []
+at = "2026-11-08T10:05:44Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Registry size stays bounded after dropping Measured values and register_derived cost is independent of unrelated registry entries"]
+moved = []
+at = "2026-11-08T03:36:16Z"
+actor = "lognd"
+rev = 1

@@ -12,7 +12,7 @@ scope = ["python/sadi/server/**"]
 
 [[acceptance]]
 text = "Without a device the launcher injects none, so status stays honestly unattached"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A failing simulator open exits EXIT_DEVICE without serving"

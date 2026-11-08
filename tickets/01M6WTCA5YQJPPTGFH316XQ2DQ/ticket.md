@@ -9,7 +9,7 @@ parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
 updated = "2026-11-08T05:58:03Z"
-scope = ["web/src/api/**", "python/sadi/server/openapi_export.py"]
+scope = ["web/src/api/**", "python/sadi/server/openapi_export.py", "python/tests/server/test_openapi_export.py"]
 
 [[links]]
 kind = "blocked-by"

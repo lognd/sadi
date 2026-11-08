@@ -1,0 +1,10 @@
+kind = "create"
+title = "Core Phase lacks tare/results/export phases"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/core/**"]
+body = "found while working ~XMK16Q2: Tare is bound to the calibration phase and the wizard counts points by phase.value."
+at = "2026-11-08T05:19:05Z"
+actor = "lognd"
+rev = 1

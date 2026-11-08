@@ -1,6 +1,7 @@
 """Tests for the FastAPI app factory."""
 
 # frob:ticket 01M6WKQCC4HJ5C8HXP946BRKXW
+# frob:ticket 01M6WK31FEG5BZNZNZHVQ3HMMX
 
 from __future__ import annotations
 
@@ -43,3 +44,53 @@ def test_settings_injected_and_no_shared_state() -> None:
     b = create_app(AppSettings(data_root=Path("b")))
     assert a.state.settings.data_root == Path("a")
     assert b.state.settings.data_root == Path("b")
+
+
+def test_lifespan_holds_lock_and_releases(tmp_path: Path) -> None:
+    """The app holds the data-root lock while running and frees it on shutdown."""
+    from sadi.store.lock import acquire
+
+    app = create_app(AppSettings(data_root=tmp_path))
+    with TestClient(app) as client:
+        assert client.get("/api/root-lock").json() == {"ok": True}
+        assert acquire(tmp_path).is_err
+    again = acquire(tmp_path)
+    assert again.is_ok
+    again.danger_ok.release()
+
+
+def test_startup_fails_when_lock_held(tmp_path: Path) -> None:
+    """A live lock makes startup raise RootLockStartupError and is never stolen."""
+    import pytest
+
+    from sadi.server.app import RootLockStartupError
+    from sadi.store.lock import LockHeld, acquire
+
+    held = acquire(tmp_path)
+    assert held.is_ok
+    try:
+        with (
+            pytest.raises(RootLockStartupError) as info,
+            TestClient(create_app(AppSettings(data_root=tmp_path))),
+        ):
+            pass
+        assert isinstance(info.value.failure.error, LockHeld)
+        assert held.danger_ok.held
+    finally:
+        held.danger_ok.release()
+
+
+def test_degraded_start_reports_lock_failure(tmp_path: Path) -> None:
+    """With require_root_lock=False the app starts and /api/root-lock shows the refusal."""
+    from sadi.store.lock import acquire
+
+    held = acquire(tmp_path)
+    assert held.is_ok
+    try:
+        app = create_app(AppSettings(data_root=tmp_path, require_root_lock=False))
+        with TestClient(app) as client:
+            body = client.get("/api/root-lock").json()
+        assert body["ok"] is False
+        assert body["kind"] == "LockHeld"
+    finally:
+        held.danger_ok.release()

@@ -85,7 +85,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/store/durable.md` | ~JA5DMTN | store/durable: cross-OS fsync, dir-fsync, atomic replace, exclusive create |
 | `docs/store/csv-export.md` | ~K79AJH0 | store/csv_export: byte-exact UTF-8 CRLF CSV writer, no overwrite, gitattributes eol |
 | `docs/store/events.md` | ~K6BT3MG | store/events+snapshot: point/edit event log, atomic snapshots, replay |
-| [`docs/store/exports.md`](store/exports.md) | ~36JQFXT | store/exports: derived exports with provenance, tmp + rename |
+| `docs/store/exports.md` | ~36JQFXT | store/exports: derived exports with provenance, tmp + rename |
 | `docs/store/session.md` | ~GCJAR1J | store/session: versioned O_EXCL session dirs, manifest, lock, resume |
 | `docs/store/spill.md` | ~JQPFW6F | store/spill: import emergency spill files as a new session version |
 | `docs/store/names.md` | ~T5XVYE8 | store/names: portable filename sanitiser, hash disambiguation, no-overwrite unique names |

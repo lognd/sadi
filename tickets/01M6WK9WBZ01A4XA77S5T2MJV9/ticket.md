@@ -7,5 +7,6 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:30:17Z"
-updated = "2026-11-08T03:30:57Z"
+updated = "2026-11-08T03:31:01Z"
+scope = ["python/sadi/uncertainty/numeric.py"]
 +++

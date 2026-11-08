@@ -2,12 +2,12 @@
 id = "01M6WP4WV9B3SCJ0GY2M32XWZV"
 title = "Launcher startup must call spill.import_all_spills after taking the data-root lock"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:19:59Z"
-updated = "2026-11-08T04:19:59Z"
+updated = "2026-11-08T04:20:03Z"
 labels = ["creates:python/tests/cli/test_launcher_spill.py"]
 +++
 

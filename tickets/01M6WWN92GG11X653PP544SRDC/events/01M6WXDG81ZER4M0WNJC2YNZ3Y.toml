@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["src/sadi/server/**", "python/sadi/server/routes/plots.py", "python/tests/server/test_plots_routes.py", "docs/server/plots.md", "docs/server/api.md", "docs/server/export.md", "python/sadi/server/app.py"]
+new = ["src/sadi/server/**", "python/sadi/server/routes/plots.py", "python/tests/server/test_plots_routes.py", "docs/server/plots.md", "docs/server/api.md", "docs/server/export.md", "python/sadi/server/app.py", "web/src/api/openapi.json"]
+at = "2026-11-08T06:27:01Z"
+actor = "lognd"
+rev = 1

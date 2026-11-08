@@ -31,6 +31,7 @@ from sadi.server.curve_source import make_curve_source
 from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
+from sadi.server.routes.plots import make_plots_router
 from sadi.server.routes.problem import install_problem_handlers
 from sadi.server.routes.results import BudgetSource, DeviceProbe, make_results_router
 from sadi.server.routes.sessions import make_sessions_router
@@ -163,6 +164,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
         make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)
     )
     app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry()))
+    app.include_router(make_plots_router(app.state.sessions))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))

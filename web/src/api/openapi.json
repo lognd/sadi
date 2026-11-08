@@ -89,6 +89,95 @@
         "title": "BudgetRow",
         "type": "object"
       },
+      "CalibrationFitView": {
+        "description": "Fitted calibration line and its 95% confidence band over the sampled volts.",
+        "properties": {
+          "band_half_width_m": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Band Half Width M",
+            "type": "array"
+          },
+          "band_height_m": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Band Height M",
+            "type": "array"
+          },
+          "band_volts": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Band Volts",
+            "type": "array"
+          },
+          "intercept_m": {
+            "title": "Intercept M",
+            "type": "number"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "r2": {
+            "title": "R2",
+            "type": "number"
+          },
+          "slope_m_per_v": {
+            "title": "Slope M Per V",
+            "type": "number"
+          }
+        },
+        "required": [
+          "slope_m_per_v",
+          "intercept_m",
+          "r2",
+          "n",
+          "band_volts",
+          "band_height_m",
+          "band_half_width_m"
+        ],
+        "title": "CalibrationFitView",
+        "type": "object"
+      },
+      "CalibrationPlot": {
+        "description": "Calibration scatter (volts vs height in m); `fit` is None until 3 points exist.",
+        "properties": {
+          "fit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CalibrationFitView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "height_m": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Height M",
+            "type": "array"
+          },
+          "volts": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Volts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "volts",
+          "height_m",
+          "fit"
+        ],
+        "title": "CalibrationPlot",
+        "type": "object"
+      },
       "CaptureBody": {
         "additionalProperties": false,
         "description": "Capture a point from typed `inputs` of `phase` over the raw sample `window`.",
@@ -2073,6 +2162,47 @@
         "title": "StepStatus",
         "type": "string"
       },
+      "StressStrainPlot": {
+        "description": "Stress-strain scatter in strain and MPa; excluded points are flagged, not dropped.",
+        "properties": {
+          "excluded": {
+            "items": {
+              "type": "boolean"
+            },
+            "title": "Excluded",
+            "type": "array"
+          },
+          "point_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Point Ids",
+            "type": "array"
+          },
+          "strain": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Strain",
+            "type": "array"
+          },
+          "stress_mpa": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Stress Mpa",
+            "type": "array"
+          }
+        },
+        "required": [
+          "point_ids",
+          "strain",
+          "stress_mpa",
+          "excluded"
+        ],
+        "title": "StressStrainPlot",
+        "type": "object"
+      },
       "Summary": {
         "additionalProperties": false,
         "description": "Counts and the overall verdict.",
@@ -2399,6 +2529,50 @@
           }
         },
         "summary": "Labs"
+      }
+    },
+    "/api/plots/calibration": {
+      "get": {
+        "description": "Calibration points with the fitted line and 95% band of the open session.",
+        "operationId": "get_calibration_api_plots_calibration_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationPlot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Calibration",
+        "tags": [
+          "plots"
+        ]
+      }
+    },
+    "/api/plots/stress-strain": {
+      "get": {
+        "description": "Stress-strain points (strain, MPa) of the open session, excluded ones flagged.",
+        "operationId": "get_stress_strain_api_plots_stress_strain_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StressStrainPlot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Stress Strain",
+        "tags": [
+          "plots"
+        ]
       }
     },
     "/api/plugins": {

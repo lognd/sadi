@@ -4,7 +4,8 @@ title = "launcher: wire live acquisition bus so /api/stream is mounted (e2e read
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 5
 reporter = "lognd"
 created = "2026-11-08T07:31:06Z"
-updated = "2026-11-08T07:31:06Z"
+updated = "2026-11-08T07:32:12Z"
 +++

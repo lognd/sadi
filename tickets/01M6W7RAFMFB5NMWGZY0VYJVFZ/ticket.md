@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:42:23Z"
+updated = "2026-11-08T05:43:51Z"
 idempotency_key = "sadi-l1"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/cli.py", "creates:python/sadi/__main__.py", "creates:python/tests/test_cli.py", "creates:docs/launcher.md"]
 scope = ["python/sadi/cli.py", "python/sadi/__main__.py", "python/tests/test_cli.py", "docs/launcher.md", "python/sadi/launcher.py", "docs/server/launcher.md", "python/tests/test_launcher.py"]
@@ -23,7 +23,7 @@ target = "01M6W7R3ZPY606D3MHG4QRM2GS"
 
 [[acceptance]]
 text = "`sadi` starts uvicorn on a free localhost port, serves the built UI from package data, opens the default browser, handles Ctrl+C cleanly (flushes WAL); flags --sim, --port, --data-dir, --no-browser, --selftest, --version"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Binds to 127.0.0.1 only; data dir default per-OS (platformdirs) and printed"

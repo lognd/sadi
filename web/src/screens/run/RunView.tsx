@@ -1,3 +1,4 @@
+// frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 import { CalibrationPlot } from "../../plots/calibration";
 import type { CalibrationData } from "../../plots/calibration";
@@ -88,6 +89,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
         <button type="button" onClick={p.onAccept} disabled={p.blockedWhy !== null}>{meta.acceptLabel} (Space)</button>
       )}
       {" "}<button type="button" onClick={p.onLoadChange}>Mark load change</button>
+      <small data-testid="load-change-hint"> Press this after applying a load; Settled cannot show until you do.</small>
       {p.blockedWhy !== null && <p data-testid="blocked-why">{p.blockedWhy}</p>}
       {p.message !== null && <p role="status" data-testid="run-message">{p.message}</p>}
     </section>

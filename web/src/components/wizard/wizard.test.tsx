@@ -58,6 +58,11 @@ describe("ErrorNotice", () => {
     expect(html).toContain("Blocked.");
     expect(html).toContain("What to do: Complete the earlier step.");
   });
+  it("hints at a stale web build on a bare 422", () => {
+    const failure = toFailure({ kind: "http", status: 422, body: "{\"detail\":[{\"loc\":[\"body\",\"step\"]}]}" });
+    expect(failure.kind).toBe("problem");
+    expect(renderToString(<ErrorNotice failure={failure} />)).toContain("npm run build");
+  });
   it("falls back to a transport message for non-problem bodies", () => {
     const failure = toFailure({ kind: "http", status: 500, body: "boom" });
     expect(failure.kind).toBe("transport");

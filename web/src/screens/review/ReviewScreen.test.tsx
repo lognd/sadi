@@ -16,7 +16,7 @@ const pt = (id: string, over: Partial<PointView> = {}): PointView => ({
 });
 const hist = { undo: [{ kind: "point", ref: "p1", label: "exclude p1" }], redo: [] };
 const results = { n_points: 1, values: [], pending: ["E"], notes: [], refinement: [] };
-const data: ReviewData = { points: [pt("p1"), pt("p2", { excluded: true, forced_early: true })], history: hist, results };
+const data: ReviewData = { points: [pt("p1"), pt("p2", { seq: 2, excluded: true, forced_early: true })], history: hist, results };
 
 const urlOf = (i: Parameters<typeof fetch>[0]): string => (typeof i === "string" ? i : i instanceof URL ? i.href : i.url);
 const json = (b: unknown, status = 200): Response => new Response(JSON.stringify(b), { status });
@@ -67,8 +67,11 @@ describe("pure helpers", () => {
 describe("rendering", () => {
   it("lists points with flags and exclude/include buttons", () => {
     const html = renderToString(<PointList points={data.points} selected="p1" busy={false} onSelect={() => undefined} onEdit={() => undefined} />);
-    expect(html).toContain("Exclude p1");
-    expect(html).toContain("Include p2");
+    expect(html).toContain("Exclude point 1");
+    expect(html).toContain("Include point 2");
+    expect(html).not.toContain("Edit p1");
+    expect(html).toContain("Edit point 1");
+    expect(html).toContain('href="#next-action"');
     expect(html).toContain("forced early, excluded");
     expect(html).toContain('aria-pressed="true"');
   });

@@ -1,3 +1,4 @@
+// frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 import type { RailItem } from "./types";
 
@@ -13,7 +14,7 @@ export interface NextActionProps {
 /** Big next-action panel: one sentence and one primary button for the current step. */
 export function NextActionPanel({ step, busy, canSkip, onPrimary, onSkip }: NextActionProps): React.JSX.Element {
   return (
-    <aside aria-label="Next action">
+    <aside id="next-action" aria-label="Next action">
       <h2>Next action</h2>
       {step === null ? (
         <p>All steps are finished.</p>

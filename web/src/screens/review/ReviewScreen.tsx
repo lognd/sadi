@@ -1,3 +1,4 @@
+// frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
 // frob:accept COV001 because="covered by ReviewScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -166,6 +167,8 @@ export function PointList(props: {
   const { points, selected, busy, onSelect, onEdit } = props;
   if (points.length === 0) return <p>No points captured yet.</p>;
   return (
+    <>
+    <a href="#next-action" data-testid="skip-to-finish">Skip to Finish</a>
     <table aria-label="Captured points">
       <thead>
         <tr><th scope="col">Point</th><th scope="col">Phase</th><th scope="col">Flags</th>
@@ -182,17 +185,18 @@ export function PointList(props: {
             <td>
               <button type="button" aria-pressed={p.point_id === selected}
                       onClick={() => { onSelect(p.point_id); }}>
-                {`Edit ${p.point_id}`}
+                {`Edit point ${String(p.seq)}`}
               </button>
               <button type="button" disabled={busy}
                       onClick={() => { onEdit(p.point_id, { op: p.excluded ? "include" : "exclude", args: {} }); }}>
-                {`${p.excluded ? "Include" : "Exclude"} ${p.point_id}`}
+                {`${p.excluded ? "Include" : "Exclude"} point ${String(p.seq)}`}
               </button>
             </td>
           </tr>
         ))}
       </tbody>
     </table>
+    </>
   );
 }
 

@@ -2,7 +2,8 @@
 id = "01M6W7R3N96SVM2D2GQQTA833F"
 title = "Uncertainty cross-check suite on every lab formula (analytic vs MC vs finite difference)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0EPXRHEMNEAB9QWVY57"

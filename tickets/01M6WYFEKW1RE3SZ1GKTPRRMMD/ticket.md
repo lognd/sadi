@@ -4,9 +4,10 @@ title = "Streaming settle detector refits whole point per push (slow at 50 kHz)"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T06:45:33Z"
-updated = "2026-11-08T06:45:33Z"
+updated = "2026-11-08T06:45:48Z"
 scope = ["python/sadi/labs/lctt/**"]
 +++
 

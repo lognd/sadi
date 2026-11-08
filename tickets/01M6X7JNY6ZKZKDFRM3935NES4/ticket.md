@@ -2,7 +2,8 @@
 id = "01M6X7JNY6ZKZKDFRM3935NES4"
 title = "Export screen figure PNG/SVG button sends no export request in the guided run"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T07:21:11Z"
-updated = "2026-11-08T07:31:42Z"
+updated = "2026-11-08T07:31:46Z"
 scope = ["python/pyproject.toml", "python/uv.lock", "web/e2e/**", "web/src/components/wizard/**", "docs/e2e.md"]
 
 [[acceptance]]

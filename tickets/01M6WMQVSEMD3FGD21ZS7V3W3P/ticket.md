@@ -2,7 +2,8 @@
 id = "01M6WMQVSEMD3FGD21ZS7V3W3P"
 title = "Backend: supply settle_band in creep payload"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -7,13 +7,13 @@ import { acceptWhenSettled, currentStep, openWizard } from "./helpers";
 
 test("keyboard-only guided run Setup -> Export against the simulator", async ({ page }) => {
   const mounted = await openWizard(page);
-  test.skip(!mounted, "wizard shell is not mounted in App.tsx yet (see docs/e2e.md, Known gaps)");
+  test.skip(!mounted, "wizard shell did not mount (is the backend up? see docs/e2e.md)");
 
   expect(await currentStep(page)).toContain("Setup");
   await page.keyboard.press("Enter"); // Setup (or skip) -> Calibrate
-  for (const phase of ["Calibrate", "Tare", "Elastic", "Plastic"]) {
+  for (const phase of ["LVDT calibration", "Tare", "Elastic", "Plastic"]) {
     expect(await currentStep(page)).toContain(phase);
-    const points = phase === "Calibrate" ? 3 : phase === "Plastic" ? 3 : 1;
+    const points = phase === "LVDT calibration" ? 3 : phase === "Plastic" ? 3 : 1;
     for (let i = 0; i < points; i += 1) await acceptWhenSettled(page);
     await page.keyboard.press("f"); // finish the phase
   }

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/e2e/**", ".gitignore"]
+new = ["web/e2e/**", ".gitignore", "web/src/screens/**"]
+at = "2026-11-08T07:10:57Z"
+actor = "lognd"
+rev = 1

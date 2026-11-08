@@ -248,13 +248,13 @@ export function ReviewScreen({ initial, fetchImpl }: { initial?: ReviewData; fet
 
   if (data === null) {
     return (
-      <main aria-label="Review">
+      <section aria-label="Review">
         {error ? <p role="alert">{error}</p> : <p role="status">Loading review...</p>}
-      </main>
+      </section>
     );
   }
   return (
-    <main aria-label="Review" aria-busy={busy}>
+    <section aria-label="Review" aria-busy={busy}>
       <h1>Review</h1>
       <p>{SAFETY_NOTE}</p>
       <div>
@@ -277,6 +277,6 @@ export function ReviewScreen({ initial, fetchImpl }: { initial?: ReviewData; fet
       ) : null}
       {data.results ? <ResultsPanel results={data.results} /> : <p>Results are not available yet.</p>}
       <HistoryList data={data} />
-    </main>
+    </section>
   );
 }

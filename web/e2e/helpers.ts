@@ -6,7 +6,12 @@ import { expect, type Page } from "@playwright/test";
 export async function openWizard(page: Page): Promise<boolean> {
   await page.goto("/");
   await expect(page.locator("main, nav").first()).toBeVisible();
-  return (await page.getByRole("navigation", { name: "Steps" }).count()) > 0;
+  try {
+    await page.getByRole("navigation", { name: "Steps" }).waitFor({ state: "visible", timeout: 10_000 });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** Title of the step currently marked aria-current in the rail. */

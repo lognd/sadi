@@ -1,0 +1,8 @@
+kind = "create"
+title = "Backend: add GET /api/health route the web client calls"
+type = "bug"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T07:11:46Z"
+actor = "lognd"
+rev = 1

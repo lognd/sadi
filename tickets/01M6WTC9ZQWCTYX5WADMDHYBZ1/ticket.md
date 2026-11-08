@@ -8,9 +8,9 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:41:17Z"
+updated = "2026-11-08T05:41:43Z"
 labels = ["creates:python/sadi/server/routes/inventory.py", "creates:python/tests/server/test_inventory_routes.py", "creates:docs/server/inventory.md"]
-scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/service.py", "python/tests/server/test_inventory_routes.py", "docs/server/inventory.md"]
+scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/service.py", "python/tests/server/test_inventory_routes.py", "docs/server/inventory.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"

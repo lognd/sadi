@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T05:21:34Z"
+digest = "a47a772493659177c1b81d4d9a29c7b68586685708c02f9dcb10ac4750a6f164"
+exit_code = 0
+head = "12c3a8b3eb32047c6d00a120b6758deb3df0b498"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_guidance.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-456063-0.xml ---------------
+============================== 1 passed in 1.63s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_guidance.py::test_confidence_and_stop_early_proposed_not_forced"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "8929f9380841c709d1a6ff3cdb0d2278f61330831116a4ae5278537214c96223"
+at = "2026-11-08T05:21:34Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6W7R3KN3HXVMJQ1D3MJNBZY"
 title = "Stress-strain plot: live E fit, selectable window, 0.2% offset yield"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

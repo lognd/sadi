@@ -2,7 +2,8 @@
 id = "01M6W7RB7ZFKF3DVKWW74FQXWT"
 title = "Run screens: calibrate, tare, elastic, plastic capture screens with live view"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

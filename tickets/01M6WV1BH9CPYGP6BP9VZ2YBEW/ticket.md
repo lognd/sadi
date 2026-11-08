@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:14:29Z"
+updated = "2026-11-08T06:14:34Z"
 scope = ["python/sadi/server/**"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Without a device the launcher injects none, so status stays honestly unattached"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A failing simulator open exits EXIT_DEVICE without serving"

@@ -2,7 +2,8 @@
 id = "01M6W7RAY4KTF866Q0Y7B4SZGG"
 title = "Race/deadlock suite incl. kill-mid-write while jobs are running"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "critical"
 points = 8
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"

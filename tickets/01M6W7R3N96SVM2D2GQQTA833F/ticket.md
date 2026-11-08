@@ -11,7 +11,7 @@ created = "2026-11-08T00:08:20Z"
 updated = "2026-11-08T03:20:40Z"
 idempotency_key = "sadi-u5"
 labels = ["ws:unc", "qa", "model:sonnet", "creates:python/tests/uncertainty/crosscheck/**", "creates:docs/uncertainty/crosscheck.md"]
-scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md", "docs/uncertainty/fallbacks.md"]
+scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md", "docs/uncertainty/fallbacks.md", "python/sadi/doctor/cli.py"]
 
 [[links]]
 kind = "blocked-by"

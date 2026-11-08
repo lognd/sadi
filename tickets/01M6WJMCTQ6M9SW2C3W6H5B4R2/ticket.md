@@ -2,7 +2,8 @@
 id = "01M6WJMCTQ6M9SW2C3W6H5B4R2"
 title = "events.replay rejects any rotated WAL: SEAL seq looks like a gap (EventsGap)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "critical"
 points = 3
 reporter = "lognd"

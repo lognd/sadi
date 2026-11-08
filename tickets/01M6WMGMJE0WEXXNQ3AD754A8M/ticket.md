@@ -2,12 +2,12 @@
 id = "01M6WMGMJE0WEXXNQ3AD754A8M"
 title = "Wire stress-strain onWindowChange to API refit"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:51:27Z"
-updated = "2026-11-08T03:51:27Z"
+updated = "2026-11-08T03:54:50Z"
 labels = ["feature"]
 +++
 

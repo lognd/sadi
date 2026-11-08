@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:26:35Z"
+digest = "ea32de965cdb712007aba05d4ae9e6c1e81a2c0849861165d169fb3cfe60ed9e"
+exit_code = 0
+head = "c45b9977e84700d392e6ad4289259993af94eebb"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/bench/test_ad3_binding.py .                                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-459157-0.xml ---------------
+============================== 1 passed in 0.21s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_binding.py::test_import_never_touches_library"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "d4d7678a7ec2339bb7cf3875cf8e6e99faaa656092afff009cd9dcc1cfeb681b"
+at = "2026-11-08T05:26:35Z"
+actor = "lognd"
+rev = 1

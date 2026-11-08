@@ -11,6 +11,7 @@ import { encodeTrace } from "../../ws/testframes";
 import { buildBody, decide, postCapture } from "./capture";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
 import { RunView, settleText, type RunViewProps } from "./RunView";
+import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
 
 const html = (el: React.JSX.Element): string => rts(el).replaceAll("<!-- -->", "");
@@ -136,5 +137,23 @@ describe("RunView", () => {
     const data = { points: [], fit: null, yield: null };
     expect(html(<RunView {...props({ phase: "elastic", plot: { kind: "stress-strain", data } })} />)).toContain("Stress-strain");
     expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Record tare");
+  });
+});
+
+describe("run F3 export", () => {
+  it("fetches the lctt-csv export", async () => {
+    const urls: string[] = [];
+    const f = ((u: string) => { urls.push(u); return Promise.resolve(new Response("a,b\n1,2\n")); }) as unknown as typeof fetch;
+    const r = await fetchRunExport("lctt-csv", f);
+    expect(urls).toEqual(["/api/export/lctt-csv"]);
+    expect(r.ok && r.value.filename).toBe("sadi-lctt-csv.csv");
+  });
+  it("reports http and network failures", async () => {
+    const bad = (() => Promise.resolve(new Response("nope", { status: 404 }))) as unknown as typeof fetch;
+    const r = await fetchRunExport("x", bad);
+    expect(!r.ok && exportErrorText(r.error)).toContain("HTTP 404");
+    const down = (() => Promise.reject(new Error("down"))) as unknown as typeof fetch;
+    const r2 = await fetchRunExport("x", down);
+    expect(!r2.ok && exportErrorText(r2.error)).toContain("down");
   });
 });

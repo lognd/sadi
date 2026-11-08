@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/screens/run/**"]
+new = ["web/src/screens/run/**", "docs/web/run-screens.md"]
+at = "2026-11-08T06:23:17Z"
+actor = "lognd"
+rev = 1

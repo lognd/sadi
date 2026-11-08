@@ -1,0 +1,32 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:24:07Z"
+digest = "579d51c85a5d0916c78228cf57e587f099abe3da50e7fec611e90af13128a827"
+exit_code = 2
+head = "2fbdcae394266a16757031417722c94c6855035b"
+inline = """
+
+==================================== ERRORS ====================================
+_ ERROR collecting SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py _
+ImportError while importing test module '~/projects/SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py:13: in <module>
+    from typani import Ok
+E   ModuleNotFoundError: No module named 'typani'
+=========================== short test summary info ============================
+ERROR ../../SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.14s
+"""
+passed = false
+provider = "command"
+ref = "uv run --quiet pytest -q -o pythonpath=. -p no:cacheprovider ~/projects/SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py"
+size = 1032
+status = "measured"
+at = "2026-11-08T06:24:07Z"
+actor = "lognd"
+rev = 1

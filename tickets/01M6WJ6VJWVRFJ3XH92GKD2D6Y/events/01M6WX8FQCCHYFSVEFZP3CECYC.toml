@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:24:12Z"
+digest = "fd9a5fd204a085737e44f0980b647dfdccb5516cfbc5e7ea1a66da78bad5d66b"
+exit_code = 0
+head = "2fbdcae394266a16757031417722c94c6855035b"
+inline = """
+..........................................                               [100%]
+42 passed in 3.55s
+"""
+passed = true
+provider = "command"
+ref = "uv run --project <worktree>/python pytest -q -o pythonpath=. -p no:cacheprovider ~/projects/SADI/private/final-project/python/tests/labs/lctt/test_loading_vs_short_run.py"
+size = 99
+status = "measured"
+at = "2026-11-08T06:24:12Z"
+actor = "lognd"
+rev = 1

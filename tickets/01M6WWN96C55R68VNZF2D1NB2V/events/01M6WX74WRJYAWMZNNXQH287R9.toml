@@ -1,0 +1,69 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:23:31Z"
+digest = "3038e55f843c8aed5917c37c724b09a6bf61c838693de33bdeb30fb90f57df94"
+exit_code = 0
+head = "dbd35cf379733cdb7e4641df658468c01eba987f"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] request { path: '/api/export' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] response ok { path: '/api/export', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[plots.layout] layout computed {
+  width: 200,
+  height: 100,
+  xTicks: 6,
+  yTicks: 6,
+  title: 't',
+  xTitle: 'x',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 48, series: 1 }
+[plots.export] svg exported { bytes: 4078, title: 't' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[screens.export] figure exported { formatId: 'fig', format: 'svg', dpi: undefined }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[api.client] request { path: '/api/export/nope' }
+
+ \u{2713} web/src/screens/export/ExportScreen.test.tsx (7 tests) 33ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  01:23:32
+   Duration  910ms (transform 243ms, setup 0ms, collect 331ms, tests 33ms, environment 0ms, prepare 205ms)
+
+JSON report written to /tmp/frob-vitest-616878-0.json
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > parses problem+json and shows the hint
+[screens.export.api] non-json error body { status: 500 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports an svg figure and reports errors as problems
+[api.client] http error { path: '/api/export/nope', status: 404 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/RunScreen.test.tsx::run F3 export fetches the lctt-csv export"
+size = 2191
+status = "measured"
+test_count = 7
+tests_digest = "df9a0cf7b472ef031a9e50173ae50dac4b796980f316c00ed1d323cd9100a067"
+at = "2026-11-08T06:23:31Z"
+actor = "lognd"
+rev = 1

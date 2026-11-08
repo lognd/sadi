@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["F3 on the run screen downloads GET /api/export/{format} (default lctt-csv) via resolveKey", "Export failures surface as a status message"]
+moved = []
+at = "2026-11-08T06:23:17Z"
+actor = "lognd"
+rev = 1

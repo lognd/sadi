@@ -1,0 +1,78 @@
+kind = "evidence"
+captured_at = "2026-11-08T10:10:31Z"
+digest = "76a604a45939047c3931691d9ce5c213e97b9e32dd06e60052c355eed49344b0"
+exit_code = 0
+head = "940217b18dd42157f03314f5f9432cf71358857e"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > posts the edit, then reloads points, history and results
+[screens.review.api] request { path: '/api/session/points/p1/edit', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > posts the edit, then reloads points, history and results
+[screens.review.session] action committed { seq: 5, summary: 'exclude p1' }
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+[api.client] response ok { path: '/api/session/points', status: 200 }
+[api.client] response ok { path: '/api/session/history', status: 200 }
+[api.client] response ok { path: '/api/results', status: 200 }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > undo and redo are POSTs
+[screens.review.api] request { path: '/api/session/undo', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > undo and redo are POSTs
+[screens.review.api] request { path: '/api/session/redo', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.api] request { path: '/api/session/points/p1/edit', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+[api.client] response ok { path: '/api/session/points', status: 200 }
+[api.client] response ok { path: '/api/session/history', status: 200 }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+
+ \u{2713} web/src/screens/review/ReviewScreen.test.tsx (13 tests) 36ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  05:10:31
+   Duration  1.10s (transform 243ms, setup 0ms, collect 342ms, tests 36ms, environment 0ms, prepare 203ms)
+
+JSON report written to /tmp/frob-vitest-1132221-0.json
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.api] http error { path: '/api/session/points/p1/edit', status: 422 }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.session] action refused; data unchanged { kind: 'http' }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] http error { path: '/api/results', status: 409 }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[screens.review.session] results recompute unavailable { kind: 'http' }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] network failure { path: '/api/session/points', message: 'down' }
+[api.client] network failure { path: '/api/session/history', message: 'down' }
+[api.client] network failure { path: '/api/results', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/review/ReviewScreen.test.tsx"
+size = 3460
+status = "measured"
+test_count = 13
+tests_digest = "f66626d811667ea0d037d5b63741dfd664c0d3d0c38719daa19c8bef5ef10131"
+at = "2026-11-08T10:10:31Z"
+actor = "lognd"
+rev = 1

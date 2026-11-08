@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:21:32Z"
-scope = ["web/src/screens/run/**"]
+updated = "2026-11-08T06:23:17Z"
+scope = ["web/src/screens/run/**", "docs/web/run-screens.md"]
 +++
 
 found while working ~74FQXWT

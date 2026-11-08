@@ -1,0 +1,10 @@
+kind = "create"
+title = "F3 export missing from keys keymap as KeyAction"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/src/keys/**"]
+body = "found while working 7KWS2S7"
+at = "2026-11-08T05:48:25Z"
+actor = "lognd"
+rev = 1

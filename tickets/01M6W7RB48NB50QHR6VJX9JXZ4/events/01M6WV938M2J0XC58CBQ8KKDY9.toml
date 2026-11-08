@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = [".github/workflows/wheels.yml", "docs/release.md", "python/tests/packaging/test_wheels_workflow.py"]
+new = [".github/workflows/wheels.yml", "docs/release.md", "python/tests/packaging/test_wheels_workflow.py", "python/pyproject.toml"]
+at = "2026-11-08T05:49:39Z"
+actor = "lognd"
+rev = 1

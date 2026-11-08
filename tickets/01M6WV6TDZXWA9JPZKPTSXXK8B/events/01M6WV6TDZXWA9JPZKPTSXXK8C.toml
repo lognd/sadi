@@ -1,0 +1,10 @@
+kind = "create"
+title = "Vite dev proxy lacks ws:true for /api (WS /api/stream)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/vite.config.ts"]
+body = "found while working 7KWS2S7"
+at = "2026-11-08T05:48:25Z"
+actor = "lognd"
+rev = 1

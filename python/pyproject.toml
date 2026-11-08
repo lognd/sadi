@@ -47,6 +47,8 @@ sadi-doctor = "sadi.doctor.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sadi"]
+# The built UI (python/sadi/_ui/*) is gitignored, so hatch must be told to ship it.
+artifacts = ["sadi/_ui/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

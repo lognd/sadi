@@ -1,6 +1,7 @@
 """`sadi` launcher: doctor preflight, then uvicorn serving the API and built web assets."""
 
 # frob:ticket 01M6WMGMM1BP37GS27VRRX9AYP
+# frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 from __future__ import annotations
 
 import argparse
@@ -13,7 +14,7 @@ import threading
 import time
 import webbrowser
 from collections.abc import Callable, Sequence
-from importlib import metadata
+from importlib import metadata, resources
 from pathlib import Path
 
 import uvicorn
@@ -166,6 +167,19 @@ def package_version() -> str:
         return "unknown"
 
 
+def resolve_web_dist(explicit: Path | None = None) -> Path:
+    """Pick the UI dir: explicit path, else packaged `sadi/_ui`, else `web/dist`."""
+    if explicit is not None:
+        _log.info("using explicit web dist %s", explicit)
+        return explicit
+    packaged = Path(str(resources.files("sadi") / "_ui"))
+    if (packaged / "index.html").is_file():
+        _log.info("using packaged UI at %s", packaged)
+        return packaged
+    _log.info("no packaged UI; falling back to %s", DEFAULT_WEB_DIST)
+    return DEFAULT_WEB_DIST
+
+
 def mount_web(app: FastAPI, dist: Path) -> bool:
     """Mount the built web assets at `/` when `dist/index.html` exists; return whether mounted."""
     if not (dist / "index.html").is_file():
@@ -219,7 +233,9 @@ def _parser() -> argparse.ArgumentParser:
     serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
     serve.add_argument("--selftest", action="store_true", help="run a simulator acquisition, exit")
     serve.add_argument("--version", action="store_true", help="print the version and exit")
-    serve.add_argument("--web-dist", type=Path, default=DEFAULT_WEB_DIST)
+    serve.add_argument(
+        "--web-dist", type=Path, default=None, help="UI dir (default: packaged, else web/dist)"
+    )
     serve.add_argument("--skip-preflight", action="store_true", help="do not run the doctor")
     sub.add_parser("doctor", help="run sadi-doctor; remaining arguments are passed through")
     return p
@@ -261,7 +277,7 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _err("sadi: doctor preflight failed; follow the steps above, then retry.\n")
             return EXIT_PREFLIGHT
     app = create_app(AppSettings(data_root=data_root))
-    mount_web(app, args.web_dist)
+    mount_web(app, resolve_web_dist(args.web_dist))
     _out(f"sadi: serving at http://{args.host}:{port}/\n")
     if not args.no_browser:
         schedule_browser(args.host, port)

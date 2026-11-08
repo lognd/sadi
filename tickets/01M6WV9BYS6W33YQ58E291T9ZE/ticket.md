@@ -12,7 +12,7 @@ scope = ["docs/index.md"]
 
 [[acceptance]]
 text = "docs/index.md links release.md"
-bound = false
+bound = true
 +++
 
 found while working ~JX9JXZ4: index.md was leased by WR6VW70; add '- [Release procedure](release.md)' after the packaging entry

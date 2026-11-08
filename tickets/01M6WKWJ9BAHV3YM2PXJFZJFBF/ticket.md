@@ -7,6 +7,14 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:40:29Z"
-updated = "2026-11-08T03:40:39Z"
+updated = "2026-11-08T03:40:49Z"
 scope = ["docs/index.md", "python/tests/test_docs_index.py"]
+
+[[acceptance]]
+text = "docs/index.md links server/app.md and web/results-panel.md, guarded by index tests"
+bound = false
+
+[[acceptance]]
+text = "pytest tests/test_docs_index.py passes"
+bound = false
 +++

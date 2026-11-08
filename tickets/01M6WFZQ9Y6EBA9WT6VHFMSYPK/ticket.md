@@ -2,13 +2,14 @@
 id = "01M6WFZQ9Y6EBA9WT6VHFMSYPK"
 title = "Final-project plugin skeleton (untracked) plus tracked absent-plugin test"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:18Z"
-updated = "2026-11-08T02:52:48Z"
+updated = "2026-11-08T02:55:29Z"
 labels = ["plugins", "creates:private/final-project/plugin/**", "creates:python/tests/plugins/test_plugin_absent.py"]
 scope = ["private/final-project/plugin/**", "python/tests/plugins/test_plugin_absent.py"]
 
@@ -22,19 +23,19 @@ target = "01M6WFZ1R6ATYWRVW3315G6CCX"
 
 [[acceptance]]
 text = "With private/ removed the tracked suite passes"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "With private/ present the plugin loads from the local dir source and reports enabled"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "git status shows nothing under private/"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "grep of tracked files finds no import of the final-project package"
-bound = false
+bound = true
 +++
 
 Untracked (private/ is gitignored; never git add): private/final-project/plugin/ with sadi_plugin.toml and a package that re-adds the weights/height inventory, weight sequencing and GP selector lab via the plugin API only (core public API imports; no sadi.store). Existing saved code lives under private/final-project/. Tracked: python/tests/plugins/test_plugin_absent.py proves core runs with the plugin absent: LocalDirSource pointed at a nonexistent/empty path yields Ok with only lctt, LabRegistry works, doctor reports no findings, and an AST scan shows no tracked file imports the private package. A second test, skipped when the dir is absent, loads the plugin and checks it registers enabled. frob scope: the private paths are not tracked so the lease must widen explicitly; do not commit them.

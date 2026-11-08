@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:55:48Z"
+digest = "bef6cddc6a9696f1960afa3ca9f1b8d7360b82f6bf46bc73e01efdb0d193945e"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 7 items
+
+python/tests/plugins/test_api.py ....                                    [ 57%]
+python/tests/server/test_routes_plugins.py ...                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-210637-0.xml ---------------
+============================== 7 passed in 0.41s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_api.py::test_failed_plugins_listed_with_error_text python/tests/plugins/test_api.py::test_get_known_and_unknown python/tests/plugins/test_api.py::test_lctt_listed_enabled python/tests/plugins/test_api.py::test_schema_exported_from_model python/tests/server/test_routes_plugins.py::test_get_one_and_404 python/tests/server/test_routes_plugins.py::test_list_includes_enabled_and_failed python/tests/server/test_routes_plugins.py::test_paths_registered"
+size = 601
+status = "measured"
+test_count = 7
+tests_digest = "d256ee7845058e2cf5ca951256011c84f870e3e69a701e585d8e3b2f049cd44c"
+at = "2026-11-08T02:55:48Z"
+actor = "lognd"
+rev = 1

@@ -4,7 +4,8 @@ title = "lctt plugin: wire real per-phase analysis into LcttLab.recompute (curre
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T02:52:30Z"
-updated = "2026-11-08T02:52:30Z"
+updated = "2026-11-08T02:55:49Z"
 +++

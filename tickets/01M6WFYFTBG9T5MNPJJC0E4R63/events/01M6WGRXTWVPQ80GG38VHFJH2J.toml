@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T02:46:04Z"
+digest = "b059ee8808a2e773ac45add411fb2fb0b6e51b3baf1108d0d8433ebda02526b1"
+exit_code = 1
+head = "5a12f3a1d6b353a9e1c183f0a3a176c8ab98b8b1"
+inline = """
+/usr/bin/python3: Error while finding module specification for 'typani.lint' (ModuleNotFoundError: No module named 'typani')
+"""
+passed = false
+provider = "command"
+ref = "uv run python -m typani.lint sadi/plugins tests/plugins"
+size = 125
+status = "measured"
+at = "2026-11-08T02:46:04Z"
+actor = "lognd"
+rev = 1

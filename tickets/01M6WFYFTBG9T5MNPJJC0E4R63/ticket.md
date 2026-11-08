@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:38Z"
-updated = "2026-11-08T02:45:57Z"
+updated = "2026-11-08T02:46:04Z"
 labels = ["plugins", "creates:python/sadi/plugins/__init__.py", "creates:python/sadi/plugins/manifest.py", "creates:python/sadi/plugins/errors.py", "creates:python/tests/plugins/test_manifest.py"]
 scope = ["python/sadi/plugins/__init__.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/errors.py", "python/tests/plugins/test_manifest.py", "python/pyproject.toml", "python/uv.lock"]
 

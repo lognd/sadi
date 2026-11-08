@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:32:40Z"
-updated = "2026-11-08T03:36:18Z"
+updated = "2026-11-08T03:36:24Z"
 scope = ["python/sadi/uncertainty/covariance.py", "python/sadi/uncertainty/measured.py", "docs/uncertainty/measured.md", "python/tests/uncertainty/test_registry_scaling.py", "python/tests/labs/lctt/test_live.py"]
 
 [[acceptance]]

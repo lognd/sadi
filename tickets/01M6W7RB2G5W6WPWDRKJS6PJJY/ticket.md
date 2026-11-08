@@ -35,7 +35,7 @@ bound = true
 
 [[acceptance]]
 text = "States which settle value feeds the E fit and how to override it"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Screenshots under docs/img/ui/"

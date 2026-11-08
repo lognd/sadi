@@ -1,0 +1,9 @@
+kind = "create"
+title = "WS guidance message carries no payload; define pydantic model and show in UI"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+at = "2026-11-08T10:01:20Z"
+actor = "lognd"
+rev = 1

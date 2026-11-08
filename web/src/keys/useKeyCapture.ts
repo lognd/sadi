@@ -1,7 +1,7 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 import { useEffect, useRef } from "react";
 import { getLogger } from "../api/log";
-import { isTextTarget, resolveKey, type KeyAction } from "./keymap";
+import { isControlTarget, isTextTarget, resolveKey, type KeyAction } from "./keymap";
 
 const log = getLogger("keys.capture");
 
@@ -12,8 +12,9 @@ export function useKeyCapture(onAction: (a: KeyAction) => void, nudgeActive: boo
   handler.current = onAction;
   useEffect(() => {
     const listener = (e: KeyboardEvent): void => {
-      const target = e.target as { tagName?: string; isContentEditable?: boolean } | null;
-      const action = resolveKey(e, { textFocus: isTextTarget(target), nudgeActive });
+      const target = e.target as { tagName?: string; isContentEditable?: boolean; closest?: (sel: string) => unknown } | null;
+      // frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
+      const action = resolveKey(e, { textFocus: isTextTarget(target), nudgeActive, controlFocus: isControlTarget(target) });
       if (action === null) return;
       e.preventDefault();
       log.debug("key action", { key: e.key, action });

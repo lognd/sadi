@@ -18,7 +18,7 @@ Implements the layout of `docs/ux.md` sections 2, 4, 5 and 6.
 ## Keyboard
 
 `keys/keymap.ts` is a pure map (`resolveKey`); `keys/useKeyCapture.ts` attaches it to window and
-ignores events from text fields. Space accepts, Shift+Space accepts unsettled, Enter presses the
+ignores events from text fields, and Enter/Space while a button, link, summary or role=button/link has focus (the control activates instead). Space accepts, Shift+Space accepts unsettled, Enter presses the
 primary button, Ctrl+Z / Ctrl+Y undo and redo, `?` toggles the shortcut list, F3 requests `export` (forwarded to `onKeyAction`). Arrows nudge the
 window when `nudgeActive` is set (Shift moves the end), else move between steps; `[ ] { }` always
 nudge. Shell handles primary/undo/redo/help; other actions go to `onKeyAction`.

@@ -43,6 +43,7 @@ Status: current
 - [Concurrency testing: race, deadlock and kill-mid-write suite](concurrency-testing.md)
 - [Backend e2e testing: simulator fault injection](testing.md)
 - [Browser e2e (Playwright)](e2e.md)
+- [Usability report (F0 walkthrough)](usability-report.md)
 - [Release process](release.md)
 - [Store durability primitives](store/durable.md)
 - [Incremental replay](store/incremental-replay.md)

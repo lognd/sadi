@@ -1,0 +1,9 @@
+kind = "create"
+title = "e2e: keyboard-only walkthrough using Tab+Enter (see docs/usability-report.md)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+at = "2026-11-08T10:01:20Z"
+actor = "lognd"
+rev = 1

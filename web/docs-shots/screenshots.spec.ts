@@ -1,5 +1,7 @@
 // frob:ticket 01M6WVQC0SQR7CMCB3V921XDAW
 // Captures the UI screenshots embedded in docs/user-guide.md. Opt-in: set SADI_SCREENSHOTS=1 (see docs/user-guide-screens.md).
+import { cpSync, existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { expect, test } from "../e2e/fixtures";
 import {
@@ -16,6 +18,21 @@ test.skip(
   !process.env.SADI_SCREENSHOTS,
   "set SADI_SCREENSHOTS=1 to regenerate docs/img/ui",
 );
+
+// frob:ticket 01M6X955RB67ZV7PBVB1Z8MJ6M
+// The Doctor's WEB-010 looks for the packaged bundle (gitignored python/sadi/web/dist); stage the vite build there.
+test.beforeAll(() => {
+  // DATA-010 inspects the default data root; point it at an existing scratch dir so it passes.
+  const xdg = mkdtempSync(resolve(tmpdir(), "sadi-docs-"));
+  mkdirSync(resolve(xdg, "sadi"), { recursive: true });
+  process.env.XDG_DATA_HOME = xdg;
+  const pkg = resolve(import.meta.dirname, "..", "..", "python", "sadi", "web", "dist");
+  if (existsSync(resolve(pkg, "index.html"))) return;
+  mkdirSync(pkg, { recursive: true });
+  cpSync(resolve(import.meta.dirname, "..", "dist"), pkg, { recursive: true });
+  writeFileSync(resolve(pkg, "version.json"), JSON.stringify({ sadi: "0.1.0" }));
+});
+
 test.use({ viewport: { width: 1000, height: 640 } });
 
 test("capture user-guide screenshots against the simulator", async ({
@@ -32,6 +49,16 @@ test("capture user-guide screenshots against the simulator", async ({
   if (!alreadyOpen) await page.getByRole("button", { name: "Doctor", exact: true }).click();
   await expect(page.getByRole("main", { name: "Doctor" })).toBeVisible();
   await page.getByRole("button", { name: /^Re-run / }).first().waitFor({ state: "visible", timeout: 30_000 }); // checks loaded
+  // frob:ticket 01M6X955RB67ZV7PBVB1Z8MJ6M
+  // Redact host-specific absolute paths so the capture is reproducible and leaks nothing.
+  await page.evaluate(() => {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      n.nodeValue = (n.nodeValue ?? "").replace(/(?:\/(?:home|tmp|mnt|var|Users|root)|[A-Za-z]:\\)[^\s"',;)]*/g, "/home/user/...");
+    }
+  });
+  // frob:ticket 01M6X9EHYXYSA7QP4N7PDT1RZ6
+  // EXT-040 (udev) is left as the simulator really reports it (warn); see docs/user-guide-screens.md.
   await page.screenshot({ path: `${out}/doctor.png` });
   await page.getByRole("button", { name: "Close Doctor" }).click();
 

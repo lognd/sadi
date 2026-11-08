@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Export and live views detect corruption in already-applied WAL bytes"]
+moved = []
+at = "2026-11-08T10:02:32Z"
+actor = "lognd"
+rev = 1

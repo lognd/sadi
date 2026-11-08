@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["doctor.png and its caption do not present a check state the simulator cannot produce"]
+moved = []
+at = "2026-11-08T09:57:19Z"
+actor = "lognd"
+rev = 1

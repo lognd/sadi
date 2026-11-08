@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:02:32Z"
+digest = "e1d1d357b0003ca64e87b92476dbbdfe60d89bc6f9d1defae69106a4540093bb"
+exit_code = 0
+head = "d21d89690013f85b2a0396560d76470283ec0452"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_session_replay_cache.py .                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1114291-0.xml --------------
+============================== 1 passed in 2.10s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_session_replay_cache.py::test_verify_detects_corruption_in_applied_bytes"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "d549b2fb6e0d540c92170b86dc5723d83c5ebb00c3af0048f58399b49e93169f"
+at = "2026-11-08T10:02:32Z"
+actor = "lognd"
+rev = 1

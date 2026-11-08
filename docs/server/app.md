@@ -27,3 +27,21 @@ exits non-zero. With `require_root_lock=False` the app starts degraded and
 `app.state.save_indicator`) and registers `SaveIndicator.mark_failed` via
 `writer.on_failure`, so a writer failure latches NOT SAVED. With no writer the indicator
 reads Saved with nothing pending.
+
+## Stress-strain refit
+
+`create_app` mounts `make_stress_strain_router(settings.curve_source)`
+(`sadi.server.routes_stress_strain`): `POST /api/stress-strain/fit`, called by
+`web/src/api/refit.ts`. It is read-only: each call re-reads the curve through the injected
+`CurveSource` (`() -> Result[Sequence[CurvePoint], RefitError]`) and refits with
+`sadi.labs.lctt.modulus.fit_modulus`; nothing is written.
+
+Request: `{"first": int, "last": int}`, an inclusive window of indices into the active
+(non-excluded) curve; at least 3 points, `0 <= first < last < n`.
+
+Response 200 (`ModulusFitView`): `first`, `last`, `modulusMpa` (slope, MPa), `interceptMpa`
+(MPa), `display` ("E = x +/- y GPa, r^2 = z"), `eGpa`, `eU95Gpa` (U95 of E, GPa), `r2`, `lowR2`.
+
+Errors are `{"error": <code>, "detail": <hint>}`: 422 `BadWindow` / `Fit` / `NoWindow`
+(fix the window), 409 `NoData` (no `curve_source` or no stored data), 500 `Propagation` /
+`Intercept`. A body missing `first` or `last` gets FastAPI's standard 422 validation body.

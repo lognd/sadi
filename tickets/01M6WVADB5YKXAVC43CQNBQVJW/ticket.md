@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:50:23Z"
-updated = "2026-11-08T06:20:39Z"
+updated = "2026-11-08T06:20:42Z"
 labels = ["lab"]
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/**", "python/tests/server/**", "python/sadi/server/**", "python/sadi/core/**", "python/tests/core/**", "docs/lctt/**", "docs/server/**", "docs/core/**"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "lctt-csv renders the 32-column CSV in memory from raw session events passed via RunState.events"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "An unready session yields a problem response, not an empty file"

@@ -2,7 +2,8 @@
 id = "01M6XAASPRSYNWC5K5MH77E8KJ"
 title = "Shell: basic styling so primary button outranks Skip (U-11)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

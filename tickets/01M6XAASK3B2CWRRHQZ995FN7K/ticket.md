@@ -7,7 +7,8 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:15:16Z"
+updated = "2026-11-08T10:15:30Z"
+scope = ["web/src/screens/export/ExportScreen.test.tsx"]
 
 [[acceptance]]
 text = "On the Export screen the CSV download link precedes the PNG-resolution select and figure buttons in DOM/Tab order"

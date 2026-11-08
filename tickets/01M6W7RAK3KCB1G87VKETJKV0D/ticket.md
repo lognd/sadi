@@ -2,7 +2,8 @@
 id = "01M6W7RAK3KCB1G87VKETJKV0D"
 title = "Versioned results stream: instant analytic, progressive refinement, stale markers"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"

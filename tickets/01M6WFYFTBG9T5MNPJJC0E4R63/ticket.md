@@ -18,7 +18,7 @@ bound = true
 
 [[acceptance]]
 text = "Malformed/missing fields yield Err(PluginManifestError), never raise"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Incompatible api_version yields Err(PluginApiVersionError) naming both versions"

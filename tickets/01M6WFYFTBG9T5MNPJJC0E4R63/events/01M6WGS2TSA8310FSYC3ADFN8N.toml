@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:46:08Z"
+digest = "2622fef11f34b4247961d6b1f963a04f910462eff7b365cd88d6ea9f7a929d78"
+exit_code = 0
+head = "5a12f3a1d6b353a9e1c183f0a3a176c8ab98b8b1"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/plugins/test_manifest.py ....                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-197760-0.xml ---------------
+============================== 4 passed in 0.21s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_manifest.py::test_missing_field_is_err python/tests/plugins/test_manifest.py::test_invalid_fields_are_err python/tests/plugins/test_manifest.py::test_bad_toml_is_err python/tests/plugins/test_manifest.py::test_missing_file_is_err"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "1e2dbe6b09e3a369f691c167a8cae39c4efe2dd44915e26fb5c1dfcbd5ba7940"
+at = "2026-11-08T02:46:08Z"
+actor = "lognd"
+rev = 1

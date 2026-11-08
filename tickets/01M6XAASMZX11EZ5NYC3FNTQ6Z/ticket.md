@@ -2,7 +2,8 @@
 id = "01M6XAASMZX11EZ5NYC3FNTQ6Z"
 title = "Shell: focusable step rail and Doctor earlier in Tab order (U-10)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

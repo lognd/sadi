@@ -2,7 +2,7 @@
 id = "01M6X3AVGVT23M1E9V82RWJ137"
 title = "Capture and wizard complete latency grows with WAL size; e2e guided run times out (wait_durable fails under sim load)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"

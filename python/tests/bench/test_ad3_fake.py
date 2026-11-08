@@ -3,14 +3,25 @@
 # frob:ticket 01M6WSQ57BQ8EZYECPGPFQFWB7
 from __future__ import annotations
 
+import inspect
 import math
 
 import pytest
 from pydantic import ValidationError
-from typani import Err
+from typani import Err, Ok
 
-from sadi.bench.ad3 import Channel, DwfBackend, DwfCode, OutNode, WaveFunction
-from sadi.bench.ad3.fake import FakeConfig, FakeDwf, ScopeCal
+from sadi.bench.ad3 import (
+    AcqMode,
+    AcqState,
+    Channel,
+    DwfBackend,
+    DwfCode,
+    IoNode,
+    OutNode,
+    WaveFunction,
+)
+from sadi.bench.ad3.dll import CtypesBackend
+from sadi.bench.ad3.fake import FakeConfig, FakeDwf, ScopeCal, waveform
 from sadi.bench.inject import (
     PinMap,
     SignalRoute,
@@ -152,3 +163,155 @@ def test_loopback_fake_to_sadi_adc_model() -> None:
     for c, v in zip(counts, volts, strict=True):
         assert counts_to_volts(c, fs) == pytest.approx(v, abs=fs / 65535)
     assert volts_to_counts(99.0, fs) == 65535 and volts_to_counts(-99.0, fs) == 0
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.version
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.set_on_close
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.enumerate_devices
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.open
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.close
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.auto_configure
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.__init__
+def test_session_calls() -> None:
+    """Session calls on a typed FakeDwf: version, on-close range, enumerate, open, auto, close."""
+    f: FakeDwf = FakeDwf(FakeConfig(serial="SN:TEST"))
+    assert f.version().unwrap() == "fake-3.0"
+    assert isinstance(f.set_on_close(1), Ok)
+    bad = f.set_on_close(3)
+    assert isinstance(bad, Err) and bad.unwrap_err().code == DwfCode.CALL_FAILED
+    infos = f.enumerate_devices().unwrap()
+    assert [i.serial for i in infos] == ["SN:TEST"]
+    dev = f.open(0).unwrap()
+    assert isinstance(f.auto_configure(dev, True), Ok)
+    assert f.close(dev).unwrap().index == 0
+    assert isinstance(f.auto_configure(dev, True), Err)
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_node_enable
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_node_function
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_node_frequency
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_node_amplitude
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_node_offset
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.out_configure
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_reset
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_channel_enable
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_channel_range
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_channel_offset
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_frequency
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_buffer_size
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_acquisition_mode
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_configure
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_status
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.in_data
+# frob:tests python/sadi/bench/ad3/fake.py::waveform
+def test_analog_out_in_round_trip() -> None:
+    """Every analog out/in setter on a typed FakeDwf takes effect in the latched capture."""
+    f: FakeDwf = FakeDwf()
+    dev = f.open(-1).unwrap()
+    ch = Channel(0)
+    node = OutNode.CARRIER
+    assert isinstance(f.in_reset(dev), Ok)
+    for res in (
+        f.out_node_enable(dev, ch, node, True),
+        f.out_node_function(dev, ch, node, WaveFunction.SQUARE),
+        f.out_node_frequency(dev, ch, node, 1000.0),
+        f.out_node_amplitude(dev, ch, node, 1.0),
+        f.out_node_offset(dev, ch, node, 0.5),
+        f.out_configure(dev, ch, True),
+        f.in_channel_enable(dev, ch, True),
+        f.in_channel_range(dev, ch, 10.0),
+        f.in_channel_offset(dev, ch, 0.0),
+        f.in_frequency(dev, 4000.0),
+        f.in_buffer_size(dev, 4),
+        f.in_acquisition_mode(dev, AcqMode.SINGLE),
+        f.in_configure(dev, True, True),
+    ):
+        assert isinstance(res, Ok)
+    assert f.in_status(dev, True).unwrap() == AcqState.DONE
+    assert f.in_data(dev, ch, 4).unwrap() == [1.5, 1.5, -0.5, -0.5]
+    assert f.in_data(dev, ch, 2).unwrap() == [1.5, 1.5]
+    assert waveform(WaveFunction.SQUARE, 0.25) == 1.0
+    assert waveform(WaveFunction.SQUARE, 0.75) == -1.0
+    assert waveform(WaveFunction.NOISE, 0.0) is None
+    assert isinstance(f.in_reset(dev), Ok)
+    assert f.in_status(dev, False).unwrap() == AcqState.READY
+    assert isinstance(f.in_data(dev, ch, 4), Err)
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.io_enable
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.io_node_set
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.io_configure
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.io_status
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.io_node_status
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.dio_output_enable
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.dio_output
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.dio_configure
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.dio_status
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.dio_input
+def test_io_calls() -> None:
+    """Analog and digital IO calls on a typed FakeDwf store and read back their values."""
+    f: FakeDwf = FakeDwf()
+    dev = f.open(-1).unwrap()
+    assert isinstance(f.io_enable(dev, True), Ok)
+    assert isinstance(f.io_node_set(dev, Channel(0), IoNode(0), 1.0), Ok)
+    assert isinstance(f.io_configure(dev), Ok)
+    assert isinstance(f.io_status(dev), Ok)
+    assert f.io_node_status(dev, Channel(0), IoNode(0)).unwrap() == 1.0
+    assert f.io_node_status(dev, Channel(1), IoNode(0)).unwrap() == 0.0
+    assert isinstance(f.dio_output_enable(dev, 0b0110), Ok)
+    assert isinstance(f.dio_output(dev, 0b0101), Ok)
+    assert isinstance(f.dio_configure(dev), Ok)
+    assert isinstance(f.dio_status(dev), Ok)
+    assert f.dio_input(dev).unwrap() == 0b0100
+    f.close(dev).unwrap()
+    assert isinstance(f.dio_input(dev), Err)
+    assert isinstance(f.io_node_status(dev, Channel(0), IoNode(0)), Err)
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.version
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.set_on_close
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.enumerate_devices
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.open
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.close
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.auto_configure
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_node_enable
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_node_function
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_node_frequency
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_node_amplitude
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_node_offset
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.out_configure
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_reset
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_channel_enable
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_channel_range
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_channel_offset
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_frequency
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_buffer_size
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_acquisition_mode
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_configure
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_status
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.in_data
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.io_enable
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.io_node_set
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.io_configure
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.io_status
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.io_node_status
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.dio_output_enable
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.dio_output
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.dio_configure
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.dio_status
+# frob:tests python/sadi/bench/ad3/backend.py::DwfBackend.dio_input
+def test_backends_match_protocol_signatures() -> None:
+    """FakeDwf and CtypesBackend expose every DwfBackend method with the same parameters."""
+    proto_methods = [
+        n for n, v in vars(DwfBackend).items() if callable(v) and not n.startswith("_")
+    ]
+    assert len(proto_methods) == 32
+    for impl in (FakeDwf, CtypesBackend):
+        for name in proto_methods:
+            want = list(inspect.signature(getattr(DwfBackend, name)).parameters)
+            got = list(inspect.signature(getattr(impl, name)).parameters)
+            assert got == want, f"{impl.__name__}.{name}"

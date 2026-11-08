@@ -7,8 +7,8 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:10:26Z"
-updated = "2026-11-08T08:23:52Z"
-scope = ["web/e2e/**"]
+updated = "2026-11-08T08:34:07Z"
+scope = ["web/e2e/**", "docs/e2e.md"]
 
 [[acceptance]]
 text = "Each e2e test runs against its own backend (fresh temp data dir and port) so specs start at Setup"

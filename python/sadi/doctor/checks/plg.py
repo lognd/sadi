@@ -8,7 +8,6 @@ import re
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, warn
 from sadi.doctor.schema import Layer, Severity
 from sadi.doctor.steps import manual
-from sadi.plugins.doctor import Severity as FindingSeverity
 
 _NUMBER = re.compile(r"^\d+\.\s*")
 _MAX_STEPS = 6
@@ -27,6 +26,8 @@ _MAX_STEPS = 6
 )
 def plg_010(ctx: Ctx) -> Outcome:
     """Run the plugin doctor and fold its findings into one result."""
+    from sadi.plugins.doctor import Severity as FindingSeverity  # lazy: keeps sadi.store out
+
     findings = [f for f in ctx.probes.plugin_findings() if f.severity is not FindingSeverity.INFO]
     if not findings:
         return ok("No plugin problems")

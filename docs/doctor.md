@@ -860,11 +860,11 @@ Implementation status and deviations from this spec (~V3H5CGF):
   `@remedy(id, mode)`) rather than a separate `remediations/` package.
 - The runner is sequential (no thread pool) and has no per-check or whole-run
   timeout budget; probe timeouts live in the subprocess probes only.
-- Implemented (34): SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040, EXT-010, WEB-010,
+- Implemented (43): DEV-010..050, SIM-010/020, WRK-010/020, SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040, EXT-010, WEB-010,
   NET-010/020, DATA-010/020/030/090, USB-020/030/040/050, CLK-010,
   RES-010/020/030, BRW-010, PLG-010. USB-020 skips as unverified on Windows
   and macOS. The Channel A/B probe is reported as unverified (decision D3).
-- Deferred: DEV, SIM and WRK layers; EXT-020..050; NET-030/040;
+- Deferred: EXT-020..050; NET-030/040;
   PY-050/060; DATA-040..080; USB-010, USB-060..080; CLK-020..040; RES-040;
   BRW-020/030; PLAT-020/040; WEB-020; the `fix` subcommand; `--bundle`.
   Each is tracked as a ticket.
@@ -876,6 +876,19 @@ Implementation status and deviations from this spec (~V3H5CGF):
   skipped by WAL-010 and covered only by `--deep` (WAL-020); the deep budget is a
   fixed 120 s (`deep-timeout`), not a `--deep-timeout` option; a missing
   manifest is reported as SESS-010 `manifest-stale` (it is a derived cache).
+- DEV, SIM and WRK use `sadi.doctor.devprobe` (`probe_device`, `probe_sim`) and
+  `sadi.doctor.workerprobe` (`probe_workers`), each one cached pass per run on
+  the probes. With no board or no `sadi_py` the DEV checks SKIP with reason
+  `no-device` and the SIM checks SKIP with `tool-missing`; neither is a failure.
+  DEV-040 needs `--stream-seconds N` and DEV-050 needs `--with-reset`; `--port`
+  pins the port. Deviations: the board is opened with `open_serial` (there is no
+  `open_probe`); the worker self-test is hosted in `workerprobe` (there is no
+  `sadi.jobs.worker.selftest`); scenario names are a fixed list; there is no
+  raw-reply tap, so DEV-020 `garbage-reply` shows the codec error text and the
+  bytes when available; the worker child's stderr is not captured; DEV-050 is
+  unverified on hardware. DEV-010 depends on USB-040/050 (there is no USB-060).
+  The spawned worker must not import `sadi.store`, so `sessions.py`, `plg.py`
+  and `probes.py` import store and plugin modules lazily.
 - With `--check`, unselected `depends_on` checks are ignored rather than run.
 
 ### 9.2 Order, dependencies, skipping

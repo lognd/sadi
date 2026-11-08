@@ -12,19 +12,11 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from sadi.logging_setup import get_logger
-from sadi.store.exports import PROV_SUFFIX
-from sadi.store.manifest import read_manifest
-from sadi.store.records import RecordType
-from sadi.store.session import SESSIONS_DIRNAME, proc_start_token, read_lock_holder
-from sadi.store.snapshot import list_snapshots, prefix_hashes_at, snapshot_dir
-from sadi.store.wal import (
-    WalCorrupt,
-    WalReader,
-    WalSegmentHeaderInvalid,
-    WalUnsupportedFormat,
-)
 
 _log = get_logger(__name__)
+
+# sadi.store is imported lazily inside functions: the WRK-010 spawned child imports
+# sadi.doctor and must not drag the store in (that would mask a real import leak).
 
 SKIP_BYTES = 256 * 1024 * 1024
 DEEP_TIMEOUT_S = 120.0
@@ -90,6 +82,8 @@ def _wal_status(
     wal_dir: Path, deadline: float | None
 ) -> tuple[WalStatus, str, int, int | None, int | None]:
     """Scan the WAL read-only; return (status, detail, tail bytes, last seq, bad version)."""
+    from sadi.store.wal import WalCorrupt, WalReader, WalSegmentHeaderInvalid, WalUnsupportedFormat
+
     if deadline is not None and time.monotonic() > deadline:
         return ("timeout", "deep time budget used up before this session", 0, None, None)
     res = WalReader.scan(wal_dir)
@@ -117,6 +111,8 @@ def _wal_status(
 
 def _leftovers(sdir: Path) -> tuple[tuple[str, ...], tuple[str, ...]]:
     """Return (tmp-file names, export names lacking a provenance sidecar), read-only."""
+    from sadi.store.exports import PROV_SUFFIX
+
     tmp: list[str] = []
     orphans: list[str] = []
     for sub in ("", "snapshots", "exports"):
@@ -144,6 +140,8 @@ def _snapshot_counts(
     sdir: Path, wal_dir: Path, last_seq: int | None, scanned: bool
 ) -> tuple[int, int]:
     """Return (invalid snapshot files, stale valid snapshots) without touching them."""
+    from sadi.store.snapshot import list_snapshots, prefix_hashes_at, snapshot_dir
+
     try:
         files = [p for p in snapshot_dir(sdir).glob("snap-*.snap") if p.is_file()]
     except OSError:
@@ -164,6 +162,9 @@ def _snapshot_counts(
 
 def _raw_before_settings(wal_dir: Path) -> bool:
     """True when a RAW_BLOCK record appears before any SETTINGS record (verified prefix only)."""
+    from sadi.store.records import RecordType
+    from sadi.store.wal import WalReader
+
     for item in WalReader(wal_dir).records():
         if item.is_err:
             return False
@@ -176,6 +177,8 @@ def _raw_before_settings(wal_dir: Path) -> bool:
 
 def _pid_reused(holder: str, alive: bool | None) -> bool:
     """True when the recorded pid is running but is not the process that took the lock."""
+    from sadi.store.session import proc_start_token
+
     if alive is not False:
         return False
     m = re.search(r"\bpid=(\d+)", holder)
@@ -184,6 +187,9 @@ def _pid_reused(holder: str, alive: bool | None) -> bool:
 
 def _one(sdir: Path, deep: bool, deadline: float | None) -> SessionFacts:
     """Survey one session directory (never writes)."""
+    from sadi.store.manifest import read_manifest
+    from sadi.store.session import read_lock_holder
+
     m = _VER_RE.match(sdir.name)
     wal_dir = sdir / "wal"
     segs = [p for p in wal_dir.iterdir() if _SEG_RE.match(p.name)] if wal_dir.is_dir() else []
@@ -240,6 +246,8 @@ def survey_sessions(
     data_root: str, deep: bool = False, timeout_s: float = DEEP_TIMEOUT_S
 ) -> list[SessionFacts]:
     """Survey every session directory under the data root using read-only store APIs."""
+    from sadi.store.session import SESSIONS_DIRNAME
+
     root = Path(data_root) / SESSIONS_DIRNAME
     try:
         dirs = sorted(p for p in root.iterdir() if p.is_dir())

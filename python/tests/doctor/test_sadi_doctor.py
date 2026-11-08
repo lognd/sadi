@@ -9,11 +9,12 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from doctor_fakes import FakeProbes, healthy
+from doctor_fakes import HEALTHY_DEVICE, FakeProbes, healthy
 from typani import Err, Ok
 
 import sadi.doctor as doctor
 from sadi.doctor import cli
+from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.registry import all_checks, get_remedy
 from sadi.doctor.render_text import render
 from sadi.doctor.schema import (
@@ -30,6 +31,7 @@ from sadi.doctor.schema import (
     StepKind,
 )
 from sadi.doctor.sessions import SessionFacts
+from sadi.doctor.workerprobe import WorkerFacts
 from sadi.plugins.doctor import DoctorFinding
 from sadi.plugins.doctor import Severity as FSev
 
@@ -135,6 +137,27 @@ def _sf(**kw: object) -> SessionFacts:
     }
     base.update(kw)
     return SessionFacts(**base)  # type: ignore[arg-type]
+
+
+def _dev(**kw: object) -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.device = HEALTHY_DEVICE.model_copy(update=kw)
+
+    return f
+
+
+def _simf(**kw: object) -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.sim = SimFacts(**kw)  # type: ignore[arg-type]
+
+    return f
+
+
+def _wrk(**kw: object) -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.workers = WorkerFacts(**kw)  # type: ignore[arg-type]
+
+    return f
 
 
 # (check id, mode, os, mutator)
@@ -296,6 +319,28 @@ CASES: list[tuple[str, str, Os, Mut]] = [
     ("WAL-030", "stale-snapshots", Os.LINUX, _sess(_sf(snapshots_stale=1))),
     ("WAL-030", "invalid-snapshot", Os.LINUX, _sess(_sf(snapshots_invalid=1))),
     ("WAL-040", "undecodable-version", Os.LINUX, _sess(_sf(raw_before_settings=True))),
+    ("DEV-010", "open-denied", Os.LINUX, _dev(open_status="denied")),
+    ("DEV-010", "open-busy", Os.MACOS, _dev(open_status="busy")),
+    ("DEV-010", "open-io-error", Os.WINDOWS, _dev(open_status="io-error")),
+    ("DEV-020", "no-reply", Os.WSL, _dev(query_status="no-reply")),
+    ("DEV-020", "garbage-reply", Os.LINUX, _dev(query_status="garbage", reply_hex="ff00")),
+    ("DEV-020", "unexpected-firmware", Os.LINUX, _dev(fw_version="9.9")),
+    ("DEV-030", "streaming-unattended", Os.LINUX, _dev(state="running", state_byte=3)),
+    ("DEV-030", "unknown-state", Os.LINUX, _dev(state="unknown", state_byte=9)),
+    ("DEV-040", "low-rate", Os.LINUX, _dev(packets_per_s=300.0)),
+    ("DEV-040", "gaps", Os.LINUX, _dev(gap_events=2)),
+    ("DEV-040", "saturated-channel", Os.LINUX, _dev(saturated_channels=(1,))),
+    ("DEV-040", "stop-not-acked", Os.LINUX, _dev(stop_acked=False)),
+    ("DEV-050", "boot-timeout", Os.LINUX, _dev(boot_status="timeout", boot_seconds=10.0)),
+    ("DEV-050", "boot-slow", Os.LINUX, _dev(boot_seconds=5.0)),
+    ("SIM-010", "sim-connect-fail", Os.LINUX, _simf(connect_ok=False)),
+    ("SIM-010", "sim-data-mismatch", Os.LINUX, _simf(data_ok=False)),
+    ("SIM-010", "sim-timeout", Os.LINUX, _simf(timed_out=True)),
+    ("SIM-020", "scenario-load-fail", Os.LINUX, _simf(failed_scenarios=("noisy",))),
+    ("WRK-010", "spawn-fail", Os.WINDOWS, _wrk(spawn_status="fail")),
+    ("WRK-010", "spawn-slow", Os.WINDOWS, _wrk(spawn_seconds=12.0)),
+    ("WRK-010", "child-imports-store", Os.LINUX, _wrk(imports_store=True)),
+    ("WRK-020", "orphan-survives", Os.LINUX, _wrk(orphan_survives=True)),
 ]
 
 
@@ -333,6 +378,15 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/data.py::data_020
 # frob:tests python/sadi/doctor/checks/data.py::data_030
 # frob:tests python/sadi/doctor/checks/data.py::data_090
+# frob:tests python/sadi/doctor/checks/dev.py::dev_010
+# frob:tests python/sadi/doctor/checks/dev.py::dev_020
+# frob:tests python/sadi/doctor/checks/dev.py::dev_030
+# frob:tests python/sadi/doctor/checks/dev.py::dev_040
+# frob:tests python/sadi/doctor/checks/dev.py::dev_050
+# frob:tests python/sadi/doctor/checks/sim.py::sim_010
+# frob:tests python/sadi/doctor/checks/sim.py::sim_020
+# frob:tests python/sadi/doctor/checks/wrk.py::wrk_010
+# frob:tests python/sadi/doctor/checks/wrk.py::wrk_020
 # frob:tests python/sadi/doctor/checks/ext.py::ext_010
 # frob:tests python/sadi/doctor/checks/net.py::net_010
 # frob:tests python/sadi/doctor/checks/net.py::net_020
@@ -379,7 +433,14 @@ def test_fault_injection_yields_mode_and_remedy(
     mutate(p)
     port = 80 if mode == "port-privileged" else 8000
     report = _run(
-        p, os, data_root=ROOT, allow_network_fs=False, api_port=port, deep=check_id == "WAL-020"
+        p,
+        os,
+        data_root=ROOT,
+        allow_network_fs=False,
+        api_port=port,
+        deep=check_id == "WAL-020",
+        stream_seconds=5 if check_id == "DEV-040" else 0,
+        with_reset=check_id == "DEV-050",
     )
     result = next(r for r in report.results if r.id == check_id)
     assert result.mode == mode, result.headline
@@ -619,3 +680,88 @@ def test_real_probes_full_run_is_valid() -> None:
     assert len(report.results) == len(list(all_checks()))
     assert DoctorReport.model_validate_json(report.model_dump_json()) == report
     assert doctor.exit_code(report) in (0, 1, 2)
+
+
+# frob:tests python/sadi/doctor/checks/dev.py::dev_010
+# frob:tests python/sadi/doctor/checks/dev.py::dev_020
+# frob:tests python/sadi/doctor/checks/dev.py::dev_030
+def test_no_device_is_informational_skip() -> None:
+    """With no board attached every DEV check skips with no-device instead of failing."""
+    p = healthy()
+    p.device = DeviceFacts()
+    report = _run(p, Os.LINUX, data_root=ROOT, stream_seconds=5, with_reset=True)
+    dev = [r for r in report.results if r.id.startswith("DEV-")]
+    assert len(dev) == 5
+    assert all(r.status is Status.SKIP and r.skip_reason is SkipReason.NO_DEVICE for r in dev)
+    assert report.summary.verdict == "ready"
+
+
+# frob:tests python/sadi/doctor/checks/dev.py::device
+# frob:tests python/sadi/doctor/checks/dev.py::dev_040
+# frob:tests python/sadi/doctor/checks/dev.py::dev_050
+def test_stream_and_reset_checks_are_opt_in() -> None:
+    """DEV-040 and DEV-050 only run with --stream-seconds / --with-reset."""
+    off = {r.id: r for r in _run(healthy(), Os.LINUX, data_root=ROOT).results}
+    assert off["DEV-040"].status is Status.SKIP and off["DEV-050"].status is Status.SKIP
+    on = {
+        r.id: r
+        for r in _run(
+            healthy(), Os.LINUX, data_root=ROOT, stream_seconds=5, with_reset=True
+        ).results
+    }
+    assert on["DEV-040"].status is Status.PASS and on["DEV-050"].status is Status.PASS
+
+
+# frob:tests python/sadi/doctor/checks/sim.py::sim_010
+# frob:tests python/sadi/doctor/checks/sim.py::sim_020
+def test_missing_binding_skips_sim_checks() -> None:
+    """Without the native binding the simulator checks skip rather than fail."""
+    p = healthy()
+    p.sim = SimFacts(binding_ok=False, detail="no module")
+    got = {r.id: r for r in _run(p, Os.LINUX, data_root=ROOT).results}
+    assert got["SIM-010"].status is Status.SKIP and got["SIM-020"].status is Status.SKIP
+
+
+# frob:tests python/sadi/doctor/workerprobe.py::selftest
+# frob:tests python/sadi/doctor/workerprobe.py::watchdog
+# frob:tests python/sadi/doctor/workerprobe.py::probe_workers
+# frob:tests python/sadi/doctor/devprobe.py::probe_device
+# frob:tests python/sadi/doctor/devprobe.py::probe_sim
+# frob:tests python/sadi/doctor/probes.py::RealProbes.worker_facts
+# frob:tests python/sadi/doctor/probes.py::RealProbes.device_facts
+# frob:tests python/sadi/doctor/probes.py::RealProbes.sim_facts
+def test_real_probes_degrade_and_workers_stay_clean() -> None:
+    """Real probes never crash; workers do not import the store; no board is no-device."""
+    from sadi.doctor.probes import RealProbes
+
+    rp = RealProbes()
+    w = rp.worker_facts()
+    assert w.spawn_status == "ok" and not w.imports_store and not w.orphan_survives
+    d = rp.device_facts(None, 0, False)
+    assert d.open_status in ("no-device", "ok", "denied", "busy", "io-error")
+    assert isinstance(rp.sim_facts().binding_ok, bool)
+
+
+# frob:tests python/sadi/doctor/checks/dev.py::dev_010
+# frob:tests python/sadi/doctor/checks/dev.py::dev_020
+# frob:tests python/sadi/doctor/checks/dev.py::dev_030
+# frob:tests python/sadi/doctor/checks/dev.py::dev_040
+# frob:tests python/sadi/doctor/checks/dev.py::dev_050
+# frob:tests python/sadi/doctor/checks/sim.py::sim_010
+# frob:tests python/sadi/doctor/checks/sim.py::sim_020
+# frob:tests python/sadi/doctor/checks/wrk.py::wrk_010
+# frob:tests python/sadi/doctor/checks/wrk.py::wrk_020
+def test_dev_sim_wrk_modes_yield_remedies_on_their_os() -> None:
+    """Each DEV, SIM and WRK mode is reachable and carries a verified remedy."""
+    cases = [c for c in CASES if c[0].split("-")[0] in ("DEV", "SIM", "WRK")]
+    assert len(cases) == 22
+    for check_id, mode, os, mutate in cases:
+        p = healthy()
+        p.os = os
+        mutate(p)
+        report = _run(p, os, data_root=ROOT, stream_seconds=5, with_reset=True)
+        result = next(r for r in report.results if r.id == check_id)
+        assert result.mode == mode, (check_id, result.headline)
+        rem = result.remediation
+        assert rem is not None and rem.steps[-1].kind is StepKind.VERIFY
+        assert render(report).isascii()

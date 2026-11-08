@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/labs/lctt/export_csv.py"]
+at = "2026-11-08T03:51:49Z"
+actor = "lognd"
+rev = 1

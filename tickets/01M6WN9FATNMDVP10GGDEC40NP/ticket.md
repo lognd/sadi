@@ -17,7 +17,7 @@ bound = false
 
 [[acceptance]]
 text = "Rust unit tests cover selftest and feature reporting"
-bound = false
+bound = true
 +++
 
 From ~A2YBMPV: doctor reads these via getattr and skips when missing, so EXT-020/040/050 are unverified. Add them to the sadi-py bindings (safe Rust, build via goway).

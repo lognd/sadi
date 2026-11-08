@@ -13,7 +13,7 @@ scope = ["python/sadi/launcher.py", "python/pyproject.toml", "python/tests/cli/t
 
 [[acceptance]]
 text = "sadi serve runs doctor preflight, takes the data-root lock (refused lock exits non-zero), serves web/dist, defaults host 127.0.0.1"
-bound = false
+bound = true
 +++
 
 No sadi launcher or server CLI entry exists. Add a console script that runs doctor preflight, takes the data-root lock via create_app, starts uvicorn and serves the built web assets.

@@ -1,8 +1,10 @@
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
+// frob:ticket 01M6WV6TFKP2396PW58G1WJD3B
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getLogger } from "../api/log";
 import { openStream, type ConnState, type StreamHandlers, type StreamHandle, type StreamOptions } from "../ws/client";
 import type { ServerMessage } from "../ws/messages";
+import { loadMarkTime, resultMarkTime } from "./markClock";
 import { TraceWindow, type Snapshot } from "../plots/live/window";
 
 const log = getLogger("hooks.trace");
@@ -41,12 +43,12 @@ export function applyMessage(w: TraceWindow, m: ServerMessage, lastPoint: { v: n
     case "state":
       if (m.pointIndex !== null && m.pointIndex !== lastPoint.v) {
         lastPoint.v = m.pointIndex;
-        w.mark({ t: w.now - (m.timeSinceLoad ?? 0), kind: "load", label: `load ${String(m.pointIndex)}` });
+        w.mark({ t: loadMarkTime(w.now, m.timeSinceLoad), kind: "load", label: `load ${String(m.pointIndex)}` });
       }
       return undefined;
     case "result":
       w.mark({
-        t: m.windowEnd ?? w.now, kind: m.settled ? "settled" : "forced",
+        t: resultMarkTime(w.now, m.windowEnd), kind: m.settled ? "settled" : "forced",
         label: `${m.settled ? "settled" : "captured early"} ${m.pointIndex === null ? "" : String(m.pointIndex)}`.trim(),
       });
       return undefined;

@@ -3,7 +3,7 @@
 Status: current
 
 Parent: [plots.md](plots.md), [../server/websocket.md](../server/websocket.md). Code:
-`web/src/ws/**` (decoder, client), `web/src/hooks/useTrace.ts`, `web/src/plots/live/**`.
+`web/src/ws/**` (decoder, client), `web/src/hooks/useTrace.ts`, `web/src/hooks/markClock.ts`, `web/src/plots/live/**`.
 
 ## Data path
 
@@ -34,6 +34,18 @@ shown inside the plot (subtitle and annotation box).
 
 Marks come from the text channel: a new `point_index` in `state` marks a load change at
 `now - time_since_load`; `result` marks a settled or forced capture at `window_end` (stream time).
+
+### Clock audit (verified)
+
+One clock everywhere: sample time `t0_s + i / sample_rate_hz` (set in `core/pipeline.py`, packed as
+the frame header `t0_s`, fed to the settle detector as its `times`). Hence `PointRecord.window_end`
+and `load_change_time` are absolute stream times, equal to the clock of trace frames, so
+`window_end` is used verbatim. `time_since_load` is a duration (last sample - load time, or
+settled time - load time once latched), so a load mark is `now - time_since_load` where `now` is the
+window end (`t0 + n * bucket`). The only skew is under one bucket (the window end is one sample
+past the last sample). The state message arrives after its trace frame, so `now` is current. No
+Python change is needed. Pure helpers: `web/src/hooks/markClock.ts` (`loadMarkTime`,
+`resultMarkTime`), pinned by `markClock.test.ts`.
 
 ## Export
 

@@ -12,7 +12,7 @@ scope = ["python/sadi/uncertainty/numeric.py", "python/tests/uncertainty/test_fa
 
 [[acceptance]]
 text = "Subnormal x (5e-324) no longer raises ZeroDivisionError in central_difference"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A zero or non-representable step returns a typed Err instead of raising"

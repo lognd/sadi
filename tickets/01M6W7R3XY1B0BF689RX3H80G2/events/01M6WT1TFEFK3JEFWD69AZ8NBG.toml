@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py", "python/tests/server/test_routes_problem.py", "python/tests/store/test_session_held_root.py"]
+new = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py", "python/tests/server/test_routes_problem.py", "python/tests/store/test_session_held_root.py", "docs/server/app.md"]
+at = "2026-11-08T05:28:12Z"
+actor = "lognd"
+rev = 1

@@ -12,7 +12,7 @@ scope = ["python/sadi/api/**", "python/tests/server/test_save_indicator.py", "do
 
 [[acceptance]]
 text = "Header save state reads Saving... whenever records are enqueued but not durable, visible to a 250 ms poll"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Saved HH:MM:SS when all enqueued records are durable; NOT SAVED latches on writer failure"

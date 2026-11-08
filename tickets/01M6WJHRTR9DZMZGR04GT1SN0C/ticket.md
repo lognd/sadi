@@ -2,7 +2,8 @@
 id = "01M6WJHRTR9DZMZGR04GT1SN0C"
 title = "doctor: SESS, WAL layers"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

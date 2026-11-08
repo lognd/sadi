@@ -124,6 +124,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/plots/calibration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Calibration
+         * @description Calibration points with the fitted line and 95% band of the open session.
+         */
+        get: operations["get_calibration_api_plots_calibration_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plots/stress-strain": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stress Strain
+         * @description Stress-strain points (strain, MPa) of the open session, excluded ones flagged.
+         */
+        get: operations["get_stress_strain_api_plots_stress_strain_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/plugins": {
         parameters: {
             query?: never;
@@ -675,6 +715,37 @@ export interface components {
             unit: string;
             /** Value */
             value: number;
+        };
+        /**
+         * CalibrationFitView
+         * @description Fitted calibration line and its 95% confidence band over the sampled volts.
+         */
+        CalibrationFitView: {
+            /** Band Half Width M */
+            band_half_width_m: number[];
+            /** Band Height M */
+            band_height_m: number[];
+            /** Band Volts */
+            band_volts: number[];
+            /** Intercept M */
+            intercept_m: number;
+            /** N */
+            n: number;
+            /** R2 */
+            r2: number;
+            /** Slope M Per V */
+            slope_m_per_v: number;
+        };
+        /**
+         * CalibrationPlot
+         * @description Calibration scatter (volts vs height in m); `fit` is None until 3 points exist.
+         */
+        CalibrationPlot: {
+            fit: components["schemas"]["CalibrationFitView"] | null;
+            /** Height M */
+            height_m: number[];
+            /** Volts */
+            volts: number[];
         };
         /**
          * CaptureBody
@@ -1591,6 +1662,20 @@ export interface components {
          */
         StepStatus: "done" | "skipped" | "current" | "locked";
         /**
+         * StressStrainPlot
+         * @description Stress-strain scatter in strain and MPa; excluded points are flagged, not dropped.
+         */
+        StressStrainPlot: {
+            /** Excluded */
+            excluded: boolean[];
+            /** Point Ids */
+            point_ids: string[];
+            /** Strain */
+            strain: number[];
+            /** Stress Mpa */
+            stress_mpa: number[];
+        };
+        /**
          * Summary
          * @description Counts and the overall verdict.
          */
@@ -1795,6 +1880,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LabInfo"][];
+                };
+            };
+        };
+    };
+    get_calibration_api_plots_calibration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalibrationPlot"];
+                };
+            };
+        };
+    };
+    get_stress_strain_api_plots_stress_strain_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StressStrainPlot"];
                 };
             };
         };

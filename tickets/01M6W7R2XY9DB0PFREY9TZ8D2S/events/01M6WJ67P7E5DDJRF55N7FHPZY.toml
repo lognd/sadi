@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:10:46Z"
+digest = "96742530c505c4d398f5e23dcb5e7ff04f79d70a16bf1b464b4e623475e90bdb"
+exit_code = 0
+head = "fd4f2431dc7edff7019f8e5ed150d8f80d24edee"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_loading.py .                                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-234013-0.xml ---------------
+============================== 1 passed in 1.42s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_loading.py::test_block_voltage_rules"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "0923a19b276039c7efc33271c737a9df8fa5cc8f93cea4a24adb0ac5409b4bcf"
+at = "2026-11-08T03:10:46Z"
+actor = "lognd"
+rev = 1

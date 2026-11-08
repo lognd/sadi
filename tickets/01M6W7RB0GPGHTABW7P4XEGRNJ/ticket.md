@@ -2,7 +2,8 @@
 id = "01M6W7RB0GPGHTABW7P4XEGRNJ"
 title = "Results-stream client: version/stale marker and refinement progress in the UI"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

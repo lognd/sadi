@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:57:31Z"
-updated = "2026-11-08T04:00:14Z"
+updated = "2026-11-08T04:00:23Z"
 labels = ["refactor"]
 scope = ["python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md", "docs/api/acquisition.md"]
 

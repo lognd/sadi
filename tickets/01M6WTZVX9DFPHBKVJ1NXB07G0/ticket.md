@@ -13,7 +13,7 @@ scope = ["python/sadi/launcher.py", "python/sadi/__main__.py", "python/tests/cli
 
 [[acceptance]]
 text = "The sim flag or SADI_SIM makes the launcher pass a simulator device in AppSettings so /api/device/status reports simulated"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "python -m sadi runs the launcher"

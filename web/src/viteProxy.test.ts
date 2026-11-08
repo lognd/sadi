@@ -2,8 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import config from "../vite.config";
 
-// frob:ticket ~TSXXK8B
-// frob:tests web/vite.config.ts
+// frob:ticket 01M6WV6TDZXWA9JPZKPTSXXK8B
 describe("vite dev proxy", () => {
   it("proxies /api with websocket upgrade to the launcher default port", () => {
     const proxy = config.server?.proxy as Record<string, { target: string; ws?: boolean }>;

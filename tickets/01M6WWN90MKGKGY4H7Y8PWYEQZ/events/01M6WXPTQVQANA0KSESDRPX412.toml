@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["State messages carry server drift_vps, capture-window first/last raw seq and a simulated flag (hello too); binary frames unchanged and documented", "Web client parses and uses the streamed values"]
+moved = []
+at = "2026-11-08T06:32:07Z"
+actor = "lognd"
+rev = 1

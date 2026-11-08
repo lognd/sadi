@@ -1217,6 +1217,17 @@
       "PointView": {
         "description": "A captured point with its edits applied.",
         "properties": {
+          "drift_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drift Rate"
+          },
           "excluded": {
             "title": "Excluded",
             "type": "boolean"
@@ -1254,6 +1265,17 @@
             "default": false,
             "title": "Settled",
             "type": "boolean"
+          },
+          "t_since_load_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Since Load S"
           },
           "window": {
             "$ref": "#/components/schemas/PointWindow"

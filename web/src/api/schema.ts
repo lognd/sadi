@@ -1223,6 +1223,8 @@ export interface components {
          * @description A captured point with its edits applied.
          */
         PointView: {
+            /** Drift Rate */
+            drift_rate?: number | null;
             /** Excluded */
             excluded: boolean;
             /**
@@ -1247,6 +1249,8 @@ export interface components {
              * @default false
              */
             settled: boolean;
+            /** T Since Load S */
+            t_since_load_s?: number | null;
             window: components["schemas"]["PointWindow"];
         };
         /**

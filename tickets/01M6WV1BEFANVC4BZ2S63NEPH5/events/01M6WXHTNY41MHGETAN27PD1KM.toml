@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["PointView carries t_since_load_s and drift_rate; to_captured maps them and forced_early into CapturedPoint"]
+moved = []
+at = "2026-11-08T06:29:23Z"
+actor = "lognd"
+rev = 1

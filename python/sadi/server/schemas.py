@@ -103,6 +103,9 @@ class PointView(BaseModel):
     history: tuple[str, ...]
     settled: bool = False
     forced_early: bool = False
+    # frob:ticket 01M6WV1BEFANVC4BZ2S63NEPH5
+    t_since_load_s: float | None = None
+    drift_rate: float | None = None
 
     @staticmethod
     def of(cur: CurrentPoint) -> PointView:
@@ -117,6 +120,8 @@ class PointView(BaseModel):
             history=cur.history,
             settled=cur.point.settled,
             forced_early=cur.point.forced_early,
+            t_since_load_s=cur.point.t_since_load_s,
+            drift_rate=cur.point.drift_rate,
         )
 
 

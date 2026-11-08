@@ -19,7 +19,8 @@ def active_points(views: list[PointView]) -> list[PointView]:
 
 
 def to_captured(views: list[PointView]) -> tuple[CapturedPoint, ...]:
-    """Project active points onto the core `CapturedPoint` (time fields are not on the wire)."""
+    """Project active points onto the core `CapturedPoint`, carrying time, drift and status."""
+    # frob:ticket 01M6WV1BEFANVC4BZ2S63NEPH5
     out: list[CapturedPoint] = []
     for i, p in enumerate(views):
         first = float(p.window.first_sample)
@@ -27,9 +28,9 @@ def to_captured(views: list[PointView]) -> tuple[CapturedPoint, ...]:
             CapturedPoint(
                 index=i,
                 window=TimeWindow(start=first, end=max(first, float(p.window.last_sample))),
-                t_since_load=0.0,
-                drift_rate=0.0,
-                status=SettleStatus.SETTLED,
+                t_since_load=max(0.0, p.t_since_load_s or 0.0),
+                drift_rate=p.drift_rate or 0.0,
+                status=SettleStatus.FORCED_EARLY if p.forced_early else SettleStatus.SETTLED,
             )
         )
     _log.debug("to_captured: projected %d points", len(out))

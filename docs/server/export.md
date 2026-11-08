@@ -26,5 +26,5 @@ exposes the open session's lab `export_formats` (see `sadi.core.lab.ExportFormat
   (`curve_source.session_events`, read-only) and passes them as `RunState.events`
   (opaque `BaseModel`s; the lab narrows them to its own event types). Labs that derive
   results from `CapturedPoint`/`AnalysisResult` alone can ignore the field.
-- The lctt lab declares `lctt-csv` (see [lctt/export-csv.md](../lctt/export-csv.md)). Figure
-  data is not offered yet.
+- The lctt lab declares `lctt-csv` (see [lctt/export-csv.md](../lctt/export-csv.md)) and
+  `lctt-figure-json` (see [lctt/figure-data.md](../lctt/figure-data.md)).

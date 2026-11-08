@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["lctt-figure-json (application/json) is declared by LcttLab and renders calibration and stress-strain series from RunState.events", "Export is read-only, in memory, refused with TOO_FEW_POINTS when no events"]
+moved = []
+at = "2026-11-08T06:32:18Z"
+actor = "lognd"
+rev = 1

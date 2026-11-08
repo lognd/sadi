@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:06:53Z"
+digest = "09f28ea6f5b28c3fb8255c67094b49b218944444d6ac354fa83bb6e43622eae4"
+exit_code = 0
+head = "a797393f1f2ca396374ad2bcefc14692735bf106"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/uncertainty/test_fallbacks.py .                             [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-452165-0.xml ---------------
+============================== 1 passed in 1.68s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_fallbacks.py::test_central_difference_subnormal_x_regression"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "294b5de1c97af5c8642d7ca6840081a8807fd624e1bf0ef9e9170af8e811fa38"
+at = "2026-11-08T05:06:53Z"
+actor = "lognd"
+rev = 1

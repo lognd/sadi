@@ -2,7 +2,8 @@
 id = "01M6WY96PJ8KEZJCMV4Y079XVA"
 title = "Fix stale 34-column comments in lctt lab.py and test name"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

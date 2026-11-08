@@ -2,7 +2,8 @@
 id = "01M6W7R3W8RJPVS0VVDG2YNMJB"
 title = "Guided run engine: phase-wise next-step guidance and confidence status"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R081S67XNGBH79ACCBZZ"

@@ -2,7 +2,8 @@
 id = "01M6WKQCC4HJ5C8HXP946BRKXW"
 title = "FastAPI app factory: mount doctor and plugins routers"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

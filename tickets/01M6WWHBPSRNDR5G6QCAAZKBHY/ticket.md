@@ -2,7 +2,8 @@
 id = "01M6WWHBPSRNDR5G6QCAAZKBHY"
 title = "Fix ty error in tests/server/test_ws_results.py (receive_bytes on object)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

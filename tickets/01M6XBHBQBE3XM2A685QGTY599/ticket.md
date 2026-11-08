@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:33:47Z"
-updated = "2026-11-08T10:36:34Z"
+updated = "2026-11-08T10:36:35Z"
 scope = ["python/sadi/jobs/pool.py", "python/tests/jobs/test_pool_slot.py", "changelog.d/*QGTY599*"]
 
 [[acceptance]]

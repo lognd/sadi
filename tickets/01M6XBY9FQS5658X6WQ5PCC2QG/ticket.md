@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:40:51Z"
-updated = "2026-11-08T10:43:26Z"
+updated = "2026-11-08T10:43:33Z"
 scope = ["frob.toml", "web/src/hooks/markClock.test.ts", "web/src/hooks/useTrace.ts", "web/src/plots/live/window.ts", "web/src/typedcalls.test.ts"]
 
 [[acceptance]]

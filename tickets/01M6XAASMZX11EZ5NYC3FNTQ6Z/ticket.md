@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
 updated = "2026-11-08T10:16:39Z"
-scope = ["web/src/App.tsx"]
+scope = ["web/src/App.tsx", "web/src/App.test.tsx"]
 
 [[acceptance]]
 text = "Step rail is a labelled nav, current step has aria-current=step and is the single tab stop; Doctor nav precedes the wizard in Tab order; vitest covers both"

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T02:46:09Z"
+digest = "3c0da54bc4cba639a4312605dea63a73d19d4356fdb9bd487b55cc5de8e44f04"
+exit_code = 0
+head = "5a12f3a1d6b353a9e1c183f0a3a176c8ab98b8b1"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/plugins/test_manifest.py .                                  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-197767-0.xml ---------------
+============================== 1 passed in 0.20s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_manifest.py::test_api_incompatible_names_both_versions"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "6015ee1da18122ea1d24f91b6f2f44a6b8a7bfd2d6c29c8faaebaecfdd95f820"
+at = "2026-11-08T02:46:09Z"
+actor = "lognd"
+rev = 1

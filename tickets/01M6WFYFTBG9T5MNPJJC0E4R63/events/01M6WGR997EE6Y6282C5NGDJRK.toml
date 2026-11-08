@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/plugins/__init__.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/errors.py", "python/tests/plugins/test_manifest.py"]
+new = ["python/sadi/plugins/__init__.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/errors.py", "python/tests/plugins/test_manifest.py", "python/pyproject.toml", "python/uv.lock"]
+at = "2026-11-08T02:45:43Z"
+actor = "lognd"
+rev = 1

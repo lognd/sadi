@@ -1,0 +1,21 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T02:46:12Z"
+digest = "9a9c1c2ce7460b0916200415c218ac97423e62399ba404f2b07863157d524536"
+exit_code = 0
+head = "5a12f3a1d6b353a9e1c183f0a3a176c8ab98b8b1"
+inline = """
+   Building sadi @ file://<worktree>/python
+      Built sadi @ file://<worktree>/python
+Uninstalled 1 package in 0.58ms
+Installed 1 package in 1ms
+typani.lint: 0 error(s), 0 info(s) in 4 file(s) scanned
+"""
+passed = true
+provider = "command"
+ref = "uv run --project python python -m typani.lint python/sadi/plugins python/tests/plugins"
+size = 203
+status = "measured"
+at = "2026-11-08T02:46:12Z"
+actor = "lognd"
+rev = 1

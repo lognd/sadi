@@ -1,0 +1,10 @@
+kind = "create"
+title = "COV001: store/events.py settings_record reached by no test"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/store/**"]
+body = "found while working ~QXARDHK: frob check flags settings_record as reached by no test; bind with frob:tests. Blocks land via E-LAND-CHECK-RED."
+at = "2026-11-08T04:14:35Z"
+actor = "lognd"
+rev = 1

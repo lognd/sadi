@@ -1,0 +1,30 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:03:51Z"
+digest = "50a1097c06409d30aac8465f7c1db2279275befdeb849812140b9895a5241b3c"
+exit_code = 0
+head = "382ee966fa9de67a7fc687452a77a5b908a0c9ce"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 86 items
+
+python/tests/jobs/test_harness.py ...................................... [ 44%]
+.................................                                        [ 82%]
+python/tests/jobs/test_manager.py ...............                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-222992-0.xml ---------------
+============================== 86 passed in 3.73s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs"
+size = 682
+status = "measured"
+test_count = 86
+tests_digest = "f4b2e8cdf972d05eb55af157a58ece4580865ccb58a3065d9f21dd7b2faf0fba"
+at = "2026-11-08T03:03:51Z"
+actor = "lognd"
+rev = 1

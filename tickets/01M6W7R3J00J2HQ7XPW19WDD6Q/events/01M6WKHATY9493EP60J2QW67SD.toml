@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:34:08Z"
+digest = "2ef533b2f7acd351c415e23d9bc65cf4a595bdb4efcf22c4b6d074c0d089ab9e"
+exit_code = 0
+head = "2c3a67e8bb79233f06b81bee0525545c4dcf28fc"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_live.py ..                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-275925-0.xml ---------------
+============================== 2 passed in 12.44s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_live.py::test_incremental_latency_200_points python/tests/labs/lctt/test_live.py::test_incremental_equals_batch"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "d1afbdcecbb122d487f921efeac1fcc0a1e821f1c1e4c60e9eb90383f89ad97b"
+at = "2026-11-08T03:34:08Z"
+actor = "lognd"
+rev = 1

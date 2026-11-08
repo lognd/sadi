@@ -18,3 +18,9 @@ delivers raw JSON texts (snake_case wire form, `protocol_version` 1).
 - `StreamedValue` renders a key with a "(stale)" marker whenever the value lags, and a progress
   bar (0..100) while MC/GP refine. A value is never shown older than the newest data without the
   marker. Malformed envelopes are logged and ignored.
+- `wsSubscribe(opts)` (`wsSubscribe.ts`) is the production `Subscribe`: each subscription opens a
+  reconnecting `ws/client.ts` `openStream` on `WS /api/stream`, forwards only RESULTS_ENVELOPE frame
+  bodies (see [../server/websocket.md](../server/websocket.md)) and ignores trace frames; undecodable
+  input is logged. After a reconnect the server may replay envelopes: `applyEnvelope` drops any whose
+  `result_version` is not newer, so state never regresses. Unsubscribing closes the socket and cancels
+  pending reconnects. `onConn` taps the `ConnState`. Build it once (stable reference) for the hook.

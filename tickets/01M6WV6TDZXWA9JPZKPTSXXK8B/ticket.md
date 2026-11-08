@@ -7,8 +7,8 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:54:06Z"
-scope = ["web/vite.config.ts"]
+updated = "2026-11-08T05:54:18Z"
+scope = ["web/vite.config.ts", "web/src/viteProxy.test.ts"]
 +++
 
 found while working 7KWS2S7

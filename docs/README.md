@@ -19,6 +19,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 |---|---|
 | [architecture.md](architecture.md) | Process model, repo layout, session layout, error convention (~1DQHSR7) |
 | [concurrency.md](concurrency.md) | Concurrency model: threads, GIL, queues, job lifecycle, versioned results (~DK06Q2F) |
+| [concurrency-testing.md](concurrency-testing.md) | Race, deadlock and kill-mid-write test suite (~7B4SZGG) |
 | [jobs/jobs.md](jobs/jobs.md) | Job system core: lifecycle, process pool, cancel and supersede (~V9NMTHC) |
 | [plan.md](plan.md) | Delivery plan and ticket map |
 | [domain.md](domain.md) | LCTT domain facts and formulas |

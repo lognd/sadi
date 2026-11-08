@@ -1,0 +1,66 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:37:21Z"
+digest = "8d4ff6290da8845b77f7a930df578a7156d0437d9142a475cf951a4df3e8da25"
+exit_code = 1
+failed_tests = ["python/tests/server/test_routes_acquisition.py::test_live_mark_load_change_without_run"]
+head = "4740782b8b008e68460ee4e1ebf8fac8898dc5e0"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_routes_acquisition.py F                         [100%]
+
+=================================== FAILURES ===================================
+____________________ test_live_mark_load_change_without_run ____________________
+
+    def test_live_mark_load_change_without_run() -> None:
+        """With no run started LiveAcquisition refuses with NoLiveSession."""
+        from typing import cast
+    
+>       from sadi.core.device import DeviceService
+
+python/tests/server/test_routes_acquisition.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """DeviceService: open simulator or serial board, stream blocks via a reader thread, reconnect."""
+    
+    # frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
+    # frob:ticket 01M6W7R2NWFTQBK7FRWGX511CP
+    
+    from __future__ import annotations
+    
+    import queue
+    import threading
+    import time
+    from collections.abc import Callable
+    from enum import StrEnum
+    from typing import Final, Literal
+    
+>   import sadi_py as sp
+E   ModuleNotFoundError: No module named 'sadi_py'
+
+python/sadi/core/device.py:15: ModuleNotFoundError
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-1241313-0.xml --------------
+========================= 1 failed, 1 warning in 2.30s =========================
+'''
+passed = false
+provider = "pytest"
+ref = "python/tests/server/test_routes_acquisition.py::test_live_mark_load_change_without_run"
+size = 2066
+status = "measured"
+test_count = 1
+tests_digest = "2939d05791363a3269df16cc87d6ccfa9b28d8451249e5bf313bd1e110db7b81"
+at = "2026-11-08T10:37:21Z"
+actor = "lognd"
+rev = 1

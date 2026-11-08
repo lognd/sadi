@@ -7,9 +7,9 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:13:31Z"
-updated = "2026-11-08T06:16:39Z"
+updated = "2026-11-08T06:16:41Z"
 
 [[acceptance]]
 text = "LivePlot export is driven by the keymap export KeyAction, not a hard-coded F3 key"
-bound = false
+bound = true
 +++

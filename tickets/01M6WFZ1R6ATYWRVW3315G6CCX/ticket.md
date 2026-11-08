@@ -2,7 +2,8 @@
 id = "01M6WFZ1R6ATYWRVW3315G6CCX"
 title = "Local-dir plugin source (plugins/, private/*/plugin) with settings and gitignore"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

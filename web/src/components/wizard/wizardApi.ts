@@ -1,3 +1,4 @@
+// frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
@@ -8,6 +9,9 @@ const log = getLogger("wizard.api");
 
 /** Write endpoints the shell can call. */
 export type WizardWrite = "wizard/complete" | "wizard/skip" | "wizard/revert" | "undo" | "redo";
+
+/** Hint shown when the server answers 422 with no problem body (usually a web/dist older than the source). */
+export const STALE_DIST_HINT = "The web build may be out of date. Rebuild it (cd web && npm run build), restart the app and reload the page.";
 
 /** A failed call: a server problem (with hint) or a transport error. */
 export type WizardFailure = { kind: "problem"; problem: Problem } | { kind: "transport"; error: ApiError };
@@ -57,6 +61,10 @@ export function toFailure(error: ApiError): WizardFailure {
     } catch {
       log.debug("error body is not a problem", { status: error.status });
     }
+  }
+  if (error.kind === "http" && error.status === 422) {
+    log.warn("422 without a problem body: likely stale web/dist", { body: error.body.slice(0, 120) });
+    return { kind: "problem", problem: { type: "", title: "Request rejected", status: 422, detail: "The server rejected this request (HTTP 422).", hint: STALE_DIST_HINT } };
   }
   return { kind: "transport", error };
 }

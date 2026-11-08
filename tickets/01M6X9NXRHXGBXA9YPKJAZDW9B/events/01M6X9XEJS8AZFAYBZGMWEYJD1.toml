@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:05:26Z"
+digest = "0913a3775c37be50eed80c3b9abd59ff1c56ea47ce5552b5524e1fc4f8b6282b"
+head = "d860df56fa2a1465ad1eeb3a54a7905d4f1e90fd"
+provider = "file"
+ref = "web/e2e/keyboard-only.spec.ts"
+size = 4388
+status = "measured"
+at = "2026-11-08T10:05:26Z"
+actor = "lognd"
+rev = 1

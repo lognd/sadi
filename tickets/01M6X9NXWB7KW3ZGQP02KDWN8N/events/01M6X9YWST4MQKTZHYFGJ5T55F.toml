@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/screens/run/useRunLive.ts", "web/src/screens/run/RunScreen.tsx", "web/src/screens/run/RunScreen.test.tsx", "docs/server/websocket.md"]
+new = ["web/src/screens/run/useRunLive.ts", "web/src/screens/run/RunScreen.tsx", "web/src/screens/run/RunScreen.test.tsx", "docs/server/websocket.md", "python/sadi/server/ws.py"]
+at = "2026-11-08T10:06:14Z"
+actor = "lognd"
+rev = 1

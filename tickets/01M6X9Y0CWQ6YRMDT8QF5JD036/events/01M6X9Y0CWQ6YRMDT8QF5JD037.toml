@@ -1,0 +1,9 @@
+kind = "create"
+title = "Review: collapse to one Tab stop per point (U-03 remainder)"
+type = "task"
+category = "todo"
+priority = "low"
+points = 1
+at = "2026-11-08T10:05:45Z"
+actor = "lognd"
+rev = 1

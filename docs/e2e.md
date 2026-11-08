@@ -15,6 +15,9 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
   Real session data is never read, written or deleted and no session is shared between specs.
 - `web/e2e/guided-run.spec.ts`: Setup to Export; asserts the results panel, a non-empty CSV
   download (F3) and a non-empty PNG figure download.
+- `web/e2e/keyboard-only.spec.ts`: Setup to Export with Tab to each control then Enter/Space (Skip, Mark load
+  change, Accept, Finish, Review Exclude/Include/Edit, Download link); never clicks. Relies on Enter/Space
+  activating a focused control (~0MZ866N, [usability report](usability-report.md)); selectors are role+name (~JAZDW9B).
 - `web/e2e/run-capture.spec.ts`: calibrate/tare/elastic/plastic capture phases (~A7JNFGT).
 - `web/docs-shots/screenshots.spec.ts`: opt-in (`SADI_SCREENSHOTS=1`) capture of `docs/img/ui/*.png` for the
   [screenshots page](user-guide-screens.md); own config, reuses the fixtures above (~921XDAW).

@@ -101,3 +101,7 @@ exports issue identical calls apart from the scale factor. Update snapshots deli
 - [Stress-strain plot](stress-strain-plot.md)
 - [Creep plot](creep-plot.md)
 - [Live trace plot](live-trace.md)
+
+## Screens
+
+- [Review screen](review-screen.md) (edit captured points, undo/redo, results recompute)

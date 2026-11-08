@@ -11,5 +11,5 @@ updated = "2026-11-08T10:02:32Z"
 
 [[acceptance]]
 text = "Export and live views detect corruption in already-applied WAL bytes"
-bound = false
+bound = true
 +++

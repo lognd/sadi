@@ -1,0 +1,57 @@
+kind = "evidence"
+captured_at = "2026-11-08T06:14:22Z"
+digest = "6e8857795eeace1a80556f39867553cd5953a4cb10592953ab9bb23fb6830f39"
+exit_code = 0
+head = "02ab8dda4979919a5602210c734a5135b1aefda9"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+ \u{2713} web/src/screens/run/RunScreen.test.tsx (13 tests) 60ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  01:14:23
+   Duration  1.41s (transform 471ms, setup 0ms, collect 672ms, tests 60ms, environment 0ms, prepare 247ms)
+
+JSON report written to /tmp/frob-vitest-599016-0.json
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "RunScreen"
+size = 2173
+status = "measured"
+test_count = 13
+tests_digest = "e1f423cb1bab650bd6650da0b43d51f4307b17229e603a4c30d2b46c5cb46988"
+at = "2026-11-08T06:14:22Z"
+actor = "lognd"
+rev = 1

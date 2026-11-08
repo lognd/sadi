@@ -8,10 +8,10 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:45:56Z"
+updated = "2026-11-08T05:45:57Z"
 idempotency_key = "sadi-pk1"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/_ui/.gitkeep", "creates:packaging/build_ui.py", "creates:docs/packaging.md"]
-scope = ["python/sadi/_ui/.gitkeep", "packaging/build_ui.py", "docs/packaging.md", "python/sadi/launcher.py", "python/tests/cli/test_launcher_ui.py", "python/tests/packaging/**"]
+scope = ["python/sadi/_ui/.gitkeep", "packaging/build_ui.py", "docs/packaging.md", "python/sadi/launcher.py", "python/tests/cli/test_launcher_ui.py", "python/tests/packaging/**", "python/pyproject.toml"]
 
 [[links]]
 kind = "blocked-by"

@@ -2,7 +2,7 @@
 id = "01M6WJ4HSDRKXM851XDT08FZC6"
 title = "Link docs/jobs/tasks.md from docs index"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"

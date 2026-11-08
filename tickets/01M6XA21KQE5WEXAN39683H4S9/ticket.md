@@ -8,5 +8,5 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T10:07:57Z"
 updated = "2026-11-08T10:21:42Z"
-scope = ["python/sadi/server/curve_source.py", "python/sadi/core/point_inputs.py"]
+scope = ["python/sadi/server/curve_source.py", "python/sadi/core/point_inputs.py", "python/sadi/labs/lctt/clamp_check.py"]
 +++

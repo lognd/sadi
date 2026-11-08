@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:38:19Z"
-updated = "2026-11-08T10:39:35Z"
+updated = "2026-11-08T10:39:55Z"
 scope = ["web/src/typedcalls.test.ts", "changelog.d/01M6XBSMZHZFQ84PV6PFTS8WZC.changed.md"]
 
 [[acceptance]]

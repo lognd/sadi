@@ -1,5 +1,4 @@
 # Progressive job tasks
-<!-- frob:waive DOC007 docs/README.md is leased by another ticket; link filed separately -->
 
 Status: current
 

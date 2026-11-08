@@ -7,8 +7,8 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T02:55:52Z"
-updated = "2026-11-08T02:56:29Z"
-scope = ["python/sadi/plugins/local.py"]
+updated = "2026-11-08T02:56:33Z"
+scope = ["python/sadi/plugins/local.py", "python/tests/plugins/test_local_source.py"]
 +++
 
 uv run ruff check . reports 3 errors (I001, E501, one more) in python/sadi/plugins/local.py. Fix with no behavior change.

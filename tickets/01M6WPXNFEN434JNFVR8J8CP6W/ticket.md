@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T04:33:31Z"
 updated = "2026-11-08T04:33:55Z"
-scope = ["python/sadi/doctor/**"]
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 +++
 
 ty reports ~125 diagnostics in doctor sources and tests. Fix without behavior change; add an acceptance command evidence: ty check on both paths reports zero. Start after ~4ZPY9YT lands (shared doctor scope).

@@ -2,13 +2,13 @@
 id = "01M6W7RB0GPGHTABW7P4XEGRNJ"
 title = "Results-stream client: version/stale marker and refinement progress in the UI"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T06:04:01Z"
 idempotency_key = "sadi-f16"
 labels = ["ws:web", "ws:conc", "model:sonnet", "creates:web/src/results-stream/**", "creates:docs/web/results-stream.md"]
 scope = ["web/src/results-stream/**", "docs/web/results-stream.md"]

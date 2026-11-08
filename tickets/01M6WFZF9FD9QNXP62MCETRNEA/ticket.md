@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:56:00Z"
+updated = "2026-11-08T02:56:02Z"
 labels = ["plugins", "creates:python/sadi/plugins/api.py", "creates:python/sadi/server/routes_plugins.py", "creates:python/tests/plugins/test_api.py", "creates:python/tests/server/test_routes_plugins.py"]
 scope = ["python/sadi/plugins/api.py", "python/sadi/server/routes_plugins.py", "python/tests/plugins/test_api.py", "python/tests/server/test_routes_plugins.py", "python/sadi/server/__init__.py"]
 
@@ -22,7 +22,7 @@ target = "01M6WFYN8C6YH5D79CPEKSP69P"
 
 [[acceptance]]
 text = "Endpoint JSON lists lctt enabled"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Failed plugin appears with error text, endpoint still returns 200"

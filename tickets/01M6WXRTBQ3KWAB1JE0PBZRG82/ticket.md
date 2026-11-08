@@ -7,14 +7,14 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:33:12Z"
-updated = "2026-11-08T06:34:36Z"
+updated = "2026-11-08T06:34:40Z"
 scope = ["python/sadi/server/routes/plots.py", "docs/server/plots.md", "docs/lctt/figure-data.md"]
 
 [[acceptance]]
 text = "Plots routes delegate to lctt figure_data; no duplicated derivation"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "OpenAPI and plots route tests unchanged and passing"
-bound = false
+bound = true
 +++

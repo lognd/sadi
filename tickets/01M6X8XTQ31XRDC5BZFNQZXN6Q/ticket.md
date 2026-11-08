@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:48:10Z"
-updated = "2026-11-08T09:55:47Z"
+updated = "2026-11-08T09:55:54Z"
 scope = ["docs/server/*.md", "python/sadi/server/*.py", "python/sadi/server/routes/*.py", "python/tests/server/test_session_replay_cache.py"]
 
 [[acceptance]]

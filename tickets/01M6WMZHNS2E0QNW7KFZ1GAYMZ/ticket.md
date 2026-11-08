@@ -13,7 +13,7 @@ scope = ["python/sadi/doctor/checks/usb.py", "python/sadi/doctor/checks/brw.py",
 
 [[acceptance]]
 text = "On WSL the catalog tags udev install, usbipd.exe attach and browser open as fixable system/process commands; bind, install, data and data-root commands never are."
-bound = false
+bound = true
 +++
 
 From ~GAG48CQ: no catalog command is tagged fixable, so 'sadi doctor fix --apply' reports nothing to do. Tag the safe system/process commands from doc 4.4.

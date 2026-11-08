@@ -13,7 +13,7 @@ scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/s
 
 [[acceptance]]
 text = "create_app mounts the doctor and plugins routers"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Unknown routes return 404 and settings are injected per app"

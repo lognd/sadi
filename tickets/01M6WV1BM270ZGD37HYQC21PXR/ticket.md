@@ -12,7 +12,7 @@ scope = ["docs/index.md,docs/server/api.md", "docs/index.md", "docs/server/api.m
 
 [[acceptance]]
 text = "docs/index.md and docs/server/api.md link results.md"
-bound = false
+bound = true
 +++
 
 found while working ~J73KJ11: those files were under another live lease

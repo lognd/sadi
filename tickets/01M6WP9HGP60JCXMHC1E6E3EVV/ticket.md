@@ -7,13 +7,13 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:22:31Z"
-updated = "2026-11-08T04:22:58Z"
+updated = "2026-11-08T04:23:10Z"
 labels = ["creates:docs/packaging.md"]
 scope = ["python/pyproject.toml", "docs/packaging.md", "docs/index.md", "python/tests/test_packaging_extras.py"]
 
 [[acceptance]]
 text = "pyproject declares the device optional-dependencies extra"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/packaging.md explains maturin develop"

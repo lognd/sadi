@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:14:52Z"
+updated = "2026-11-08T03:14:59Z"
 idempotency_key = "sadi-ds7"
 labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/exports.py", "creates:python/tests/store/test_exports.py", "creates:docs/store/exports.md"]
 scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md"]
@@ -27,7 +27,7 @@ bound = true
 
 [[acceptance]]
 text = "Exports never overwrite; deleting all exports loses no data (test regenerates them from WAL)"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

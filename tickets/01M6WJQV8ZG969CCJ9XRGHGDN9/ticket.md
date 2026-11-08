@@ -4,7 +4,8 @@ title = "WAL scan errors on a torn first segment header (zero acks); treat as em
 type = "bug"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:26Z"
-updated = "2026-11-08T03:20:26Z"
+updated = "2026-11-08T03:42:07Z"
 +++

@@ -27,6 +27,7 @@ Status: current
 - [Web layout](web-layout.md)
 - [Doctor UI](web/doctor-ui.md)
 - [Results panel](web/results-panel.md)
+- [Wizard shell](web/wizard.md)
 - [Plot renderer core](web/plots.md)
 - [Calibration plot](web/calibration-plot.md)
 - [Server app](server/app.md)

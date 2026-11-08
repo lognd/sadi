@@ -25,7 +25,6 @@ function crowded(): Scene {
   };
 }
 
-// frob:tests placeBoxes
 describe("label placement", () => {
   it("never overlaps placed boxes or the legend and is deterministic", () => {
     const a = computeLayout(crowded());
@@ -52,7 +51,6 @@ describe("label placement", () => {
   });
 });
 
-// frob:tests logTicks
 describe("log axes", () => {
   it("produces decade ticks and log-mapped geometry", () => {
     expect(logTicks(1, 1000).values).toEqual([1, 10, 100, 1000]);
@@ -93,7 +91,6 @@ describe("log axes", () => {
   });
 });
 
-// frob:tests decimateWindow
 describe("zoom decimation", () => {
   const x = Array.from({ length: 10000 }, (_, i) => i);
   const y = x.map((v) => Math.sin(v / 50));
@@ -122,7 +119,6 @@ describe("zoom decimation", () => {
   });
 });
 
-// frob:tests figureScenes
 describe("figure panels", () => {
   const x = [0, 1, 2, 3, 4];
   const fig: Figure = {
@@ -156,7 +152,6 @@ describe("figure panels", () => {
   });
 });
 
-// frob:tests buildDrawList
 describe("markers, spans and labels", () => {
   it("emit draw ops identically for svg and draw-list goldens", () => {
     const s = crowded();

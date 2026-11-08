@@ -7,9 +7,9 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:50:23Z"
-updated = "2026-11-08T06:01:33Z"
+updated = "2026-11-08T06:01:39Z"
 labels = ["refactor"]
-scope = ["python/sadi/server/session_points.py", "python/sadi/server/routes/results.py", "python/sadi/server/routes/export.py", "python/tests/server/test_session_points.py"]
+scope = ["python/sadi/server/session_points.py", "python/sadi/server/routes/results.py", "python/sadi/server/routes/export.py", "python/tests/server/test_session_points.py", "changelog.d/01M6WVADCSP63DBMYH3RNCXWTM.changed.md"]
 
 [[acceptance]]
 text = "Helpers live in public sadi.server.session_points and routes/export no longer imports private names from routes/results"

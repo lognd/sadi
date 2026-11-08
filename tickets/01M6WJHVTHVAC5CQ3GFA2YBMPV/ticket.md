@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:04:05Z"
+updated = "2026-11-08T04:04:13Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "NET-040 runs only with --running; the doctor stays read-only"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: deferred checks

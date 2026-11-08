@@ -7,8 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T04:14:35Z"
-updated = "2026-11-08T04:16:50Z"
+updated = "2026-11-08T04:17:24Z"
 scope = ["python/sadi/store/**", "python/tests/store/test_events.py"]
+
+[[acceptance]]
+text = "settings_record is reached by a bound test"
+bound = false
 +++
 
 found while working ~QXARDHK: frob check flags settings_record as reached by no test; bind with frob:tests. Blocks land via E-LAND-CHECK-RED.

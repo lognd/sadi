@@ -2,7 +2,8 @@
 id = "01M6WFYN8C6YH5D79CPEKSP69P"
 title = "Plugin loader and PluginRegistry generalizing LabRegistry"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

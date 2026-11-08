@@ -2,7 +2,8 @@
 id = "01M6WHAW41PYAKM3VTPTTS9C1J"
 title = "Fix ruff errors in plugins/local.py"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

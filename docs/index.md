@@ -31,6 +31,7 @@ Status: current
 - [Wizard shell](web/wizard.md)
 - [Budget and formula panel](web/budget-panel.md)
 - [Plot renderer core](web/plots.md)
+- [Results stream client](web/results-stream.md)
 - [Calibration plot](web/calibration-plot.md)
 - [Server app](server/app.md)
 - [Server inventory API](server/inventory.md)

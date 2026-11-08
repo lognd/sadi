@@ -1,6 +1,6 @@
 # REST API: sessions, wizard, points
 
-Status: current (subset of ticket X3H80G2; see "Not yet" below)
+Status: current
 
 Handlers in `sadi.server.routes.sessions` are thin and synchronous (`def`, so FastAPI runs
 them in the threadpool and the event loop stays free). All logic lives in
@@ -41,7 +41,7 @@ Every failure is `application/problem+json` with `type`, `title`, `status`, `det
 (device 503, input 422, store 500, compute 422, job 409; wizard errors 404/409/422), no
 session open is 409, and malformed bodies are 422.
 
-## Not yet
+## Not yet (subset of ticket X3H80G2)
 
 Inventory, results, guidance, export, device status, OpenAPI/TS client generation and the
 loop-lag test are tracked as follow-up tickets.

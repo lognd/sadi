@@ -4,9 +4,10 @@ title = "Wire inventory router and provider into create_app"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T05:41:07Z"
-updated = "2026-11-08T05:41:07Z"
+updated = "2026-11-08T05:46:04Z"
 scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py"]
 
 [[acceptance]]

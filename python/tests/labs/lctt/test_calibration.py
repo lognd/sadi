@@ -204,13 +204,19 @@ def test_voltage_uncertainty_ignored_without_flag() -> None:
     assert a.slope.value == b.slope.value
 
 
+_TAIL_P = 1e-9  # two-sided miss probability per check (negligible over all examples)
+
 _X = st.lists(
     st.floats(-5, 5, allow_nan=False), min_size=6, max_size=30, unique_by=lambda v: round(v, 3)
 )
 
 
+# frob:ticket 01M6WF38QK5F60GK3RVQT3RGZY
 # frob:tests python/sadi/labs/lctt/calibration.py::fit_calibration
-@settings(max_examples=60, deadline=None)
+# Root cause of the flake: the estimated SE has only n-2 (>=4) dof, so the error
+# is Student-t, not normal; "6 sigma" fails ~0.4% per check at n=6 (~40% per run
+# over 60 examples x 2 checks). Bound with the t quantile instead, and derandomize.
+@settings(max_examples=60, deadline=None, derandomize=True)
 @given(
     xs=_X,
     slope=st.floats(1e-3, 5e-3),
@@ -226,14 +232,17 @@ def test_property_slope_recovered_within_standard_error(
     if np.ptp(xs) < 2.0:
         return
     f = _fit(xs, ys)
-    assert abs(f.slope.value - slope) < 6 * f.se_slope + 1e-12
-    assert abs(f.intercept.value - icpt) < 6 * f.se_intercept + 1e-12
+    tcrit = float(stats.t.isf(_TAIL_P / 2, len(xs) - 2))
+    assert abs(f.slope.value - slope) < tcrit * f.se_slope + 1e-12
+    assert abs(f.intercept.value - icpt) < tcrit * f.se_intercept + 1e-12
     ref = _hand_linest(xs, ys)
     assert f.se_slope == pytest.approx(ref["se_slope"], rel=1e-6)
 
 
+# frob:ticket 01M6WF38QK5F60GK3RVQT3RGZY
 # frob:tests python/sadi/labs/lctt/calibration.py::fit_calibration
-@settings(max_examples=40, deadline=None)
+# Same flake as above: SE is estimated (finite dof), so bound with the t quantile.
+@settings(max_examples=40, deadline=None, derandomize=True)
 @given(xs=_X, seed=st.integers(0, 2**31), scale=st.floats(0.5, 5.0))
 def test_property_weighted_fit_recovers_slope(xs: list[float], seed: int, scale: float) -> None:
     if np.ptp(xs) < 2.0:
@@ -242,7 +251,8 @@ def test_property_weighted_fit_recovers_slope(xs: list[float], seed: int, scale:
     uy = [1e-4 * (1 + scale * abs(x) / 5) for x in xs]
     ys = [2e-3 * x + 0.025 + rng.normal(0, u) for x, u in zip(xs, uy, strict=True)]
     f = _fit(xs, ys, u_heights=uy)
-    assert abs(f.slope.value - 2e-3) < 6 * f.se_slope + 1e-12
+    tcrit = float(stats.t.isf(_TAIL_P / 2, len(xs) - 2))
+    assert abs(f.slope.value - 2e-3) < tcrit * f.se_slope + 1e-12
     scaled = _fit(xs, ys, u_heights=[7 * u for u in uy])
     assert scaled.slope.value == pytest.approx(f.slope.value, rel=1e-9)
     assert scaled.se_slope == pytest.approx(f.se_slope, rel=1e-9)

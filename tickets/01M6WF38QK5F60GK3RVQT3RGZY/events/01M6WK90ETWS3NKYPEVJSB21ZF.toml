@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:29:45Z"
+digest = "d86351f4946a8f0c76ab53159b21fda356aeec70367232e3cde41d00ca390f2a"
+exit_code = 0
+head = "14eb7e092452f2151a6fa627b447376b29463c51"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_calibration.py ..                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-269822-0.xml ---------------
+============================== 2 passed in 2.38s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_calibration.py::test_property_slope_recovered_within_standard_error python/tests/labs/lctt/test_calibration.py::test_property_weighted_fit_recovers_slope"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "f21e9b6a65cbb0b27c4514311e96b4c3ad3a2bb22fd8f86b7d62aa6e424ba035"
+at = "2026-11-08T03:29:45Z"
+actor = "lognd"
+rev = 1

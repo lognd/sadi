@@ -13,7 +13,7 @@ scope = ["python/sadi/server/routes/results.py", "python/tests/server/test_resul
 
 [[acceptance]]
 text = "GET /api/results includes a provenance list on the wire"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Each quantity provenance names point ids, sample span and algorithm"

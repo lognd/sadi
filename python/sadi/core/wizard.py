@@ -51,6 +51,7 @@ class WizardError(ErrorSet):
     DuplicateStep = "Two steps share an id; fix the lab's step list"
     UnknownStep = "That step does not exist in this lab"
     Gated = "An earlier step is not finished; complete it or skip it explicitly first"
+    NeedPoints = "This step needs more captured points before it can be completed (or skip it)"
     NotCurrent = "Only the current step can be completed or skipped"
     NothingToRevert = "No finished step to reopen"
     NotLatest = "Only the most recently finished step can be reopened"
@@ -140,8 +141,16 @@ def _mark(kind: str, step: StepId) -> NewRecord:
     return marker_record(MarkerV1(kind=kind, label=str(step)))
 
 
-def _resolved(steps: list[StepSpec], state: ReplayState, anomalies: list[str]) -> dict[StepId, str]:
-    """Fold wizard markers into step -> MARK_DONE/MARK_SKIPPED, enforcing sequential order."""
+def _resolved(
+    steps: list[StepSpec],
+    state: ReplayState,
+    anomalies: list[str],
+    seqs: dict[StepId, int] | None = None,
+) -> dict[StepId, str]:
+    """Fold wizard markers into step -> MARK_DONE/MARK_SKIPPED, enforcing sequential order.
+
+    When `seqs` is given it receives the seq of each applied resolving marker.
+    """
     known = [s.id for s in steps]
     out: dict[StepId, str] = {}
     for entry in state.markers:
@@ -156,9 +165,13 @@ def _resolved(steps: list[StepSpec], state: ReplayState, anomalies: list[str]) -
                 anomalies.append(f"seq {entry.seq}: {sid} resolved out of order; ignored")
             else:
                 out[sid] = m.kind
+                if seqs is not None:
+                    seqs[sid] = entry.seq
         elif m.kind == MARK_REVERTED:
             if out and list(out)[-1] == sid:
                 del out[sid]
+                if seqs is not None:
+                    seqs.pop(sid, None)
             else:
                 anomalies.append(f"seq {entry.seq}: revert of {sid} which is not the latest")
         else:
@@ -239,12 +252,31 @@ class Wizard:
         )
 
     def complete(self, replay: ReplayState, sid: StepId) -> Result[Command, WizardError]:
-        """Mark the current step done."""
+        """Mark the current step done once its `min_points` criterion holds."""
         gate = self._gate(replay, sid)
         if gate.is_err:
             return Err(gate.danger_err)
+        spec = self._spec(sid)
+        assert spec is not None  # _gate accepted it
+        have = self._step_points(replay, spec)
+        if have < spec.min_points:
+            _log.info("wizard: complete %s refused, %d/%d points", sid, have, spec.min_points)
+            return Err(WizardError.NeedPoints)
         _log.info("wizard: complete %s", sid)
         return Ok(Command(records=(_mark(MARK_DONE, sid),), summary=f"completed {sid}"))
+
+    def _step_points(self, replay: ReplayState, spec: StepSpec) -> int:
+        """Count active points of the step's phase captured since the previous step resolved."""
+        seqs: dict[StepId, int] = {}
+        _resolved(self.steps, replay, [], seqs)
+        ids = [s.id for s in self.steps]
+        idx = ids.index(spec.id)
+        since = seqs.get(ids[idx - 1], 0) if idx else 0
+        return sum(
+            1
+            for p in replay.view().points
+            if not p.excluded and p.point.phase == spec.phase.value and p.seq > since
+        )
 
     def skip(self, replay: ReplayState, sid: StepId) -> Result[Command, WizardError]:
         """Explicitly skip the current step (the only way past a step without completing it)."""

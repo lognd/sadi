@@ -176,3 +176,38 @@ def test_flags_finished_can_undo_can_redo() -> None:
     for sid in ("calibrate", "tare", "load"):
         log.apply(w.skip(log.state, StepId(sid)))
     assert w.state(log.state).finished
+
+
+# frob:ticket 01M6WJB330TVRVWW639E6GGFJZ
+# frob:tests python/sadi/core/wizard.py::Wizard.complete
+def test_complete_requires_min_points_but_skip_never_blocked() -> None:
+    base = _specs()
+    specs = [base[0].model_copy(update={"min_points": 1}), *base[1:]]
+    wiz = Wizard.create(specs).danger_ok
+    log = Log()
+    assert wiz.complete(log.state, StepId("calibrate")).danger_err is WizardError.NeedPoints
+    log.apply(wiz.capture(log.state, _point("p1")))
+    log.apply(wiz.undo(log.state))  # excludes p1 -> criterion unmet again
+    assert wiz.complete(log.state, StepId("calibrate")).danger_err is WizardError.NeedPoints
+    log.apply(wiz.capture(log.state, _point("p2")))
+    assert wiz.complete(log.state, StepId("calibrate")).is_ok
+    log2 = Log()
+    log2.apply(wiz.skip(log2.state, StepId("calibrate")))
+    assert wiz.state(log2.state).current == StepId("tare")
+
+
+# frob:ticket 01M6WJB330TVRVWW639E6GGFJZ
+# frob:tests python/sadi/core/wizard.py::Wizard.complete
+def test_min_points_ignores_points_before_previous_step() -> None:
+    base = _specs()
+    specs = [
+        base[0],
+        base[1],
+        base[2].model_copy(update={"min_points": 1, "phase": Phase.CALIBRATION}),
+    ]
+    wiz = Wizard.create(specs).danger_ok
+    log = Log()
+    log.apply(wiz.capture(log.state, _point("p1")))
+    log.apply(wiz.complete(log.state, StepId("calibrate")))
+    log.apply(wiz.complete(log.state, StepId("tare")))
+    assert wiz.complete(log.state, StepId("load")).danger_err is WizardError.NeedPoints

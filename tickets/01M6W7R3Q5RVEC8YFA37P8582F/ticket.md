@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:41:26Z"
+updated = "2026-11-08T03:41:29Z"
 idempotency_key = "sadi-x1"
 labels = ["ws:py", "lctt", "oq:Q2", "model:sonnet", "creates:python/sadi/labs/lctt/export_csv.py", "creates:python/tests/labs/lctt/test_export_csv.py", "creates:docs/lctt/export-csv.md"]
 scope = ["python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/test_export_csv.py", "docs/lctt/export-csv.md", "docs/index.md"]
@@ -27,7 +27,7 @@ bound = true
 
 [[acceptance]]
 text = "Round-trip test: export of the the local short-run file inputs matches the original file field-by-field within float formatting; reader parses LabVIEW CSVs back to a session for post-processing (Q1)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "CRLF/encoding handling documented and tested on all OS"

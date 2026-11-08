@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["web/src/keys/keymap.ts"]
+at = "2026-11-08T10:14:52Z"
+actor = "lognd"
+rev = 1

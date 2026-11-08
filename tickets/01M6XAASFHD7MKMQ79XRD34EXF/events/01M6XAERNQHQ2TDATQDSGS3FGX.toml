@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/RunScreen.test.tsx"]
+new = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md"]
+at = "2026-11-08T10:14:54Z"
+actor = "lognd"
+rev = 1

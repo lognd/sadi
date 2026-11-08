@@ -44,7 +44,7 @@ and Space, however, do not activate a focused button or link (U-01).
 | U-03 | 2 | review | Tab order walks 2 buttons per point (16+ stops) before reaching the Finish button; no skip link. | Fixed ~81EQRYA (Skip to Finish link) and ~F5JD036 (one Tab stop per point row, arrows switch Edit/Exclude) |
 | U-04 | 2 | run | Hotkeys are ignored in text fields, so a typist must Tab off the field before Space accepts; nothing says so. | fixed (~RD34EXF) |
 | U-05 | 2 | run | "Mark load change" is required before Settled ever shows (docs/e2e.md); the operator is not told to press it. | Fixed ~81EQRYA (phase text and hint beside the button) |
-| U-06 | 2 | run | After Enter on a step with zero points the run advances silently and shows "Stopped: device_fault" in the message line; the wording does not say what to do. | open |
+| U-06 | 2 | run | After Enter on a step with zero points the run advances silently and shows "Stopped: device_fault" in the message line; the wording does not say what to do. | fixed (~BJVWSNR) |
 | U-07 | 2 | setup | "Setup: Clamp slip check" has no capture UI; the only ways forward are "Finish" and "Skip", and the text does not say what the check is. | open |
 | U-08 | 3 | export | Two figure buttons per format and the PNG-resolution select come before the CSV link; the primary deliverable is second in Tab order. | open |
 | U-09 | 3 | all | A `web/dist` older than the source gives a 422 on skip/complete (step id not sent) with no hint to rebuild. | Fixed ~81EQRYA (a bare 422 now shows a rebuild-web/dist hint) |

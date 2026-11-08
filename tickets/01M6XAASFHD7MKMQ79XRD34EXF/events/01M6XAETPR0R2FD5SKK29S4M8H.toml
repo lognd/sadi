@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:14:55Z"
+digest = "2ec03ccd36dff40627ead5a85ed8b3322dbb6e3c8b052e7899cc066f41d3e046"
+exit_code = 0
+head = "d69a88f95dd41f78569215f2aa453a4dbbed4475"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/keys/keymap.test.ts (12 tests) 7ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  05:14:55
+   Duration  679ms (transform 90ms, setup 0ms, collect 83ms, tests 7ms, environment 0ms, prepare 162ms)
+
+JSON report written to /tmp/frob-vitest-1144355-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/keys/keymap.test.ts"
+size = 316
+status = "measured"
+test_count = 12
+tests_digest = "77c58f1ff48de2748b472c7709551f9136fd4c0f7fee60b13531ad0134be34ab"
+at = "2026-11-08T10:14:55Z"
+actor = "lognd"
+rev = 1

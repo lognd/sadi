@@ -1,5 +1,7 @@
+// frob:ticket 01M6XAASH92DG6W6GDJBJVWSNR
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
 // frob:ticket 01M6WV6TFKP2396PW58G1WJD3B
+import { stopText } from "./stopText";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getLogger } from "../api/log";
 import { openStream, type ConnState, type StreamHandlers, type StreamHandle, type StreamOptions } from "../ws/client";
@@ -53,7 +55,7 @@ export function applyMessage(w: TraceWindow, m: ServerMessage, lastPoint: { v: n
       });
       return undefined;
     case "stopped":
-      return `Stopped: ${m.reason} ${m.hint}`.trim();
+      return stopText(m.reason, m.hint, lastPoint.v);
     case "analysis_failed":
       return `Analysis failed: ${m.reason}`;
     default:

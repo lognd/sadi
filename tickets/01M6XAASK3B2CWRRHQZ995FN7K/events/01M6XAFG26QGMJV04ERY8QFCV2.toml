@@ -1,0 +1,105 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:15:16Z"
+digest = "30576e4d6a25c547912c5c1e6ee7cef09a481f552002d762de1d64718311dfdd"
+exit_code = 0
+head = "59e205c66bc7a0cef0e18f2a63c71af2fa7f2d67"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] request { path: '/api/export' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] response ok { path: '/api/export', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 597.44, y: 364, penalty: 0 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+[plots.export] svg exported { bytes: 4650, title: 'LVDT calibration, height versus voltage' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 49, series: 2 }
+[plots.export] svg exported { bytes: 4194, title: 'Stress-strain' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure exported { formatId: 'fig', format: 'svg', dpi: undefined, files: 2 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/nope' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[screens.export] no figure data to draw yet { formatId: 'fig' }
+
+ \u{2713} web/src/screens/export/ExportScreen.test.tsx (9 tests) 38ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  05:15:17
+   Duration  875ms (transform 227ms, setup 0ms, collect 310ms, tests 38ms, environment 0ms, prepare 146ms)
+
+JSON report written to /tmp/frob-vitest-1158024-0.json
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > parses problem+json and shows the hint
+[screens.export.api] non-json error body { status: 500 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] http error { path: '/api/export/nope', status: 404 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure data has unexpected shape { formatId: 'fig' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/export/ExportScreen.test.tsx"
+size = 4187
+status = "measured"
+test_count = 9
+tests_digest = "6691cbb40dd027e6c03644dc040cd636f821e15b4b92a5c8503c60056a725f89"
+at = "2026-11-08T10:15:16Z"
+actor = "lognd"
+rev = 1

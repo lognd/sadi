@@ -57,7 +57,10 @@ describe("applyMessage", () => {
     applyMessage(w, { kind: "result", rawSeq: 3, pointIndex: 0, settled: true, forcedEarly: false, windowEnd: 5.1 }, last);
     applyMessage(w, { kind: "result", rawSeq: 4, pointIndex: 1, settled: false, forcedEarly: true, windowEnd: null }, last);
     expect(w.snapshot(10).marks.map((m) => m.kind)).toEqual(["load", "settled", "forced"]);
-    expect(applyMessage(w, { kind: "stopped", reason: "overload", hint: "reduce load" }, last)).toContain("overload");
+    expect(applyMessage(w, { kind: "stopped", reason: "overload", hint: "reduce load" }, last)).toContain("range");
+    const fault = applyMessage(w, { kind: "stopped", reason: "device_fault", hint: "x" }, { v: null });
+    expect(fault).toContain("capture a point first");
+    expect(fault).not.toContain("Stopped: device_fault");
   });
 });
 

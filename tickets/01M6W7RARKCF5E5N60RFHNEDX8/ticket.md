@@ -2,7 +2,8 @@
 id = "01M6W7RARKCF5E5N60RFHNEDX8"
 title = "Review screen: re-edit points, window edits, undo/redo, results recompute"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

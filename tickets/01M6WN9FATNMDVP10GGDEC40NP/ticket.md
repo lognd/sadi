@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T04:05:00Z"
 updated = "2026-11-08T04:06:56Z"
 labels = ["rust"]
-scope = ["creates:crates/sadi-py/src/meta.rs"]
+scope = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs"]
 +++
 
 From ~A2YBMPV: doctor reads these via getattr and skips when missing, so EXT-020/040/050 are unverified. Add them to the sadi-py bindings (safe Rust, build via goway).

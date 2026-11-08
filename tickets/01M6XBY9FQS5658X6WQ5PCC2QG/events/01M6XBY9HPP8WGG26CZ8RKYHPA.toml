@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["frob check shows zero COV001 under web/src (log.ts, canvas.ts, window.ts, ws/client.ts); rename or qualify so calls resolve"]
+moved = []
+at = "2026-11-08T10:40:51Z"
+actor = "lognd"
+rev = 1

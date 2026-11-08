@@ -8,4 +8,8 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:40:51Z"
 updated = "2026-11-08T10:40:51Z"
+
+[[acceptance]]
+text = "frob check shows zero COV001 under web/src (log.ts, canvas.ts, window.ts, ws/client.ts); rename or qualify so calls resolve"
+bound = false
 +++

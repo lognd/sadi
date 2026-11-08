@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:53:12Z"
+updated = "2026-11-08T02:53:17Z"
 labels = ["plugins", "creates:python/tests/store/test_session_plugin_provenance.py"]
 scope = ["python/sadi/store/manifest.py", "python/sadi/store/session.py", "python/tests/store/test_session_plugin_provenance.py"]
 
@@ -18,7 +18,7 @@ target = "01M6WFYN8C6YH5D79CPEKSP69P"
 
 [[acceptance]]
 text = "New session manifest contains plugin id+version"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Old manifest without the field still reopens"

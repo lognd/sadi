@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
-    "gen:api": "openapi-typescript ${SADI_OPENAPI_URL:-http://127.0.0.1:8000/openapi.json} -o src/api/schema.ts"
+    "gen:spec": "cd ../python && uv run --frozen python -m sadi.server.openapi_export ../web/src/api/openapi.json",
+    "gen:ts": "openapi-typescript src/api/openapi.json -o src/api/schema.ts",
+    "gen:api": "npm run gen:spec && npm run gen:ts"
   },
   "dependencies": {
     "katex": "^0.19.1",

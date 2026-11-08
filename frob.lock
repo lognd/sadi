@@ -46,6 +46,61 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T00:14:31.07875396Z"
 
 [[symbol]]
+identity = "web/src/api/schema.test.ts"
+symref = "web/src/api/schema.test.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "c53d58a00544c20241e52e9372f2779c2d1cade737cba939973c2449eb02d38b"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:59:56.466874972Z"
+
+[[symbol]]
+identity = "web/src/api/schema.test.ts::here"
+symref = "web/src/api/schema.test.ts::here"
+sig = "805082ab2126fb7b0fd07b4a39f0af5bd3100f967392fd17779bb0db7e17a96c"
+body = "9ab58fe4460babf0a332d6e7948e8c5337264ca96b55e1c500091f5e92be3be7"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "575d33ce4fe220eefdf699b80c0261b281fdc8edc2746407c08e58a62acbae7a"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:59:56.466874972Z"
+
+[[symbol]]
+identity = "web/src/api/schema.test.ts::suite$generated_API_client"
+symref = "web/src/api/schema.test.ts::suite$generated_API_client"
+sig = "c45a77387e07d94b29b6ef8264089a099897aa0f3fe5904536adead846f22256"
+body = "c5492ce68c8ecdd982f6b0bd847f27b7cbbf3ebb139648323cbed63e8897a18d"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "bacfade072901c23c2250d1e1e8f26bb4b8dd66cd992268879c671f85d4ac4df"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:59:56.466874972Z"
+
+[[symbol]]
+identity = "web/src/api/schema.test.ts::suite$generated_API_client.test$covers_the_core_route_families"
+symref = "web/src/api/schema.test.ts::suite$generated_API_client.test$covers_the_core_route_families"
+sig = "b4daff8eaad8293a58257175a8b7f04ae92bc9557e871fef2a6e9d4465efd1d0"
+body = "8b45961c1a359043bbeaf8f9a0e3af9f54b50f1f316a115a14426884fa0748d7"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "753bb00c410d609c3ef23687142aa386d11c6405c3a9d9318e5a55de72ffae93"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:59:56.466874972Z"
+
+[[symbol]]
+identity = "web/src/api/schema.test.ts::suite$generated_API_client.test$schema_ts_is_the_generator_output_for_the_committed_openapi_json"
+symref = "web/src/api/schema.test.ts::suite$generated_API_client.test$schema_ts_is_the_generator_output_for_the_committed_openapi_json"
+sig = "7d8f70bfa826235b5c822d410946f78c72d07559676161233ff0b22d1ca72fbe"
+body = "1019a69ee2b725dede083128f19e13fd47fb03c7ca1e66d0b42e3833925ae42e"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "e0248de3da5ed6efcf51f4c524219d50401b53d8747ff3aa69b60cc4c98cf637"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:59:56.466874972Z"
+
+[[symbol]]
 identity = "web/src/components/guidance/GuidancePanel.test.tsx"
 symref = "web/src/components/guidance/GuidancePanel.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
@@ -498,6 +553,50 @@ attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
 contract = "3b54ea44594cdd07e0d82bc6f25da6e05e22535e88dc2a1cdb0dde485ada6f06"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:37:07.609770118Z"
+
+[[symbol]]
+identity = "web/src/hooks/markClock.test.ts"
+symref = "web/src/hooks/markClock.test.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "c2a5904cd2ba791104a596e0621486463730e69d1bc0eab6dc11d8a8522b70dd"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:00:49.689468908Z"
+
+[[symbol]]
+identity = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields"
+symref = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields"
+sig = "fd474df81daf4d91b7ea42463384a2100ebb38b6f97e2f44617f1b3d70b392a9"
+body = "c129222e95c60be3c3208c2b5aa92361d6cf096f9b0d849afa0db325f332ec0b"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "edb4fa6deb3af34598ad82e641d5ec9f892817cf8fd247c5e7df4e244acf23dc"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:00:49.689468908Z"
+
+[[symbol]]
+identity = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields.test$load_mark_is_now_minus_time_since_load__result_mark_is_window_end_verbatim"
+symref = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields.test$load_mark_is_now_minus_time_since_load__result_mark_is_window_end_verbatim"
+sig = "378f2544e4b7f4c65cde80565581c39af7138b31cefb48b9a60bc020e16f62c6"
+body = "8abf8e2cdb9c11499dbe6b0fcd974d96d64b0ee9e6c788a795d719dc4c267ced"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "cce4ce4ba9ba1a958b9e243de3216c41083e9d5b38570c1459314b25f9e95a1e"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:00:49.689468908Z"
+
+[[symbol]]
+identity = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields.test$marks_land_on_the_trace-frame_clock__t0_s_"
+symref = "web/src/hooks/markClock.test.ts::suite$stream_clock_vs_record_fields.test$marks_land_on_the_trace-frame_clock__t0_s_"
+sig = "6102490cf46e3140ac3ad91da8d336294154b1ae322205ac7ba9061de060cdb3"
+body = "8c10564b05cf44682e882c574ec3f7c21df28224480e03002a314dbff4ae411c"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "55f3c54b3ea663555e6709729d2db44d46aafaeb81915da42e66e8470e53e499"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:00:49.689468908Z"
 
 [[symbol]]
 identity = "web/src/keys/keymap.ts"

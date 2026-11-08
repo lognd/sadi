@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:33:48Z"
-updated = "2026-11-08T10:37:29Z"
-scope = ["python/sadi/server/**"]
+updated = "2026-11-08T10:37:39Z"
+scope = ["python/sadi/server/**", "crates/sadi-py/tests/test_acq.py"]
 
 [[acceptance]]
 text = "COV001 findings in python/sadi/server and acq.pyi resolved with real tests or frob:tests markers"

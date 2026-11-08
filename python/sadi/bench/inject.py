@@ -24,7 +24,7 @@ __all__ = [
 ]
 
 
-# frob:todo 2GQ2J53 real-board pin mapping is unknown; PinMap is supplied by the hardware session.
+# frob:todo 01M6WT4Z643F7CJDFJT2GQ2J53 real-board pin mapping is unknown; PinMap is supplied by the hardware session.
 _ADC_BITS = 16
 _ADC_MAX = (1 << _ADC_BITS) - 1
 

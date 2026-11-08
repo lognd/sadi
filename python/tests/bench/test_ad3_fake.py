@@ -33,14 +33,14 @@ def _open(fake: FakeDwf):
     return fake.open(-1).unwrap()
 
 
-# frob:tests sadi.bench.ad3.fake.FakeDwf
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
 def test_satisfies_protocol() -> None:
     """FakeDwf is assignable to DwfBackend and enumerates one AD3."""
     be: DwfBackend = FakeDwf()
     assert be.enumerate_devices().unwrap()[0].serial.startswith("SN:")
 
 
-# frob:tests sadi.bench.ad3.fake.FakeDwf
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
 def test_open_close_typestate() -> None:
     """Closed handles return HANDLE_CLOSED; a second open without close fails."""
     f = FakeDwf()
@@ -52,7 +52,7 @@ def test_open_close_typestate() -> None:
     assert isinstance(f.open(5), Err)
 
 
-# frob:tests sadi.bench.inject.capture
+# frob:tests python/sadi/bench/inject.py::capture
 def test_sine_sampled_exactly() -> None:
     """A 1 kHz sine sampled at 8 kHz gives the analytic values."""
     f = FakeDwf()
@@ -63,7 +63,7 @@ def test_sine_sampled_exactly() -> None:
         assert v == pytest.approx(0.5 + 2.0 * math.sin(2 * math.pi * k / 8), abs=1e-12)
 
 
-# frob:tests sadi.bench.ad3.fake.FakeDwf
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
 def test_deterministic_noise_and_cal() -> None:
     """Same seed gives identical noisy captures; gain/offset apply; clipping at range."""
     cfg = FakeConfig(seed=7, cal={0: ScopeCal(gain=2.0, offset_v=0.1, noise_v=0.01)})
@@ -85,7 +85,7 @@ def test_deterministic_noise_and_cal() -> None:
     assert max(capture(f, dev, 0, 1000.0, 4, range_v=4.0).unwrap()) == 2.0
 
 
-# frob:tests sadi.bench.ad3.fake.FakeDwf.set_custom
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf.set_custom
 def test_custom_and_ramp_waveforms() -> None:
     """Custom buffers and ramps generate the expected samples."""
     f = FakeDwf()
@@ -101,7 +101,7 @@ def test_custom_and_ramp_waveforms() -> None:
     assert capture(f, dev, 0, 4000.0, 4).unwrap() == [-1.0, -0.5, 0.0, 0.5]
 
 
-# frob:tests sadi.bench.ad3.fake.FakeDwf
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
 def test_rejects_bad_arguments() -> None:
     """Unsupported functions, bad ranges and unlatched reads are Err(CALL_FAILED)."""
     f = FakeDwf()
@@ -117,7 +117,7 @@ def test_rejects_bad_arguments() -> None:
         assert isinstance(res, Err) and res.unwrap_err().code == DwfCode.CALL_FAILED
 
 
-# frob:tests sadi.bench.inject.PinMap
+# frob:tests python/sadi/bench/inject.py::PinMap
 def test_pinmap_validation() -> None:
     """PinMap rejects shared out channels, negatives and unknown keys."""
     with pytest.raises(ValidationError):
@@ -128,7 +128,7 @@ def test_pinmap_validation() -> None:
         PinMap.model_validate({"lvdt": {"out_channel": 0}, "load": {"out_channel": 1}, "x": 1})
 
 
-# frob:tests sadi.bench.inject.stop_injection
+# frob:tests python/sadi/bench/inject.py::stop_injection
 def test_stop_injection_silences_outputs() -> None:
     """After stop_injection the scope reads zero."""
     f = FakeDwf()
@@ -138,7 +138,7 @@ def test_stop_injection_silences_outputs() -> None:
     assert capture(f, dev, 1, 1000.0, 2).unwrap() == [0.0, 0.0]
 
 
-# frob:tests sadi.bench.inject.volts_to_counts
+# frob:tests python/sadi/bench/inject.py::volts_to_counts
 def test_loopback_fake_to_sadi_adc_model() -> None:
     """FakeDwf waveform -> capture -> ideal SADI 16-bit ADC counts matches the analytic counts."""
     fs = 5.12

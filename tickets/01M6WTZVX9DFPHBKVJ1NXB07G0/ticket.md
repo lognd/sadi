@@ -14,6 +14,10 @@ scope = ["python/sadi/launcher.py", "python/sadi/__main__.py", "python/tests/cli
 [[acceptance]]
 text = "The sim flag or SADI_SIM makes the launcher pass a simulator device in AppSettings so /api/device/status reports simulated"
 bound = false
+
+[[acceptance]]
+text = "python -m sadi runs the launcher"
+bound = false
 +++
 
 found in ~0VYJVFZ. launcher exports SADI_SIM=1 but nothing in server/app reads it. Also add python/sadi/__main__.py for python -m sadi.

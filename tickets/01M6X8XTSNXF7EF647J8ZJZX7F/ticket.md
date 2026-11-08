@@ -4,7 +4,8 @@ title = "Capture Doctor screen in user-guide screenshots"
 type = "task"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:48:10Z"
-updated = "2026-11-08T09:48:10Z"
+updated = "2026-11-08T09:48:16Z"
 +++

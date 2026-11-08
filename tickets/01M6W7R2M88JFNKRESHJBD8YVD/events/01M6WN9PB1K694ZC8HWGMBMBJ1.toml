@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:05:07Z"
+digest = "d05227d3ac589a119868a6c620adf0f47a15560b2da96b148a9f703c677f14e7"
+exit_code = 0
+head = "193e4840eed464f1cd73d0efe1ba98ba00d269d3"
+inline = """
+..........                                                               [100%]
+10 passed in 0.23s
+"""
+passed = true
+provider = "command"
+ref = "pytest -q crates/sadi-py/tests"
+size = 99
+status = "measured"
+at = "2026-11-08T04:05:07Z"
+actor = "lognd"
+rev = 1

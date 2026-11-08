@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
 updated = "2026-11-08T10:05:01Z"
-scope = ["web/src/screens/run/useRunLive.ts"]
+scope = ["web/src/screens/run/useRunLive.ts", "web/src/screens/run/RunScreen.tsx"]
 
 [[acceptance]]
 text = "WS guidance message carries a frozen extra=forbid pydantic payload (phase, next_action, stop_early, stop_reason); web parses it and RunScreen shows next_action; pytest and vitest cover it"

@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:11:39Z"
-updated = "2026-11-08T04:15:56Z"
+updated = "2026-11-08T04:16:01Z"
 labels = ["python"]
 scope = ["python/sadi/core/point_inputs.py", "python/sadi/api/acquisition.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/curve_source.py", "docs/server/app.md", "docs/api/acquisition.md", "docs/lctt/capture.md", "creates:python/tests/core/test_point_meta.py", "python/tests/core/test_point_meta.py", "changelog.d/01M6WNNMJX4MDX9TBZZ6Q18K2C.changed.md"]
 

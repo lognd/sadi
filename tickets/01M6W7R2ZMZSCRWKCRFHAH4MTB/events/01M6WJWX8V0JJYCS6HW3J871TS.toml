@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T03:23:09Z"
+digest = "ff8d9675005c61aa9c49a4274d14f78fcc1656131b3adf7e709fa6fef1ebccb7"
+exit_code = 0
+head = "9e90a935a999ce106290a462117fd232e01aa8dc"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/crash/test_crash.py ....                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-256384-0.xml ---------------
+============================== 4 passed in 2.35s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/crash/test_crash.py::test_power_loss_truncation_recovers"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "58031317c2629c9e4cfb9fe21716b0acf482f9010b8ae29fd94392231c9837e9"
+at = "2026-11-08T03:23:09Z"
+actor = "lognd"
+rev = 1

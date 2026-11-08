@@ -1,0 +1,10 @@
+kind = "create"
+title = "doctor: USB-010, USB-060..080 and Windows/macOS USB support"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
+body = "found while working ~V3H5CGF: USB skips unverified off Linux/WSL"
+at = "2026-11-08T03:17:10Z"
+actor = "lognd"
+rev = 1

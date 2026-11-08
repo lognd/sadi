@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:20:54Z"
+digest = "441f925abf03679bf8ed888b9ce8fd6d20d7351b52d000497aba3789f67418e9"
+exit_code = 0
+head = "6139c9263652b8f55299bb3ddfc2d2ea119c36f9"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/uncertainty/crosscheck/test_labs_crosscheck.py ...          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-251035-0.xml ---------------
+============================== 3 passed in 2.12s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_near_zero_denominator_is_typed_not_raised"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "92fa9b3912b6f5d696fca90e47609af747e1f30224404da01dcdad74ebcf3e48"
+at = "2026-11-08T03:20:54Z"
+actor = "lognd"
+rev = 1

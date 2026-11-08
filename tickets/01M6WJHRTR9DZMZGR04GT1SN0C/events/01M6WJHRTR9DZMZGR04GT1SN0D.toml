@@ -1,0 +1,10 @@
+kind = "create"
+title = "doctor: SESS, WAL layers"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
+body = "found while working ~V3H5CGF: spec layers not implemented"
+at = "2026-11-08T03:17:07Z"
+actor = "lognd"
+rev = 1

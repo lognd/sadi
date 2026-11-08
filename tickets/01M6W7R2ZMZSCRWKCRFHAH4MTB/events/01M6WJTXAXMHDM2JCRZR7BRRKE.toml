@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:22:05Z"
+digest = "a3c57a26ab0d7d566a4beae155f41fb93ca396b760aecaceaf752a0d206ed09c"
+exit_code = 0
+head = "6c50213f95338e59616e5818ab61296771e0ed3a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/crash/test_crash.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-253842-0.xml ---------------
+============================== 1 passed in 0.55s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/crash/test_crash.py::test_partial_record_is_torn_tail_not_corruption"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "3152c4bae6f1dc1f8e0cd985366660938574d85a3867cfd3d5a4eda0474f7464"
+at = "2026-11-08T03:22:05Z"
+actor = "lognd"
+rev = 1

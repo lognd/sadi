@@ -4,9 +4,10 @@ title = "Verify stream clock vs record window_end/time_since_load for live marks
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:48:25Z"
+updated = "2026-11-08T05:59:33Z"
 scope = ["web/src/hooks/**"]
 +++
 

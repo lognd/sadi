@@ -2,7 +2,8 @@
 id = "01M6W7R2TPG1HC0F9QHDQ1C3W6"
 title = "Pre-test clamp-slip check procedure"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

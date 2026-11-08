@@ -1,13 +1,15 @@
 """build_ui: runs npm steps via an injectable runner and copies dist into the package."""
 
-# frob:ticket ~ZKJSYXC
+# frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 from __future__ import annotations
 
 import importlib.util
+import sys
 import tomllib
 from collections.abc import Sequence
 from pathlib import Path
 
+import pytest
 from typani import Err, Ok, Result
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -80,3 +82,19 @@ def test_pyproject_ships_ui() -> None:
     assert "sadi/_ui/**" in wheel["artifacts"]
     assert data["project"]["scripts"]["sadi"] == "sadi.launcher:main"
     assert (ROOT / "python" / "sadi" / "_ui" / ".gitkeep").is_file()
+
+
+def test_run_command_missing_exe(tmp_path: Path) -> None:
+    """A command that is not on PATH yields Err rather than raising."""
+    # frob:tests test_run_command_missing_exe
+    got = build_ui_mod.run_command(["definitely-not-a-real-exe-xyz"], tmp_path)
+    assert got.is_err
+
+
+def test_run_command_success_and_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """run_command maps exit codes to Ok/Err using the current interpreter."""
+    # frob:tests test_run_command_success_and_failure
+    monkeypatch.setenv("PATH", str(Path(sys.executable).parent))
+    py = Path(sys.executable).name
+    assert build_ui_mod.run_command([py, "-c", "pass"], tmp_path).is_ok
+    assert build_ui_mod.run_command([py, "-c", "raise SystemExit(3)"], tmp_path).is_err

@@ -1,6 +1,6 @@
 """Build the web UI (npm ci, npm run build) and copy web/dist into python/sadi/_ui/."""
 
-# frob:ticket ~ZKJSYXC
+# frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 from __future__ import annotations
 
 import logging

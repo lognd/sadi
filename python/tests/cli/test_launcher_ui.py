@@ -1,6 +1,6 @@
 """Launcher UI resolution: explicit, packaged sadi/_ui, then web/dist."""
 
-# frob:ticket ~ZKJSYXC
+# frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 from __future__ import annotations
 
 from pathlib import Path

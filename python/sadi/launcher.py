@@ -1,7 +1,7 @@
 """`sadi` launcher: doctor preflight, then uvicorn serving the API and built web assets."""
 
 # frob:ticket 01M6WMGMM1BP37GS27VRRX9AYP
-# frob:ticket ~ZKJSYXC
+# frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 from __future__ import annotations
 
 import argparse

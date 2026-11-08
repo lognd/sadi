@@ -1,0 +1,11 @@
+kind = "create"
+title = "sadi-py: reconcile sim stubs (__init__.pyi class sim vs sim.pyi), expose SessionConfig on sim.open, add crates/sadi-py/tests to pytest testpaths"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+labels = ["rust"]
+body = "From ~JBD8YVD. Also run the Rust unit tests for sim.rs via goway (only compiled/clippy-checked locally)."
+at = "2026-11-08T04:06:17Z"
+actor = "lognd"
+rev = 1

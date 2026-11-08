@@ -7,7 +7,8 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T09:57:18Z"
-updated = "2026-11-08T09:58:43Z"
+updated = "2026-11-08T09:59:04Z"
+scope = ["web/docs-shots/screenshots.spec.ts"]
 
 [[acceptance]]
 text = "doctor.png and its caption do not present a check state the simulator cannot produce"

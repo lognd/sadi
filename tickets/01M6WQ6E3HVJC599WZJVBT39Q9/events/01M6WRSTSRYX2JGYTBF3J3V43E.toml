@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["A spill planted in the real-dir stand-in is not imported, and its bytes and mtime are unchanged after startup", "Negative controls: the same spill in the app's data root, or with HOME/XDG pointed at the stand-in, IS imported"]
+moved = []
+at = "2026-11-08T05:06:22Z"
+actor = "lognd"
+rev = 1

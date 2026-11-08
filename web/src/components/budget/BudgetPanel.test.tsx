@@ -19,7 +19,6 @@ const budget: ResultBudget = {
 };
 
 describe("budget panel", () => {
-  // frob:tests BudgetPanel
   it("ranks rows and highlights the dominant input", () => {
     const html = renderToString(<BudgetPanel budgets={[budget]} initial="E" />);
     expect(html.indexOf('data-testid="row-b"')).toBeLessThan(html.indexOf('data-testid="row-a"'));

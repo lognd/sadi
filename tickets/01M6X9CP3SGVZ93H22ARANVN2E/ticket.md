@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:56:17Z"
-updated = "2026-11-08T10:02:35Z"
+updated = "2026-11-08T10:02:48Z"
+scope = ["python/sadi/server/curve_source.py"]
 
 [[acceptance]]
 text = "Export and live views detect corruption in already-applied WAL bytes"

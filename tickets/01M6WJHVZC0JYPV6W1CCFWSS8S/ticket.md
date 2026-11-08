@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:29:13Z"
+updated = "2026-11-08T04:29:14Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
@@ -24,7 +24,7 @@ bound = true
 
 [[acceptance]]
 text = "BRW-020 warns on an old or unidentifiable browser"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "BRW-030 is opt-in via --open-browser and warns when the browser never fetches the throwaway page"

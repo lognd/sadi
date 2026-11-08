@@ -104,6 +104,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Health
+         * @description Return status "ok", the package version and the sim flag when known.
+         */
+        get: operations["get_health_api_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/labs": {
         parameters: {
             query?: never;
@@ -1059,6 +1079,21 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * HealthOut
+         * @description Health payload consumed by web/src/api/client.ts getHealth.
+         */
+        HealthOut: {
+            /** Simulated */
+            simulated?: boolean | null;
+            /**
+             * Status
+             * @default ok
+             */
+            status: string;
+            /** Version */
+            version: string;
+        };
+        /**
          * History
          * @description Undo and redo stacks, oldest first; the last element is what undo/redo would act on.
          */
@@ -1864,6 +1899,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_health_api_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthOut"];
                 };
             };
         };

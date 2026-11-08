@@ -1,0 +1,8 @@
+kind = "create"
+title = "e2e: capture never completes (Captured wait times out) on current main"
+type = "bug"
+category = "todo"
+priority = "high"
+at = "2026-11-08T08:34:51Z"
+actor = "lognd"
+rev = 1

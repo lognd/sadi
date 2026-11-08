@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T03:08:23Z"
+digest = "348e17f50c957227726f7c1a1e71e9faf70bb532045e3544de7cee9d6d9bc54c"
+exit_code = 0
+head = "35c9ac81b2350b9ba9e2e9dff6c15e9bba14078e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/jobs/test_tasks.py .                                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-230726-0.xml ---------------
+============================== 1 passed in 2.43s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_tasks.py::test_gp_progressive_best_fit_and_suggestion"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "e42ce5bbdc6319c202e0d2c0af1198b08c7e4645aa068399e03e10c04062a696"
+at = "2026-11-08T03:08:23Z"
+actor = "lognd"
+rev = 1

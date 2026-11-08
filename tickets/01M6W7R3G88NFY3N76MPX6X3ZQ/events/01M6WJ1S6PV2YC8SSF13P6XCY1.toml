@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T03:08:19Z"
+digest = "c6ec9267e3f31ae4d41ace372f95c93b591dd03493ce3bbe86da4add21be27bb"
+exit_code = 0
+head = "35c9ac81b2350b9ba9e2e9dff6c15e9bba14078e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 10 items
+
+python/tests/jobs/test_tasks.py ..........                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-230689-0.xml ---------------
+============================== 10 passed in 2.89s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_tasks.py::test_mc_supersede_interleavings_are_deterministic"
+size = 522
+status = "measured"
+test_count = 10
+tests_digest = "a0893375802dff5158bd717779d5fb29b8a4559fd335564344894ec8ffac6110"
+at = "2026-11-08T03:08:19Z"
+actor = "lognd"
+rev = 1

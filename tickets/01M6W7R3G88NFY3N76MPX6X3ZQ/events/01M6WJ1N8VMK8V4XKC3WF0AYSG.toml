@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T03:08:15Z"
+digest = "83d650f2e3f2d01488ff14a4fa7022da9f214c55ee00336c169484096115a0a6"
+exit_code = 0
+head = "35c9ac81b2350b9ba9e2e9dff6c15e9bba14078e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/jobs/test_tasks.py .                                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-230652-0.xml ---------------
+============================== 1 passed in 2.37s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_tasks.py::test_new_data_version_supersedes_inflight_mc"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "a1ce5b7e2d3f49a4d875da5e11e347689578acc9942bf19cb8c4b4565702914f"
+at = "2026-11-08T03:08:15Z"
+actor = "lognd"
+rev = 1

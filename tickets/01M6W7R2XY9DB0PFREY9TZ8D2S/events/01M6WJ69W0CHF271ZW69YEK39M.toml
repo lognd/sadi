@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T03:10:49Z"
+digest = "71b94bb2e3bf097640f96dd1591e38ebda029bb8fa8b76beb926a2623f707cc4"
+exit_code = 0
+head = "fd4f2431dc7edff7019f8e5ed150d8f80d24edee"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_loading.py .                                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-234048-0.xml ---------------
+============================== 1 passed in 1.51s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_loading.py::test_loading_matches_domain_closed_forms"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "56ab813c47811a9a2922e923db574eee8af275f78f4a456a3097763a183cf5f6"
+at = "2026-11-08T03:10:49Z"
+actor = "lognd"
+rev = 1

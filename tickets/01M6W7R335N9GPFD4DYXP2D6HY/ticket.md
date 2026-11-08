@@ -2,13 +2,13 @@
 id = "01M6W7R335N9GPFD4DYXP2D6HY"
 title = "Wizard framework: step state machine, undo/redo command log, step rail data"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:10:04Z"
 idempotency_key = "sadi-wiz1"
 labels = ["ws:py", "model:sonnet", "creates:python/sadi/core/wizard.py", "creates:python/tests/core/test_wizard.py", "creates:docs/core/wizard.md"]
 scope = ["python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "docs/core/wizard.md"]

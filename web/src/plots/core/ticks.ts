@@ -45,3 +45,32 @@ export function formatTick(value: number, step: number): string {
   const decimals = Math.min(10, Math.max(0, -Math.floor(Math.log10(step))));
   return value.toFixed(decimals);
 }
+
+/** Decade ticks for a log axis: tick values plus the decade-snapped bounds that cover [min, max]. */
+export interface LogTickSet {
+  readonly values: readonly number[];
+  readonly lo: number;
+  readonly hi: number;
+}
+
+/**
+ * Decade ticks (1 x 10^k) covering the positive range [min, max]; spans of two decades or less also
+ * get 2 and 5 minor labels, and spans over seven decades are strided so labels stay readable.
+ * Callers must pass min > 0 (validateScene reports non-positive data as an error first).
+ */
+export function logTicks(min: number, max: number): LogTickSet {
+  const e0 = Math.floor(Math.log10(min) + 1e-9);
+  let e1 = Math.ceil(Math.log10(max) - 1e-9);
+  if (e1 <= e0) e1 = e0 + 1;
+  const decades = e1 - e0;
+  const stride = Math.max(1, Math.ceil(decades / 7));
+  const mantissas = decades <= 2 ? [1, 2, 5] : [1];
+  const values: number[] = [];
+  for (let e = e0; e <= e1; e += stride) {
+    for (const m of mantissas) {
+      const v = Number((m * 10 ** e).toPrecision(12));
+      if (v <= 10 ** e1 * (1 + 1e-9)) values.push(v);
+    }
+  }
+  return { values, lo: Number((10 ** e0).toPrecision(12)), hi: Number((10 ** e1).toPrecision(12)) };
+}

@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
+// frob:ticket 01M6WM4ZDY9EHM2BW9312B5SEY
 import type { Column } from "./scene";
 
 /**
@@ -62,4 +63,31 @@ export function decimateIndices(x: Column, y: Column, buckets: number): number[]
   }
   push(last);
   return out.sort((p, q) => p - q).filter((v, k, arr) => k === 0 || arr[k - 1] !== v);
+}
+
+/**
+ * Zoom-aware decimation: indices into the FULL series that matter for the x window [x0, x1].
+ * Points inside the window are min/max decimated into `buckets` over the window span; the single
+ * neighbour on each side of an in-window run is kept so the line enters and leaves the view. One
+ * O(n) pass, so zoom or resize re-derives the result from the full data without any cached state.
+ */
+export function decimateWindow(x: Column, y: Column, buckets: number, x0: number, x1: number): number[] {
+  const lo = Math.min(x0, x1);
+  const hi = Math.max(x0, x1);
+  const n = Math.min(x.length, y.length);
+  const inside = (i: number): boolean => {
+    const v = x[i] as number;
+    return v >= lo && v <= hi && Number.isFinite(y[i]);
+  };
+  const cand: number[] = [];
+  const xs: number[] = [];
+  for (let i = 0; i < n; i++) {
+    if (inside(i) || (i > 0 && inside(i - 1)) || (i + 1 < n && inside(i + 1))) {
+      cand.push(i);
+      xs.push(Math.min(hi, Math.max(lo, x[i] as number)));
+    }
+  }
+  const ys = cand.map((i) => y[i] as number);
+  const picked = decimateIndices(xs, ys, buckets);
+  return picked.map((k) => cand[k] as number);
 }

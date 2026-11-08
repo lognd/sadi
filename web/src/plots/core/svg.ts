@@ -1,9 +1,8 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
 /* eslint-disable @typescript-eslint/restrict-template-expressions -- numeric geometry in attribute and font strings */
 import type { DrawOp } from "./drawlist";
-import { buildDrawList } from "./drawlist";
-import { computeLayout } from "./layout";
-import type { Scene } from "./scene";
+import { renderPlan } from "./figure";
+import type { Drawable } from "./figure";
 
 /** Escape text for XML content and attribute values. */
 function esc(s: string): string {
@@ -68,7 +67,7 @@ export function drawListToSvg(ops: readonly DrawOp[], width: number, height: num
 }
 
 /** Serialize a scene to SVG using the same layout the canvas uses. */
-export function sceneToSvg(scene: Scene): string {
-  const layout = computeLayout(scene);
-  return drawListToSvg(buildDrawList(scene, layout), scene.width, scene.height, scene.theme.fontFamily);
+export function sceneToSvg(scene: Drawable): string {
+  const plan = renderPlan(scene);
+  return drawListToSvg(plan.ops, plan.width, plan.height, plan.fontFamily);
 }

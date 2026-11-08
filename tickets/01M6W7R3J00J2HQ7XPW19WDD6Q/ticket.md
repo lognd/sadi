@@ -2,7 +2,8 @@
 id = "01M6W7R3J00J2HQ7XPW19WDD6Q"
 title = "Live recompute engine: update all results after every captured point"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

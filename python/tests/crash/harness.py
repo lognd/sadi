@@ -238,7 +238,7 @@ def verify_recovery(run: Run, *, check_resume: bool = True) -> list[str]:
         if not rotated:
             _check_state(sdir, out)
         else:
-            # frob:todo 01M6WJMCTQ6M9SW2C3W6H5B4R2 replay_wal rejects rotated WALs (SEAL seq read as a gap).
+            # frob:todo 01M6WJMCTQ6M9SW2C3W6H5B4R2 rotated-WAL replay gap
             _log.warning("skipping replay check on rotated WAL (known bug ~6H5B4R2)")
     elif run.oracle.max_ack:
         out.append("I2: acknowledged records but no segment files")

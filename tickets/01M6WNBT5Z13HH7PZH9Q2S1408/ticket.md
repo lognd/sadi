@@ -17,7 +17,7 @@ bound = false
 
 [[acceptance]]
 text = "sim.rs Rust unit tests and crates/sadi-py/tests run in the suites"
-bound = false
+bound = true
 +++
 
 From ~JBD8YVD. Also run the Rust unit tests for sim.rs via goway (only compiled/clippy-checked locally).

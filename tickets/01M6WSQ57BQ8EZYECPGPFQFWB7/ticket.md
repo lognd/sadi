@@ -2,7 +2,8 @@
 id = "01M6WSQ57BQ8EZYECPGPFQFWB7"
 title = "ad3: FakeDwf simulated device backend and SADI signal-injection bench"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

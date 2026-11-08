@@ -160,3 +160,19 @@ def test_edit_validation() -> None:
     log.apply(w.undo(log.state))
     assert "fit_window" not in log.state.view().analysis
     assert isinstance(log.state.edits[0].edit, EditV1)
+
+
+# frob:tests python/sadi/core/wizard.py::WizardState.finished
+# frob:tests python/sadi/core/wizard.py::History.can_undo
+# frob:tests python/sadi/core/wizard.py::History.can_redo
+def test_flags_finished_can_undo_can_redo() -> None:
+    w, log = _wiz(), Log()
+    assert not w.state(log.state).finished
+    assert not w.history(log.state).can_undo and not w.history(log.state).can_redo
+    log.apply(w.capture(log.state, _point("p")))
+    assert w.history(log.state).can_undo
+    log.apply(w.undo(log.state))
+    assert w.history(log.state).can_redo
+    for sid in ("calibrate", "tare", "load"):
+        log.apply(w.skip(log.state, StepId(sid)))
+    assert w.state(log.state).finished

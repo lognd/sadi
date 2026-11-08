@@ -1,0 +1,15 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:51:26Z"
+digest = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+exit_code = 0
+head = "bdc6521cd38ea74afa7bf83758fcb3c49a20a49d"
+inline = ""
+passed = true
+provider = "command"
+ref = "git grep -q results.md docs/index.md"
+size = 0
+status = "measured"
+at = "2026-11-08T05:51:26Z"
+actor = "lognd"
+rev = 1

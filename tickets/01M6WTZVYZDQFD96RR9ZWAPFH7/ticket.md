@@ -7,7 +7,7 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:45:03Z"
+updated = "2026-11-08T05:45:16Z"
 labels = ["ws:srv"]
 scope = ["python/pyproject.toml", "python/uv.lock"]
 

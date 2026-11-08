@@ -1,15 +1,13 @@
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
+// frob:ticket 01M6WWMS5EKF26MGK5YGR0E3TZ
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { getLogger } from "../../api/log";
-import { isTextTarget } from "../../keys/keymap";
+import { isTextTarget, resolveKey } from "../../keys/keymap";
 import { exportFigure, renderToCanvas } from "../core";
 import { useTrace, type UseTraceOptions } from "../../hooks/useTrace";
 import { buildLiveScene } from "./scene";
 
 const log = getLogger("plots.live.view");
-
-/** Key that exports the current frame as PNG (F3, per docs/ux.md). */
-export const EXPORT_KEY = "F3";
 
 /** Save a blob through a temporary link; browser only. */
 function saveBlob(blob: Blob, name: string): void {
@@ -43,7 +41,8 @@ export function LivePlot(props: UseTraceOptions & { readonly width?: number; rea
   }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key !== EXPORT_KEY || isTextTarget(e.target as { tagName?: string; isContentEditable?: boolean } | null)) return;
+      const textFocus = isTextTarget(e.target as { tagName?: string; isContentEditable?: boolean } | null);
+      if (resolveKey(e, { textFocus, nudgeActive: false }) !== "export") return;
       e.preventDefault();
       void doExport();
     };

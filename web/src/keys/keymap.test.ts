@@ -12,6 +12,7 @@ describe("keymap", () => {
     expect(resolveKey(ev(" "), ctx)).toBe("accept");
     expect(resolveKey(ev(" ", { shiftKey: true }), ctx)).toBe("accept-unsettled");
   });
+  // frob:ticket 01M6WWMS5EKF26MGK5YGR0E3TZ
   it("maps F3 to export, inert in text fields", () => {
     expect(resolveKey(ev("F3"), ctx)).toBe("export");
     expect(resolveKey(ev("F3"), { ...ctx, textFocus: true })).toBeNull();

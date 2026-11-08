@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["inventory.py and export.py propagate errors via @propagate/unwrap with no TYP004 findings and unchanged problem+json behaviour"]
+moved = []
+at = "2026-11-08T06:17:28Z"
+actor = "lognd"
+rev = 1

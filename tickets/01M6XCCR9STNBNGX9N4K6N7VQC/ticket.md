@@ -2,12 +2,12 @@
 id = "01M6XCCR9STNBNGX9N4K6N7VQC"
 title = "Drive StreamHandle.close and SocketLike.close through typed params"
 type = "chore"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:48:45Z"
-updated = "2026-11-08T10:48:45Z"
+updated = "2026-11-08T10:48:51Z"
 scope = ["web/src/typedcalls.test.ts"]
 +++
 

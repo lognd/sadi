@@ -29,15 +29,17 @@ REL_UNC = 0.005  # 0.5 % relative standard uncertainty keeps first-order propaga
 RHO = 0.4  # < 0.5 keeps the neighbour-chained correlation matrix positive definite
 
 # name -> (formula, nominal argument values); every value is non-zero, well conditioned and of
-# magnitude >= 1 (the numeric path mishandles |x| < 1 near a pole: bug ~SJ9VQC9, see SI_SMALL).
+# any magnitude (realistic SI cases with |x| < 1 are included; bug ~SJ9VQC9 fixed).
 FORMULAS: dict[str, tuple[Uncertain, tuple[float, ...]]] = {
     "height_at": (calibration.height_at, (2.5, 0.3, 1.7)),
     "displacement": (calibration.displacement, (2.5, 0.8)),
     "load_force": (loading.load_force, (12.0, 0.5, 9.81)),
     "cross_area": (loading.cross_area, (12.5,)),
     "stress": (loading.stress, (150.0, 12.0)),
+    "stress_si": (loading.stress, (150.0, 1.2e-4)),
     "strain": (loading.strain, (4.0, 3.2, 0.4, 8.3)),
     "secant_modulus": (modulus.secant_modulus, (2.0e6, 4.0)),
+    "secant_modulus_si": (modulus.secant_modulus, (2.0e6, 0.004)),
     "chord_modulus": (modulus.chord_modulus, (4.0e6, 1.2e7, 2.0, 6.0)),
     "yield_stress": (yield_.yield_stress, (1.0e6, 3.5, 2.0e6, 5.0, 2.0e5, 2.0)),
     "yield_strain": (yield_.yield_strain, (1.0e6, 3.5, 2.0e6, 5.0, 2.0e5, 2.0)),
@@ -125,9 +127,8 @@ def test_degenerate_yield_segment_is_typed() -> None:
 
 
 # frob:tests python/sadi/uncertainty/numeric.py::gradient
-@pytest.mark.xfail(strict=True, reason="bug ~SJ9VQC9: numeric step floor crosses the pole")
 def test_si_small_stress_numeric_path() -> None:
-    """Realistic SI stress (area 1.2e-4 m^2) should cross-check; blocked by ~SJ9VQC9."""
+    """Realistic SI stress (area 1.2e-4 m^2) cross-checks (regression for ~SJ9VQC9)."""
     area = Measured.create(1.2e-4, 1.2e-6).unwrap()
     force = Measured.create(150.0, 1.5).unwrap()
     loading.stress.cross_check(force, area, rel_tol=REL_TOL).unwrap()

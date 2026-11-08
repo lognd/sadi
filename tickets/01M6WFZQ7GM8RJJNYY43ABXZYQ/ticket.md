@@ -2,7 +2,8 @@
 id = "01M6WFZQ7GM8RJJNYY43ABXZYQ"
 title = "Plugin docs: plugins.md, lab-modules, doctor, CLI, index"
 type = "docs"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

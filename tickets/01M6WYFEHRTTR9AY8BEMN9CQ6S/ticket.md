@@ -2,7 +2,8 @@
 id = "01M6WYFEHRTTR9AY8BEMN9CQ6S"
 title = "Expose ByteFaultPlan in sadi_py.sim bindings"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

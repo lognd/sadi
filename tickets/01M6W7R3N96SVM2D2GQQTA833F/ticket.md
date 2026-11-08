@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0EPXRHEMNEAB9QWVY57"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:18:34Z"
+updated = "2026-11-08T03:20:40Z"
 idempotency_key = "sadi-u5"
 labels = ["ws:unc", "qa", "model:sonnet", "creates:python/tests/uncertainty/crosscheck/**", "creates:docs/uncertainty/crosscheck.md"]
-scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md"]
+scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md", "docs/uncertainty/fallbacks.md"]
 
 [[links]]
 kind = "blocked-by"

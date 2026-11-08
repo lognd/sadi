@@ -27,7 +27,7 @@ target = "01M6W7R3RXWS1WSH3TPXMK16Q2"
 
 [[acceptance]]
 text = "For each phase (calibrate, elastic, plastic) returns next action text ('Use weights 3, 5, 6'; 'Wait: creeping'; 'Press Space to accept'), expected value, running confidence indicator (current half-width vs user target), and stop-early recommendation"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Phase transition proposed (never forced) when confidence is enough; user can ignore and continue"

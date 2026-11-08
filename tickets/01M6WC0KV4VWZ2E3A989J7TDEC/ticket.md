@@ -2,7 +2,8 @@
 id = "01M6WC0KV4VWZ2E3A989J7TDEC"
 title = "Route specimen ids and titles through sanitize_name in the session store"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

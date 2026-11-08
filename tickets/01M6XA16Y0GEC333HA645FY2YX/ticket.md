@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:07:30Z"
-updated = "2026-11-08T10:12:02Z"
+updated = "2026-11-08T10:12:18Z"
+scope = ["docs/server/websocket.md"]
 
 [[acceptance]]
 text = "Hub publishes guidance after result/settle-state changes, de-duplicated, via an end-to-end WS test"

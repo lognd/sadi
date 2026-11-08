@@ -2,11 +2,12 @@
 id = "01M6WM63C59QDCSJ6HD48GN3NY"
 title = "Plot core: error bars, band highlight, annotation collision avoidance"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-08T03:45:41Z"
-updated = "2026-11-08T03:45:41Z"
+updated = "2026-11-08T03:47:25Z"
 scope = ["web/src/plots/core/**"]
 +++
 

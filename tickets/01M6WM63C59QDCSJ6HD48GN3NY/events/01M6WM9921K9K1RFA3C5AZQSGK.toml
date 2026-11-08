@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "wont-fix"
+reason = "Superseded: error bars and auto annotation anchor landed with DDAPA9P; remainder covered by ~12B5SEY"
+at = "2026-11-08T03:47:25Z"
+actor = "lognd"
+rev = 1

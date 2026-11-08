@@ -1921,13 +1921,13 @@ acked_at = "2026-11-08T07:05:07.74848138Z"
 [[symbol]]
 identity = "web/src/screens/export/ExportScreen.tsx::FormatList"
 symref = "web/src/screens/export/ExportScreen.tsx::FormatList"
-sig = "efb09aa53a6986e44d31da9ff6f1c61efde4a8859722c945e1a33034c4ca72f0"
-body = "4fe383a2bd3450aa2f970b2bbdd0d06a99d3319b09f6e7929ad6a31c176c25f8"
-doc = "50574172b85ddec136072b88d89c0466482ea1692b50ec0e469f97c5512798a6"
+sig = "6dc2548798df9eade119c50cc058e2d594bd17e9927cf5c771279ffda79ff822"
+body = "600284a64e300dd2e51f3b32a95dedca13e0253526d224e7f690b496a2eccb16"
+doc = "a498ae96f712f9a541955dc6dcd862e0454fcd666fd59e69b2ad8dda80a02ba8"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "8e7cbf07c247ee43ee8eb06ab669e6d02f54d87af2b02cc2cd3ef8ee5dd0ae38"
+contract = "a06235acde1d97ccf90a86c41ae6f557080ad44fb55d05a6bab8856dc44fab8b"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T05:53:09.37934528Z"
+acked_at = "2026-11-08T10:15:37.909582082Z"
 
 [[symbol]]
 identity = "web/src/screens/export/ExportScreen.tsx::ProblemAlert"

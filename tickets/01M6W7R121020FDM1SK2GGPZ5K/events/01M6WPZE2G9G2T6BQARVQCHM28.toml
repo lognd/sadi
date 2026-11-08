@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md"]
+new = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md", "docs/index.md"]
+at = "2026-11-08T04:34:28Z"
+actor = "lognd"
+rev = 1

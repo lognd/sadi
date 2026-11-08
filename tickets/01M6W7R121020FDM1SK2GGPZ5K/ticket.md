@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:17Z"
-updated = "2026-11-08T04:32:36Z"
+updated = "2026-11-08T04:34:28Z"
 idempotency_key = "sadi-r6"
 labels = ["ws:rust", "optional", "unverified-protocol", "model:sonnet", "creates:crates/sadi-proto/src/v3/**", "creates:crates/sadi-proto/tests/vectors_v3.rs", "creates:docs/device/v3.md"]
-scope = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md"]
+scope = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"

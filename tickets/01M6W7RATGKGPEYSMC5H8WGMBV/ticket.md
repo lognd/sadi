@@ -2,13 +2,13 @@
 id = "01M6W7RATGKGPEYSMC5H8WGMBV"
 title = "Results/Export screen: report view, figure export, CSV download"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T05:51:13Z"
 idempotency_key = "sadi-f15"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/export/**", "creates:docs/web/export-screen.md"]
 scope = ["web/src/screens/export/**", "docs/web/export-screen.md"]

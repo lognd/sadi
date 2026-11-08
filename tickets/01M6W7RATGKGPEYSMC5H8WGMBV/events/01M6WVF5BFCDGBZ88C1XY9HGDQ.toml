@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Summary of final values with U and which settle value fed E, export-all-figures (PNG/SVG at chosen DPI), CSV download in the 32-column schema", "Shows export provenance from DS7"]
+new = ["Summary of final values with U and which settle value fed E, export-all-figures (PNG/SVG at chosen DPI), CSV download in the 32-column schema", "Shows export provenance from DS7", "Empty export format list shows a clear message", "problem+json errors show the server hint"]
+moved = [1, 2]
+at = "2026-11-08T05:52:58Z"
+actor = "lognd"
+rev = 1

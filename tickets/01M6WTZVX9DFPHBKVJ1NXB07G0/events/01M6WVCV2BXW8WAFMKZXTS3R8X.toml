@@ -1,0 +1,36 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:51:39Z"
+digest = "427c7eba8b5ed96d391a581dbf5c78bc1e9d9b1fa5911f788830853691cb17cc"
+exit_code = 0
+head = "f76307468611a41da56ed85aec8b213f74f75c43"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/cli/test_launcher.py ...                                    [ 75%]
+python/tests/server/test_app.py .                                        [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-517484-0.xml ---------------
+========================= 4 passed, 1 warning in 2.23s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/cli/test_launcher.py::test_sim_flag_injects_device python/tests/cli/test_launcher.py::test_sim_requested_flag_and_env python/tests/cli/test_launcher.py::test_sim_open_failure_exits_device python/tests/server/test_app.py::test_device_status_uses_injected_device"
+size = 1083
+status = "measured"
+test_count = 4
+tests_digest = "f24f06511a699a3514d54f5b85c53e90031a1f139beecc293d7ddf46c8fa81a4"
+at = "2026-11-08T05:51:39Z"
+actor = "lognd"
+rev = 1

@@ -9,6 +9,8 @@ them in the threadpool and the event loop stays free). All logic lives in
 
 Live data (trace frames, state, results) is pushed over a WebSocket: [websocket.md](websocket.md).
 
+Related REST surfaces: [results.md](results.md) and [export.md](export.md).
+
 ## Data safety
 
 - Every write is a WAL record, durable (`wait_durable`) before the response is sent.

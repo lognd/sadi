@@ -223,3 +223,86 @@ def test_version_flag(capsys: pytest.CaptureFixture[str]) -> None:
     """frob:tests sadi.launcher.package_version - --version prints and exits 0."""
     assert launcher.main(["--version"]) == 0
     assert capsys.readouterr().out.startswith("sadi ")
+
+
+class _FakeDevice:
+    """Stand-in for a simulator DeviceService."""
+
+    status = "simulated"
+    fault = None
+    closed = False
+
+    def close(self) -> None:
+        """Record shutdown."""
+        _FakeDevice.closed = True
+
+
+def test_sim_requested_flag_and_env() -> None:
+    """frob:tests sadi.launcher.sim_requested - flag or SADI_SIM enables the simulator."""
+    assert launcher.sim_requested(True, {})
+    assert launcher.sim_requested(False, {"SADI_SIM": "1"})
+    assert not launcher.sim_requested(False, {"SADI_SIM": "0"})
+    assert not launcher.sim_requested(False, {})
+
+
+def test_sim_flag_injects_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """frob:tests sadi.launcher.main - --sim passes the simulator device via AppSettings."""
+    seen: list[object] = []
+    _FakeDevice.closed = False
+
+    def fake_serve(app: FastAPI, _h: str, _p: int) -> None:
+        seen.append(app.state.settings.device)
+
+    monkeypatch.setattr(launcher, "open_sim_device", lambda: Ok(_FakeDevice()))
+    argv = [
+        "--sim",
+        "--skip-preflight",
+        "--no-browser",
+        "--port",
+        "0",
+        "--data-root",
+        str(tmp_path),
+    ]
+    assert launcher.main(argv, serve=fake_serve) == 0
+    assert isinstance(seen[0], _FakeDevice)
+    assert _FakeDevice.closed
+
+
+def test_no_sim_means_no_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Without --sim or SADI_SIM no device is injected."""
+    monkeypatch.delenv("SADI_SIM", raising=False)
+    seen: list[object] = []
+
+    def fake_serve(app: FastAPI, _h: str, _p: int) -> None:
+        seen.append(app.state.settings.device)
+
+    argv = ["--skip-preflight", "--no-browser", "--port", "0", "--data-root", str(tmp_path)]
+    assert launcher.main(argv, serve=fake_serve) == 0
+    assert seen == [None]
+
+
+def test_sim_open_failure_exits_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """A failing simulator open exits EXIT_DEVICE without serving."""
+    monkeypatch.setattr(launcher, "open_sim_device", lambda: Err("no sadi_py"))
+    argv = [
+        "--sim",
+        "--skip-preflight",
+        "--no-browser",
+        "--port",
+        "0",
+        "--data-root",
+        str(tmp_path),
+    ]
+    assert launcher.main(argv, serve=_enter) == launcher.EXIT_DEVICE
+
+
+def test_python_dash_m_sadi() -> None:
+    """frob:tests sadi.__main__ - `python -m sadi --version` runs the launcher."""
+    import subprocess
+    import sys
+
+    res = subprocess.run(
+        [sys.executable, "-m", "sadi", "--version"], capture_output=True, text=True, check=False
+    )
+    assert res.returncode == 0
+    assert res.stdout.startswith("sadi ")

@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6WMGMM1BP37GS27VRRX9AYP
 # frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
+# frob:ticket 01M6WTZVX9DFPHBKVJ1NXB07G0
 from __future__ import annotations
 
 import argparse
@@ -13,9 +14,10 @@ import sys
 import threading
 import time
 import webbrowser
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from importlib import metadata, resources
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import uvicorn
 from fastapi import FastAPI
@@ -29,6 +31,9 @@ from sadi.doctor.schema import DoctorReport, RunOptions
 from sadi.logging_setup import get_logger
 from sadi.server.app import AppSettings, RootLockStartupError, create_app
 
+if TYPE_CHECKING:
+    from sadi.core.device import DeviceService
+
 _log = get_logger(__name__)
 
 EXIT_USAGE = 64
@@ -39,6 +44,8 @@ DEFAULT_PORT = 8000
 DEFAULT_WEB_DIST = Path("web") / "dist"
 EXIT_SELFTEST = 4
 EXIT_PORT = 5
+EXIT_DEVICE = 6
+SIM_ENV = "SADI_SIM"
 APP_NAME = "sadi"
 BROWSER_WAIT_S = 15.0
 
@@ -159,6 +166,28 @@ def selftest() -> Result[int, str]:
     return Ok(facts.packets)
 
 
+def sim_requested(flag: bool, env: Mapping[str, str] | None = None) -> bool:
+    """Return whether the simulator is wanted: the `--sim` flag or `SADI_SIM` set to 1/true/yes."""
+    values = os.environ if env is None else env
+    return flag or values.get(SIM_ENV, "").strip().lower() in ("1", "true", "yes")
+
+
+def open_sim_device() -> Result[DeviceService, str]:
+    """Open a simulator `DeviceService` for the app; Err when `sadi_py` or the open fails."""
+    try:
+        from sadi.core.device import DeviceService, DeviceSource
+    except ImportError as exc:
+        _log.error("simulator unavailable: %s", exc)
+        return Err(f"simulator unavailable (sadi_py not importable): {exc}")
+    svc = DeviceService(DeviceSource(kind="sim"))
+    opened = svc.open()
+    if opened.is_err:
+        _log.error("simulator open failed: %s", opened.danger_err.detail)
+        return Err(f"simulator open failed: {opened.danger_err.detail}")
+    _log.info("simulator device open")
+    return Ok(svc)
+
+
 def package_version() -> str:
     """Installed `sadi` version, or `unknown` when not installed."""
     try:
@@ -267,16 +296,22 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     port = port_got.danger_ok
     data_root = args.data_root if args.data_root is not None else default_data_dir()
     _out(f"sadi: data directory: {data_root}\n")
-    if args.sim:
-        os.environ["SADI_SIM"] = "1"
-        _log.info("simulator mode requested (SADI_SIM=1)")
+    sim = sim_requested(args.sim)
     if not args.skip_preflight:
         pre = preflight(data_root, port)
         if pre.is_err:
             _err(pre.danger_err)
             _err("sadi: doctor preflight failed; follow the steps above, then retry.\n")
             return EXIT_PREFLIGHT
-    app = create_app(AppSettings(data_root=data_root))
+    device: DeviceService | None = None
+    if sim:
+        _log.info("simulator mode requested")
+        opened = open_sim_device()
+        if opened.is_err:
+            _err(f"sadi: {opened.danger_err}\n")
+            return EXIT_DEVICE
+        device = opened.danger_ok
+    app = create_app(AppSettings(data_root=data_root, device=device))
     mount_web(app, resolve_web_dist(args.web_dist))
     _out(f"sadi: serving at http://{args.host}:{port}/\n")
     if not args.no_browser:
@@ -291,6 +326,9 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     except KeyboardInterrupt:
         _log.info("interrupted; server shut down gracefully")
         _out("sadi: stopped\n")
+    finally:
+        if device is not None:
+            device.close()
     return 0
 
 

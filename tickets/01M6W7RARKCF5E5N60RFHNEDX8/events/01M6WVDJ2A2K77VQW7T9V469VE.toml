@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/FHNEDX8; scope: web/src/screens/review/**, docs/web/review-screen.md; ttl 7200s"
+at = "2026-11-08T05:52:05Z"
+actor = "lognd"
+rev = 1

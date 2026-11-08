@@ -7,5 +7,6 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:46:56Z"
-updated = "2026-11-08T06:47:05Z"
+updated = "2026-11-08T06:47:24Z"
+scope = ["python/tests/labs/lctt/test_lab_export.py"]
 +++

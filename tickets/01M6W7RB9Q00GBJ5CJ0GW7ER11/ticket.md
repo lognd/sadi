@@ -35,7 +35,7 @@ bound = true
 
 [[acceptance]]
 text = "Runs on ubuntu, windows, macos in e2e.yml"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

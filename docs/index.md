@@ -3,6 +3,7 @@
 Status: current
 
 - [Domain specification](domain.md)
+- [User guide: running a test](user-guide.md)
 - [Plan](plan.md)
 - [Protocol](protocol.md)
 - [Open questions](open-questions.md)

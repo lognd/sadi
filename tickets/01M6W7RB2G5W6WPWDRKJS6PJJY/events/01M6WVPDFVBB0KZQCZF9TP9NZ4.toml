@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Step-by-step bench procedure mapping to docs/domain.md section 6, including clamp-slip pre-check, calibration, tare, hold/confirm, review, export", "States which settle value feeds the E fit and how to override it", "Screenshots under docs/img/ui/", "docs/index.md links user-guide.md and the guide carries Status and Parent headers"]
+new = ["Step-by-step bench procedure mapping to docs/domain.md section 6, including clamp-slip pre-check, calibration, tare, hold/confirm, review, export", "States which settle value feeds the E fit and how to override it", "docs/index.md links user-guide.md and the guide carries Status and Parent headers"]
+moved = [1, 2, 0, 3]
+at = "2026-11-08T05:56:56Z"
+actor = "lognd"
+rev = 1

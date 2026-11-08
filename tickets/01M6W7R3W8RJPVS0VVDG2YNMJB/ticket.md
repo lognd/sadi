@@ -2,13 +2,13 @@
 id = "01M6W7R3W8RJPVS0VVDG2YNMJB"
 title = "Guided run engine: phase-wise next-step guidance and confidence status"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R081S67XNGBH79ACCBZZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T05:19:17Z"
 idempotency_key = "sadi-ph1"
 labels = ["ws:plan", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/guidance.py", "creates:python/tests/labs/lctt/test_guidance.py", "creates:docs/lctt/guidance.md"]
 scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "docs/lctt/guidance.md"]

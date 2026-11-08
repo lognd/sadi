@@ -2,12 +2,12 @@
 id = "01M6WC0KV4VWZ2E3A989J7TDEC"
 title = "Route specimen ids and titles through sanitize_name in the session store"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T01:22:53Z"
-updated = "2026-11-08T01:22:53Z"
+updated = "2026-11-08T03:02:20Z"
 
 [[acceptance]]
 text = "User-derived names used in paths go through sanitize_name/unique_name"

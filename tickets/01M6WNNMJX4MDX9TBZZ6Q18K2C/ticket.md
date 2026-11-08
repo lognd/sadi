@@ -2,12 +2,12 @@
 id = "01M6WNNMJX4MDX9TBZZ6Q18K2C"
 title = "WAL POINT must persist settled, forced-early and drift flags (not only phase/window/inputs)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:11:39Z"
-updated = "2026-11-08T04:11:39Z"
+updated = "2026-11-08T04:14:19Z"
 labels = ["python"]
 +++
 

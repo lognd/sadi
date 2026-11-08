@@ -2,7 +2,8 @@
 id = "01M6WMJZPYNHZR0KHY2C6W07WH"
 title = "Mount save-indicator router in app and register mark_failed"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

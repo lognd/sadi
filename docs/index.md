@@ -32,6 +32,7 @@ Status: current
 - [Plot renderer core](web/plots.md)
 - [Calibration plot](web/calibration-plot.md)
 - [Server app](server/app.md)
+- [Server inventory API](server/inventory.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

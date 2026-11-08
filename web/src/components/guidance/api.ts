@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RAPKVH796SZ6Z9EFDXQE
+// frob:accept COV001 because="covered by GuidancePanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import type { Result } from "../../api/result";
 import type { GuidancePhase, GuidanceState, HoldState } from "./types";

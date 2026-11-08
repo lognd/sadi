@@ -1,5 +1,5 @@
 // frob:ticket 01M6W7RAPKVH796SZ6Z9EFDXQE
-// frob:accept COV001
+// frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
 import {

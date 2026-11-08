@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RAPKVH796SZ6Z9EFDXQE
+// frob:accept COV001 because="covered by GuidancePanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useState, type KeyboardEvent } from "react";
 import { getLogger } from "../../api/log";
 import type { GuidancePhase, GuidanceState } from "./types";

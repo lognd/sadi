@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:38:19Z"
-updated = "2026-11-08T10:39:26Z"
+updated = "2026-11-08T10:39:32Z"
+scope = ["web/src/typedcalls.test.ts"]
 
 [[acceptance]]
 text = "Add vitest tests with receiver-qualified calls and vitest evidence for the unresolved web COV001 findings"

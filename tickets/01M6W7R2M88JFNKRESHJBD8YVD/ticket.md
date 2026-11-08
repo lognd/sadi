@@ -2,13 +2,14 @@
 id = "01M6W7R2M88JFNKRESHJBD8YVD"
 title = "sadi-py: simulator and fault-plan bindings"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T04:05:17Z"
+updated = "2026-11-08T04:06:00Z"
 idempotency_key = "sadi-r7b"
 labels = ["ws:rust", "fault-injection", "model:sonnet", "creates:crates/sadi-py/src/sim.rs", "creates:crates/sadi-py/python/sadi_py/sim.pyi", "creates:crates/sadi-py/tests/**"]
 scope = ["crates/sadi-py/src/sim.rs", "crates/sadi-py/python/sadi_py/sim.pyi", "crates/sadi-py/tests/**", "docs/device/python-binding.md"]

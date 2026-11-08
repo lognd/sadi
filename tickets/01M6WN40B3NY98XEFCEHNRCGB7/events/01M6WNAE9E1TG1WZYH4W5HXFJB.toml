@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["creates:python/sadi/core/point_inputs.py", "python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "python/sadi/server/curve_source.py", "creates:python/tests/api/test_point_roundtrip.py", "docs/server/app.md", "docs/api/acquisition.md"]
+new = ["creates:python/sadi/core/point_inputs.py", "python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "python/sadi/server/curve_source.py", "creates:python/tests/api/test_point_roundtrip.py", "docs/server/app.md", "docs/api/acquisition.md", "python/sadi/core/point_inputs.py"]
+at = "2026-11-08T04:05:32Z"
+actor = "lognd"
+rev = 1

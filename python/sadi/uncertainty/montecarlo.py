@@ -236,23 +236,32 @@ class McSampler:
                 return Err(y.danger_err)
             self._outputs.append(y.danger_ok)
             _log.debug("mc batch %d done, n=%d", len(self._outputs), self.n)
-        return Ok(self.estimate())
+        return self.estimate()
 
-    def estimate(self) -> McEstimate:
-        """Summarise all samples drawn so far (requires at least two)."""
+    def estimate(self) -> Result[McEstimate, MonteCarloError]:
+        """Summarise samples so far (needs two); McNonFinite if statistics overflow."""
         y = np.concatenate(self._outputs)
         n = len(y)
-        sd = float(np.std(y, ddof=1))
+        # frob:ticket 01M6WK9WBZ01A4XA77S5T2MJV9
+        # finite samples near 1e300 overflow sum/square; type it, don't warn.
+        with np.errstate(over="ignore", invalid="ignore"):
+            sd = float(np.std(y, ddof=1))
+            mean = float(np.mean(y))
         low, high = (float(q) for q in np.percentile(y, [2.5, 97.5]))
-        return McEstimate(
-            n=n,
-            seed=self._seed,
-            mean=float(np.mean(y)),
-            std=sd,
-            low=low,
-            high=high,
-            se_mean=sd / math.sqrt(n),
-            se_std=sd / math.sqrt(2.0 * (n - 1)),
+        if not (math.isfinite(sd) and math.isfinite(mean)):
+            _log.warning("mc statistics overflowed at n=%d (mean=%g sd=%g)", n, mean, sd)
+            return Err(MonteCarloError.McNonFinite)
+        return Ok(
+            McEstimate(
+                n=n,
+                seed=self._seed,
+                mean=mean,
+                std=sd,
+                low=low,
+                high=high,
+                se_mean=sd / math.sqrt(n),
+                se_std=sd / math.sqrt(2.0 * (n - 1)),
+            )
         )
 
 

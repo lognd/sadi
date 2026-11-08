@@ -24,6 +24,7 @@ dev = [
     "hypothesis",
     "ruff",
     "ty",
+    "httpx",
 ]
 
 [build-system]

@@ -29,6 +29,13 @@ covariances. `Measured.correlate(other, rho)` declares a correlation. Derived qu
 inherit their covariance with every registered quantity, so correlation is not lost
 through intermediate results.
 
+Entries are ref-counted to the lifetime of their `Measured` (`retain`/`release` via
+`weakref.finalize`): once the last object with an id is garbage collected the id and its
+covariances are forgotten, so the registry does not grow without bound. `register_derived`
+walks only the sources and their stored covariance neighbours (an adjacency index), so its
+cost follows the derived value's ancestry, not the registry size. Ids registered directly
+with `register` (no `Measured`) live until `forget` is called.
+
 ## Coverage
 
 `t95(dof)`, `interval95(value, u, dof)`, `relative_uncertainty(value, u)` and

@@ -1,0 +1,15 @@
+kind = "create"
+title = "Server doctor endpoints: GET /api/doctor and POST /api/doctor/{check_id}/run"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/routes_doctor.py"]
+acceptance = ["GET /api/doctor returns a DoctorReport", "POST /api/doctor/{check_id}/run re-runs one check and returns its CheckResult"]
+body = "Follow-up from JCJ0197: implement the endpoints the web doctor client expects (DoctorReport / CheckResult from python/sadi/doctor/schema.py); see docs/web/doctor-ui.md."
+at = "2026-11-08T03:35:02Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6WA9WZW89EA826DSJCJ0197"

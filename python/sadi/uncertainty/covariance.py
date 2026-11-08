@@ -24,12 +24,48 @@ class CovarianceRegistry:
         self._lock = threading.RLock()
         self._var: dict[str, float] = {}
         self._cov: dict[frozenset[str], float] = {}
+        self._nbrs: dict[str, set[str]] = {}  # ids with a stored nonzero covariance
+        self._refs: dict[str, int] = {}
 
     def register(self, ident: str, variance: float) -> None:
         """Record (or replace) the variance of `ident`."""
         with self._lock:
             self._var[ident] = variance
             _log.debug("registered %s var=%g", ident, variance)
+
+    def retain(self, ident: str) -> None:
+        """Add one owner of `ident`; pair each call with `release` (e.g. via weakref.finalize)."""
+        with self._lock:
+            self._refs[ident] = self._refs.get(ident, 0) + 1
+
+    def release(self, ident: str) -> None:
+        """Drop one owner of `ident`; forget it once no owners remain."""
+        with self._lock:
+            n = self._refs.get(ident, 0) - 1
+            if n > 0:
+                self._refs[ident] = n
+                return
+            self._refs.pop(ident, None)
+            self.forget(ident)
+
+    def forget(self, ident: str) -> None:
+        """Remove `ident` and every covariance involving it (cost ~ its neighbour count)."""
+        with self._lock:
+            self._var.pop(ident, None)
+            for w in self._nbrs.pop(ident, ()):
+                self._cov.pop(frozenset((ident, w)), None)
+                peers = self._nbrs.get(w)
+                if peers is not None:
+                    peers.discard(ident)
+                    if not peers:
+                        del self._nbrs[w]
+            _log.debug("forgot %s", ident)
+
+    def _store_cov(self, a: str, b: str, cov: float) -> None:
+        """Store cov(a, b) and index the pair for neighbour lookup (lock held)."""
+        self._cov[frozenset((a, b))] = cov
+        self._nbrs.setdefault(a, set()).add(b)
+        self._nbrs.setdefault(b, set()).add(a)
 
     def known(self, ident: str) -> bool:
         """Return True if `ident` has a registered variance."""
@@ -51,7 +87,7 @@ class CovarianceRegistry:
             if abs(cov) > bound * (1 + 1e-12):
                 _log.warning("covariance %g exceeds bound %g for %s,%s", cov, bound, a, b)
                 return Err(UncertaintyError.InvalidCorrelation)
-            self._cov[frozenset((a, b))] = cov
+            self._store_cov(a, b, cov)
             _log.debug("cov(%s,%s)=%g", a, b, cov)
             return Ok(None)
 
@@ -82,15 +118,21 @@ class CovarianceRegistry:
 
         Stores cov(ident, w) = sum_i c_i cov(x_i, w) for every known w, so later
         combinations of derived and source quantities keep their correlation.
+        Only ids with a stored covariance to some source can be nonzero, so the cost
+        follows the sources' neighbourhood, not the registry size.
         """
         with self._lock:
             var = max(0.0, first_order_variance(self, terms))
-            others = [w for w in self._var if w != ident]
+            cands: set[str] = set()
+            for x, _ in terms:
+                cands.add(x)
+                cands.update(self._nbrs.get(x, ()))
+            others = [w for w in cands if w != ident and w in self._var]
             covs = {w: sum(c * self.covariance(x, w) for x, c in terms) for w in others}
             self.register(ident, var)
             for w, cov in covs.items():
                 if cov != 0.0:
-                    self._cov[frozenset((ident, w))] = cov
+                    self._store_cov(ident, w, cov)
             return var
 
 

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:38:02Z"
+digest = "d626fa0f5cc8883e1816c2c5176e6b461bea606cc8caa1c438bb188fe837be34"
+exit_code = 0
+head = "5837421b2e5d3e3b3f195160010acbdd7fe7ff89"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_sessions_survey.py .                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-283383-0.xml ---------------
+============================== 1 passed in 0.71s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sessions_survey.py::test_missing_manifest_is_stale"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "a4fe8d40060197d3868e261e743713df78134ccec522d56d48f628e9ed445b54"
+at = "2026-11-08T03:38:02Z"
+actor = "lognd"
+rev = 1

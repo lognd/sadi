@@ -21,6 +21,7 @@ Status: current
 - [Wizard framework](core/wizard.md)
 - [Job system core](jobs/jobs.md)
 - [Web layout](web-layout.md)
+- [Doctor UI](web/doctor-ui.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)
@@ -36,3 +37,4 @@ Status: current
 - [LCTT loading: tare, load, stress, strain](lctt/loading.md)
 - [LCTT modulus, yield, saturation](lctt/modulus.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
+- [LCTT live results](lctt/live-results.md)

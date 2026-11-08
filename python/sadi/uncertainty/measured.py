@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import math
 import uuid
+import weakref
 from collections.abc import Sequence
 
 from pydantic import BaseModel, Field, field_validator
@@ -28,6 +29,12 @@ class Provenance(BaseModel):
     wal_seq: int | None = None
     derivation: str | None = None
     parents: tuple[str, ...] = ()
+
+
+def _track(m: Measured, registry: CovarianceRegistry) -> None:
+    """Tie the registry entry of `m` to its lifetime so dead quantities are forgotten."""
+    registry.retain(m.id)
+    weakref.finalize(m, registry.release, m.id)
 
 
 class Measured(BaseModel):
@@ -104,6 +111,7 @@ class Measured(BaseModel):
             provenance=provenance or Provenance(),
         )
         registry.register(out.id, out.std_unc**2)
+        _track(out, registry)
         _log.info("created %s = %g +/- %g %s", out.id, out.value, out.std_unc, out.unit)
         return Ok(out)
 
@@ -121,6 +129,7 @@ class Measured(BaseModel):
             m = parsed.danger_ok
             if not registry.known(m.id):
                 registry.register(m.id, m.std_unc**2)
+            _track(m, registry)
         else:
             _log.warning("from_json failed")
         return parsed
@@ -280,7 +289,10 @@ def _multiplicative(
             _log.warning("div by zero")
             return Err(UncertaintyError.DomainError)
         value = a.value / bm.value
-        partials = [1.0 / bm.value, -(a.value / bm.value) / bm.value]  # no ** : 1e-200**2 underflows to 0
+        partials = [
+            1.0 / bm.value,
+            -(a.value / bm.value) / bm.value,
+        ]  # no ** : 1e-200**2 underflows to 0
     return _derive([a, bm], partials, value, unit.danger_ok, name)
 
 
@@ -320,5 +332,6 @@ def _derive(
             source="derived", derivation=name, parents=tuple(m.id for m in inputs)
         ),
     )
+    _track(out, registry)
     _log.debug("derived %s via %s = %g +/- %g %s", ident, name, out.value, out.std_unc, unit)
     return Ok(out)

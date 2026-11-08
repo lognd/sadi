@@ -28,6 +28,7 @@ Status: current
 - [Sessions](store/session.md)
 - [Event log and snapshots](store/events.md)
 - [Lab modules](core/lab-modules.md)
+- [Acquisition pipeline](core/pipeline.md)
 - [Plugins](plugins.md)
 - [UX design](ux.md)
 - [LCTT capture modes](lctt/capture.md)

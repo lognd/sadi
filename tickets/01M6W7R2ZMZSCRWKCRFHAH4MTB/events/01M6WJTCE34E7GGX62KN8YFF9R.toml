@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md"]
+new = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md", "docs/store/lock.md", "changelog.d/*HAH4MTB*"]
+at = "2026-11-08T03:21:49Z"
+actor = "lognd"
+rev = 1

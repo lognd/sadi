@@ -2,13 +2,14 @@
 id = "01M6W7R36G6BYYB4RBC60ZNFTD"
 title = "Acquisition pipeline: raw -> WAL (durable) -> analysis -> display"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "critical"
 points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:21:08Z"
+updated = "2026-11-08T03:21:18Z"
 idempotency_key = "sadi-b3"
 labels = ["ws:srv", "data-safety", "model:sonnet", "creates:python/sadi/core/pipeline.py", "creates:python/tests/core/test_pipeline.py", "creates:docs/core/pipeline.md"]
 scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md", "docs/index.md"]

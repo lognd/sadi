@@ -8,10 +8,10 @@ points = 8
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:16:05Z"
+updated = "2026-11-08T03:22:07Z"
 idempotency_key = "sadi-ds6"
 labels = ["ws:store", "fault-injection", "model:sonnet", "creates:python/tests/crash/**", "creates:.github/workflows/crash.yml", "creates:docs/store/crash-testing.md"]
-scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md"]
+scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md", "docs/store/lock.md", "changelog.d/*HAH4MTB*"]
 
 [[links]]
 kind = "blocked-by"
@@ -27,7 +27,7 @@ target = "01M6W7R2F3KJWQCWEKZK6BT3MG"
 
 [[acceptance]]
 text = "Harness spawns a writer subprocess and SIGKILLs / TerminateProcess it at randomized and failpoint-targeted moments (mid-record, between data fsync and dir fsync, mid-rotate, mid-snapshot rename, mid-manifest)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "After each kill, recovery asserts DS1 invariants: all acknowledged (durable_seq) records present, no corrupt record accepted, no session overwritten, snapshot is old-or-new never torn"

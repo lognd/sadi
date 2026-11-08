@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:22:29Z"
+digest = "89c3a4adedb29f15823d7bf07dbd4e60c6e9640a21978bc25fc8d5d3025080d2"
+exit_code = 0
+head = "b5a24552ef98e25b997cca234ecc822686a19832"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/uncertainty/test_fallbacks.py .                             [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-255022-0.xml ---------------
+============================== 1 passed in 1.84s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_fallbacks.py::test_gradient_small_divisor_does_not_cross_pole"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "6a9bfde48242b54363aae72e26ccf2ab441a39a9a27f5ea7fb024283f8e6afa7"
+at = "2026-11-08T03:22:29Z"
+actor = "lognd"
+rev = 1

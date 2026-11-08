@@ -7,6 +7,6 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T07:11:46Z"
-updated = "2026-11-08T09:45:05Z"
+updated = "2026-11-08T09:45:22Z"
 scope = ["python/tests/e2e/**"]
 +++

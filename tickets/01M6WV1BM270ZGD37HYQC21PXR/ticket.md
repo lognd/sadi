@@ -2,7 +2,8 @@
 id = "01M6WV1BM270ZGD37HYQC21PXR"
 title = "Link docs/server/results.md from docs/index.md and docs/server/api.md"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

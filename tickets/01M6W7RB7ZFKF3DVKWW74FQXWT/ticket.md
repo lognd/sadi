@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T06:14:22Z"
+updated = "2026-11-08T06:14:27Z"
 idempotency_key = "sadi-f11"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/run/**", "creates:docs/web/run-screens.md"]
 scope = ["web/src/screens/run/**", "docs/web/run-screens.md", "docs/index.md"]
@@ -47,7 +47,7 @@ target = "01M6W7RB0GPGHTABW7P4XEGRNJ"
 
 [[acceptance]]
 text = "Live screen per F0B: big readouts, trace, settle/creep indicator, live plot of the phase (calibration fit, stress-strain), capture via accept key, forced-early confirmation"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Saturation warning visible and in status bar; disconnect behaviour per design"

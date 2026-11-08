@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:56:40Z"
+updated = "2026-11-08T03:56:41Z"
 scope = ["python/sadi/api/**", "python/tests/api/**", "docs/api/**"]
 
 [[acceptance]]
 text = "Every block from the source and its stop tail is ingested into the WAL"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Load chain writes ordered load markers and never skips on refusal"

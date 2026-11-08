@@ -1,0 +1,7 @@
+# frob:ticket 01M6WFZ1N70HDJJRZWRHWP4E7Y
+id = "lctt"
+version = "0.1.0"
+api_version = ">=1.0,<2"
+
+[contributions]
+labs = ["sadi.labs.lctt.plugin:register"]

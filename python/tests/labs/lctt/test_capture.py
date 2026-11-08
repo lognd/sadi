@@ -53,7 +53,7 @@ def make(stream=DRIFT, **kw) -> tuple[CaptureController, FakeClock]:
     res = CaptureController.create(stream, cfg, resolver, clock)
     assert not isinstance(res, Err)
     ctl = res.danger_ok
-    assert not isinstance(ctl.start_point(0.0), Err)
+    assert not isinstance(ctl.start_point(0.0, 1.0), Err)
     return ctl, clock
 
 
@@ -151,7 +151,7 @@ def test_missing_raw_range() -> None:
     clock = FakeClock()
     cfg = CaptureConfig(phase="p")
     ctl = CaptureController.create(DRIFT, cfg, lambda a, b: None, clock).danger_ok
-    ctl.start_point(0.0)
+    ctl.start_point(0.0, 1.0)
     ctl.push(*block(0, 60))
     assert ctl.accept() == Err(CaptureError.NoRawRange)
 

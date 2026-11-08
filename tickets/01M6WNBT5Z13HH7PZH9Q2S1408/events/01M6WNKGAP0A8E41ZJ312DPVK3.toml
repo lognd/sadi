@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sim.open accepts a SessionConfig and stubs agree", "sim.rs Rust unit tests and crates/sadi-py/tests run in the suites"]
+moved = []
+at = "2026-11-08T04:10:29Z"
+actor = "lognd"
+rev = 1

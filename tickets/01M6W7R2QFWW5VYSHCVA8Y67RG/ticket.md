@@ -2,16 +2,16 @@
 id = "01M6W7R2QFWW5VYSHCVA8Y67RG"
 title = "sadi-py acquisition thread: GIL-released reader with bounded channel"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T04:12:32Z"
 idempotency_key = "sadi-r8"
 labels = ["ws:rust", "ws:conc", "model:sonnet", "creates:crates/sadi-py/src/acq.rs", "creates:crates/sadi-py/tests/acq.rs", "creates:docs/device/acquisition-thread.md"]
-scope = ["crates/sadi-py/src/acq.rs", "crates/sadi-py/tests/acq.rs", "docs/device/acquisition-thread.md"]
+scope = ["crates/sadi-py/src/acq.rs", "crates/sadi-py/tests/acq.rs", "docs/device/acquisition-thread.md", "crates/sadi-py/src/session.rs", "crates/sadi-py/python/sadi_py/__init__.py", "crates/sadi-py/python/sadi_py/__init__.pyi", "crates/sadi-py/python/sadi_py/acq.pyi", "crates/sadi-py/tests/test_acq.py", "docs/device/python-binding.md"]
 
 [[links]]
 kind = "blocked-by"

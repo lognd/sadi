@@ -12,7 +12,6 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
-use sadi_proto::session::SessionConfig as ProtoConfig;
 use sadi_proto::sim::device::{SimConfig, SimDevice};
 use sadi_proto::sim::physics::LoadStep;
 use sadi_proto::sim::physics::SlipStep;
@@ -21,6 +20,7 @@ use sadi_proto::sim::signal::SignalSource;
 use sadi_proto::sim::signal_faults::FaultPlan;
 use sadi_proto::Transport;
 
+use crate::device::SessionConfig;
 use crate::errors::BindError;
 use crate::session::Session;
 
@@ -281,13 +281,15 @@ impl SimControl {
 /// Opens a simulator session and its runtime control handle.
 ///
 /// `scenario` is a builtin name, JSON text or a dict; `seed` overrides the
-/// plan's seed.
+/// plan's seed; `cfg` tunes the session like `open_sim`.
 #[pyfunction]
-#[pyo3(signature = (scenario, seed=None))]
+#[pyo3(signature = (scenario, seed=None, cfg=None))]
 fn open(
     scenario: &Bound<'_, PyAny>,
     seed: Option<u64>,
+    cfg: Option<SessionConfig>,
 ) -> Result<(Session, SimControl), BindError> {
+    let proto = cfg.unwrap_or_default().to_proto()?;
     let sc = scenario_from(scenario)?;
     let shared = SharedSim::new(sc);
     if let Some(seed) = seed {
@@ -295,7 +297,7 @@ fn open(
     }
     let sim = SimDevice::new(Box::new(shared.clone()), SimConfig::default());
     tracing::info!(?seed, "controllable simulator opened");
-    let session = Session::new(Box::new(sim) as Box<dyn Transport>, ProtoConfig::default());
+    let session = Session::new(Box::new(sim) as Box<dyn Transport>, proto);
     Ok((session, SimControl { shared }))
 }
 

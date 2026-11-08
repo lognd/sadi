@@ -21,4 +21,4 @@ include = [{ path = "python/sadi_py/py.typed", format = "sdist" }]
 exclude = ["python/sadi_py/tests/**"]
 
 [tool.pytest.ini_options]
-testpaths = ["python/sadi_py/tests"]
+testpaths = ["python/sadi_py/tests", "tests"]

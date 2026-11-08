@@ -9,7 +9,7 @@ Tests: `python/tests/labs/lctt/test_capture.py`.
 [streaming settle detector](settle.md) and turns each capture into a `PointV1` event
 (see the store events model). The clock is injected (`Clock`), so max-wait behaviour is
 deterministic in tests. Build it with `CaptureController.create(stream, config,
-resolver, clock)`; call `start_point(t)` at each load change, `push(times, lvdt)` for raw
+resolver, clock)`; call `start_point(t, mass_kg, u_mass_kg=0.0)` at each load change (total hanging mass), `push(times, lvdt)` for raw
 blocks and `tick()` on a timer.
 
 ## Modes (`CaptureConfig.mode`)
@@ -35,6 +35,17 @@ The averaging window is mapped to the raw WAL seq range by an injected
 `CaptureError.NoRawRange`. Derived values on the event are audit only. To change a
 window, append `set_window_edit(point_id, window)` (an `EditV1` `set_window`); replay
 in `sadi.store.events` recomputes the view from raw.
+
+## Recording
+
+Each `Captured` carries `inputs`, a `LoadInputs` (see `sadi.core.point_inputs`): `volts`
+is the mean raw LVDT volts over the averaging window, `u_volts` its standard error,
+`mass_kg`/`u_mass_kg` come from `start_point`, and `phase` is `CaptureConfig.phase`.
+`point` is built with `build_point`, so its `inputs` use the shared phase mapping. Write it
+with `AcquisitionDriver.record_point(captured.inputs, captured.point.window)` (labs may not
+import `sadi.api`; the caller does). `recover_state` and the server curve source then
+replay the point as a load point. Only phase, window and inputs are written by
+`record_point`; settle/forced-early flags stay on the in-memory `point`.
 
 ## Errors
 

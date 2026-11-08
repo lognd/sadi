@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-py/**"]
+new = ["crates/sadi-py/**", "docs/device/python-binding.md"]
+at = "2026-11-08T04:09:23Z"
+actor = "lognd"
+rev = 1

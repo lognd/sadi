@@ -125,3 +125,15 @@ export function axisTitle(axis: AxisSpec): string {
 export function pickColor(theme: Theme, index: number, explicit?: string): string {
   return explicit ?? theme.palette[index % theme.palette.length] ?? theme.text;
 }
+
+// frob:ticket 01M6XB9EBAP0ZTTYAMG9NEG3KJ
+/** Marker glyphs cycled by series index so series differ without colour. */
+export const MARKER_CYCLE: readonly MarkerKind[] = ["filled", "ring", "cross"];
+
+/** Non-colour cue for series `index`: explicit style wins, else glyph cycles and odd lines dash. */
+export function seriesCue(series: Series, index: number): { readonly marker: MarkerKind; readonly dashed: boolean } {
+  return {
+    marker: series.marker ?? MARKER_CYCLE[index % MARKER_CYCLE.length] ?? "filled",
+    dashed: series.dashed ?? index % 2 === 1,
+  };
+}

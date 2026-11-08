@@ -40,7 +40,8 @@ export const lightTheme: Theme = {
   grid: "#e3e3e3",
   annotationFill: "#fafafa",
   annotationStroke: "#999999",
-  palette: ["#0072b2", "#d55e00", "#009e73", "#cc79a7", "#e69f00", "#56b4e9"],
+  // frob:ticket 01M6XB9EBAP0ZTTYAMG9NEG3KJ
+  palette: ["#0072b2", "#d55e00", "#009e73", "#b8588f", "#a86f00", "#2f87c0"],
   fontSize: { title: 16, subtitle: 12, label: 13, tick: 11, legend: 11, annotation: 11, footer: 10 },
   lineWidth: 1.5,
   fitWidth: 1.75,

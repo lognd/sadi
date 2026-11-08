@@ -42,7 +42,7 @@ bound = true
 
 [[acceptance]]
 text = "No mention of private project contents in tracked docs"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "frob check --ticket passes (no doc drift)"

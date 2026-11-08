@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:58:22Z"
+digest = "8d320a29be0a88eb464efaeeeb7595e0df382730ead583a5faf8f6d26ad1483b"
+exit_code = 0
+head = "114a215cf8db0245cbf7efc73465a8bcf331cc43"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_creep.py .                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-337734-0.xml ---------------
+============================== 1 passed in 1.62s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_creep.py::test_settle_band_from_threshold_and_backward_compatible"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "57d840aec836dc6f80af56166d86775c7619e6ef7ffa5f4fe46ffae19ee765f9"
+at = "2026-11-08T03:58:22Z"
+actor = "lognd"
+rev = 1

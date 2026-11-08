@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Points recorded by AcquisitionDriver.record_point replay via recover_state and feed a successful POST /api/stress-strain/fit; writer and reader share one mapping in sadi.core.point_inputs"]
+moved = []
+at = "2026-11-08T04:06:41Z"
+actor = "lognd"
+rev = 1

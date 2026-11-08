@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Label placement is greedy and deterministic: no placed box overlaps another or the legend, and results are identical across runs", "A log axis yields decade ticks and log-mapped geometry, and non-positive data returns a PlotError instead of drawing", "A Figure stacks panels sharing one x range with aligned plot areas through the same draw path as a Scene", "decimateWindow and zoomScene re-derive min/max decimation for a window and width from the full data"]
+new = ["Label placement is greedy and deterministic: no placed box overlaps another or the legend, and results are identical across runs", "A log axis yields decade ticks and log-mapped geometry, and non-positive data returns a PlotError instead of drawing", "A Figure stacks panels sharing one x range with aligned plot areas through the same draw path as a Scene", "decimateWindow and zoomScene re-derive min/max decimation for a window and width from the full data", "Spans, markers and extra labels render through the shared draw list to both canvas and SVG, with goldens"]
+moved = [1, 2, 3, 4]
+at = "2026-11-08T03:51:23Z"
+actor = "lognd"
+rev = 1

@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:35:02Z"
-updated = "2026-11-08T03:35:38Z"
-scope = ["python/sadi/server/routes_doctor.py"]
+updated = "2026-11-08T03:36:03Z"
+scope = ["python/sadi/server/routes_doctor.py", "python/tests/server/test_routes_doctor.py"]
 
 [[links]]
 kind = "blocked-by"

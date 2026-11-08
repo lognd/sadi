@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml", "crates/sadi-py/python/sadi_py/__init__.py", "crates/sadi-py/python/sadi_py/__init__.pyi", "docs/device/python-binding.md", "creates:crates/sadi-py/python/sadi_py/tests/test_meta.py", "crates/sadi-py/src/meta.rs"]
+new = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml", "crates/sadi-py/python/sadi_py/__init__.py", "crates/sadi-py/python/sadi_py/__init__.pyi", "docs/device/python-binding.md", "creates:crates/sadi-py/python/sadi_py/tests/test_meta.py", "crates/sadi-py/src/meta.rs", "crates/sadi-py/python/sadi_py/tests/test_meta.py"]
+at = "2026-11-08T04:08:37Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sadi_py exposes __version__, PROTOCOL_VERSION, serial_features() and selftest() with stubs and docs", "Rust unit tests cover selftest and feature reporting"]
+moved = []
+at = "2026-11-08T04:08:19Z"
+actor = "lognd"
+rev = 1

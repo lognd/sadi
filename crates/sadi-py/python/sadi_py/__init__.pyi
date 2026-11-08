@@ -210,3 +210,11 @@ class sim:
     """Simulator helpers (registered stub; populated by later tickets)."""
 
 __all__: Final[list[str]]
+
+__version__: str
+PROTOCOL_VERSION: int
+
+def serial_features() -> list[str]:
+    """Serial features compiled into this build (for example "serial", "udev")."""
+def selftest() -> None:
+    """Run the codec and scenario self-test; raises CodecFailure on disagreement."""

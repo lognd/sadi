@@ -7,6 +7,7 @@ mod codec;
 mod convert;
 mod device;
 mod errors;
+mod meta;
 mod session;
 mod sim;
 
@@ -37,6 +38,7 @@ fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(codec::decode_packet, m)?)?;
     m.add_function(wrap_pyfunction!(codec::decode_data_packet, m)?)?;
     m.add_function(wrap_pyfunction!(codec::adc_to_volts, m)?)?;
+    meta::register(m)?;
     sim::register(m)?;
     acq::register(m)?;
     Ok(())

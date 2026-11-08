@@ -31,9 +31,13 @@ from sadi_py._native import (
     decode_data_packet,
     decode_packet,
     encode_command,
+    PROTOCOL_VERSION,
+    __version__,
     open_serial,
     open_sim,
     ports,
+    selftest,
+    serial_features,
     sim,
 )
 
@@ -43,6 +47,6 @@ __all__ = [
     "Handshake", "Idempotence", "PacketInfo", "PacketKind", "Phase", "PhaseError",
     "PortInfo", "ReadTimeoutError", "SadiError", "ScenarioFailure", "Session",
     "SessionConfig", "TapError", "TransportFailure", "UnexpectedStateError",
-    "VersionInfo", "adc_to_volts", "decode_data_packet", "decode_packet",
-    "encode_command", "open_serial", "open_sim", "ports", "sim",
+    "PROTOCOL_VERSION", "VersionInfo", "__version__", "adc_to_volts", "decode_data_packet", "decode_packet",
+    "encode_command", "open_serial", "open_sim", "ports", "selftest", "serial_features", "sim",
 ]

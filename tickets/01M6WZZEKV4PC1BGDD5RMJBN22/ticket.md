@@ -2,7 +2,7 @@
 id = "01M6WZZEKV4PC1BGDD5RMJBN22"
 title = "e2e harness: drop 25x sim decimation"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"

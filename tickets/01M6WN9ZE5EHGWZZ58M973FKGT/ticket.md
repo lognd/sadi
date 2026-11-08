@@ -2,7 +2,8 @@
 id = "01M6WN9ZE5EHGWZZ58M973FKGT"
 title = "Audit StrEnum error families in doctor/** and server/** -> typani ErrorSet (doctor/schema.py DoctorError etc)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

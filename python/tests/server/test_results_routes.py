@@ -14,7 +14,9 @@ from fastapi.testclient import TestClient
 from sadi.core.registry import LabRegistry
 from sadi.labs.lctt.plugin import register
 from sadi.server.app import AppSettings, create_app
-from sadi.server.routes.results import ResultBudget, to_result_budget
+from sadi.server.routes.results import ResultBudget, provenance_for, to_result_budget
+from sadi.server.schemas import PointView
+from sadi.store.events import PointWindow
 from sadi.uncertainty.budget import build_budget
 from sadi.uncertainty.covariance import CovarianceRegistry
 from sadi.uncertainty.measured import Measured
@@ -73,6 +75,37 @@ def test_results_need_open_session_then_recompute(client: TestClient) -> None:
     body = client.get("/api/results").json()
     assert body["values"] == []
     assert body["n_points"] == 0
+
+
+# frob:tests python/sadi/server/routes/results.py::provenance_for
+def test_provenance_names_points_span_and_algorithm() -> None:
+    """Each quantity lists the active point ids, the sample span and the lab algorithm."""
+    views = [
+        PointView(
+            point_id=f"p{i}",
+            seq=i,
+            phase="load",
+            excluded=False,
+            inputs={},
+            window=PointWindow(first_raw_seq=1, last_raw_seq=2, first_sample=a, last_sample=b),
+            history=(),
+        )
+        for i, (a, b) in enumerate([(10, 20), (30, 45)])
+    ]
+    got = provenance_for("lctt", ["E"], views)
+    assert len(got) == 1
+    assert got[0].point_ids == ("p0", "p1")
+    assert (got[0].first_sample, got[0].last_sample) == (10, 45)
+    assert got[0].algorithm == "lctt.recompute"
+    assert provenance_for("lctt", ["E"], [])[0].first_sample is None
+
+
+# frob:tests python/sadi/server/routes/results.py::ResultsView
+def test_results_wire_has_provenance_key(client: TestClient) -> None:
+    """GET /api/results carries a provenance list (empty while recompute is a stub)."""
+    _open(client)
+    _cal(client)
+    assert client.get("/api/results").json()["provenance"] == []
 
 
 # frob:tests python/sadi/server/routes/results.py::to_result_budget

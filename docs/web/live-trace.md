@@ -44,6 +44,23 @@ and exports the current scene as 192 dpi PNG through `plots/core` `exportFigure`
 
 `live.test.tsx` benchmarks decode + window + snapshot per frame for 50 kS/s (50 frames/s, 256
 buckets, 2 channels) in node and asserts p95 under 8 ms, mean under 4 ms, well below the 16 ms
-frame budget. A real-browser 60 fps run is not automated here.
+frame budget.
+
+### Real-browser 60 fps benchmark (opt-in)
+
+The 60 fps result in a real browser is UNVERIFIED: no browser was available when this was built, and
+nothing runs it by default (it is not part of `vitest run`). The harness exists so a human can run it:
+
+- `plots/live/framestats.ts` holds pure helpers (`intervals`, `percentile`, `summarize`,
+  `meets60fps`); they are unit tested in `framestats.test.ts`. `meets60fps` requires mean >= 58 fps
+  and p95 interval <= 1.25 x 16.67 ms.
+- `plots/live/bench.ts` `runFrameBench(env)` runs 600 animation frames of decode + window +
+  snapshot with an injectable clock and scheduler (the unit test uses a fake 60 Hz clock);
+  `installBench()` exposes `window.__sadiLiveBench()`.
+
+To run: call `installBench()` once from a dev entry point (temporary, do not commit), start
+`npm run dev` in `web/`, open the page in a real browser, and run
+`await __sadiLiveBench()` in the devtools console; pass the result through `meets60fps`. Record the
+browser, hardware and numbers here once measured.
 
 Dev proxy: `web/vite.config.ts` proxies `/api` with `ws: true` so `WS /api/stream` works under `vite dev`.

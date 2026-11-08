@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/api/**", "python/sadi/server/openapi_export.py", "python/tests/server/test_openapi_export.py", "web/package.json", "web/src/api/schema.test.ts", "docs/web-api-client.md"]
+new = ["web/src/api/**", "python/sadi/server/openapi_export.py", "python/tests/server/test_openapi_export.py", "web/package.json", "web/src/api/schema.test.ts", "docs/web-api-client.md", "changelog.d/01M6W7R0KH8QFP4K9PTM197V9E.changed.md"]
+at = "2026-11-08T05:58:04Z"
+actor = "lognd"
+rev = 1

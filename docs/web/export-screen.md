@@ -9,7 +9,8 @@ Parent: [web layout](../web-layout.md), next to the [guidance panel](guidance.md
   fetcher) and renders the report, the format list and any error.
 - Report (`ReportView`): final values as a table (display string, 95 % interval, plain-language
   confidence, MC cross-check state), pending quantities, and the result `notes` and `refinement`
-  lines, which carry the provenance text (for example which settle value fed E).
+  lines (free text). Structured per-quantity provenance (point ids, sample span, algorithm) is on
+  the `provenance` field of `GET /api/results`; rendering it is a web follow-up.
 - Formats (`FormatList`): download formats (CSV, the 32-column schema) are plain links to
   `GET /api/export/{id}`. Figure formats (inline JSON) get PNG and SVG buttons plus a DPI
   selector; `exportFigureFormat` fetches the figure data and renders it with the shared

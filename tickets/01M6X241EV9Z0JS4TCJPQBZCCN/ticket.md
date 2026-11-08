@@ -7,7 +7,8 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:49:14Z"
-updated = "2026-11-08T08:11:26Z"
+updated = "2026-11-08T08:11:35Z"
+scope = ["web/e2e/**"]
 
 [[acceptance]]
 text = "Run screen shows per-phase input fields and sends them; vitest covers validation"

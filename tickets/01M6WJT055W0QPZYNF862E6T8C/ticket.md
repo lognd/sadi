@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:56:41Z"
+updated = "2026-11-08T03:56:44Z"
 scope = ["python/sadi/api/**", "python/tests/api/**", "docs/api/**"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Load chain writes ordered load markers and never skips on refusal"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Device fault halts acquisition loudly while saved blocks stay saved"

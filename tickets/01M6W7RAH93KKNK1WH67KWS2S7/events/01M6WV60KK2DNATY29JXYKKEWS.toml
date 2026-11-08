@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/live/**", "web/src/ws/**", "web/src/hooks/useTrace.ts", "docs/web/live-trace.md"]
+new = ["web/src/plots/live/**", "web/src/ws/**", "web/src/hooks/useTrace.ts", "docs/web/live-trace.md", "docs/web/plots.md"]
+at = "2026-11-08T05:47:58Z"
+actor = "lognd"
+rev = 1

@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T07:21:11Z"
 updated = "2026-11-08T07:31:31Z"
-scope = ["python/pyproject.toml", "python/uv.lock", "web/e2e/**"]
+scope = ["python/pyproject.toml", "python/uv.lock", "web/e2e/**", "web/src/components/wizard/**"]
 
 [[acceptance]]
 text = "PUT wizard complete/skip POSTs carry the current step as a JSON body so Enter and Skip advance the wizard against the launcher-built app"

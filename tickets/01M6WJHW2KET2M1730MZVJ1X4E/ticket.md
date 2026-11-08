@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:41Z"
+updated = "2026-11-08T04:32:42Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "A check exceeding its per-check timeout is reported skip/timeout (unverified) with a remedy and never hangs the run"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "The whole-run budget aborts running and unstarted checks as skip/timeout"

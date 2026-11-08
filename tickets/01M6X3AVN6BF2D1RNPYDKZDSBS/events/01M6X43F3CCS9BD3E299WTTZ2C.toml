@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Each e2e test runs against its own backend (fresh temp data dir and port) so specs start at Setup"]
+moved = []
+at = "2026-11-08T08:23:52Z"
+actor = "lognd"
+rev = 1

@@ -47,6 +47,8 @@ and fails on any `sadi.*` import other than public modules of `sadi.core`, `sadi
 `sadi.logging_setup` or the lab's own package (no private `_modules`, no other lab).
 Labs needing store event types (`EditV1`, `PointV1`, `PointWindow`) import them from
 `sadi.core.events`, a public re-export, never from `sadi.store`.
+Labs publishing exports (`write_export`, `render_csv`, `ExportResult`) use `sadi.core.export_api`,
+a pure re-export of the store primitives, so atomic no-replace publish semantics are unchanged.
 
 ## Worked example: LCTT
 

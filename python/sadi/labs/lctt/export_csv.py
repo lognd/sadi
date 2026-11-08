@@ -37,9 +37,8 @@ from sadi.labs.lctt.live import (
 from sadi.labs.lctt.loading import LoadingInputs, compute_loading, pool_tare
 from sadi.labs.lctt.modulus import CurvePoint, fit_modulus
 from sadi.labs.lctt.yield_ import find_yield
+from sadi.core.export_api import UTF8_BOM, ExportResult, HasPath, render_csv, write_export
 from sadi.logging_setup import get_logger
-from sadi.store.csv_export import UTF8_BOM, render_csv
-from sadi.store.exports import ExportResult, _HasPath, write_export  # noqa: PLC2701
 from sadi.uncertainty import Measured, Provenance
 
 _log = get_logger(__name__)
@@ -374,7 +373,7 @@ def _meta(  # noqa: PLR0913
 
 
 def export_csv(  # noqa: PLR0913
-    session: _HasPath,
+    session: HasPath,
     events: Sequence[LiveEvent],
     *,
     date: datetime,

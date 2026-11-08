@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["docs/lctt/export-csv.md"]
+at = "2026-11-08T06:19:28Z"
+actor = "lognd"
+rev = 1

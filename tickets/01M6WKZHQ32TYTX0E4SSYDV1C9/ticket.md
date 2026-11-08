@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:42:07Z"
-updated = "2026-11-08T06:19:22Z"
+updated = "2026-11-08T06:19:28Z"
+scope = ["docs/lctt/export-csv.md"]
 
 [[acceptance]]
 text = "Private mapping doc and test cover all 32 reference columns and metadata keys"

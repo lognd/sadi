@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6WTCA1SET2XBYG05J73KJ11
 # frob:ticket 01M6WVGZHZBY41K8M1BHYC1SYW
+# frob:ticket 01M6WVADCSP63DBMYH3RNCXWTM
 
 from __future__ import annotations
 
@@ -13,7 +14,6 @@ from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
 
 from sadi.core.lab import LabId, LabModule
-from sadi.core.models import CapturedPoint, SettleStatus, TimeWindow
 from sadi.core.point_inputs import PHASE_CALIBRATION, PHASE_SPECIMEN, PHASE_TARE
 from sadi.core.registry import LabRegistry
 from sadi.core.results import ResultSet, make_result
@@ -30,6 +30,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
+from sadi.server.session_points import active_points, to_captured
 from sadi.uncertainty.budget import Budget, BudgetRow
 
 _log = get_logger(__name__)
@@ -130,28 +131,6 @@ def provenance_for(
     )
 
 
-def _points_for(views: list[PointView]) -> list[PointView]:
-    """Keep the active (non-excluded) points."""
-    return [p for p in views if not p.excluded]
-
-
-def _captured(views: list[PointView]) -> tuple[CapturedPoint, ...]:
-    """Project active points onto the core `CapturedPoint` (time fields are not on the wire)."""
-    out: list[CapturedPoint] = []
-    for i, p in enumerate(views):
-        first = float(p.window.first_sample)
-        out.append(
-            CapturedPoint(
-                index=i,
-                window=TimeWindow(start=first, end=max(first, float(p.window.last_sample))),
-                t_since_load=0.0,
-                drift_rate=0.0,
-                status=SettleStatus.SETTLED,
-            )
-        )
-    return tuple(out)
-
-
 def _guidance_problem(err: ErrorSet) -> ApiProblem:
     """Map a GuidanceError member to a problem; its description is the hint."""
     bad_input = err in (GuidanceError.BadTarget, GuidanceError.BadRange)
@@ -179,8 +158,8 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
         return Err(
             not_found(info.danger_ok.lab, "Register the session's lab or resume with another.")
         )
-    active = _points_for(pts.danger_ok)
-    analysis = lab.recompute(_captured(active))
+    active = active_points(pts.danger_ok)
+    analysis = lab.recompute(to_captured(active))
     if analysis.is_err:
         _log.warning("recompute failed for lab %s: %s", lab.id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))
@@ -229,7 +208,7 @@ def make_results_router(
     ) -> GuidanceState:
         """Guided-run advice for `phase` from the live results; never changes the phase."""
         rs = unwrap(live_results(svc, labs))
-        views = _points_for(unwrap(svc.points()))
+        views = active_points(unwrap(svc.points()))
         n_cal = sum(1 for p in views if p.phase == PHASE_CALIBRATION)
         cfg = GuidanceConfig() if target is None else GuidanceConfig(target=target)
         got = guide(phase, GuidanceInput(results=rs, n_cal_points=n_cal, hold=hold), cfg)

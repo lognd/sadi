@@ -2,13 +2,13 @@
 id = "01M6W7R121020FDM1SK2GGPZ5K"
 title = "Optional: v3.41 codec (CRC-16/CCITT-FALSE framing)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 5
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:17Z"
-updated = "2026-11-08T00:08:17Z"
+updated = "2026-11-08T04:32:36Z"
 idempotency_key = "sadi-r6"
 labels = ["ws:rust", "optional", "unverified-protocol", "model:sonnet", "creates:crates/sadi-proto/src/v3/**", "creates:crates/sadi-proto/tests/vectors_v3.rs", "creates:docs/device/v3.md"]
 scope = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md"]

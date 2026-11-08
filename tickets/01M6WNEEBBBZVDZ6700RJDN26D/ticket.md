@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:07:43Z"
-updated = "2026-11-08T04:11:04Z"
+updated = "2026-11-08T04:11:14Z"
 labels = ["python"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md", "creates:python/tests/labs/lctt/test_capture_record.py", "python/tests/labs/lctt/test_capture_record.py"]
 

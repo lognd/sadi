@@ -2,7 +2,7 @@
 
 Status: current
 
-Owner: ~2RWJ137. Code: `python/sadi/store/incremental.py`.
+Owners: ~2RWJ137, ~AZ8KDXT. Code: `python/sadi/store/incremental.py`.
 
 `sadi.store.incremental.IncrementalReplay` serves the server's per-action
 state (`SessionService._replay`) without re-walking the whole WAL.
@@ -30,4 +30,19 @@ incremental vs full replay on random event sequences, restart, torn tail,
 undo/redo) and `python/tests/server/test_action_latency.py` (200k raw
 records, then 20 actions under a bound).
 
-Out of scope, still full walks: curve-source reads and `notes()`.
+## Curve source and notes (~AZ8KDXT)
+
+`SessionService.notes()` and the active-session curve source
+(`curve_source.make_curve_source`, via `session_events(sdir, replayer)`) use
+the same machinery under the same safety contract. `IncrementalReplay.notes()`
+returns every JSON NOTE payload in WAL order; the tail loop collects notes as it
+applies frames, and a rebase re-collects them (notes are not in snapshots, so a
+snapshot base triggers one full WAL walk for notes). The curve source keeps one
+`IncrementalReplay` per session dir behind a lock and drops caches of sessions
+that are no longer the newest. Any anomaly falls back to the full verified
+replay; results equal the previous full scans. `session_events(sdir)` without a
+replayer still does a full `recover_state`.
+
+Tests: `python/tests/store/test_incremental_notes.py` (equivalence, restart,
+torn tail) and `python/tests/server/test_curve_notes_latency.py` (200k raw
+records, repeated notes and curve calls under a bound).

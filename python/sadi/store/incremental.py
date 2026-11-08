@@ -28,7 +28,9 @@ from sadi.store.events import (
     restore_state,
 )
 from sadi.store.records import (
+    FLAG_JSON,
     FRAME_HEADER_LEN,
+    Record,
     RecordType,
     decode_payload_check,
     parse_header,
@@ -43,6 +45,16 @@ from sadi.store.wal import (
 _log = get_logger(__name__)
 
 
+def _is_note(rec: Record) -> bool:
+    """True for a JSON NOTE record (the only kind `notes()` returns)."""
+    return rec.type == int(RecordType.NOTE) and bool(rec.flags & FLAG_JSON)
+
+
+def _note_text(rec: Record) -> str:
+    """Decode a NOTE payload."""
+    return rec.payload.decode("utf-8")
+
+
 class IncrementalReplay:
     """Cached fold of one session's WAL, advanced by tailing the active segment."""
 
@@ -55,6 +67,7 @@ class IncrementalReplay:
         self._seg = 1
         self._pos = 0
         self._expected: int | None = None
+        self._notes: list[str] = []
         self.rebases = 0
 
     def state(self) -> Result[ReplayState, EventsError]:
@@ -67,11 +80,20 @@ class IncrementalReplay:
                 return Ok(self._frozen)
         return self._rebase()
 
+    # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
+    def notes(self) -> Result[tuple[str, ...], EventsError]:
+        """Return every JSON NOTE payload in WAL order (equal to a full scan)."""
+        got = self.state()
+        if got.is_err:
+            return Err(got.danger_err)
+        return Ok(tuple(self._notes))
+
     def _rebase(self) -> Result[ReplayState, EventsError]:
         """Full verified replay (snapshot + WAL); re-derive the tail position from its report."""
         self.rebases += 1
         self._acc = None
         self._frozen = None
+        self._notes = []
         base: ReplayState | None = None
         loaded = snapshot.load_latest_snapshot(self._session_dir)
         if loaded.is_err:
@@ -91,6 +113,9 @@ class IncrementalReplay:
         if folded.is_err:
             return Err(folded.danger_err)
         state = folded.danger_ok
+        notes = self._scan_notes(recs, base)
+        if notes.is_err:
+            return Err(notes.danger_err)
         if report is None or not report.segments:
             _log.info("no segment position for %s; incremental cache stays cold", self._wal)
             return Ok(state)
@@ -101,6 +126,7 @@ class IncrementalReplay:
         else:
             self._seg, self._pos = last.segment_no, last.verified_bytes
             self._expected = state.covers_seq + 1 if state.covers_seq else None
+        self._notes = notes.danger_ok
         self._acc = _Acc(state)
         self._frozen = state
         _log.info(
@@ -110,6 +136,18 @@ class IncrementalReplay:
             self._pos,
         )
         return Ok(state)
+
+    def _scan_notes(
+        self, recs: list[Record], base: ReplayState | None
+    ) -> Result[list[str], EventsError]:
+        """Collect NOTE payloads; snapshots hold no notes, so a snapshot base needs a full walk."""
+        if base is not None:
+            recs = []
+            for item in WalReader(self._wal).records():
+                if item.is_err:
+                    return Err(EventsWal(error=item.danger_err))
+                recs.append(item.danger_ok)
+        return Ok([_note_text(r) for r in recs if _is_note(r)])
 
     def _advance(self) -> bool:
         """Apply frames appended since the last call; False means 'fall back to a rebase'."""
@@ -149,6 +187,8 @@ class IncrementalReplay:
                 if rec.seq != self._expected or rec.type == int(RecordType.SEAL):
                     return False
                 _apply(acc, rec)
+                if _is_note(rec):
+                    self._notes.append(_note_text(rec))
                 self._expected = rec.seq + 1
                 self._pos = end
         return True

@@ -344,21 +344,18 @@ class SessionService:
             return Ok(sub.danger_ok)
 
     # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
+    # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
     def notes(self) -> Result[list[str], ApiProblem]:
         """Return every JSON NOTE payload of the open session in WAL order."""
         with self._lock:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
-            out: list[str] = []
-            for item in WalReader(cur.handle.path / "wal").records():
-                if item.is_err:
-                    _log.error("note scan stopped by corruption: %s", item.danger_err)
-                    return Err(from_model(EventsWal(error=item.danger_err), "store"))
-                rec = item.danger_ok
-                if rec.type == int(RecordType.NOTE) and rec.flags & FLAG_JSON:
-                    out.append(rec.payload.decode("utf-8"))
-            return Ok(out)
+            got = cur.replayer.notes()
+            if got.is_err:
+                _log.error("note scan stopped by corruption: %s", got.danger_err)
+                return Err(from_model(got.danger_err, "store"))
+            return Ok(list(got.danger_ok))
 
     # ---- internals --------------------------------------------------------------------
 

@@ -56,6 +56,8 @@ Errors are `{"error": <code>, "detail": <hint>}`: 422 `BadWindow` / `Fit` / `NoW
 
 ### Active session curve source
 
+The source tails the session WAL incrementally (see `docs/store/incremental-replay.md`), so calls stay O(new records) while the simulator writes raw blocks; `SessionService.notes()` does likewise.
+
 When `settings.curve_source` is None, `create_app` injects `sadi.server.curve_source.make_curve_source(data_root)`.
 The active session is the newest directory (names sort by UTC stamp) under
 `<data_root>/sessions` that has a `wal/`. Each call recovers its state read-only

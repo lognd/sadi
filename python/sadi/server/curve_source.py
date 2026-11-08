@@ -1,9 +1,11 @@
 """Read-only CurveSource over the active session: newest session dir under the data root."""
 
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
+# frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
 
 from __future__ import annotations
 
+import threading
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,7 +31,8 @@ from sadi.labs.lctt.live import (
 from sadi.labs.lctt.modulus import CurvePoint
 from sadi.logging_setup import get_logger
 from sadi.server.routes_stress_strain import CurveSource, RefitError
-from sadi.store.events import CurrentPoint, recover_state
+from sadi.store.events import CurrentPoint, ReplayState, recover_state
+from sadi.store.incremental import IncrementalReplay
 from sadi.store.session import SESSIONS_DIRNAME
 from sadi.uncertainty import Measured
 
@@ -83,9 +86,16 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
 
 
 # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
-def session_events(sdir: Path) -> Result[list[LiveEvent], str]:
-    """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags."""
-    state = recover_state(sdir)
+def session_events(
+    sdir: Path, replayer: IncrementalReplay | None = None
+) -> Result[list[LiveEvent], str]:
+    """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags.
+
+    With `replayer` (tracking `sdir`) the fold is incremental yet equal to a full replay.
+    """
+    state: Result[ReplayState, object] = (
+        recover_state(sdir) if replayer is None else replayer.state()
+    )
     if state.is_err:
         return Err(str(state.danger_err))
     events: list[LiveEvent] = []
@@ -102,13 +112,21 @@ def session_events(sdir: Path) -> Result[list[LiveEvent], str]:
     return Ok(events)
 
 
-def load_curve(data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded) stress-strain curve from the active session's events."""
+def load_curve(
+    data_root: Path, cache: dict[Path, IncrementalReplay] | None = None
+) -> Result[Sequence[CurvePoint], RefitError]:
+    """Build the active (non-excluded) stress-strain curve from the active session's events.
+
+    `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
+    """
     sdir = active_session(data_root)
     if sdir is None:
         _log.info("curve source: no session under %s", data_root)
         return Err(RefitError.NoData)
-    res = session_events(sdir)
+    replayer = None
+    if cache is not None:
+        replayer = cache.setdefault(sdir, IncrementalReplay(sdir))
+    res = session_events(sdir, replayer)
     if res.is_err:
         _log.error("curve source: replay of %s failed: %s", sdir.name, res.danger_err)
         return Err(RefitError.NoData)
@@ -132,5 +150,16 @@ def load_curve(data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
 
 
 def make_curve_source(data_root: Path) -> CurveSource:
-    """Return a CurveSource that re-reads the active session under `data_root` on every call."""
-    return lambda: load_curve(data_root)
+    """Return a CurveSource over the active session under `data_root` (incremental WAL tail)."""
+    cache: dict[Path, IncrementalReplay] = {}
+    lock = threading.Lock()
+
+    def source() -> Result[Sequence[CurvePoint], RefitError]:
+        """Serialise calls (cache is not thread-safe); keep only the newest session cached."""
+        with lock:
+            res = load_curve(data_root, cache)
+            for stale in [k for k in cache if k != active_session(data_root)]:
+                del cache[stale]
+            return res
+
+    return source

@@ -2,7 +2,8 @@
 id = "01M6WKZHQ32TYTX0E4SSYDV1C9"
 title = "Verify CSV export 32-column names and metadata keys against the private reference VI header"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

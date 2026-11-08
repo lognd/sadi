@@ -4,9 +4,10 @@ title = "events.replay rejects any rotated WAL: SEAL seq looks like a gap (Event
 type = "bug"
 category = "todo"
 priority = "critical"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:18:33Z"
-updated = "2026-11-08T03:18:33Z"
+updated = "2026-11-08T03:22:54Z"
 scope = ["python/sadi/store/events.py", "python/tests/store/test_events.py"]
 +++
 

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:36:16Z"
+digest = "99af802b82801e1590562ecfe211c4bf0487402aaa1dbf6bfb0c2d7e6824e0d9"
+exit_code = 0
+head = "265cce4b8b5f044645af9ef57ec3764ef6365d0a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/uncertainty/test_registry_scaling.py .                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-280412-0.xml ---------------
+============================== 1 passed in 1.84s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_registry_scaling.py::test_registry_bounded_after_dropping_measured"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "ba02cc039cce6c67a1c9711a1138016e4af5b18e73af2ba373bd3c550e8caffa"
+at = "2026-11-08T03:36:16Z"
+actor = "lognd"
+rev = 1

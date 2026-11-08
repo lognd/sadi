@@ -21,6 +21,7 @@ Status: current
 - [Wizard framework](core/wizard.md)
 - [Job system core](jobs/jobs.md)
 - [Web layout](web-layout.md)
+- [Doctor UI](web/doctor-ui.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

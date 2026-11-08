@@ -15,13 +15,13 @@ acked_at = "2026-11-08T00:15:02.391237649Z"
 [[symbol]]
 identity = "web/src/App.tsx::App"
 symref = "web/src/App.tsx::App"
-sig = "05ca56c67b0cdd563218f04194e4cd35c4b760d6b9bd7b5c8d05ed0474a0088f"
-body = "0e72385e36dd1313e0586ccca11a52b92b36083417918457ffed59cae04d8bb0"
-doc = "703ae16bcb6b9f46f0241b33af05c12b5feb8ffbfde5d157a47b8e6c85e32889"
+sig = "2d85b38ce2272d24aa2aa9a28ee8513ca91265476a414ceaf997f501203db09f"
+body = "26ee753d08965ee7f3b8d4d094d77df0a584ed7cdd4bd119b0018049e3fe5587"
+doc = "92e5db964b41e628e93c795bb981355b039412c93b1c1442a2fc37128fc29a97"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "6e4a0de4c6a3bbd1446c598a2b2b7594c60a8455e5ea80d717e31890431c47f5"
+contract = "5c26e0cda03c66afc395ed13b3067809c0dfc6a59089edfd2a08f910d9cb4b79"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T00:14:31.011558348Z"
+acked_at = "2026-11-08T03:35:17.145727982Z"
 
 [[symbol]]
 identity = "web/src/api/log.ts::Logger.info"

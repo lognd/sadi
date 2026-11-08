@@ -17,3 +17,9 @@ def test_readme_links_jobs_tasks() -> None:
 def test_index_links_core_wizard() -> None:
     """The docs index links docs/core/wizard.md."""
     assert "(core/wizard.md)" in (DOCS / "index.md").read_text(encoding="utf-8")
+
+
+def test_index_links_doctor_ui() -> None:
+    """The docs index links docs/web/doctor-ui.md."""
+    # frob:ticket 01M6WA9WZW89EA826DSJCJ0197
+    assert "(web/doctor-ui.md)" in (DOCS / "index.md").read_text(encoding="utf-8")

@@ -15,7 +15,9 @@ Live data (trace frames, state, results) is pushed over a WebSocket: [websocket.
 - Undo/redo/edit are compensating records; nothing is deleted or overwritten.
 - One session is open per server process; opening another gives 409 until `close`.
 - Resume creates a NEW version with a parent link; the parent is never modified. The new
-  version starts a fresh WAL (the parent's state is not folded in; follow-up ticket).
+  version's WAL starts by folding the parent's POINT, EDIT, SETTINGS and MARKER records in
+  their original order (raw capture data stays in the parent); the parent stays byte-identical.
+  See `_fold_parent` in `sadi.server.service`.
 - The app holds the data-root flock, so session create/resume use the `*_in_held_root`
   variants, which do not take the lock again.
 

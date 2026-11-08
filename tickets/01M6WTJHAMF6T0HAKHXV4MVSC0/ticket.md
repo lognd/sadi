@@ -2,12 +2,13 @@
 id = "01M6WTJHAMF6T0HAKHXV4MVSC0"
 title = "docs: update server api.md resume bullet (parent state is now folded, ~S7757MP)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:37:20Z"
-updated = "2026-11-08T05:41:29Z"
+updated = "2026-11-08T05:42:14Z"
 labels = ["modifies:docs/server/api.md"]
 scope = ["docs/server/api.md"]
 

@@ -1,0 +1,10 @@
+kind = "create"
+title = "Mount wizard shell and run/review/export screens in App.tsx"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/src/App.tsx", "web/src/main.tsx"]
+body = "found while working ~GW7ER11: App only renders health page and Doctor; guided-run e2e specs skip until mounted"
+at = "2026-11-08T07:01:31Z"
+actor = "lognd"
+rev = 1

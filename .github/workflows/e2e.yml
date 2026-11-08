@@ -1,0 +1,56 @@
+# frob:ticket 01M6W7RB9Q00GBJ5CJ0GW7ER11
+# creates:.github/workflows/e2e.yml
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    name: browser e2e (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: python/uv.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: uv sync
+        working-directory: python
+        run: uv sync --frozen
+      - name: build sadi_py (simulator backend)
+        working-directory: python
+        run: uv run --with maturin maturin develop --manifest-path ../crates/sadi-py/Cargo.toml
+      - name: build UI into the wheel tree
+        run: uv run --project python python packaging/build_ui.py
+      - name: install playwright chromium
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+      - name: playwright
+        working-directory: web
+        run: npx playwright test -c e2e/playwright.config.ts
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-traces-${{ matrix.os }}
+          path: web/test-results

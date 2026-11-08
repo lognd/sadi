@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
+    "e2e": "playwright test -c e2e/playwright.config.ts",
     "gen:spec": "cd ../python && uv run --frozen python -m sadi.server.openapi_export ../web/src/api/openapi.json",
     "gen:ts": "openapi-typescript src/api/openapi.json -o src/api/schema.ts",
     "gen:api": "npm run gen:spec && npm run gen:ts"
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.65.0",
     "@types/katex": "^0.16.8",
     "@types/node": "^22.20.5",
     "@types/react": "^19.0.0",

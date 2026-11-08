@@ -41,6 +41,7 @@ Status: current
 - [Data-safety design](data-safety.md)
 - [Concurrency testing: race, deadlock and kill-mid-write suite](concurrency-testing.md)
 - [Backend e2e testing: simulator fault injection](testing.md)
+- [Browser e2e (Playwright)](e2e.md)
 - [Release process](release.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

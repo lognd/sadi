@@ -17,12 +17,6 @@ browser). Useful flags: `--sim` (use the built-in simulator), `--port N`, `--no-
 `--selftest`. The launcher runs the [doctor](doctor.md) preflight first; fix anything it
 reports before continuing. See [packaging](packaging.md).
 
-The screenshots in this guide come from `sadi --sim` (simulated data) and are regenerated
-with `SADI_SCREENSHOTS=1 npx playwright test -c e2e/playwright.config.ts screenshots`
-(see [e2e](e2e.md)). They are stored under `docs/img/ui/`.
-
-![Setup step with the step rail](img/ui/setup.png)
-
 ## 2. The two specimens
 
 A test uses two specimens (see [lab module](lctt/lab-module.md)):
@@ -68,18 +62,6 @@ The steps map to [domain](domain.md) section 6.
 8. **Export.** The results screen shows the final values with the 95 % interval and a
    plain-language confidence sentence, then offers the CSV and figure downloads. See
    [export screen](web/export-screen.md) and [CSV export](lctt/export-csv.md).
-
-Calibration, tare and the specimen runs share one capture screen: wait for the readout to
-show Settled, then press Space.
-
-![LVDT calibration capture screen](img/ui/run-capture.png)
-
-The Results step shows the values as they stand, and Export offers the CSV and figure
-downloads.
-
-![Results step](img/ui/results.png)
-
-![Export step with the results panel](img/ui/export.png)
 
 ## 4. Which settle value feeds the E fit
 

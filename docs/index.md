@@ -4,6 +4,7 @@ Status: current
 
 - [Domain specification](domain.md)
 - [User guide: running a test](user-guide.md)
+- [User guide: screenshots](user-guide-screens.md)
 - [Plan](plan.md)
 - [Protocol](protocol.md)
 - [Open questions](open-questions.md)

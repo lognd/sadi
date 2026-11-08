@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:53:20Z"
+updated = "2026-11-08T05:53:26Z"
 idempotency_key = "sadi-f15"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/export/**", "creates:docs/web/export-screen.md"]
 scope = ["web/src/screens/export/**", "docs/web/export-screen.md", "docs/web/guidance.md"]
@@ -31,7 +31,7 @@ target = "01M6W7R41EVGYTSV1B72ZQVKAB"
 
 [[acceptance]]
 text = "Summary of final values with U and which settle value fed E, export-all-figures (PNG/SVG at chosen DPI), CSV download in the 32-column schema"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Shows export provenance from DS7"

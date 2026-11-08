@@ -4,7 +4,8 @@ title = "e2e: Enter on Setup (Clamp slip check) does not advance the wizard agai
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T07:21:11Z"
-updated = "2026-11-08T07:21:11Z"
+updated = "2026-11-08T07:21:19Z"
 +++

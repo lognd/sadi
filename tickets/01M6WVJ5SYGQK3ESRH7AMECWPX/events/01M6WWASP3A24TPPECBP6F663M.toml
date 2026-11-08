@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/server/test_routes.py"]
+new = ["python/tests/server/test_routes.py", "web/src/api/openapi.json"]
+at = "2026-11-08T06:08:04Z"
+actor = "lognd"
+rev = 1

@@ -7,9 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:54:37Z"
-updated = "2026-11-08T06:08:03Z"
+updated = "2026-11-08T06:08:04Z"
 labels = ["ws:server"]
-scope = ["python/tests/server/test_routes.py"]
+scope = ["python/tests/server/test_routes.py", "web/src/api/openapi.json"]
 +++
 
 found while working ~FHNEDX8: PointView omits settled and forced_early from PointV1; review screen shows them only when present.

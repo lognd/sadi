@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:06:17Z"
-updated = "2026-11-08T04:10:38Z"
+updated = "2026-11-08T04:10:46Z"
 labels = ["rust"]
 scope = ["crates/sadi-py/**", "docs/device/python-binding.md", "creates:changelog.d/**"]
 

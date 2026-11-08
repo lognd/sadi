@@ -7,11 +7,11 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:20Z"
-updated = "2026-11-08T10:24:15Z"
+updated = "2026-11-08T10:33:18Z"
 
 [[acceptance]]
 text = "COV001 count under python/sadi reduced below 10 with real tests or frob:tests markers; no test weakened"
-bound = false
+bound = true
 +++
 
 Follow-up to ACKX0VE (128 -> 40). Remaining: pool.py send_run/send_cancel/join, live.py and guidance.py symbols, wizard/probes/lock/writer_thread. frob:accept cannot park Unresolved findings; bind with real tests.

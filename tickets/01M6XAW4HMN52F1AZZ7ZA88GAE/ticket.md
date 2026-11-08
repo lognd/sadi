@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:22:12Z"
-updated = "2026-11-08T10:28:42Z"
+updated = "2026-11-08T10:28:55Z"
 scope = ["docs/web/wizard.md", "web/src/a11y/contrast.test.ts", "web/src/a11y/contrast.ts", "web/src/styles.css"]
 
 [[acceptance]]

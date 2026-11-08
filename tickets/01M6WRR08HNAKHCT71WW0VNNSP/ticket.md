@@ -2,7 +2,8 @@
 id = "01M6WRR08HNAKHCT71WW0VNNSP"
 title = "numeric central difference raises ZeroDivisionError for subnormal step"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

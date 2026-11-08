@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:23:11Z"
+digest = "585d72dd176080b793b99388fca69f01aed1f45b5524040a6232b85e2966fbf6"
+exit_code = 0
+head = "71c6ebb1d8bace1579d3e62f092be216d189cdb6"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 13 items
+
+python/tests/bench/test_ad3_fake.py .............                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1204225-0.xml --------------
+============================== 13 passed in 0.35s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_fake.py"
+size = 522
+status = "measured"
+test_count = 13
+tests_digest = "55b2e2f1788a6a77b372add63341ba5f45d2d266562bedff5715695e7c74bf48"
+at = "2026-11-08T10:23:11Z"
+actor = "lognd"
+rev = 1

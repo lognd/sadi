@@ -37,7 +37,9 @@ total hanging mass (kg) (+ optional mass uncertainty). Blank volts/mean means "u
 block-mean reading" (shown as the placeholder and recorded). Required fields are never
 defaulted: `collectInputs` refuses with one clear message per problem before any POST, and a
 backend 422 body is shown in the status line. Typed values persist between points. Hotkeys are
-ignored while a field has focus.
+ignored while a field has focus (typing never captures); a hint under the inputs says so
+(`TEXT_FIELD_HOTKEY_HINT`, linked via `aria-describedby`), and Esc blurs the field so hotkeys resume
+(Tab also works).
 
 ## Gaps (filed as tickets)
 

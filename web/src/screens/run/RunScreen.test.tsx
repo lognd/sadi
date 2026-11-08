@@ -196,3 +196,12 @@ describe("mark load change", () => {
     expect(r.ok).toBe(false);
   });
 });
+
+// frob:ticket 01M6XAASFHD7MKMQ79XRD34EXF
+describe("RunView hotkey hint (U-04)", () => {
+  it("is rendered and linked to the input fieldset", () => {
+    const out = html(<RunView {...props()} />);
+    expect(out).toContain('data-testid="hotkey-hint"');
+    expect(out).toContain('aria-describedby="hotkey-hint"');
+  });
+});

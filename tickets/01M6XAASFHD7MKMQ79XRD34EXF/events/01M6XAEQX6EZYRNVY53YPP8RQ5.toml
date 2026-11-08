@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts"]
+new = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts"]
+at = "2026-11-08T10:14:53Z"
+actor = "lognd"
+rev = 1

@@ -1,7 +1,7 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 import { useEffect, useRef } from "react";
 import { getLogger } from "../api/log";
-import { isControlTarget, isTextTarget, resolveKey, type KeyAction } from "./keymap";
+import { isControlTarget, isTextTarget, resolveKey, shouldBlurOnEscape, type KeyAction } from "./keymap";
 
 const log = getLogger("keys.capture");
 
@@ -13,6 +13,12 @@ export function useKeyCapture(onAction: (a: KeyAction) => void, nudgeActive: boo
   useEffect(() => {
     const listener = (e: KeyboardEvent): void => {
       const target = e.target as { tagName?: string; isContentEditable?: boolean; closest?: (sel: string) => unknown } | null;
+      // frob:ticket 01M6XAASFHD7MKMQ79XRD34EXF
+      if (shouldBlurOnEscape(e.key, isTextTarget(target))) {
+        (e.target as HTMLElement).blur();
+        log.debug("escape blurred text field");
+        return;
+      }
       // frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
       const action = resolveKey(e, { textFocus: isTextTarget(target), nudgeActive, controlFocus: isControlTarget(target) });
       if (action === null) return;

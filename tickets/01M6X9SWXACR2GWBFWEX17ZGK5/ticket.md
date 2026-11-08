@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:03:30Z"
-updated = "2026-11-08T10:10:31Z"
+updated = "2026-11-08T10:10:35Z"
 scope = ["python/tests/server/test_curve_notes_latency.py"]
 
 [[acceptance]]

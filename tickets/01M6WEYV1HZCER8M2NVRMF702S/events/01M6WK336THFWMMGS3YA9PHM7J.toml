@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sadi store recover names the cause of a data-root lock refusal (held, stale, io) and accepts --recover-stale to take over a stale lock"]
+moved = []
+at = "2026-11-08T03:26:34Z"
+actor = "lognd"
+rev = 1

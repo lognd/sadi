@@ -2,7 +2,7 @@
 id = "01M6WBKXD1562WNR2FQS9RXHNM"
 title = "Add Backpressure/DiskFull/Closed/Stalled to StoreCode"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"

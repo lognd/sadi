@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:34:00Z"
-scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**", "docs/lctt/export-csv.md", "python/sadi/labs/lctt/live.py"]
+updated = "2026-11-08T06:34:01Z"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**", "docs/lctt/export-csv.md", "python/sadi/labs/lctt/live.py", "python/sadi/labs/lctt/capture.py"]
 
 [[acceptance]]
 text = "PointRow carries elapsed time and sample std dev; round-trip test passes"

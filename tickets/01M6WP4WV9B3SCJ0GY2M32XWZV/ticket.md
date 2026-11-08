@@ -2,7 +2,8 @@
 id = "01M6WP4WV9B3SCJ0GY2M32XWZV"
 title = "Launcher startup must call spill.import_all_spills after taking the data-root lock"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

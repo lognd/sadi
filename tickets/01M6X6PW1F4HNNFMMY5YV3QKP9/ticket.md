@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T09:09:25Z"
 updated = "2026-11-08T09:27:11Z"
-scope = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md"]
+scope = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md", "docs/api"]
 +++
 
 found while working ~WV4W4WY: POST /api/session/points phase=specimen is rejected (no_capture / phase_mismatch) at every wizard step, so GET /api/export/lctt-csv cannot succeed in a guided run; guided-run.spec.ts omits the CSV download until fixed.

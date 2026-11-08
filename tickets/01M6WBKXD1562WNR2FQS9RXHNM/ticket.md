@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T01:15:57Z"
-updated = "2026-11-08T03:26:25Z"
+updated = "2026-11-08T03:26:39Z"
 scope = ["python/sadi/core/errors.py", "python/tests/core/test_models.py", "docs/data-safety.md"]
 
 [[acceptance]]
 text = "StoreCode has backpressure, disk_full, closed and stalled, each with a hint and problem body"
-bound = false
+bound = true
 +++
 
 found while working ~3F2W55E; writer_thread.py defines these errors locally

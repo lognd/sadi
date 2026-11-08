@@ -2835,12 +2835,12 @@ acked_at = "2026-11-08T05:55:20.226212207Z"
 identity = "web/src/screens/run/RunScreen.test.tsx"
 symref = "web/src/screens/run/RunScreen.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "1818c1809b9535320ebb0b7da9b818a691ee78a7c90c167c663bb840796286ec"
+body = "7d2eae0b01fdc663e639e1a312bd5892b675c6fc3c958b2e6c01e8df434c6daa"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T10:06:50.176362254Z"
+acked_at = "2026-11-08T10:15:19.522805121Z"
 
 [[symbol]]
 identity = "web/src/screens/run/RunScreen.test.tsx::OPEN"
@@ -2951,6 +2951,28 @@ attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
 contract = "2e95dedc10b0d138e5d0a47e151513d2e3657bd2e85d55ab4535f6b0bf7376c8"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T06:14:05.724162799Z"
+
+[[symbol]]
+identity = "web/src/screens/run/RunScreen.test.tsx::suite$RunView_hotkey_hint__U-04_"
+symref = "web/src/screens/run/RunScreen.test.tsx::suite$RunView_hotkey_hint__U-04_"
+sig = "44d6dd124880cc953d0f0ce1e795dc401d1c4665d3291c0e5217f6037ee6055c"
+body = "f2ce73f79dc6e287375003bee7ef40fd39a75e620eb35b0a83f8c11b99bf0a61"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "7cc440b5a96429c219b5c83f34638000b977100ed7c8a66e4da8879ba51db8c5"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:15:19.522805121Z"
+
+[[symbol]]
+identity = "web/src/screens/run/RunScreen.test.tsx::suite$RunView_hotkey_hint__U-04_.test$is_rendered_and_linked_to_the_input_fieldset"
+symref = "web/src/screens/run/RunScreen.test.tsx::suite$RunView_hotkey_hint__U-04_.test$is_rendered_and_linked_to_the_input_fieldset"
+sig = "a3a1805a11889fb78b84c0bf06c763865cc1ecacadbf24206e35714eba1169c0"
+body = "18e7439578532746b7e5da24cdbf50a5f45ee116cdd371fb129709cb65be14c6"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "f2c87243254ecfad8e794e15fcdafa0a0b68b86baaa3111e7302b7c9edbe7975"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:15:19.522805121Z"
 
 [[symbol]]
 identity = "web/src/screens/run/RunScreen.test.tsx::suite$capture_decisions"

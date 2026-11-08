@@ -273,7 +273,7 @@ def combine_runs(
 
 # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
 def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
-    """Render the 34-column lctt CSV from the raw session events carried on `run` (in memory)."""
+    """Render the 42-column lctt CSV from the raw session events carried on `run` (in memory)."""
     events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
     doc = build_document(events, date=datetime.now(UTC))
     if isinstance(doc, Err):
@@ -287,7 +287,7 @@ _LIVE_EVENT_TYPES = (
 )  # fmt: skip
 
 
-#: The lctt-csv export format: project-defined 34-column layout, see docs/lctt/export-csv.md.
+#: The lctt-csv export format: project-defined 42-column layout, see docs/lctt/export-csv.md.
 CSV_FORMAT = ExportFormat(
     id=ExportFormatId("lctt-csv"),
     title="LCTT CSV (32 columns)",

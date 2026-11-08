@@ -68,7 +68,7 @@ def _doc() -> CsvDocument:
 
 
 # frob:tests python/sadi/labs/lctt/export_csv.py::build_document
-def test_header_is_34_columns_and_block_layout() -> None:
+def test_header_is_42_columns_and_block_layout() -> None:
     data = render_document(_doc())
     lines = data.decode("utf-8").split("\r\n")
     blank = lines.index("")

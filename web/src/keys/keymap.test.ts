@@ -61,7 +61,6 @@ describe("keymap", () => {
 });
 
 // frob:ticket 01M6XAASFHD7MKMQ79XRD34EXF
-// frob:tests shouldBlurOnEscape
 describe("text-field hotkey hint (U-04)", () => {
   it("blurs only on Escape inside a text field", () => {
     expect(shouldBlurOnEscape("Escape", true)).toBe(true);

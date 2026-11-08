@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T03:45:04Z"
-updated = "2026-11-08T03:52:47Z"
+updated = "2026-11-08T03:52:49Z"
 scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 
 [[acceptance]]
@@ -24,7 +24,7 @@ bound = true
 
 [[acceptance]]
 text = "decimateWindow and zoomScene re-derive min/max decimation for a window and width from the full data"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Spans, markers and extra labels render through the shared draw list to both canvas and SVG, with goldens"

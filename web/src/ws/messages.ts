@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
+// frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 /** Typed parsing of the JSON text side channel (docs/server/websocket.md "Messages"). */
 import { err, ok, type Result } from "../api/result";
 
@@ -18,7 +19,7 @@ export type ServerMessage =
   | { readonly kind: "result"; readonly rawSeq: number; readonly pointIndex: number | null; readonly settled: boolean; readonly forcedEarly: boolean; readonly windowEnd: number | null }
   | { readonly kind: "analysis_failed"; readonly rawSeq: number; readonly reason: string }
   | { readonly kind: "stopped"; readonly reason: string; readonly hint: string }
-  | { readonly kind: "guidance" }
+  | { readonly kind: "guidance"; readonly phase: string; readonly nextAction: string; readonly stopEarly: boolean; readonly stopReason: string }
   | { readonly kind: "stats"; readonly sentFrames: number; readonly droppedFrames: number }
   | { readonly kind: "other"; readonly name: string };
 
@@ -71,7 +72,7 @@ export function parseMessage(text: string): Result<ServerMessage, MessageError> 
     case "stopped":
       return ok({ kind, reason: str(raw["reason"]), hint: str(raw["hint"]) });
     case "guidance":
-      return ok({ kind });
+      return ok({ kind, phase: str(raw["phase"]), nextAction: str(raw["next_action"]), stopEarly: raw["stop_early"] === true, stopReason: str(raw["stop_reason"]) });
     case "stats":
       return ok({ kind, sentFrames: num(raw["sent_frames"]) ?? 0, droppedFrames: num(raw["dropped_frames"]) ?? 0 });
     default:

@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 /** Live feed for the run screens: wraps useTrace and taps the settle state and newest raw seq. */
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -18,13 +19,26 @@ export interface SideState {
   readonly window: CaptureWindow | null;
   /** True when the server reports a simulated data source. */
   readonly simulated: boolean;
+  /** Newest guided-run next step from a guidance message, if any has arrived. */
+  readonly guidance?: GuidanceNote | null;
+}
+
+/** Guided-run advice carried by the WS guidance message. */
+export interface GuidanceNote {
+  readonly phase: string;
+  readonly nextAction: string;
+  readonly stopEarly: boolean;
+  readonly stopReason: string;
 }
 
 /** Fold one message into the side state (pure; unrelated kinds return the same object). */
 export function foldSide(s: SideState, m: ServerMessage): SideState {
   if (m.kind === "hello") return { ...s, simulated: m.simulated };
   if (m.kind === "state") {
-    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: m.simulated ?? false };
+    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: m.simulated ?? false, guidance: s.guidance ?? null };
+  }
+  if (m.kind === "guidance") {
+    return { ...s, guidance: { phase: m.phase, nextAction: m.nextAction, stopEarly: m.stopEarly, stopReason: m.stopReason } };
   }
   if (m.kind === "result") return { ...s, rawSeq: Math.max(s.rawSeq, m.rawSeq) };
   return s;

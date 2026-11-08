@@ -4,7 +4,8 @@ title = "SessionReplayCache: periodically re-verify already-applied WAL bytes (e
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:56:17Z"
-updated = "2026-11-08T09:56:17Z"
+updated = "2026-11-08T09:56:20Z"
 +++

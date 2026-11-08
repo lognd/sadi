@@ -7,5 +7,6 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T02:29:29Z"
-updated = "2026-11-08T02:29:31Z"
+updated = "2026-11-08T02:33:14Z"
+scope = ["docs/**", "python/tests/**"]
 +++

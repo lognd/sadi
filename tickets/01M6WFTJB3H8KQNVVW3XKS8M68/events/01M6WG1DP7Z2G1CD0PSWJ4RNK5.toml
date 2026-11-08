@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["docs/**", "python/tests/**"]
+at = "2026-11-08T02:33:14Z"
+actor = "lognd"
+rev = 1

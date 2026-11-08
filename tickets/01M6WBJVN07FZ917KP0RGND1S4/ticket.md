@@ -12,5 +12,5 @@ scope = ["crates/sadi-proto/src/session.rs"]
 
 [[acceptance]]
 text = "The four accessors have unit tests bound via frob:tests and passing"
-bound = false
+bound = true
 +++

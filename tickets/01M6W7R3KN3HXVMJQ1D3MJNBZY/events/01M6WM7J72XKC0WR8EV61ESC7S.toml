@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/stressstrain/**", "docs/web/stress-strain-plot.md"]
+new = ["web/src/plots/stressstrain/**", "docs/web/stress-strain-plot.md", "docs/web/plots.md"]
+at = "2026-11-08T03:46:29Z"
+actor = "lognd"
+rev = 1

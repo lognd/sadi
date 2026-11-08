@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:46:09Z"
+updated = "2026-11-08T03:46:29Z"
 idempotency_key = "sadi-f6"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/stressstrain/**", "creates:docs/web/stress-strain-plot.md"]
-scope = ["web/src/plots/stressstrain/**", "docs/web/stress-strain-plot.md"]
+scope = ["web/src/plots/stressstrain/**", "docs/web/stress-strain-plot.md", "docs/web/plots.md"]
 
 [[links]]
 kind = "blocked-by"

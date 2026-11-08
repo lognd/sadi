@@ -2,12 +2,13 @@
 id = "01M6WX3GGD2VSGEY1GT2X49DSV"
 title = "CSV export: add elapsed-time and per-sample std dev columns"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:21:34Z"
-scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
+updated = "2026-11-08T06:34:01Z"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**", "docs/lctt/export-csv.md", "python/sadi/labs/lctt/live.py", "python/sadi/labs/lctt/capture.py", "python/sadi/core/point_inputs.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py"]
 
 [[acceptance]]
 text = "PointRow carries elapsed time and sample std dev; round-trip test passes"

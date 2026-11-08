@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:56:44Z"
+updated = "2026-11-08T03:56:46Z"
 scope = ["python/sadi/api/**", "python/tests/api/**", "docs/api/**"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "Device fault halts acquisition loudly while saved blocks stay saved"
-bound = false
+bound = true
 +++
 
 found while working ~60ZNFTD

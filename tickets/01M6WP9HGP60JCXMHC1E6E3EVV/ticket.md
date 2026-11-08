@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "docs/packaging.md explains maturin develop"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "a test asserts the extra exists"

@@ -2,13 +2,13 @@
 id = "01M6WFZ1R6ATYWRVW3315G6CCX"
 title = "Local-dir plugin source (plugins/, private/*/plugin) with settings and gitignore"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:31:56Z"
+updated = "2026-11-08T02:50:15Z"
 labels = ["plugins", "creates:python/sadi/plugins/local.py", "creates:python/sadi/plugins/settings.py", "creates:python/tests/plugins/test_local_source.py"]
 scope = [".gitignore", "python/sadi/plugins/local.py", "python/sadi/plugins/settings.py", "python/tests/plugins/test_local_source.py"]
 

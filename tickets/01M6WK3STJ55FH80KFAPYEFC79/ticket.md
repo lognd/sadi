@@ -2,7 +2,8 @@
 id = "01M6WK3STJ55FH80KFAPYEFC79"
 title = "Audit StrEnum error families (StoreCode etc, JobState, DeviceStatus) -> typani ErrorSet; unify writer_thread errors with StoreCode"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

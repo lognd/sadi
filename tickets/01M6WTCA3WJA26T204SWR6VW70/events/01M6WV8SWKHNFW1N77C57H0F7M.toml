@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["REST: export endpoints (CSV and figure data)"]
+new = ["REST: export endpoints (CSV and figure data)", "GET /api/export lists formats; GET /api/export/{format} streams CSV with Content-Disposition and figure JSON inline"]
+moved = [1]
+at = "2026-11-08T05:49:30Z"
+actor = "lognd"
+rev = 1

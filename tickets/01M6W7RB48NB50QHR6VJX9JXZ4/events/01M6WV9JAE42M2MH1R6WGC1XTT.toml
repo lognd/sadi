@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:49:54Z"
+digest = "24d30adc4b095f563e8ccd683fabf560a0d263e8996a1a65970607c875806639"
+exit_code = 0
+head = "e0b17de172caca2489b3aa98e73a4df48598e931"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/packaging/test_wheels_workflow.py .....                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-509578-0.xml ---------------
+============================== 5 passed in 0.16s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/packaging/test_wheels_workflow.py"
+size = 521
+status = "measured"
+test_count = 5
+tests_digest = "f7dc1043d50859eea49c82782731d709f1259c33e2660f10faf839dedbaa4f34"
+at = "2026-11-08T05:49:54Z"
+actor = "lognd"
+rev = 1

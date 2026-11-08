@@ -1,0 +1,10 @@
+kind = "create"
+title = "Link docs/release.md from docs/index.md"
+type = "docs"
+category = "todo"
+priority = "medium"
+scope = ["docs/index.md"]
+body = "found while working ~JX9JXZ4: index.md was leased by WR6VW70; add '- [Release procedure](release.md)' after the packaging entry"
+at = "2026-11-08T05:49:48Z"
+actor = "lognd"
+rev = 1

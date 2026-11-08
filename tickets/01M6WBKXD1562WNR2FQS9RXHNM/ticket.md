@@ -4,9 +4,10 @@ title = "Add Backpressure/DiskFull/Closed/Stalled to StoreCode"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T01:15:57Z"
-updated = "2026-11-08T01:15:57Z"
+updated = "2026-11-08T03:25:50Z"
 scope = ["python/sadi/core/errors.py"]
 +++
 

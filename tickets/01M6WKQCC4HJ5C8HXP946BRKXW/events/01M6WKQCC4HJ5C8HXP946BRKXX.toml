@@ -1,0 +1,8 @@
+kind = "create"
+title = "FastAPI app factory: mount doctor and plugins routers"
+type = "task"
+category = "todo"
+priority = "high"
+at = "2026-11-08T03:37:39Z"
+actor = "lognd"
+rev = 1

@@ -2,13 +2,13 @@
 id = "01M6W7R2ZMZSCRWKCRFHAH4MTB"
 title = "Crash-recovery tests: kill the process mid-write on every OS"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "critical"
 points = 8
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:16:05Z"
 idempotency_key = "sadi-ds6"
 labels = ["ws:store", "fault-injection", "model:sonnet", "creates:python/tests/crash/**", "creates:.github/workflows/crash.yml", "creates:docs/store/crash-testing.md"]
 scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md"]

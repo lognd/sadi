@@ -2,7 +2,8 @@
 id = "01M6WX3GMG3Z1WCC12V437XJK7"
 title = "CSV export: decide row-level session constants and force-unit loads vs reference"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

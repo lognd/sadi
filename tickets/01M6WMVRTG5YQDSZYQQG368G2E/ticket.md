@@ -13,7 +13,7 @@ scope = ["python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "pyth
 
 [[acceptance]]
 text = "AcquisitionPipeline.halt() is public, idempotent, and used by AcquisitionDriver without noqa"
-bound = false
+bound = true
 +++
 
 AcquisitionDriver (python/sadi/api/acquisition.py) calls private pipeline._halt with a noqa. Add a public halt method on AcquisitionPipeline in python/sadi/core and use it.

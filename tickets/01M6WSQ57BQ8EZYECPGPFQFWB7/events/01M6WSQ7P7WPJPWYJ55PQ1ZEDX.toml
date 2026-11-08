@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["FakeDwf satisfies the DwfBackend Protocol and generates and samples waveforms deterministically with no hardware", "sadi.bench.inject drives any DwfBackend to inject signals and capture outputs, with pin mapping supplied as validated configuration", "A loopback test through FakeDwf and the SADI simulator model runs in CI"]
+moved = []
+at = "2026-11-08T05:22:26Z"
+actor = "lognd"
+rev = 1

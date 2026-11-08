@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:28:50Z"
+updated = "2026-11-08T04:28:52Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
@@ -32,7 +32,7 @@ bound = false
 
 [[acceptance]]
 text = "DATA-020 probes the filesystem type on Windows and macOS"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: deferred checks

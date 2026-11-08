@@ -2,7 +2,8 @@
 id = "01M6XBHBTGXTE4TT5A9BE5FMFS"
 title = "COV001 in python/sadi/server and sadi_py acq.pyi"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

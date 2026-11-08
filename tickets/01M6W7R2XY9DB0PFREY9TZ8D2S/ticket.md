@@ -2,7 +2,8 @@
 id = "01M6W7R2XY9DB0PFREY9TZ8D2S"
 title = "LCTT tare and strain/stress/load with RSS uncertainty"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

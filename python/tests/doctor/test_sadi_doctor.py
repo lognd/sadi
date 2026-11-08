@@ -598,6 +598,12 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/ext.py::ext_040
 # frob:tests python/sadi/doctor/checks/ext.py::ext_050
 # frob:tests python/sadi/doctor/checks/ext.py::child_json
+# frob:tests python/sadi/doctor/checks/usb.py::serial_nodes
+# frob:tests python/sadi/doctor/checks/usb.py::ftdi_devices
+# frob:tests python/sadi/doctor/checks/usb.py::usb_010
+# frob:tests python/sadi/doctor/checks/usb.py::usb_060
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+# frob:tests python/sadi/doctor/checks/usb.py::usb_080
 # frob:tests python/sadi/doctor/checks/net.py::net_030
 # frob:tests python/sadi/doctor/checks/net.py::net_040
 # frob:tests python/sadi/doctor/checks/net.py::health_script

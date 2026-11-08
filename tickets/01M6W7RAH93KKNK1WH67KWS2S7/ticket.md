@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:42:36Z"
+updated = "2026-11-08T05:47:25Z"
 idempotency_key = "sadi-f4"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/live/**", "creates:web/src/ws/**", "creates:web/src/hooks/useTrace.ts", "creates:docs/web/live-trace.md"]
 scope = ["web/src/plots/live/**", "web/src/ws/**", "web/src/hooks/useTrace.ts", "docs/web/live-trace.md"]
@@ -23,15 +23,15 @@ target = "01M6W7R3ZPY606D3MHG4QRM2GS"
 
 [[acceptance]]
 text = "Decodes the binary frame spec from B5, scrolling window with min/max envelope, marks load changes, settle/capture events and saturation limits at +-4.9 V"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Sustains 60 fps with 50 kS/s source in a browser benchmark test; reconnect handling shown in-plot"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Screenshot-ready: titled, labelled axes with units, legend; export via F3"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

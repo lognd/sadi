@@ -2,7 +2,8 @@
 id = "01M6WPMXZ110ZWN7DSR2C5G9GB"
 title = "ty: clear diagnostics in python/tests (excluding tests/doctor)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 3
 reporter = "lognd"

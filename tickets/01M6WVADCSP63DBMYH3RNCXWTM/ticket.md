@@ -2,7 +2,8 @@
 id = "01M6WVADCSP63DBMYH3RNCXWTM"
 title = "Promote _captured/_points_for helpers from routes/results.py to a shared public module"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

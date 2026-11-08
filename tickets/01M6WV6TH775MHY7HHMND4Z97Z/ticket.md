@@ -7,8 +7,16 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:57:28Z"
-scope = ["web/src/plots/live/**"]
+updated = "2026-11-08T05:58:47Z"
+scope = ["web/src/plots/live/**", "docs/web/live-trace.md"]
+
+[[acceptance]]
+text = "Pure frame-time statistics helpers are unit tested"
+bound = true
+
+[[acceptance]]
+text = "Opt-in frame benchmark harness exists, is tested with a fake clock, and docs state the 60 fps result is UNVERIFIED"
+bound = true
 +++
 
 found while working 7KWS2S7

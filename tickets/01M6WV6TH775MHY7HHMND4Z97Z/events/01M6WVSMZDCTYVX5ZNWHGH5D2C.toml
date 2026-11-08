@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Pure frame-time statistics helpers are unit tested", "Opt-in frame benchmark harness exists, is tested with a fake clock, and docs state the 60 fps result is UNVERIFIED"]
+moved = []
+at = "2026-11-08T05:58:42Z"
+actor = "lognd"
+rev = 1

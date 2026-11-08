@@ -2,7 +2,8 @@
 id = "01M6W7R335N9GPFD4DYXP2D6HY"
 title = "Wizard framework: step state machine, undo/redo command log, step rail data"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

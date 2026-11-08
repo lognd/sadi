@@ -27,6 +27,13 @@ describe("StepRail", () => {
     expect(html).toContain("(skipped)");
     expect(html).toContain('aria-current="step"');
   });
+
+  it("is a labelled nav with exactly one tab stop, on the current step", () => {
+    const html = renderToString(<StepRail rail={rail} />);
+    expect(html).toContain('<nav aria-label="Steps"');
+    expect(html.match(/tabindex="0"/g)?.length).toBe(1);
+    expect(html).toMatch(/<li[^>]*aria-current="step"[^>]*tabindex="0"|<li[^>]*tabindex="0"[^>]*aria-current="step"/);
+  });
 });
 
 describe("NextActionPanel", () => {

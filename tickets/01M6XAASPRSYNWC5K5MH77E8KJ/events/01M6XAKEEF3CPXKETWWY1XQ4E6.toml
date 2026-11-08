@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/styles.css"]
+new = ["web/src/styles.css", "web/src/main.tsx"]
+at = "2026-11-08T10:17:27Z"
+actor = "lognd"
+rev = 1

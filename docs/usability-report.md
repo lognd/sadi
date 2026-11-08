@@ -48,7 +48,7 @@ and Space, however, do not activate a focused button or link (U-01).
 | U-07 | 2 | setup | "Setup: Clamp slip check" has no capture UI; the only ways forward are "Finish" and "Skip", and the text does not say what the check is. | open |
 | U-08 | 3 | export | Two figure buttons per format and the PNG-resolution select come before the CSV link; the primary deliverable is second in Tab order. | fixed (~995FN7K) |
 | U-09 | 3 | all | A `web/dist` older than the source gives a 422 on skip/complete (step id not sent) with no hint to rebuild. | Fixed ~81EQRYA (a bare 422 now shows a rebuild-web/dist hint) |
-| U-10 | 3 | all | The step rail is plain text and not focusable; the Doctor button is last in Tab order. | open |
+| U-10 | 3 | all | The step rail is plain text and not focusable; the Doctor button is last in Tab order. | fixed |
 | U-11 | 3 | all | The unstyled layout (default fonts, no spacing) makes the primary button visually equal to Skip. | fixed (~H77E8KJ) |
 
 ## Severity-1 status

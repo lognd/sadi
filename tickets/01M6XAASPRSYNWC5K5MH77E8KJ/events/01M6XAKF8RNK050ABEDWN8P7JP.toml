@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/styles.css", "web/src/main.tsx", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx"]
+new = ["web/src/styles.css", "web/src/main.tsx", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "docs/web/wizard.md"]
+at = "2026-11-08T10:17:28Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,9 @@
+kind = "create"
+title = "Reduce COV001 findings in python/sadi (bind tests or accept with reason)"
+type = "task"
+category = "todo"
+priority = "low"
+points = 3
+at = "2026-11-08T10:17:28Z"
+actor = "lognd"
+rev = 1

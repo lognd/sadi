@@ -2,7 +2,8 @@
 id = "01M6WX3GGD2VSGEY1GT2X49DSV"
 title = "CSV export: add elapsed-time and per-sample std dev columns"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

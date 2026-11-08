@@ -9,6 +9,7 @@ import { decodeFrame } from "../../ws/frame";
 import { parseMessage, type ServerMessage } from "../../ws/messages";
 import { encodeTrace } from "../../ws/testframes";
 import { buildBody, decide, postCapture } from "./capture";
+import { postLoadChange } from "./loadChange";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
 import { RunView, settleText, type RunViewProps } from "./RunView";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
@@ -42,7 +43,7 @@ const view = (o: Partial<LiveView> = {}): LiveView =>
   ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
 const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
   phase: "calibrate", view: view(), trace: <canvas data-testid="live-canvas" />, plot: null, blockedWhy: null,
-  confirming: false, message: null, onAccept: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
+  confirming: false, message: null, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
 });
 
 describe("live derivation from a mocked sim stream", () => {
@@ -163,5 +164,26 @@ describe("run F3 export", () => {
     const down = (() => Promise.reject(new Error("down"))) as unknown as typeof fetch;
     const r2 = await fetchRunExport("x", down);
     expect(!r2.ok && exportErrorText(r2.error)).toContain("down");
+  });
+});
+
+describe("mark load change", () => {
+  it("RunView renders the Mark load change button", () => {
+    expect(html(<RunView {...props()} />)).toContain("Mark load change");
+  });
+  it("postLoadChange posts to the route and returns the marker seq", async () => {
+    const calls: string[] = [];
+    const f = ((url: string, init?: RequestInit) => {
+      calls.push(`${init?.method ?? "GET"} ${url}`);
+      return Promise.resolve(new Response(JSON.stringify({ marker_seq: 5 }), { status: 200 }));
+    }) as typeof fetch;
+    const r = await postLoadChange(f);
+    expect(calls).toEqual(["POST /api/session/load-change"]);
+    expect(r.ok && r.value.marker_seq).toBe(5);
+  });
+  it("postLoadChange surfaces a 409 as an error", async () => {
+    const f = (() => Promise.resolve(new Response("{}", { status: 409 }))) as typeof fetch;
+    const r = await postLoadChange(f);
+    expect(r.ok).toBe(false);
   });
 });

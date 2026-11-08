@@ -13,10 +13,10 @@ import threading
 from typing import TYPE_CHECKING, Any, Final
 
 import numpy as np
-from typani import Result
+from typani import Err, ErrorSet, Result
 
 from sadi.api.acquisition import AcquisitionDriver, DriverFault
-from sadi.core.pipeline import AcquisitionPipeline, Bus, PipelineConfig
+from sadi.core.pipeline import AcquisitionPipeline, Bus, PipelineConfig, PipelineError
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import StreamConfig
 from sadi.logging_setup import get_logger
@@ -25,7 +25,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from sadi.core.device import DeviceService
-    from sadi.store.writer_thread import WriterHandle
+    from sadi.store.wal import Seq
+    from sadi.store.writer_thread import WriterError, WriterHandle
 
 _log = get_logger(__name__)
 
@@ -39,6 +40,12 @@ PACKET_LEN: Final[int] = 612
 LIVE_SETTLE: Final[SettleConfig] = SettleConfig(
     window_s=0.02, threshold=1.0, min_dwell_s=0.03, min_points=5
 )
+
+
+class LiveError(ErrorSet):
+    """Why a live-run command was refused; the description is the hint shown to the operator."""
+
+    NoLiveSession = "No acquisition is running; open or resume a session first"
 
 
 class _Decimated:
@@ -86,6 +93,7 @@ class LiveAcquisition:
         )
         self._lock = threading.Lock()
         self._driver: AcquisitionDriver | None = None
+        self._pipe: AcquisitionPipeline | None = None
         self._fault: DriverFault | None = None
 
     @property
@@ -101,6 +109,15 @@ class LiveAcquisition:
         """True while a run is active."""
         with self._lock:
             return self._driver is not None and self._driver.running
+
+    def mark_load_change(self) -> Result[Seq, LiveError | WriterError | PipelineError]:
+        """Record a load-applied marker in the WAL and open a new settle point (Ok is its seq)."""
+        with self._lock:
+            pipe = self._pipe
+        if pipe is None:
+            _log.warning("load change refused: no live run")
+            return Err(LiveError.NoLiveSession)
+        return pipe.mark_load_change()
 
     def on_session_open(self, writer: WriterHandle, path: Path) -> None:
         """Start streaming into the new session WAL; failures are logged, not raised."""
@@ -122,12 +139,14 @@ class LiveAcquisition:
                 self._device.stop_streaming()
                 return
             self._driver = driver
+            self._pipe = pipe
             _log.info("live acquisition started for session %s", path.name)
 
     def on_session_close(self) -> None:
         """Stop the run and drain its blocks into the WAL; must run before the writer closes."""
         with self._lock:
             driver, self._driver = self._driver, None
+            self._pipe = None
             if driver is None:
                 return
             stopped = driver.stop()

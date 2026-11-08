@@ -59,3 +59,26 @@ def test_sim_launcher_streams_frames_and_saves_raw(tmp_path: Path) -> None:
     session = next((tmp_path / "sessions").iterdir())
     recs = [r.danger_ok for r in WalReader(session / "wal").records() if r.is_ok]
     assert any(r.type == int(RecordType.RAW_BLOCK) for r in recs)
+
+
+# frob:tests python/sadi/server/live.py::LiveAcquisition.mark_load_change
+# frob:tests python/sadi/server/routes/acquisition.py::make_acquisition_router
+def test_sim_load_change_is_recorded_in_wal(tmp_path: Path) -> None:
+    """POST /api/session/load-change durably records a load_applied MARKER in the session WAL."""
+
+    def serve(app: FastAPI, _h: str, _p: int) -> None:
+        with TestClient(app) as client:
+            assert client.post("/api/session/load-change").status_code == 409
+            made = client.post("/api/sessions", json={"lab": "lctt", "slug": "lc"})
+            assert made.status_code == 201, made.text
+            r = client.post("/api/session/load-change")
+            assert r.status_code == 200, r.text
+            assert r.json()["marker_seq"] > 0
+            assert client.post("/api/session/close").status_code == 204
+
+    argv = ["serve", "--sim", "--skip-preflight", "--no-browser", "--port", "0",
+            "--data-root", str(tmp_path)]  # fmt: skip
+    assert launcher.main(argv, serve=serve) == 0
+    session = next((tmp_path / "sessions").iterdir())
+    recs = [r.danger_ok for r in WalReader(session / "wal").records() if r.is_ok]
+    assert any(r.type == int(RecordType.MARKER) for r in recs)

@@ -30,6 +30,7 @@ from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
 from sadi.server.live import LiveAcquisition
 from sadi.server.results_stream import ResultsStream
+from sadi.server.routes.acquisition import make_acquisition_router
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.plots import make_plots_router
@@ -165,6 +166,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     if cfg.live is not None:
         app.state.sessions.set_hooks(cfg.live.on_session_open, cfg.live.on_session_close)
     app.include_router(make_sessions_router(app.state.sessions))
+    # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
+    app.include_router(make_acquisition_router(cfg.live.mark_load_change if cfg.live else None))
     app.include_router(
         make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)
     )

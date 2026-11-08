@@ -12,6 +12,7 @@ import type { WizardState } from "../../components/wizard/types";
 import type { ConnState } from "../../ws/client";
 import type { Snapshot } from "../../plots/live";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
+import { postLoadChange } from "./loadChange";
 import { buildBody, decide, postCapture, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
 import { RunView, type PhasePlot } from "./RunView";
@@ -82,6 +83,12 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     else void capture(d.kind === "capture-early");
   }, [view, confirm, capture]);
 
+  const markLoadChange = useCallback(async (): Promise<void> => {
+    const r = await postLoadChange(p.fetchImpl);
+    if (r.ok) setMessage("Load change marked; wait for the reading to settle.");
+    else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Load change refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
+  }, [p.fetchImpl]);
+
   const doExport = useCallback(async (): Promise<void> => {
     const r = await fetchRunExport(p.exportFormat ?? DEFAULT_RUN_EXPORT, p.fetchImpl);
     if (!r.ok) { setMessage(exportErrorText(r.error)); return; }
@@ -99,11 +106,11 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
 
   return (
     <WizardShell status={{ source: view.source, motion: view.motion, signal: view.signal }} onKeyAction={onKey} onWizard={p.onWizard}>
-      {p.simulated === true && <p data-testid="sim-banner">SIMULATED DATA</p>}
+      {(p.simulated === true || side.simulated) && <p data-testid="sim-banner">SIMULATED DATA</p>}
       <RunView
         phase={p.phase} view={view} trace={<TraceCanvas snapshot={live.snapshot} conn={live.conn} />} plot={p.plot ?? null}
         blockedWhy={blockedWhy} confirming={confirm === "asking"} message={message ?? live.notice}
-        onAccept={() => { accept(false); }} onConfirmEarly={() => { accept(true); }}
+        onAccept={() => { accept(false); }} onLoadChange={() => { void markLoadChange(); }} onConfirmEarly={() => { accept(true); }}
         onCancelEarly={() => { setConfirm("idle"); }}
       />
     </WizardShell>

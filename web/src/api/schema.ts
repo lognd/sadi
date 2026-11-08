@@ -464,6 +464,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/session/load-change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Load Change
+         * @description Mark that a load was applied: durably record it and start a new settle point.
+         */
+        post: operations["load_change_api_session_load_change_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/session/points": {
         parameters: {
             query?: never;
@@ -1166,6 +1186,14 @@ export interface components {
          * @enum {string}
          */
         Layer: "plat" | "py" | "ext" | "web" | "net" | "data" | "sess" | "wal" | "usb" | "dev" | "sim" | "clk" | "res" | "wrk" | "brw" | "plg";
+        /**
+         * LoadChangeOut
+         * @description Result of marking a load change: the WAL seq of the durable load-applied marker.
+         */
+        LoadChangeOut: {
+            /** Marker Seq */
+            marker_seq: number;
+        };
         /**
          * McCrossCheck
          * @description RSS vs MC flag; MC runs as a job (J3), so a fresh result starts PENDING.
@@ -2326,6 +2354,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    load_change_api_session_load_change_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoadChangeOut"];
                 };
             };
         };

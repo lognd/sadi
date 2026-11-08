@@ -38,8 +38,10 @@ export async function expectStep(page: Page, text: string): Promise<void> {
   await expect(page.locator('ol.step-rail li[aria-current="step"]')).toContainText(text);
 }
 
-/** Wait until the live view reports Settled, then press Space (keyboard-only accept). */
+/** Mark a load change, wait until the live view reports Settled, then press Space (keyboard-only accept). */
 export async function acceptWhenSettled(page: Page): Promise<void> {
+  // The detector only leaves "loading" once a load change is marked (docs/e2e.md).
+  await page.getByRole("button", { name: "Mark load change" }).click();
   await expect(page.getByTestId("readout")).toContainText("[Settled]", { timeout: 60_000 });
   await page.keyboard.press(" ");
   await expect(page.getByTestId("run-message")).toContainText("Captured");

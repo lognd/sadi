@@ -24,6 +24,8 @@ export interface RunViewProps {
   readonly confirming: boolean;
   readonly message: string | null;
   readonly onAccept: () => void;
+  /** Operator confirms a load was applied (marks a load change on the live run). */
+  readonly onLoadChange: () => void;
   readonly onConfirmEarly: () => void;
   readonly onCancelEarly: () => void;
 }
@@ -68,6 +70,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
       ) : (
         <button type="button" onClick={p.onAccept} disabled={p.blockedWhy !== null}>{meta.acceptLabel} (Space)</button>
       )}
+      {" "}<button type="button" onClick={p.onLoadChange}>Mark load change</button>
       {p.blockedWhy !== null && <p data-testid="blocked-why">{p.blockedWhy}</p>}
       {p.message !== null && <p role="status" data-testid="run-message">{p.message}</p>}
     </section>

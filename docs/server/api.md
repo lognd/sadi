@@ -51,3 +51,9 @@ session open is 409, and malformed bodies are 422.
 
 Inventory, results, guidance, export, device status, OpenAPI/TS client generation and the
 loop-lag test are tracked as follow-up tickets.
+
+## POST /api/session/load-change
+
+`sadi.server.routes.acquisition` calls `LiveAcquisition.mark_load_change`, which records a WAL
+MARKER (`load_applied`) through the live pipeline and returns `{marker_seq}`. 409
+`no_live_session` when no acquisition runs; 409 `acquisition_halted` when the pipeline refuses.

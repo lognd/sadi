@@ -25,7 +25,13 @@ messages, so there is no second socket. `TraceCanvas` draws the shared live scen
 - Export: F3 (resolved by `resolveKey` to `export`) downloads `GET /api/export/{format}`
   (`exportTrace.ts`, default `lctt-csv`, prop `exportFormat`). Failures show in the status line.
 
+A "Mark load change" button (`loadChange.ts`) POSTs /api/session/load-change so the settle
+detector can settle after a load is applied. The sim banner also shows when the stream hello
+reports `simulated`.
+
 ## Gaps (filed as tickets)
+
+- G3: no input entry (volts/height, mean/n, diameter, mass); capture returns 422 (ticket ~PQBZCCN).
 
 - G1: the stream carries no live drift rate, capture-window raw seq or simulated flag. Drift is
   estimated client-side from the trace and the simulated flag is a prop.

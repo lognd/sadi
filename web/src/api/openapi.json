@@ -1063,6 +1063,20 @@
         "title": "Layer",
         "type": "string"
       },
+      "LoadChangeOut": {
+        "description": "Result of marking a load change: the WAL seq of the durable load-applied marker.",
+        "properties": {
+          "marker_seq": {
+            "title": "Marker Seq",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "marker_seq"
+        ],
+        "title": "LoadChangeOut",
+        "type": "object"
+      },
       "McCrossCheck": {
         "description": "RSS vs MC flag; MC runs as a job (J3), so a fresh result starts PENDING.",
         "properties": {
@@ -3037,6 +3051,28 @@
           }
         },
         "summary": "Put Weight"
+      }
+    },
+    "/api/session/load-change": {
+      "post": {
+        "description": "Mark that a load was applied: durably record it and start a new settle point.",
+        "operationId": "load_change_api_session_load_change_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoadChangeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Load Change",
+        "tags": [
+          "acquisition"
+        ]
       }
     },
     "/api/session/points": {

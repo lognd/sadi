@@ -13,7 +13,7 @@ scope = ["python/tests/server/test_routes.py", "web/src/api/openapi.json", "web/
 
 [[acceptance]]
 text = "GET /api/session/points returns settled and forced_early per point from the captured PointV1"
-bound = false
+bound = true
 +++
 
 found while working ~FHNEDX8: PointView omits settled and forced_early from PointV1; review screen shows them only when present.

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:43Z"
+updated = "2026-11-08T04:32:44Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -28,7 +28,7 @@ bound = true
 
 [[acceptance]]
 text = "Result order is the catalog order regardless of completion order, deterministic across runs"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A crashing worker and a dependency cycle are handled (reported / raised), not lost or hung"

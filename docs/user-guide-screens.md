@@ -14,6 +14,13 @@ cd web && SADI_SCREENSHOTS=1 npx playwright test -c docs-shots/playwright.config
 
 It reuses the backend fixture of the [e2e](e2e.md) suite.
 
+## Doctor
+
+The Doctor screen lists the environment checks (platform, Python, extension, web bundle, network) with
+a status per check and a Re-run button. Open it from the Doctor link in the top bar.
+
+![Doctor screen with the environment checks](img/ui/doctor.png)
+
 ## Setup
 
 The step rail lists Setup, LVDT calibration, Tare, Elastic, Plastic, Results and Export.

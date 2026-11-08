@@ -65,16 +65,33 @@ describe("export screen", () => {
     expect(figureFileName("fig", "svg")).toBe("fig.svg");
   });
 
-  it("exports an svg figure and reports errors as problems", async () => {
-    const scene = { title: "t", width: 200, height: 100, xAxis: { label: "x" }, yAxis: { label: "y" },
-      series: [{ id: "s", label: "s", x: [0, 1], y: [0, 1], style: "line" }] };
+  it("exports figure data as one svg per figure and reports errors as problems", async () => {
+    const data = {
+      calibration: { volts: [1, 2, 3], height_m: [0.01, 0.02, 0.031], fit: { slope_m_per_v: 0.01, intercept_m: 0, r2: 0.999, n: 3,
+        band_volts: [1, 2, 3], band_height_m: [0.01, 0.02, 0.03], band_half_width_m: [0.001, 0.001, 0.001] } },
+      stress_strain: { point_ids: ["a", "b"], strain: [0.001, 0.002], stress_mpa: [70, 140], excluded: [false, true] },
+    };
     const save = vi.fn();
-    const ok = await exportFigureFormat("fig", { format: "svg" }, () => json(scene), save);
+    const ok = await exportFigureFormat("fig", { format: "svg" }, () => json(data), save);
     expect(ok).toBeNull();
-    expect(save).toHaveBeenCalledWith(expect.any(Blob), "fig.svg");
+    expect(save).toHaveBeenCalledWith(expect.any(Blob), "fig-calibration.svg");
+    expect(save).toHaveBeenCalledWith(expect.any(Blob), "fig-stress-strain.svg");
     const bad = await exportFigureFormat("nope", { format: "svg" },
       () => json({ title: "Unknown", detail: "x", hint: "use fig" }, 404), save);
     expect(bad?.hint).toBe("use fig");
-    expect(save).toHaveBeenCalledTimes(1);
+    const odd = await exportFigureFormat("fig", { format: "svg" }, () => json({ series: [] }), save);
+    expect(odd?.title).toBe("Figure data cannot be drawn");
+    expect(save).toHaveBeenCalledTimes(2);
+  });
+
+  it("says so when the session has no points to plot", async () => {
+    const empty = {
+      calibration: { volts: [], height_m: [], fit: null },
+      stress_strain: { point_ids: [], strain: [], stress_mpa: [], excluded: [] },
+    };
+    const save = vi.fn();
+    const p = await exportFigureFormat("fig", { format: "svg" }, () => json(empty), save);
+    expect(p?.title).toBe("Nothing to plot yet");
+    expect(save).not.toHaveBeenCalled();
   });
 });

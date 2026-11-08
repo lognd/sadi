@@ -8,10 +8,10 @@ points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:53:24Z"
+updated = "2026-11-08T03:54:45Z"
 idempotency_key = "sadi-f7"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/creep/**", "creates:docs/web/creep-plot.md"]
-scope = ["web/src/plots/creep/**", "docs/web/creep-plot.md"]
+scope = ["web/src/plots/creep/**", "docs/web/creep-plot.md", "docs/web/plots.md"]
 
 [[links]]
 kind = "blocked-by"

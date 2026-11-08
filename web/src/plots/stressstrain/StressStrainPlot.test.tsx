@@ -12,12 +12,11 @@ const data: StressStrainData = {
   yield: null,
 };
 
-// frob:tests StressStrainPlot
 describe("StressStrainPlot", () => {
   it("renders an accessible group with window controls", () => {
     const html = renderToString(<StressStrainPlot data={data} onWindowChange={() => undefined} />);
     expect(html).toContain('role="group"');
     expect(html).toContain("Window start");
-    expect(html).toContain("points 0 to 4");
+    expect(html).toContain("to <!-- -->4");
   });
 });

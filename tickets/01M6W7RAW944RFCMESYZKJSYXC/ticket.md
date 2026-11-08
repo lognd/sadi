@@ -2,7 +2,8 @@
 id = "01M6W7RAW944RFCMESYZKJSYXC"
 title = "Packaging: bundle built UI into the sadi wheel, entry points"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

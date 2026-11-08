@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:56:57Z"
+updated = "2026-11-08T02:56:58Z"
 labels = ["plugins", "creates:python/sadi/cli/plugins.py", "creates:python/sadi/plugins/state.py", "creates:python/tests/cli/test_plugins_cli.py", "creates:python/tests/plugins/test_state.py"]
 scope = ["python/sadi/cli/__init__.py", "python/sadi/cli/plugins.py", "python/sadi/plugins/state.py", "python/tests/cli/test_plugins_cli.py", "python/tests/plugins/test_state.py"]
 
@@ -26,7 +26,7 @@ bound = true
 
 [[acceptance]]
 text = "disable then list shows disabled; enable restores"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Unknown id returns clear error, no traceback"

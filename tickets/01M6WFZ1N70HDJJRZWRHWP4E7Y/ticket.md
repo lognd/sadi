@@ -8,7 +8,7 @@ points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:52:07Z"
+updated = "2026-11-08T02:52:08Z"
 labels = ["plugins", "creates:python/sadi/labs/lctt/plugin.py", "creates:python/sadi/labs/lctt/sadi_plugin.toml", "creates:python/sadi/plugins/builtin.py", "creates:python/tests/plugins/test_boundary.py", "creates:python/tests/plugins/test_lctt_plugin.py"]
 scope = ["python/sadi/labs/lctt/__init__.py", "python/pyproject.toml", "python/sadi/labs/lctt/plugin.py", "python/sadi/labs/lctt/sadi_plugin.toml", "python/sadi/plugins/builtin.py", "python/tests/plugins/test_boundary.py", "python/tests/plugins/test_lctt_plugin.py"]
 
@@ -22,7 +22,7 @@ bound = true
 
 [[acceptance]]
 text = "Existing lctt tests pass unmodified"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Boundary test fails on a fixture plugin importing sadi.store.wal"

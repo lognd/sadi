@@ -25,3 +25,11 @@ nudge. Shell handles primary/undo/redo/help; other actions go to `onKeyAction`.
 The on-screen list (`SHORTCUTS`) lives beside the map.
 
 Not yet: accept/nudge/step navigation behaviour (run and review screens), mode toggle, header.
+
+## Mounting in the app
+
+`App.tsx` renders `screens/WizardHost.tsx`, which maps the current rail step's `phase` to a screen
+(`screenFor`): run screens for calibration, tare, elastic and plastic; the review screen for
+Results; the export screen for Export (and when no step is current). Each screen is keyed by its
+kind so it remounts on a step change, and reports rail changes through `WizardShell.onWizard`.
+On Results the review screen owns undo/redo (`delegateUndo`), so a key press is never applied twice.

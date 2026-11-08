@@ -8,6 +8,7 @@ import type { KeyAction } from "../../keys/keymap";
 import type { UseTraceOptions } from "../../hooks/useTrace";
 import { renderToCanvas } from "../../plots/core";
 import { buildLiveScene } from "../../plots/live";
+import type { WizardState } from "../../components/wizard/types";
 import type { ConnState } from "../../ws/client";
 import type { Snapshot } from "../../plots/live";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
@@ -52,6 +53,8 @@ export interface RunScreenProps {
   readonly exportFormat?: string;
   /** Receives the downloaded export; the default saves it through a temporary link (browser only). */
   readonly onExport?: (blob: Blob, filename: string) => void;
+  /** Forwarded to the wizard shell: called when the rail changes. */
+  readonly onWizard?: (w: WizardState) => void;
   readonly fetchImpl?: typeof fetch;
 }
 
@@ -95,7 +98,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [accept, doExport]);
 
   return (
-    <WizardShell status={{ source: view.source, motion: view.motion, signal: view.signal }} onKeyAction={onKey}>
+    <WizardShell status={{ source: view.source, motion: view.motion, signal: view.signal }} onKeyAction={onKey} onWizard={p.onWizard}>
       {p.simulated === true && <p data-testid="sim-banner">SIMULATED DATA</p>}
       <RunView
         phase={p.phase} view={view} trace={<TraceCanvas snapshot={live.snapshot} conn={live.conn} />} plot={p.plot ?? null}

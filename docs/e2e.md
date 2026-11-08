@@ -29,10 +29,12 @@ npx playwright test -c e2e/playwright.config.ts
 On Debian/Ubuntu/WSL chromium needs system libraries: `sudo npx playwright install-deps chromium`
 (or `sudo apt install libnspr4 libnss3 libasound2t64`). Without them the browser exits 127.
 
-## Known gaps
+## Mounting
 
-`web/src/App.tsx` currently mounts only the health page and the Doctor; the wizard shell,
-run, review and export screens are not routed. The specs detect a missing step rail and skip
-with that reason, and start asserting as soon as the wizard is mounted. Selectors (export
-button names, results region) are best-effort against the screen components and may need
-adjusting at that point.
+`web/src/App.tsx` mounts `WizardHost` (`web/src/screens/WizardHost.tsx`) under the health line and
+the Doctor link. The host reads the wizard rail and shows the screen for the current step: Setup
+note, run screens (calibrate, tare, elastic, plastic), review (Results) and export (Export, F3 saves
+the CSV). The step rail is visible on every step. The specs wait up to 10 s for the "Steps"
+navigation and skip only if it never appears (backend down). Selectors follow the components: the
+calibration step title is "LVDT calibration", so the specs match `calibration`/`LVDT calibration`
+rather than "Calibrate" (the run heading still says "Calibrate").

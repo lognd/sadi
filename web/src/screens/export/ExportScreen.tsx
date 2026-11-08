@@ -18,7 +18,7 @@ export function figureFileName(formatId: string, fmt: ExportOptions["format"]): 
 }
 
 /** Save a blob through a temporary link; browser only. */
-function saveBlob(blob: Blob, name: string): void {
+export function saveBlob(blob: Blob, name: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -190,10 +190,10 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
   }, [dpi, fetchImpl]);
 
   return (
-    <main aria-label="Results and export">
+    <section aria-label="Results and export">
       {problem ? <ProblemAlert p={problem} /> : null}
       <ReportView results={results} />
       <FormatList formats={formats} dpi={dpi} onDpi={setDpi} onFigure={onFigure} />
-    </main>
+    </section>
   );
 }

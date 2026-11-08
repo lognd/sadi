@@ -1,5 +1,5 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { useKeyCapture } from "../../keys/useKeyCapture";
 import type { KeyAction } from "../../keys/keymap";
@@ -20,20 +20,26 @@ export interface WizardShellProps {
   /** Called for capture and window-nudge keys the shell does not handle itself. */
   onKeyAction?: (a: KeyAction) => void;
   nudgeActive?: boolean;
+  /** Called whenever the rail is loaded or changes, so a host can pick the screen for the current step. */
+  onWizard?: (w: WizardState) => void;
+  /** When true, undo and redo keys go to `onKeyAction` instead of the shell (the work area owns history). */
+  delegateUndo?: boolean;
 }
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Wizard shell: rail, work area, next-action panel, status bar and keyboard capture. */
-export function WizardShell({ status, children, onKeyAction, nudgeActive = false }: WizardShellProps): React.JSX.Element {
+export function WizardShell({ status, children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false }: WizardShellProps): React.JSX.Element {
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
   const [busy, setBusy] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [help, setHelp] = useState(true);
+  const wizardCb = useRef(onWizard);
+  wizardCb.current = onWizard;
 
   useEffect(() => {
     void getWizard().then((r) => {
-      if (r.ok) setWizard(r.value);
+      if (r.ok) { setWizard(r.value); wizardCb.current?.(r.value); }
       else { log.warn("wizard load failed"); setFailure(r.error); }
     });
   }, []);
@@ -45,6 +51,7 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
     if (r.ok) {
       log.info("committed", { what, seq: r.value.seq });
       setWizard(r.value.wizard);
+      wizardCb.current?.(r.value.wizard);
       setFailure(null);
       setSavedAt(new Date().toLocaleTimeString());
     } else {
@@ -57,11 +64,12 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
   const act = useCallback((a: KeyAction): void => {
     log.debug("action", { a });
     if (a === "primary" || a === "finish-phase") void write("wizard/complete");
+    else if (delegateUndo && (a === "undo" || a === "redo")) onKeyAction?.(a);
     else if (a === "undo") void write("undo");
     else if (a === "redo") void write("redo");
     else if (a === "help") setHelp((h) => !h);
     else onKeyAction?.(a);
-  }, [write, onKeyAction]);
+  }, [write, onKeyAction, delegateUndo]);
   useKeyCapture(act, nudgeActive);
 
   return (

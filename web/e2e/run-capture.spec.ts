@@ -7,10 +7,10 @@ import { acceptWhenSettled, currentStep, openWizard } from "./helpers";
 
 test("simulator banner, live readout and Space capture on the calibrate screen", async ({ page }) => {
   const mounted = await openWizard(page);
-  test.skip(!mounted, "wizard shell is not mounted in App.tsx yet (see docs/e2e.md, Known gaps)");
+  test.skip(!mounted, "wizard shell did not mount (is the backend up? see docs/e2e.md)");
 
   await page.keyboard.press("Enter"); // leave Setup
-  expect(await currentStep(page)).toContain("Calibrate");
+  expect(await currentStep(page)).toContain("calibration");
   await expect(page.getByTestId("sim-banner")).toHaveText("SIMULATED DATA");
   await expect(page.getByTestId("readout")).toContainText("Live V:");
   await expect(page.getByTestId("live-canvas")).toBeVisible();
@@ -19,10 +19,10 @@ test("simulator banner, live readout and Space capture on the calibrate screen",
 
 test("each capture phase shows its heading and accepts a point", async ({ page }) => {
   const mounted = await openWizard(page);
-  test.skip(!mounted, "wizard shell is not mounted in App.tsx yet (see docs/e2e.md, Known gaps)");
+  test.skip(!mounted, "wizard shell did not mount (is the backend up? see docs/e2e.md)");
 
   await page.keyboard.press("Enter");
-  for (const [phase, heading] of [["Calibrate", /Calibrate/], ["Tare", /Tare/], ["Elastic", /Elastic/], ["Plastic", /Plastic/]] as const) {
+  for (const [phase, heading] of [["calibration", /Calibrate/], ["Tare", /Tare/], ["Elastic", /Elastic/], ["Plastic", /Plastic/]] as const) {
     expect(await currentStep(page)).toContain(phase);
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
     await acceptWhenSettled(page);

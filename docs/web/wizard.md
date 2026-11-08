@@ -62,3 +62,9 @@ calibrate, elastic, plastic is legal, otherwise 409 `bad_phase_transition` with 
 (`web/src/api/runPhase.ts`): GET first, do nothing if the server is already in or past that phase
 (so repeats and reloads show no error), otherwise POST each missing phase in order. A refusal is
 shown above the run screen through `ErrorNotice` with the server's hint. Tare is not a server phase.
+
+## Contrast (WCAG AA)
+
+`web/src/styles.css` colors are checked by `web/src/a11y/contrast.test.ts` (helper:
+`a11y/contrast.ts`): text pairs need 4.5:1, control borders and the focus ring 3:1. Change a
+custom property there and the test fails if a pair drops below AA.

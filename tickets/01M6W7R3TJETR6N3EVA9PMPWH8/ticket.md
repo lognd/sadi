@@ -2,7 +2,8 @@
 id = "01M6W7R3TJETR6N3EVA9PMPWH8"
 title = "Results panel: best value +/- U, 95% interval, plain-language confidence"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

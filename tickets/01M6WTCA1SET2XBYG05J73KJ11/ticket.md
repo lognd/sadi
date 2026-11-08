@@ -8,8 +8,8 @@ points = 5
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:41:02Z"
-scope = ["python/sadi/server/routes/results.py"]
+updated = "2026-11-08T05:41:53Z"
+scope = ["python/sadi/server/routes/results.py", "python/sadi/server/app.py"]
 
 [[links]]
 kind = "blocked-by"

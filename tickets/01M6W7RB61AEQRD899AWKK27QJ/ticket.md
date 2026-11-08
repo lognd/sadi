@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T06:44:41Z"
+updated = "2026-11-08T06:44:57Z"
 idempotency_key = "sadi-t1"
 labels = ["ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/e2e/**", "creates:docs/testing.md"]
 scope = ["python/tests/e2e/**", "docs/testing.md"]
@@ -55,7 +55,7 @@ bound = true
 
 [[acceptance]]
 text = "docs/testing.md documents the scenario matrix and how to add one"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Parametrised full-run scenarios through the API: each FaultPlan (noise, drift, creep, slip steps, dropped bytes, saturation, combined) asserts settle behaviour, slip flagged, saturation warning, byte resync with counted gaps, results within tolerance of ground truth, raw preserved in WAL"

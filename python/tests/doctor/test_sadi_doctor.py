@@ -1165,3 +1165,94 @@ def test_web_020_skips_without_version_json() -> None:
     report = _run(p, Os.LINUX, data_root=ROOT)
     result = next(r for r in report.results if r.id == "WEB-020")
     assert result.status is Status.SKIP and result.skip_reason is SkipReason.UNVERIFIED
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::windows_fstype
+# frob:tests python/sadi/doctor/hostprobe.py::windows_long_paths
+# frob:tests python/sadi/doctor/hostprobe.py::windows_default_browser
+def test_windows_readers_answer_none_off_windows(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The registry and volume readers return None when not running on Windows."""
+    monkeypatch.setattr(hostprobe.sys, "platform", "linux")
+    assert hostprobe.windows_fstype("/tmp") is None
+    assert hostprobe.windows_long_paths() is None
+    assert hostprobe.windows_default_browser() is None
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::web_bundle_version
+def test_web_bundle_version_reads_version_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """version.json's sadi field is returned; absent or malformed files give None."""
+    dist = tmp_path / "web" / "dist"
+    dist.mkdir(parents=True)
+    monkeypatch.setattr(hostprobe, "__file__", str(tmp_path / "doctor" / "hostprobe.py"))
+    assert hostprobe.web_bundle_version() is None
+    (dist / "version.json").write_text("{not json", encoding="utf-8")
+    assert hostprobe.web_bundle_version() is None
+    (dist / "version.json").write_text('{"sadi": "1.2.3"}', encoding="utf-8")
+    assert hostprobe.web_bundle_version() == "1.2.3"
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::build_target
+def test_build_target_is_none_without_attribute(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A sadi_py without BUILD_TARGET (or a str one) maps to None or the string."""
+    import types
+
+    fake = types.ModuleType("sadi_py")
+    monkeypatch.setitem(__import__("sys").modules, "sadi_py", fake)
+    assert hostprobe.build_target() is None
+    fake.BUILD_TARGET = "x86_64-unknown-linux-gnu"  # type: ignore[attr-defined]
+    assert hostprobe.build_target() == "x86_64-unknown-linux-gnu"
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::launch_hit
+def test_launch_hit_true_when_browser_connects(monkeypatch: pytest.MonkeyPatch) -> None:
+    """launch_hit is True when the opened URL is fetched, False when nothing connects."""
+    import urllib.request
+    from threading import Thread
+
+    def fetch(url: str) -> bool:
+        Thread(target=lambda: urllib.request.urlopen(url, timeout=5).read()).start()
+        return True
+
+    monkeypatch.setattr(hostprobe.webbrowser, "open", fetch)
+    assert hostprobe.launch_hit(5.0) is True
+    monkeypatch.setattr(hostprobe.webbrowser, "open", lambda url: True)
+    assert hostprobe.launch_hit(0.1) is False
+    monkeypatch.setattr(hostprobe.webbrowser, "open", lambda url: False)
+    assert hostprobe.launch_hit(0.1) is False
+
+
+# frob:tests python/sadi/doctor/probes.py::Probes.build_target
+# frob:tests python/sadi/doctor/probes.py::Probes.long_paths_enabled
+# frob:tests python/sadi/doctor/probes.py::Probes.web_bundle_version
+# frob:tests python/sadi/doctor/probes.py::Probes.browser_version
+# frob:tests python/sadi/doctor/probes.py::Probes.browser_launch_hit
+# frob:tests python/sadi/doctor/probes.py::RealProbes.build_target
+# frob:tests python/sadi/doctor/probes.py::RealProbes.long_paths_enabled
+# frob:tests python/sadi/doctor/probes.py::RealProbes.web_bundle_version
+# frob:tests python/sadi/doctor/probes.py::RealProbes.browser_version
+# frob:tests python/sadi/doctor/probes.py::RealProbes.browser_launch_hit
+def test_real_probes_delegate_to_hostprobe(monkeypatch: pytest.MonkeyPatch) -> None:
+    """RealProbes routes the new probes to hostprobe and parses `--version` output."""
+    from sadi.doctor.probes import RealProbes
+
+    real = RealProbes()
+    monkeypatch.setattr(hostprobe, "build_target", lambda: "t")
+    monkeypatch.setattr(hostprobe, "windows_long_paths", lambda: False)
+    monkeypatch.setattr(hostprobe, "web_bundle_version", lambda: "9")
+    monkeypatch.setattr(hostprobe, "launch_hit", lambda timeout: True)
+    assert real.build_target() == "t"
+    assert real.long_paths_enabled() is False
+    assert real.web_bundle_version() == "9"
+    assert real.browser_launch_hit(1.0) is True
+    monkeypatch.setattr(real, "os_kind", lambda: Os.LINUX)
+    monkeypatch.setattr(real, "_browser_name", lambda: "firefox")
+    monkeypatch.setattr(real, "which", lambda name: "/usr/bin/firefox")
+    run = CommandRun(
+        argv=("firefox", "--version"), exit_code=0, stdout_tail="Mozilla Firefox 120.0\n"
+    )
+    monkeypatch.setattr(real, "run", lambda argv, **kw: Ok(run))
+    assert real.browser_version() == ("firefox", 120)
+    monkeypatch.setattr(real, "_browser_name", lambda: None)
+    assert real.browser_version() is None

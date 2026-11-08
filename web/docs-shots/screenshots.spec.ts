@@ -23,15 +23,17 @@ test("capture user-guide screenshots against the simulator", async ({
 }) => {
   await page.goto("/");
   await expect(page.locator("main, nav").first()).toBeVisible();
-  const doctor = page.getByRole("button", { name: "Close Doctor" });
-  if (
-    await doctor.waitFor({ state: "visible", timeout: 5_000 }).then(
-      () => true,
-      () => false,
-    )
-  ) {
-    await page.screenshot({ path: `${out}/doctor.png` }); // only shown when the app opens Doctor on load
-  }
+  // frob:ticket 8ZJZX7F
+  // Doctor may already be open (backend has no health route); otherwise open it from the nav.
+  const closeDoctor = page.getByRole("button", { name: "Close Doctor" });
+  const alreadyOpen = await closeDoctor
+    .waitFor({ state: "visible", timeout: 5_000 })
+    .then(() => true, () => false);
+  if (!alreadyOpen) await page.getByRole("button", { name: "Doctor", exact: true }).click();
+  await expect(page.getByRole("main", { name: "Doctor" })).toBeVisible();
+  await page.getByRole("button", { name: /^Re-run / }).first().waitFor({ state: "visible", timeout: 30_000 }); // checks loaded
+  await page.screenshot({ path: `${out}/doctor.png` });
+  await page.getByRole("button", { name: "Close Doctor" }).click();
 
   const mounted = await openWizard(page);
   test.skip(!mounted, "wizard shell did not mount");

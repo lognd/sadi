@@ -2,7 +2,8 @@
 id = "01M6W7RAFMFB5NMWGZY0VYJVFZ"
 title = "`sadi` launcher: serve UI + API, pick port, open browser, flags"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

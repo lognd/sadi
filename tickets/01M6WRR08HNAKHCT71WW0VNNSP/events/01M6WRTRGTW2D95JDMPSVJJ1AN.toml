@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Subnormal x (5e-324) no longer raises ZeroDivisionError in central_difference", "A zero or non-representable step returns a typed Err instead of raising"]
+moved = []
+at = "2026-11-08T05:06:53Z"
+actor = "lognd"
+rev = 1

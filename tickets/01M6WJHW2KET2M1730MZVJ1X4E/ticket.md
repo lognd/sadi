@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:42Z"
+updated = "2026-11-08T04:32:43Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -24,7 +24,7 @@ bound = true
 
 [[acceptance]]
 text = "The whole-run budget aborts running and unstarted checks as skip/timeout"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Result order is the catalog order regardless of completion order, deterministic across runs"

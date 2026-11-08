@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip
-from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason
+from sadi.doctor.schema import Command, Layer, Mutates, Os, Severity, SkipReason, Step
 from sadi.doctor.steps import action, cmd, manual
 
 FTDI_VID = "0403"
@@ -149,6 +149,33 @@ def _usb_020_win(ctx: Ctx, out: Outcome) -> Fix:
     )
 
 
+# frob:ticket 01M6WMZHNS2E0QNW7KFZ1GAYMZ
+def _wsl_attach(ctx: Ctx, busid: str) -> tuple[Command, ...]:
+    """Return the fixable interop attach command on WSL only; bind (Administrator) is never fixable."""
+    if ctx.os is not Os.WSL:
+        return ()
+    return (cmd(ctx.os, f"usbipd.exe attach --wsl --busid {busid}", fixable=True),)
+
+
+# frob:ticket 01M6WMZHNS2E0QNW7KFZ1GAYMZ
+def _udev_install(ctx: Ctx) -> tuple[Step, ...]:
+    """Return the fixable udev rule install step (Linux/WSL), one subprocess per command."""
+    if ctx.os not in _LINUXISH:
+        return ()
+    dest = "/etc/udev/rules.d/99-sadi.rules"
+    return (
+        action(
+            "Install the SADI udev rule (run from the SADI checkout).",
+            f"{dest} exists and `udevadm trigger` prints nothing.",
+            cmd(ctx.os, f"sudo install -m 0644 packaging/udev/99-sadi.rules {dest}", fixable=True),
+            cmd(ctx.os, "sudo udevadm control --reload-rules", fixable=True),
+            cmd(ctx.os, "sudo udevadm trigger", fixable=True),
+            mutates=Mutates.SYSTEM,
+            changes="Writes /etc/udev/rules.d/99-sadi.rules and reloads udev rules.",
+        ),
+    )
+
+
 @remedy("USB-020", "shared-not-attached")
 def _usb_020_shared(ctx: Ctx, out: Outcome) -> Fix:
     """Attach a shared device."""
@@ -160,6 +187,7 @@ def _usb_020_shared(ctx: Ctx, out: Outcome) -> Fix:
                 "In a normal PowerShell window on Windows, attach it.",
                 "No error; `usbipd list` shows the device as Attached.",
                 cmd(Os.WINDOWS, f"usbipd attach --wsl --busid {busid}"),
+                *_wsl_attach(ctx, busid),
                 mutates=Mutates.SYSTEM,
                 changes="Moves the device from Windows to WSL until it is unplugged.",
             ),
@@ -354,5 +382,6 @@ def _usb_050_node(ctx: Ctx, out: Outcome) -> Fix:
                 changes="Changes the node mode until the device is replugged.",
                 alt="Install a udev rule for a permanent fix (packaging/udev).",
             ),
+            *_udev_install(ctx),
         ),
     )

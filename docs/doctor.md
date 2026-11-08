@@ -403,6 +403,11 @@ asks the user to run it):
 | `usbipd attach --wsl --busid <id>` (WSL, the device was already bound) | `system` | runs `usbipd.exe attach` via interop; bind (which needs Administrator) is never run by the doctor |
 | Open the browser at the running SADI | `process` | `webbrowser.open` |
 
+Catalog status (~Z1GAYMZ): the three rows above are tagged `fixable` in the
+catalog (USB-050 udev install on Linux/WSL, USB-020 `usbipd.exe attach` on
+WSL only, BRW-010 `python3 -m webbrowser` as a `process` step). `usbipd bind`
+and every `install`, `data-dir` and `data` step stay unfixable.
+
 `--yes` answers yes to every prompt for scripted lab setup and is refused
 when stdin is not a terminal unless `--yes` is given together with
 `--non-interactive`; both flags are logged at WARNING. `fix` never has a

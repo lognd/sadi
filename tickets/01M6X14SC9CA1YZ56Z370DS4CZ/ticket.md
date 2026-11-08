@@ -4,7 +4,8 @@ title = "web: schema.test.ts fails, generated header missing from schema.ts"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T07:32:10Z"
-updated = "2026-11-08T07:32:10Z"
+updated = "2026-11-08T07:32:13Z"
 +++

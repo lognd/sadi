@@ -2,7 +2,8 @@
 id = "01M6WA9WZW89EA826DSJCJ0197"
 title = "Doctor UI screen: show checks and guided fix steps in the web app"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

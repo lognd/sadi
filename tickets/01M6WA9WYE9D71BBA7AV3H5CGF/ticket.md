@@ -2,14 +2,14 @@
 id = "01M6WA9WYE9D71BBA7AV3H5CGF"
 title = "Implement sadi doctor: check runner, checks, step-by-step remediation (CLI)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T00:53:00Z"
-updated = "2026-11-08T00:53:05Z"
+updated = "2026-11-08T03:05:50Z"
 labels = ["model:sonnet", "ws:srv", "creates:python/sadi/doctor/**", "creates:python/tests/doctor/**", "creates:docs/doctor-checks.md"]
-scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor-checks.md"]
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor-checks.md", "python/pyproject.toml", "docs/doctor.md", "docs/README.md"]
 
 [[links]]
 kind = "blocked-by"

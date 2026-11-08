@@ -29,3 +29,4 @@ Status: current
 - [Lab modules](core/lab-modules.md)
 - [Plugins](plugins.md)
 - [UX design](ux.md)
+- [LCTT capture modes](lctt/capture.md)

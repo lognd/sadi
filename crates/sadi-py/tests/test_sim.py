@@ -154,3 +154,10 @@ def test_open_and_state_getters() -> None:
     assert ctl.slip_count >= 0
     s.stop()
     s.close()
+
+
+# frob:tests crates/sadi-py/python/sadi_py/sim.pyi::open
+def test_open_accepts_session_config() -> None:
+    s, _ = sim.open("clean", 1, sp.SessionConfig(read_timeout_ms=500))
+    s.connect()
+    s.close()

@@ -2,7 +2,7 @@
 
 from typing import Any, Mapping, Sequence
 
-from sadi_py import Session
+from sadi_py import Session, SessionConfig
 
 JsonLike = str | Mapping[str, Any]
 
@@ -35,7 +35,9 @@ class SimControl:
     def set_seed(self, seed: int) -> None:
         """Reseed the noise generator."""
 
-def open(scenario: JsonLike, seed: int | None = None) -> tuple[Session, SimControl]:
+def open(
+    scenario: JsonLike, seed: int | None = None, cfg: SessionConfig | None = None
+) -> tuple[Session, SimControl]:
     """Open a simulator session plus its runtime control handle."""
 def validate_scenario(scenario: JsonLike) -> None:
     """Raise ScenarioFailure unless the scenario (name, JSON text or dict) is valid."""

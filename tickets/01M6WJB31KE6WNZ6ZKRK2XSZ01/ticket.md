@@ -2,7 +2,8 @@
 id = "01M6WJB31KE6WNZ6ZKRK2XSZ01"
 title = "Link docs/core/wizard.md from docs/index.md"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

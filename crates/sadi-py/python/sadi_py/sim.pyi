@@ -36,10 +36,22 @@ class SimControl:
         """Reseed the noise generator."""
 
 def open(
-    scenario: JsonLike, seed: int | None = None, cfg: SessionConfig | None = None
+    scenario: JsonLike,
+    seed: int | None = None,
+    cfg: SessionConfig | None = None,
+    byte_faults: JsonLike | None = None,
 ) -> tuple[Session, SimControl]:
-    """Open a simulator session plus its runtime control handle."""
+    """Open a simulator session plus its runtime control handle.
+
+    `byte_faults` is a ByteFaultPlan (JSON text or dict) injecting seeded wire faults.
+    """
 def validate_scenario(scenario: JsonLike) -> None:
     """Raise ScenarioFailure unless the scenario (name, JSON text or dict) is valid."""
 def validate_fault_plan(plan: JsonLike) -> None:
     """Raise ScenarioFailure unless the fault plan (JSON text or dict) is valid."""
+def validate_byte_fault_plan(plan: JsonLike) -> None:
+    """Raise ScenarioFailure unless the byte-fault plan (JSON text or dict) is valid.
+
+    Keys: seed (int) and per-byte drop, duplicate, flip plus per-read truncate, stall,
+    short_read probabilities in [0, 1]; unknown keys are rejected.
+    """

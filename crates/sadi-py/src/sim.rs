@@ -12,6 +12,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
+use sadi_proto::sim::byte_faults::{ByteFaultPlan, FaultyTransport};
 use sadi_proto::sim::device::{SimConfig, SimDevice};
 use sadi_proto::sim::physics::LoadStep;
 use sadi_proto::sim::physics::SlipStep;
@@ -193,6 +194,20 @@ fn serde_plan(text: &str) -> Result<FaultPlan, BindError> {
     Ok(sc.faults)
 }
 
+/// Parses and validates a byte-fault plan from JSON text or a dict.
+fn byte_plan_from(obj: &Bound<'_, PyAny>) -> Result<ByteFaultPlan, BindError> {
+    byte_plan_from_text(&json_text(obj)?)
+}
+
+/// Parses byte-fault plan JSON; unknown fields and rates outside [0, 1] are errors.
+// frob:ticket 01M6WYFEHRTTR9AY8BEMN9CQ6S
+fn byte_plan_from_text(text: &str) -> Result<ByteFaultPlan, BindError> {
+    serde_json::from_str(text).map_err(|e| {
+        tracing::warn!(error = %e, "byte fault plan rejected");
+        ScenarioError::Parse(e).into()
+    })
+}
+
 /// Live handle for changing a running simulator; safe to share across threads.
 #[pyclass(frozen, module = "sadi_py.sim", name = "SimControl")]
 pub struct SimControl {
@@ -281,23 +296,30 @@ impl SimControl {
 /// Opens a simulator session and its runtime control handle.
 ///
 /// `scenario` is a builtin name, JSON text or a dict; `seed` overrides the
-/// plan's seed; `cfg` tunes the session like `open_sim`.
+/// plan's seed; `cfg` tunes the session like `open_sim`; `byte_faults` (JSON
+/// text or dict, see `ByteFaultPlan`) injects seeded wire-level faults.
 #[pyfunction]
-#[pyo3(signature = (scenario, seed=None, cfg=None))]
+#[pyo3(signature = (scenario, seed=None, cfg=None, byte_faults=None))]
 fn open(
     scenario: &Bound<'_, PyAny>,
     seed: Option<u64>,
     cfg: Option<SessionConfig>,
+    byte_faults: Option<&Bound<'_, PyAny>>,
 ) -> Result<(Session, SimControl), BindError> {
     let proto = cfg.unwrap_or_default().to_proto()?;
     let sc = scenario_from(scenario)?;
+    let plan = byte_faults.map(byte_plan_from).transpose()?;
     let shared = SharedSim::new(sc);
     if let Some(seed) = seed {
         shared.set_seed(seed);
     }
     let sim = SimDevice::new(Box::new(shared.clone()), SimConfig::default());
-    tracing::info!(?seed, "controllable simulator opened");
-    let session = Session::new(Box::new(sim) as Box<dyn Transport>, proto);
+    tracing::info!(?seed, byte_faults = plan.is_some(), "controllable simulator opened");
+    let transport: Box<dyn Transport> = match plan {
+        Some(plan) => Box::new(FaultyTransport::new(sim, plan)),
+        None => Box::new(sim),
+    };
+    let session = Session::new(transport, proto);
     Ok((session, SimControl { shared }))
 }
 
@@ -313,6 +335,12 @@ fn validate_fault_plan(plan: &Bound<'_, PyAny>) -> Result<(), BindError> {
     plan_from(plan).map(|_| ())
 }
 
+/// Validates a byte-fault plan (JSON text or dict) without opening anything.
+#[pyfunction]
+fn validate_byte_fault_plan(plan: &Bound<'_, PyAny>) -> Result<(), BindError> {
+    byte_plan_from(plan).map(|_| ())
+}
+
 /// Registers the `sim` submodule.
 pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     let sub = PyModule::new(m.py(), "sim")?;
@@ -320,6 +348,7 @@ pub(crate) fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     sub.add_function(wrap_pyfunction!(open, &sub)?)?;
     sub.add_function(wrap_pyfunction!(validate_scenario, &sub)?)?;
     sub.add_function(wrap_pyfunction!(validate_fault_plan, &sub)?)?;
+    sub.add_function(wrap_pyfunction!(validate_byte_fault_plan, &sub)?)?;
     m.add_submodule(&sub)?;
     Ok(())
 }
@@ -390,6 +419,19 @@ mod tests {
             Err(BindError::Scenario(_))
         ));
         assert!(serde_plan("{\"seed\": 7}").is_ok());
+    }
+
+    // frob:tests crates/sadi-py/src/sim.rs::byte_plan_from_text
+    #[test]
+    fn byte_plan_parses_rates_and_rejects_bad_ones() {
+        let plan = byte_plan_from_text("{\"seed\": 3, \"drop\": 0.5}").expect("valid plan");
+        assert_eq!(plan.drop.get(), 0.5);
+        for bad in ["{\"drop\": 1.5}", "{\"bogus\": 1}"] {
+            assert!(matches!(
+                byte_plan_from_text(bad),
+                Err(BindError::Scenario(_))
+            ));
+        }
     }
 
     // frob:tests crates/sadi-py/src/sim.rs::SharedSim.set_seed

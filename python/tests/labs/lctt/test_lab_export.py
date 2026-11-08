@@ -23,8 +23,9 @@ def test_lab_declares_lctt_csv() -> None:
     assert fmts[1].media_type == "application/json"
 
 
+# frob:ticket 01M6WYHZA2BAKB92CQENP7G7SD
 # frob:tests python/sadi/labs/lctt/lab.py::_write_csv
-def test_writer_renders_32_columns_from_run_events() -> None:
+def test_writer_renders_full_header_from_run_events() -> None:
     """Events on the RunState produce a CSV the reader parses back with every point."""
     run = RunState(session_id="s", events=tuple(_events(8)))
     out = CSV_FORMAT.writer(run, AnalysisResult(values={}))

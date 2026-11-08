@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["test_writer_renders_full_header_from_run_events is named without a stale column count and passes"]
+moved = []
+at = "2026-11-08T06:47:55Z"
+actor = "lognd"
+rev = 1

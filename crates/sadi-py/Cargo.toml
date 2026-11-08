@@ -23,6 +23,7 @@ serial = ["sadi-proto/serial"]
 sadi-proto = { path = "../sadi-proto" }
 pyo3 = { version = "0.30", features = ["abi3-py311"] }
 numpy = "0.30"
+serde_json = "1"
 thiserror.workspace = true
 tracing.workspace = true
 

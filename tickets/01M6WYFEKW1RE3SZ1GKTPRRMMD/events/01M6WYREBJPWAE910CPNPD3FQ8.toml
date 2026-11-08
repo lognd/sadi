@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Incremental settle scan gives the same verdict as a full refit on random and drifting data", "Streaming push of 50k samples at device rate completes within a generous time bound"]
+moved = []
+at = "2026-11-08T06:50:28Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,1 @@
+Rename stale test test_writer_renders_32_columns_from_run_events.

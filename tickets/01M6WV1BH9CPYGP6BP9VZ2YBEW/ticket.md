@@ -12,7 +12,7 @@ scope = ["python/sadi/server/**"]
 
 [[acceptance]]
 text = "Launcher --sim passes the simulator DeviceService as AppSettings.device and closes it on shutdown"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Without a device the launcher injects none, so status stays honestly unattached"

@@ -73,3 +73,5 @@ The Run screen has per-phase input fields (see web/run-screens.md); `acceptWhenS
 fills them, leaves the field (hotkeys are ignored in text inputs), marks a load change, waits for the
 marker ack and `[Settled]`, blurs the Mark button (a focused button owns Space, which would re-mark), then presses Space. Known gaps (tickets): capture latency grows with WAL
 size so the full guided run does not finish (~2RWJ137). Each test has its own backend, so specs start at Setup (fixed in ~DKZDSBS).
+
+See [the 2026-11-08 re-run results](e2e-results-8FA58BP.md).

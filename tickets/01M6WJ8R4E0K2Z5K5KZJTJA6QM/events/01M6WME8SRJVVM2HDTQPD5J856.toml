@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["LcttLab.steps() begins with a Phase.SETUP step hosting the clamp-slip sub-check, gated by min_points = cycles"]
+moved = []
+at = "2026-11-08T03:50:09Z"
+actor = "lognd"
+rev = 1

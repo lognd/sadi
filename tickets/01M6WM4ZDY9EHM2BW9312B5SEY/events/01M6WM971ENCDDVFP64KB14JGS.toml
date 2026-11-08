@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/core/**"]
+new = ["web/src/plots/core/**", "docs/web/plots.md"]
+at = "2026-11-08T03:47:23Z"
+actor = "lognd"
+rev = 1

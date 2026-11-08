@@ -95,3 +95,7 @@ PNG golden images are not used: jsdom and the `canvas` package are not installed
 taken at the draw-call level (a recording `Ctx2D`), and the test asserts that 96 dpi and 300 dpi
 exports issue identical calls apart from the scale factor. Update snapshots deliberately with
 `vitest -u`.
+
+## Plot modules
+
+- [Stress-strain plot](stress-strain-plot.md)

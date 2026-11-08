@@ -8,11 +8,28 @@ from dataclasses import dataclass, field
 
 from typani import Err, Ok, Result
 
+from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
+from sadi.doctor.workerprobe import WorkerFacts
 from sadi.plugins.doctor import DoctorFinding
 
 GIB = 1024**3
+
+
+HEALTHY_DEVICE = DeviceFacts(
+    ports=("/dev/ttyUSB0",),
+    port="/dev/ttyUSB0",
+    open_status="ok",
+    query_status="ok",
+    fw_version="3.410",
+    state="stopped",
+    state_byte=2,
+    stream_status="ok",
+    packets_per_s=1000.0,
+    boot_status="ok",
+    boot_seconds=1.0,
+)
 
 
 @dataclass
@@ -59,6 +76,9 @@ class FakeProbes:
     sessions: list[SessionFacts] = field(default_factory=list)
     browser: bool = True
     findings: list[DoctorFinding] = field(default_factory=list)
+    device: DeviceFacts = field(default_factory=DeviceFacts)
+    sim: SimFacts = field(default_factory=SimFacts)
+    workers: WorkerFacts = field(default_factory=WorkerFacts)
 
     def os_kind(self) -> Os:
         """Return the fake OS."""
@@ -196,6 +216,18 @@ class FakeProbes:
         """Return the fake spill files."""
         return self.spills
 
+    def device_facts(self, port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
+        """Return the fake device facts."""
+        return self.device
+
+    def sim_facts(self) -> SimFacts:
+        """Return the fake simulator facts."""
+        return self.sim
+
+    def worker_facts(self) -> WorkerFacts:
+        """Return the fake worker facts."""
+        return self.workers
+
     def browser_available(self) -> bool:
         """Return the fake browser availability."""
         return self.browser
@@ -214,6 +246,7 @@ def healthy() -> FakeProbes:
     p.files["/sys/bus/usb/devices/1-1/idProduct"] = "6010\n"
     p.links["/sys/bus/usb/devices/1-1/1-1:1.0/driver"] = "../../../bus/usb/drivers/ftdi_sio"
     p.dirs["/dev"] = ["ttyUSB0", "null"]
+    p.device = HEALTHY_DEVICE
     return p
 
 

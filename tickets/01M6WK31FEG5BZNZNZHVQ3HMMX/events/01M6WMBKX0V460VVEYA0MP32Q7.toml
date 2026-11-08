@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["App startup holds the data-root lock for its lifetime and releases it on shutdown", "A held or stale lock fails startup with a typed RootLockFailed and is never stolen", "A degraded start exposes the lock failure at GET /api/root-lock"]
+moved = []
+at = "2026-11-08T03:48:42Z"
+actor = "lognd"
+rev = 1

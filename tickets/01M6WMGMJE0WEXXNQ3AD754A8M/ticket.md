@@ -1,0 +1,14 @@
++++
+id = "01M6WMGMJE0WEXXNQ3AD754A8M"
+title = "Wire stress-strain onWindowChange to API refit"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+reporter = "lognd"
+created = "2026-11-08T03:51:27Z"
+updated = "2026-11-08T03:51:27Z"
+labels = ["feature"]
++++
+
+StressStrainPlot onWindowChange is callback-only. Host screen must call the API refit and re-render; add an endpoint client and a test.

@@ -112,6 +112,7 @@ class SkipReason(StrEnum):
     TIMEOUT = "timeout"
     DISABLED = "disabled"
     UNVERIFIED = "unverified"
+    NO_DEVICE = "no-device"
 
 
 CheckId = Annotated[str, StringConstraints(pattern=r"^[A-Z]{2,4}-\d{3}$")]

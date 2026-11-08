@@ -25,5 +25,7 @@ return_tol`. The check passes only if all cycles pass; otherwise `advice` is
 ## Wizard
 
 `setup_subcheck()` returns the `SetupSubCheck` descriptor (step `setup`, check `clamp-slip`)
-with operator guidance built from the config. Registering a Setup step in the LCTT lab
-needs a core `Phase` value and is tracked separately.
+with operator guidance built from the config. `LcttLab.steps()` starts with that Setup step
+(`plugin.setup_step`, `Phase.SETUP`, device-point capture), ahead of Calibrate on the step rail.
+Its completion criterion is `min_points = config.cycles`: `complete` is refused with `NeedPoints`
+until one point per cycle is captured; `skip` is never blocked (ticket ~JTJA6QM).

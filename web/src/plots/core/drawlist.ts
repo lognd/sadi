@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
+// frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import { getLogger } from "../../api/log";
 import { decimateIndices } from "./decimate";
 import { mapValue } from "./layout";
@@ -73,6 +74,18 @@ export function buildDrawList(scene: Scene, layout: Layout): DrawOp[] {
     }
     const idx = decimateIndices(s.x, s.y, Math.ceil(plot.w));
     const pts = project(layout, s.x, s.y, idx);
+    if (s.yErr !== undefined) {
+      for (const i of idx) {
+        const yv = s.y[i] as number;
+        const e = s.yErr[i] as number;
+        const px = r2(mapValue(layout.xMap, s.x[i] as number));
+        const top = r2(mapValue(layout.yMap, yv + e));
+        const bot = r2(mapValue(layout.yMap, yv - e));
+        ops.push({ op: "line", x1: px, y1: top, x2: px, y2: bot, stroke: color, strokeWidth: theme.lineWidth });
+        ops.push({ op: "line", x1: r2(px - 3), y1: top, x2: r2(px + 3), y2: top, stroke: color, strokeWidth: theme.lineWidth });
+        ops.push({ op: "line", x1: r2(px - 3), y1: bot, x2: r2(px + 3), y2: bot, stroke: color, strokeWidth: theme.lineWidth });
+      }
+    }
     for (let k = 0; k < pts.length; k += 2) {
       ops.push(...marker(s.marker ?? "filled", pts[k] as number, pts[k + 1] as number, theme.markerRadius, color));
     }

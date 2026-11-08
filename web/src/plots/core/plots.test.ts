@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
+// frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import { describe, expect, it } from "vitest";
 import {
   buildDrawList, computeLayout, decimateIndices, exportFigure, formatTick, lightTheme, niceTicks,
@@ -131,5 +132,31 @@ describe("renderToCanvas", () => {
     expect([canvas.width, canvas.height]).toEqual([1280, 800]);
     expect(canvas.style.width).toBe("640px");
     expect(r.log[1]).toBe("scale(2,2)");
+  });
+});
+
+describe("error bars and auto annotation placement", () => {
+  it("draws capped error bars and widens the autoscaled domain", () => {
+    const s: Scene = {
+      ...scene(3),
+      series: [{ id: "d", label: "d", x: [0, 1], y: [5, 6], style: "points", yErr: [1, 1] }],
+      bands: [], fits: [], annotation: undefined,
+    };
+    const ops = buildDrawList(s, computeLayout(s));
+    const bars = ops.filter((o) => o.op === "line" && o.strokeWidth === s.theme.lineWidth);
+    expect(bars.length).toBeGreaterThanOrEqual(6);
+    expect(computeLayout(s).yTicks[0]?.value).toBeLessThanOrEqual(4);
+  });
+
+  it("auto anchor avoids the corner holding data", () => {
+    const base = scene(6);
+    const crowdBr: Scene = {
+      ...base, bands: [], fits: [], legend: false,
+      series: [{ id: "d", label: "d", x: [0, 1, 2, 3, 4, 10, 9.5, 9.5], y: [10, 10, 10, 10, 10, 0, 0.8, 0.8], style: "points" }],
+      annotation: { lines: ["a line", "b line"], anchor: "auto" },
+    };
+    const fixed = computeLayout({ ...crowdBr, annotation: { lines: ["a line", "b line"], anchor: "br" } });
+    const auto = computeLayout(crowdBr);
+    expect(auto.annotation?.box).not.toEqual(fixed.annotation?.box);
   });
 });

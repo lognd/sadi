@@ -43,6 +43,9 @@ screen, PNG and SVG are identical up to a uniform scale. No dependency was added
   is scene size x dpi/96 (300 dpi gives 3.125x); SVG is vector and also returns `text`.
   `deps.createCanvas` injects an offscreen canvas (tests, workers).
 
+Added later: `Series.yErr` (error bars) and annotation anchor `"auto"` (collision avoidance), see
+[calibration-plot.md](calibration-plot.md).
+
 ## Tests
 
 `web/src/plots/core/plots.test.ts` covers tick choice and formatting, layout determinism,

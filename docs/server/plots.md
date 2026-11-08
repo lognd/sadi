@@ -24,3 +24,7 @@ anomaly falls back to the full verified replay (`docs/store/incremental-replay.m
 - Stress-strain rows come from the lctt export document derivation; excluded points are
   flagged, not dropped. Arrays are empty until the tare and specimen are recorded.
 - Errors are problem+json: 409 `no_open_session` when nothing is open.
+
+Live views re-verify periodically: the cache drops an entry older than
+`curve_source.REVERIFY_INTERVAL_S` (30 s) and rebuilds it by a full verified replay, so corruption in
+already-applied WAL bytes is detected within that interval; any replay error also drops the entry.

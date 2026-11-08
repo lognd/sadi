@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Review Edit/Exclude labels use point numbers (U-02)", "Review has a Skip to Finish link (U-03)", "Run screen says to press Mark load change before Settled (U-05)", "Bare 422 on wizard writes shows a rebuild web/dist hint (U-09)"]
+moved = []
+at = "2026-11-08T10:04:21Z"
+actor = "lognd"
+rev = 1

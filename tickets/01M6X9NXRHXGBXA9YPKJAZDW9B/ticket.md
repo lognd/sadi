@@ -7,5 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:03:07Z"
+updated = "2026-11-08T10:05:16Z"
+scope = ["web/e2e/keyboard-only.spec.ts", "docs/e2e.md"]
+
+[[acceptance]]
+text = "Keyboard-only e2e spec passes (Tab + Enter/Space through guided run)"
+bound = false
 +++

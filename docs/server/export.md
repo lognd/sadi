@@ -33,3 +33,7 @@ exposes the open session's lab `export_formats` (see `sadi.core.lab.ExportFormat
 Events for the run state come from the shared `curve_source.SessionReplayCache` (the same incremental
 replayer the plots and stress-strain routes use), not a full WAL walk per request; the result equals a
 full replay and anomalies fall back to the verified full replay.
+
+Export never serves unverified data: `render_export` calls `SessionReplayCache.events(path, verify=True)`,
+which discards the cached replayer and runs a full CRC-verified replay, so corruption in WAL bytes the
+incremental tail had already applied fails the export (replay error, nothing rendered).

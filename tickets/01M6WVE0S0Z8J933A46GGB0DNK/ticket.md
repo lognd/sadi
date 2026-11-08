@@ -2,7 +2,8 @@
 id = "01M6WVE0S0Z8J933A46GGB0DNK"
 title = "Verify --sim against a real built sadi_py simulator (launcher tests inject fake)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 2
 reporter = "lognd"

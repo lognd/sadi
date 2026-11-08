@@ -1,4 +1,4 @@
-"""Tests for the LCTT 34-column CSV export, reader, round trip and byte policy."""
+"""Tests for the LCTT 42-column CSV export, reader, round trip and byte policy."""
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
 from __future__ import annotations
@@ -73,9 +73,9 @@ def test_header_is_34_columns_and_block_layout() -> None:
     lines = data.decode("utf-8").split("\r\n")
     blank = lines.index("")
     assert lines[blank + 1].split(",") == list(COLUMNS)
-    assert len(COLUMNS) == 34
+    assert len(COLUMNS) == 42
     assert lines[0] == "Title,SADI LCTT tensile test"
-    assert all(len(r.split(",")) == 34 for r in lines[blank + 2 : -1])
+    assert all(len(r.split(",")) == 42 for r in lines[blank + 2 : -1])
     assert len(lines[blank + 2 : -1]) == 8
     meta = dict(_doc().meta)
     for key in ("Date", "Operator", "Description", "Tare mean (V)", "Cal slope (m/V)", "E (Pa)"):
@@ -200,7 +200,7 @@ def test_private_short_run_file_round_trips_field_by_field() -> None:
 # frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
 def test_elapsed_and_sd_columns_round_trip() -> None:
     doc = _doc()
-    assert doc.get("Schema") == "2"
+    assert doc.get("Schema") == "3"
     assert math.isnan(doc.rows[0].elapsed_s)  # unknown elapsed time is NaN, not 0
     assert doc.rows[3].elapsed_s == pytest.approx(33.0)
     assert all(r.volts_sd == pytest.approx(2e-4) for r in doc.rows)
@@ -210,3 +210,28 @@ def test_elapsed_and_sd_columns_round_trip() -> None:
     lp = [e for e in to_live_events(back) if isinstance(e, LoadPoint)]
     assert lp[0].t_since_load_s is None and lp[3].t_since_load_s == pytest.approx(33.0)
     assert lp[3].volts_sd == pytest.approx(2e-4)
+
+
+# frob:ticket 01M6WX3GJK2D59J39ZZS1J03DV
+# frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
+def test_uncertainty_columns_round_trip_and_values() -> None:
+    doc = _doc()
+    back = read_document(render_document(doc)).danger_ok
+    for a, b in zip(doc.rows, back.rows, strict=True):
+        for col in ("u_delta_volts", "u_displacement_m", "u_hanger_kg", "u_tare_v",
+                    "u_l0_m", "u_diameter_m", "u_secant_modulus_pa"):  # fmt: skip
+            assert getattr(b, col) == pytest.approx(getattr(a, col), rel=1e-9, nan_ok=True)
+    r = doc.rows[3]
+    assert r.u_delta_volts == pytest.approx(math.hypot(r.u_volts, r.u_tare_v))
+    assert r.u_displacement_m > 0 and r.u_l0_m == 0.0 and r.u_diameter_m >= 0
+    assert r.u_secant_modulus_pa > 0
+    assert r.diameter_m == doc.get_float("Specimen diameter (m)")
+
+
+# frob:ticket 01M6WX3GJK2D59J39ZZS1J03DV
+# frob:tests python/sadi/labs/lctt/export_csv.py::read_document
+def test_older_schema_header_rejected() -> None:
+    text = render_document(_doc()).decode("utf-8")
+    old = text.replace(",u_delta_volts", "", 1).encode("utf-8")
+    res = read_document(old)
+    assert isinstance(res, Err) and res.danger_err == ExportCsvError.BadHeader

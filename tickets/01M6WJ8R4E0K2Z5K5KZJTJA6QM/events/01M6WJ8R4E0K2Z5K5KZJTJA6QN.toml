@@ -1,0 +1,10 @@
+kind = "create"
+title = "Add Setup wizard step (Phase.SETUP) hosting clamp-slip sub-check"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py"]
+body = "found while working DQ1C3W6: clamp_check.setup_subcheck() exists but LcttLab.steps() has no Setup step; needs core Phase value."
+at = "2026-11-08T03:12:11Z"
+actor = "lognd"
+rev = 1

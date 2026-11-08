@@ -1,0 +1,9 @@
+kind = "create"
+title = "Link docs/core/wizard.md from docs/index.md"
+type = "bug"
+category = "todo"
+priority = "low"
+body = "XP2D6HY could not widen onto docs/index.md (leased elsewhere). Add the link."
+at = "2026-11-08T03:13:28Z"
+actor = "lognd"
+rev = 1

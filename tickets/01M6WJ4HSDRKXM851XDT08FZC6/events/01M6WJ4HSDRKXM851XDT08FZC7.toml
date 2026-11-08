@@ -1,0 +1,10 @@
+kind = "create"
+title = "Link docs/jobs/tasks.md from docs index"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["docs/README.md"]
+body = "found while working ~PX6X3ZQ"
+at = "2026-11-08T03:09:53Z"
+actor = "lognd"
+rev = 1

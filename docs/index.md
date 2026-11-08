@@ -30,3 +30,7 @@ Status: current
 - [Lab modules](core/lab-modules.md)
 - [Plugins](plugins.md)
 - [UX design](ux.md)
+- [LCTT capture modes](lctt/capture.md)
+- [LCTT loading: tare, load, stress, strain](lctt/loading.md)
+- [LCTT modulus, yield, saturation](lctt/modulus.md)
+- [LCTT pre-test clamp-slip check](lctt/clamp-check.md)

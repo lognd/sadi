@@ -50,6 +50,8 @@ The manager coalesces to the latest per slot. Results use `ResultEnvelope` with
 `data_version`, a per-key monotone `result_version` and state `analytic|refining|final|stale`.
 An optional `sink` callback receives envelopes; `on_outcome` receives each `JobOutcome`.
 
+Concrete progressive tasks (Monte Carlo and GP fit) are described in [tasks.md](tasks.md).
+
 ## Threading
 
 `JobManager` is loop-thread only (asserted). Pump threads post to the loop via

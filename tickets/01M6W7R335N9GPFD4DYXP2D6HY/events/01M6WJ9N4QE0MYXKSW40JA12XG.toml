@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:12:40Z"
+digest = "204893c177c82aeedfbb2f5cd6bd048b4d45faf8414eeff6eb5914d6ae7f61c6"
+exit_code = 0
+head = "3aa9326149130078b215325946612e5e85ca81bf"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_wizard.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-236537-0.xml ---------------
+============================== 1 passed in 0.27s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_wizard.py::test_undo_redo_point_capture_never_deletes"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "dc7f1d009c4189680c29a444f42c37cfeb461d53e3f8b57a8d6fd3a017639f23"
+at = "2026-11-08T03:12:40Z"
+actor = "lognd"
+rev = 1

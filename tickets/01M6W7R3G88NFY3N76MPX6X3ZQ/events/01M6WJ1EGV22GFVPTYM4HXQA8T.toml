@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T03:08:07Z"
+digest = "84085a4b5292db8d461e3160bf744989ff222f688508ba5af5cb2b21f10f1646"
+exit_code = 0
+head = "35c9ac81b2350b9ba9e2e9dff6c15e9bba14078e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/jobs/test_tasks.py .                                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-230518-0.xml ---------------
+============================== 1 passed in 2.37s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_tasks.py::test_mc_interval_tightens_and_matches_single_shot"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "e182b3177530785d0c1a7bf0e9cf6ca965e85b53c5d9f4ad88a1151a907e6383"
+at = "2026-11-08T03:08:07Z"
+actor = "lognd"
+rev = 1

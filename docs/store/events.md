@@ -45,3 +45,5 @@ first whose frame CRC is valid, whose `covers_seq` does not exceed the verified 
 and whose prefix hash matches the WAL. Corrupt, stale, ahead-of-log or unparsable
 snapshots and leftover `.tmp` files are logged and ignored, never deleted. It then replays
 only the WAL tail after the snapshot, or the whole log if no snapshot qualifies.
+
+See also [Derived exports with provenance](exports.md) for the export side of the same atomic-publish rules.

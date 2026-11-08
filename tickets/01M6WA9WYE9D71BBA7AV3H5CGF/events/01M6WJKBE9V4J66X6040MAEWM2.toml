@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T03:17:58Z"
+digest = "369a90d82eddc0b4ff6d29a7074b9badf00d6a1c58e53a99f545441ac8a899c8"
+exit_code = 0
+head = "13a5dd18df1ac47187ba1daf63b50cc54a6676f1"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 47 items
+
+python/tests/doctor/test_sadi_doctor.py ................................ [ 68%]
+...............                                                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-245835-0.xml ---------------
+============================== 47 passed in 0.41s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_fault_injection_yields_mode_and_remedy"
+size = 602
+status = "measured"
+test_count = 47
+tests_digest = "9be9d577338b573deb4486b8f40e4a86ae7a0336c9f90f829c93cd3b04f278c6"
+at = "2026-11-08T03:17:58Z"
+actor = "lognd"
+rev = 1

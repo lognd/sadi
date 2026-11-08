@@ -61,7 +61,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/jobs/testing.md` | ~VAX9DG6 | Deterministic job test harness: fake clock, controllable scheduler, inline executor |
 | `docs/launcher.md` | ~0VYJVFZ | `sadi` launcher: serve UI + API, pick port, open browser, flags |
 | `docs/lctt/calibration.md` | ~NQKWT3Y | LCTT calibration: LINEST-equivalent fit with standard errors and t95 |
-| `docs/lctt/capture.md` | ~QPQKQEK | Capture modes: human confirm key, auto-capture with max wait, forced-early |
+| [`docs/lctt/capture.md`](lctt/capture.md) | ~QPQKQEK | Capture modes: human confirm key, auto-capture with max wait, forced-early |
 | `docs/lctt/clamp-check.md` | ~DQ1C3W6 | Pre-test clamp-slip check procedure |
 | `docs/lctt/creep.md` | ~7NDJSG8 | Creep fit: strain vs log-time per hold |
 | `docs/lctt/slip.md` | ~T3M5GJG | Slip detector: sudden strain steps without load change |

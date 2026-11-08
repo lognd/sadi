@@ -4,9 +4,10 @@ title = "lctt recompute is a stub; CapturedPoint time fields missing from PointV
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T05:45:26Z"
+updated = "2026-11-08T06:24:52Z"
 scope = ["python/sadi/labs/**,python/sadi/server/**"]
 +++
 

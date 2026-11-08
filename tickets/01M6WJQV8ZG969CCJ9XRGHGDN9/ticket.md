@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:26Z"
-updated = "2026-11-08T03:43:35Z"
+updated = "2026-11-08T03:43:36Z"
 scope = ["python/sadi/store/wal.py", "python/tests/store/test_wal.py", "docs/data-safety.md"]
 
 [[acceptance]]
@@ -16,5 +16,5 @@ bound = true
 
 [[acceptance]]
 text = "A full-length corrupt or non-magic first header still returns Err"
-bound = false
+bound = true
 +++

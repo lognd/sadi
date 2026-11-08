@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T03:51:27Z"
 updated = "2026-11-08T03:54:07Z"
 labels = ["feature"]
-scope = ["python/sadi/launcher.py", "python/pyproject.toml", "python/tests/cli/test_launcher.py"]
+scope = ["python/sadi/launcher.py", "python/pyproject.toml", "python/tests/cli/test_launcher.py", "docs/server/launcher.md"]
 +++
 
 No sadi launcher or server CLI entry exists. Add a console script that runs doctor preflight, takes the data-root lock via create_app, starts uvicorn and serves the built web assets.

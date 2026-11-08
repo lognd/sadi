@@ -1,0 +1,44 @@
+kind = "evidence"
+accepts = [1, 2, 3]
+captured_at = "2026-11-08T05:47:25Z"
+digest = "99e69d8ab9c8a927892c9e400e01a09e9ecb1e18ba0ea16124b449c32348967f"
+exit_code = 0
+head = "2c483fed51d2ea248e5dd0b0b989352ae355cdb1"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/ws/ws.test.ts > openStream > reconnects with backoff, reports state, routes data, stops on close
+[ws.client] connecting { url: 'ws://x', attempt: 1 }
+[ws.client] stream open {}
+[ws.client] connecting { url: 'ws://x', attempt: 2 }
+[ws.client] connecting { url: 'ws://x', attempt: 3 }
+[ws.client] stream open {}
+[ws.client] stream closed by caller {}
+
+ \u{2713} web/src/ws/ws.test.ts (7 tests) 15ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  00:47:26
+   Duration  750ms (transform 163ms, setup 0ms, collect 166ms, tests 15ms, environment 1ms, prepare 220ms)
+
+JSON report written to /tmp/frob-vitest-503135-0.json
+stderr | web/src/ws/ws.test.ts > decodeFrame > rejects bad input without throwing
+[ws.frame] trace frame size mismatch { bytes: 70, nCh: 1, nPoints: 1 }
+
+stderr | web/src/ws/ws.test.ts > openStream > reconnects with backoff, reports state, routes data, stops on close
+[ws.client] stream lost; will reconnect { next_attempt: 2, delayMs: 250 }
+[ws.client] stream lost; will reconnect { next_attempt: 3, delayMs: 500 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/ws/ws.test.ts"
+size = 1094
+status = "measured"
+test_count = 7
+tests_digest = "ea6a1906809aeeeb587b072eb74b861d1045d64cb14851129fd38d14e14452b5"
+at = "2026-11-08T05:47:25Z"
+actor = "lognd"
+rev = 1

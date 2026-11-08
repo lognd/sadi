@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:45:57Z"
+updated = "2026-11-08T05:47:13Z"
 idempotency_key = "sadi-pk1"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/_ui/.gitkeep", "creates:packaging/build_ui.py", "creates:docs/packaging.md"]
 scope = ["python/sadi/_ui/.gitkeep", "packaging/build_ui.py", "docs/packaging.md", "python/sadi/launcher.py", "python/tests/cli/test_launcher_ui.py", "python/tests/packaging/**", "python/pyproject.toml", ".gitignore", "docs/index.md"]
@@ -23,11 +23,11 @@ target = "01M6W7RAFMFB5NMWGZY0VYJVFZ"
 
 [[acceptance]]
 text = "Build step runs vite build and copies dist into the Python package data; wheel contains the UI and `sadi` console script"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Documented one-command build; works from a clean checkout on all 3 OS"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

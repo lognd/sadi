@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:22:55Z"
+digest = "c83c0691847a4cb0a4a173a9fa91828fef3ccd6930fececbdc10a63fc1e68cbc"
+exit_code = 0
+head = "9e90a935a999ce106290a462117fd232e01aa8dc"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 8 items
+
+python/tests/crash/test_crash.py ........                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-256040-0.xml ---------------
+============================== 8 passed in 5.12s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/crash/test_crash.py::test_random_kill_recovers"
+size = 521
+status = "measured"
+test_count = 8
+tests_digest = "6e4ccbddecabaa4042de1ccab2292cb44dd8b212d9556d08c020167dbe613971"
+at = "2026-11-08T03:22:55Z"
+actor = "lognd"
+rev = 1

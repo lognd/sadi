@@ -2,7 +2,8 @@
 id = "01M6WTCA815WPY0DGJN7DKNM2S"
 title = "Loop-lag test: handlers stay under latency budget while jobs run"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

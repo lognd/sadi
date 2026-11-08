@@ -73,8 +73,8 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
             hanger_kg=p.hanger_kg,
             u_hanger_kg=p.u_hanger_kg,
         )
-    if isinstance(p, ClampInputs):
-        return None  # frob:ticket 01M6XA21KQE5WEXAN39683H4S9 clamp cycles are not curve events
+    if isinstance(p, ClampInputs):  # clamp cycles are not curve events
+        return None  # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
     meta = parse_meta(cp.point)
     return LoadPoint(

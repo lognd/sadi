@@ -46,7 +46,7 @@ bound = true
 
 [[acceptance]]
 text = "frob check --ticket passes (no doc drift)"
-bound = false
+bound = true
 +++
 
 Update docs/plugins.md (drafted as design) to final signatures; lab-modules.md now describes labs as a plugin contribution kind and drops the 'not a plugin system' claim; doctor.md gets the plugin checks and fix steps; document SADI_PLUGIN_PATH, sadi plugins CLI, endpoint, session provenance, how to write a local plugin. Run frob doc ack as needed. Avoid collisions with the course-scrub ticket ~XKS8M68: start after it lands.

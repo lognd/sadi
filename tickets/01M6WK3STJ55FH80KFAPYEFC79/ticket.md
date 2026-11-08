@@ -12,5 +12,5 @@ scope = ["python/sadi/core/errors.py", "python/sadi/store/writer_thread.py", "py
 
 [[acceptance]]
 text = "Error code families are typani ErrorSet with stable wire values; writer errors carry StoreCode; remaining StrEnums recorded as states"
-bound = false
+bound = true
 +++

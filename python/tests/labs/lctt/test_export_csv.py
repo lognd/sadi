@@ -1,4 +1,4 @@
-"""Tests for the LCTT 32-column CSV export, reader, round trip and byte policy."""
+"""Tests for the LCTT 34-column CSV export, reader, round trip and byte policy."""
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
 from __future__ import annotations
@@ -46,7 +46,8 @@ def _events(n: int = 8) -> list[LiveEvent]:
     for i in range(n):
         ev.append(
             LoadPoint(point_id=f"p{i}", volts=0.5 + 0.01 * (i + 1) - 0.0002 * i * i,
-                      mass_kg=0.2 * (i + 1), u_mass_kg=1e-4, u_volts=1e-4)
+                      mass_kg=0.2 * (i + 1), u_mass_kg=1e-4, u_volts=1e-4,
+                      t_since_load_s=None if i == 0 else 30.0 + i, volts_sd=2e-4)
         )  # fmt: skip
     return ev
 
@@ -67,14 +68,14 @@ def _doc() -> CsvDocument:
 
 
 # frob:tests python/sadi/labs/lctt/export_csv.py::build_document
-def test_header_is_32_columns_and_block_layout() -> None:
+def test_header_is_34_columns_and_block_layout() -> None:
     data = render_document(_doc())
     lines = data.decode("utf-8").split("\r\n")
     blank = lines.index("")
     assert lines[blank + 1].split(",") == list(COLUMNS)
-    assert len(COLUMNS) == 32
+    assert len(COLUMNS) == 34
     assert lines[0] == "Title,SADI LCTT tensile test"
-    assert all(len(r.split(",")) == 32 for r in lines[blank + 2 : -1])
+    assert all(len(r.split(",")) == 34 for r in lines[blank + 2 : -1])
     assert len(lines[blank + 2 : -1]) == 8
     meta = dict(_doc().meta)
     for key in ("Date", "Operator", "Description", "Tare mean (V)", "Cal slope (m/V)", "E (Pa)"):
@@ -193,3 +194,19 @@ def test_private_short_run_file_round_trips_field_by_field() -> None:
     assert isinstance(again, Ok)
     for a, b in zip(parsed.danger_ok.rows, again.danger_ok.rows, strict=True):
         assert a.stress_pa == pytest.approx(b.stress_pa, rel=1e-9)
+
+
+# frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+# frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
+def test_elapsed_and_sd_columns_round_trip() -> None:
+    doc = _doc()
+    assert doc.get("Schema") == "2"
+    assert math.isnan(doc.rows[0].elapsed_s)  # unknown elapsed time is NaN, not 0
+    assert doc.rows[3].elapsed_s == pytest.approx(33.0)
+    assert all(r.volts_sd == pytest.approx(2e-4) for r in doc.rows)
+    back = read_document(render_document(doc)).danger_ok
+    assert back.rows[3].elapsed_s == pytest.approx(33.0)
+    assert back.rows[3].volts_sd == pytest.approx(2e-4)
+    lp = [e for e in to_live_events(back) if isinstance(e, LoadPoint)]
+    assert lp[0].t_since_load_s is None and lp[3].t_since_load_s == pytest.approx(33.0)
+    assert lp[3].volts_sd == pytest.approx(2e-4)

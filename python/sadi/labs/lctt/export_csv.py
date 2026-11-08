@@ -1,8 +1,8 @@
-"""LCTT CSV export and reader in the 32-column LabVIEW layout (domain.md section 4).
+"""LCTT CSV export and reader in the 34-column LabVIEW layout (domain.md section 4).
 
 The document is DERIVED from session events (never the source of truth, invariant I7): the
 events are recomputed through the loading, modulus and yield engines, rendered as a metadata
-block, a blank line, the 32-column header and one row per logged point, and published through
+block, a blank line, the 34-column header and one row per logged point, and published through
 the store exports primitive (tmp + fsync + no-replace rename, provenance sidecar). The reader
 parses such a file back into a `CsvDocument` and into live events for post-processing.
 Bytes: UTF-8, no BOM, CRLF after every row (see store/csv_export.py); the reader also accepts
@@ -10,6 +10,7 @@ LF and a BOM so files re-saved by other tools still load.
 """
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
+# frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
 from __future__ import annotations
 
 import csv
@@ -44,7 +45,7 @@ from sadi.uncertainty import Measured, Provenance
 _log = get_logger(__name__)
 
 EXPORT_KIND = "lctt-csv"
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "2"  # v2: elapsed_s and volts_sd columns (34 columns)
 TITLE = "SADI LCTT tensile test"
 NAN = float("nan")
 
@@ -56,20 +57,22 @@ class ExportCsvError(ErrorSet):
     Compute = "A result could not be computed from the session events; see the log"
     Write = "The export could not be written; the recording itself is safe"
     BadFile = "The file is not a LabVIEW-schema LCTT CSV (missing blank line or header)"
-    BadHeader = "The column header does not match the 32-column schema"
+    BadHeader = "The column header does not match the 34-column schema"
     BadCell = "A cell could not be parsed as its column type"
     Encoding = "The file is not valid UTF-8"
 
 
 class PointRow(BaseModel):
-    """One logged point; field order IS the 32-column header order."""
+    """One logged point; field order IS the 34-column header order."""
 
     model_config = ConfigDict(frozen=True)
 
     point_id: str
     index: int
+    elapsed_s: float  # seconds since load was applied; NaN when unknown
     volts: float
     u_volts: float
+    volts_sd: float  # per-sample std dev of the raw volts; NaN when unknown
     mass_kg: float
     u_mass_kg: float
     delta_volts: float
@@ -102,7 +105,7 @@ class PointRow(BaseModel):
 
 COLUMNS: tuple[str, ...] = tuple(PointRow.model_fields)
 _TYPES: tuple[Any, ...] = tuple(f.annotation for f in PointRow.model_fields.values())
-assert len(COLUMNS) == 32, "the LabVIEW schema has exactly 32 columns"  # noqa: S101
+assert len(COLUMNS) == 34, "the LabVIEW schema has exactly 34 columns"  # noqa: S101
 
 
 class CsvDocument(BaseModel):
@@ -225,7 +228,9 @@ def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     for r in doc.rows:
         events.append(
             LoadPoint(point_id=r.point_id, volts=r.volts, u_volts=r.u_volts,
-                      mass_kg=r.mass_kg, u_mass_kg=r.u_mass_kg)
+                      mass_kg=r.mass_kg, u_mass_kg=r.u_mass_kg,
+                      t_since_load_s=None if math.isnan(r.elapsed_s) else r.elapsed_s,
+                      volts_sd=None if math.isnan(r.volts_sd) else r.volts_sd)
         )  # fmt: skip
         if r.excluded:
             events.append(ExcludePoint(point_id=r.point_id))
@@ -312,6 +317,8 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         rows.append(
             PointRow(
                 point_id=pid, index=len(rows), volts=p.volts, u_volts=p.u_volts,
+                elapsed_s=NAN if p.t_since_load_s is None else p.t_since_load_s,
+                volts_sd=NAN if p.volts_sd is None else p.volts_sd,
                 mass_kg=p.mass_kg, u_mass_kg=p.u_mass_kg,
                 delta_volts=p.volts - tare.value,
                 height_m=fit.slope.value * p.volts + fit.intercept.value,

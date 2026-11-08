@@ -76,6 +76,7 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
         point_id=cp.point.point_id,
         volts=p.volts,
         u_volts=p.u_volts,
+        volts_sd=p.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
         mass_kg=p.mass_kg,
         u_mass_kg=p.u_mass_kg,
     )

@@ -7,7 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:50Z"
-updated = "2026-11-08T10:25:52Z"
+updated = "2026-11-08T10:26:15Z"
+scope = ["docs/web/wizard.md"]
 
 [[acceptance]]
 text = "Wizard POSTs /api/session/run-phase on calibrate->elastic->plastic transitions; schema.ts regenerated; vitest covers it"

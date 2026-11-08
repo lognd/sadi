@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:23:17Z"
+updated = "2026-11-08T06:23:31Z"
 scope = ["web/src/screens/run/**", "docs/web/run-screens.md"]
 
 [[acceptance]]
 text = "F3 on the run screen downloads GET /api/export/{format} (default lctt-csv) via resolveKey"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Export failures surface as a status message"

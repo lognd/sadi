@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["GET /api/results/budgets returns the lab budgets when no source is injected", "A lab without the budgets hook yields an empty list"]
+moved = []
+at = "2026-11-08T06:04:02Z"
+actor = "lognd"
+rev = 1

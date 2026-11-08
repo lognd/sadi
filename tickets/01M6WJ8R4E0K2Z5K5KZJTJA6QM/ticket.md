@@ -12,7 +12,7 @@ scope = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/test
 
 [[acceptance]]
 text = "LcttLab.steps() begins with a Phase.SETUP step hosting the clamp-slip sub-check, gated by min_points = cycles"
-bound = false
+bound = true
 +++
 
 found while working DQ1C3W6: clamp_check.setup_subcheck() exists but LcttLab.steps() has no Setup step; needs core Phase value.

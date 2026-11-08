@@ -1,0 +1,10 @@
+kind = "create"
+title = "PointView lacks settled/forced_early flags for review screen"
+type = "bug"
+category = "todo"
+priority = "medium"
+labels = ["ws:server"]
+body = "found while working ~FHNEDX8: PointView omits settled and forced_early from PointV1; review screen shows them only when present."
+at = "2026-11-08T05:54:37Z"
+actor = "lognd"
+rev = 1

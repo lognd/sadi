@@ -2,7 +2,8 @@
 id = "01M6WV6TC9NXXA0GCFGJNV4CSJ"
 title = "F3 export missing from keys keymap as KeyAction"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

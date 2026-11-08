@@ -1,5 +1,6 @@
 """REST routes for exporting the open session through its lab's export formats (read-only)."""
 
+# frob:ticket 01M6WWMSA41S7Y91W4RE16P75D
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
 # frob:ticket 01M6WVADCSP63DBMYH3RNCXWTM
 
@@ -8,7 +9,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import ExportFormat, LabId, LabModule
 from sadi.core.models import RunState
@@ -47,27 +48,22 @@ def _view(fmt: ExportFormat) -> ExportFormatView:
     )
 
 
+@propagate
 def _open_lab(svc: SessionService, labs: LabRegistry) -> Result[tuple[str, LabModule], ApiProblem]:
     """Resolve the open session's name and lab, or the problem explaining why not."""
-    info = svc.info()
-    if info.is_err:
-        return Err(info.danger_err)
-    got = labs.get(LabId(info.danger_ok.lab))
-    if got.is_err:
-        return Err(
-            not_found(info.danger_ok.lab, "Register the session's lab or resume with another.")
-        )
-    return Ok((info.danger_ok.name, got.danger_ok))
+    info = svc.info().unwrap()
+    lab = labs.get(LabId(info.lab)).unwrap(
+        err=not_found(info.lab, "Register the session's lab or resume with another.")
+    )
+    return Ok((info.name, lab))
 
 
+@propagate
 def render_export(
     svc: SessionService, labs: LabRegistry, format_id: str
 ) -> Result[tuple[ExportFormat, str, bytes], ApiProblem]:
     """Render `format_id` for the open session in memory; nothing is written to disk or the WAL."""
-    opened = _open_lab(svc, labs)
-    if opened.is_err:
-        return Err(opened.danger_err)
-    name, lab = opened.danger_ok
+    name, lab = _open_lab(svc, labs).unwrap()
     fmt = next((f for f in lab.export_formats if f.id == format_id), None)
     if fmt is None:
         _log.warning("unknown export format %r for lab %s", format_id, lab.id)
@@ -78,10 +74,7 @@ def render_export(
                 f"Pick one of this lab's formats ({known}); GET /api/export lists them.",
             )
         )
-    pts = svc.points()
-    if pts.is_err:
-        return Err(pts.danger_err)
-    captured = to_captured(active_points(pts.danger_ok))
+    captured = to_captured(active_points(svc.points().unwrap()))
     analysis = lab.recompute(captured)
     if analysis.is_err:
         _log.warning("export %s: recompute failed: %s", format_id, analysis.danger_err)

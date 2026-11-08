@@ -11,7 +11,7 @@ updated = "2026-11-08T03:25:04Z"
 
 [[acceptance]]
 text = "docs/index.md links docs/core/wizard.md"
-bound = false
+bound = true
 +++
 
 XP2D6HY could not widen onto docs/index.md (leased elsewhere). Add the link.

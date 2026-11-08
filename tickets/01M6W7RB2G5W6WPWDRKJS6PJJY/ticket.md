@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:56:53Z"
+updated = "2026-11-08T05:56:56Z"
 idempotency_key = "sadi-doc1"
 labels = ["ws:docs", "model:sonnet", "creates:docs/user-guide.md", "creates:docs/img/ui/**"]
 scope = ["docs/user-guide.md", "docs/img/ui/**", "docs/index.md"]
@@ -36,10 +36,6 @@ bound = true
 [[acceptance]]
 text = "States which settle value feeds the E fit and how to override it"
 bound = true
-
-[[acceptance]]
-text = "Screenshots under docs/img/ui/"
-bound = false
 
 [[acceptance]]
 text = "docs/index.md links user-guide.md and the guide carries Status and Parent headers"

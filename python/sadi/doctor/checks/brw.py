@@ -57,5 +57,12 @@ def _brw_010_wsl(ctx: Ctx, out: Outcome) -> Fix:
                 changes="Installs the wslu package.",
                 alt="export BROWSER=explorer.exe",
             ),
+            action(
+                "Open the running SADI in the browser.",  # frob:ticket 01M6WMZHNS2E0QNW7KFZ1GAYMZ
+                "The SADI page loads.",
+                cmd(ctx.os, "python3 -m webbrowser http://127.0.0.1:8000", fixable=True),
+                mutates=Mutates.PROCESS,
+                changes="Starts a browser window; changes no files.",
+            ),
         ),
     )

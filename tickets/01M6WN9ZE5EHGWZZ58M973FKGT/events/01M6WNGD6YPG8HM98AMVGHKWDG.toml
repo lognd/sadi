@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py"]
+new = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py", "python/tests/doctor/test_error_families.py"]
+at = "2026-11-08T04:08:47Z"
+actor = "lognd"
+rev = 1

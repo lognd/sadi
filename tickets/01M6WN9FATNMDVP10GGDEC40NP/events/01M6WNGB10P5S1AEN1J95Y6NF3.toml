@@ -1,0 +1,27 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:08:44Z"
+digest = "fbc9e8e489ea515c09d6df9860ce6be140aa413750ef49a7c3d831a1b74dde0a"
+exit_code = 0
+head = "7c9a44cd44638b2fa5dcef882b481495062f37e3"
+inline = '''
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 9f9e6a0e-f582-4944-b4ba-c09c0087bac7 with nextest profile: default
+    Starting 2 tests across 1 binary (8 tests skipped)
+        PASS [   0.006s] sadi-py meta::tests::selftest_passes
+        PASS [   0.007s] sadi-py meta::tests::features_match_cfg
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.007s] 2 tests run: 2 passed, 8 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-py meta::"
+size = 646
+status = "measured"
+test_count = 2
+tests_digest = "01a7cb9b34ce9d7297494150514eb1c0be25e77cc3032068c66e7cc8c9919c8f"
+at = "2026-11-08T04:08:44Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:08:43Z"
+digest = "2e65c5d6f3eda7e0a18d85884f12543032a302cf41a7abfb721686f834166577"
+exit_code = 0
+head = "7c9a44cd44638b2fa5dcef882b481495062f37e3"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/crates/sadi-py
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+crates/sadi-py/python/sadi_py/tests/test_meta.py ...                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-361419-0.xml ---------------
+============================== 3 passed in 0.13s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "crates/sadi-py/python/sadi_py/tests/test_meta.py"
+size = 529
+status = "measured"
+test_count = 3
+tests_digest = "506a93af910ca3693f8f2a05cbfbc565d64711141207abfc61f8d3ed44393028"
+at = "2026-11-08T04:08:43Z"
+actor = "lognd"
+rev = 1

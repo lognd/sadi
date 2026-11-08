@@ -23,6 +23,7 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.core.events import PointV1
 from sadi.labs.lctt.settle_stream import (
     PointRecord,
     StreamConfig,
@@ -30,6 +31,7 @@ from sadi.labs.lctt.settle_stream import (
     StreamStatus,
 )
 from sadi.logging_setup import get_logger
+from sadi.store.events import point_record
 from sadi.store.records import (
     MarkerV1,
     NewRecord,
@@ -358,6 +360,20 @@ class AcquisitionPipeline:
         _log.debug("raw block seq=%d packets=%d queued, pending=%d", seq, count, len(self._pending))
         self._wake.set()
         return Ok(seq)
+
+    def record_point(self, point: PointV1) -> Result[Seq, WriterError | PipelineError]:
+        """Append a captured POINT event to the WAL (append-only; refused once halted)."""
+        if self.halted:
+            return Err(PipelineError.Halted)
+        with self._producer_lock:
+            res = self._wal.submit(point_record(point))
+        if res.is_err:
+            err = res.danger_err
+            _log.error("point %s refused by WAL: %s", point.point_id, err)
+            self._halt("store_" + type(err).__name__.lower(), err.hint)
+            return Err(err)
+        _log.info("point %s phase=%s seq=%d", point.point_id, point.phase, res.danger_ok)
+        return Ok(res.danger_ok)
 
     def mark_load_change(self) -> Result[Seq, WriterError | PipelineError]:
         """Write a load-applied marker and open a new point at the current stream time."""

@@ -8,7 +8,7 @@ and `make_plugins_router(registry)` (`/api/plugins`).
 
 `AppSettings` (pydantic, frozen) is the injection point: `registry` (a `PluginRegistry`,
 default empty) and `data_root` (a `Path`, default `data`). The settings are stored on
-`app.state.settings`. Unknown paths return HTTP 404. No static web mount or launcher yet.
+`app.state.settings`. Unknown paths return HTTP 404. The `sadi` launcher ([launcher.md](launcher.md)) mounts the built web assets.
 
 ## Data-root lock
 

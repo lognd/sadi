@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["With no injected curve_source, create_app serves POST /api/stress-strain/fit from the newest session under data_root, and returns 409 NoData when none exists", "Reading the active session never writes or modifies any file in it"]
+moved = []
+at = "2026-11-08T04:01:26Z"
+actor = "lognd"
+rev = 1

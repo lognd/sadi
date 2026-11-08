@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Doctor checks EXT-020..050, NET-030/040 and PY-050/060 each report every declared failure mode with a remedy for linux, wsl, macos and windows", "NET-040 runs only with --running; the doctor stays read-only"]
+moved = []
+at = "2026-11-08T04:03:55Z"
+actor = "lognd"
+rev = 1

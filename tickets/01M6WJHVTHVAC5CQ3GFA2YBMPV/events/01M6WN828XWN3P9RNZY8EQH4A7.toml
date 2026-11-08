@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:04:13Z"
+digest = "f32bdfa130761f7278b0ede4ba4eb4a0b17a7c8a792208c5f3ad45361cdd1b14"
+exit_code = 0
+head = "e48d352a00ff64a871cd8baf3c29ec08dd26febc"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/doctor/test_sadi_doctor.py ...                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-348472-0.xml ---------------
+============================== 3 passed in 0.33s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_declared_modes_are_all_injected python/tests/doctor/test_sadi_doctor.py::test_every_mode_has_a_remedy_for_every_os python/tests/doctor/test_sadi_doctor.py::test_catalog_docs_are_current"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "bd05bfe284c767128b2938bd8d774d1f52935196519ce471f3fa3f196b4d9604"
+at = "2026-11-08T04:04:13Z"
+actor = "lognd"
+rev = 1

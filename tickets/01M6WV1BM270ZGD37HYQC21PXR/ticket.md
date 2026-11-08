@@ -7,8 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T05:51:13Z"
+updated = "2026-11-08T05:51:26Z"
 scope = ["docs/index.md,docs/server/api.md", "docs/index.md", "docs/server/api.md"]
+
+[[acceptance]]
+text = "docs/index.md and docs/server/api.md link results.md"
+bound = false
 +++
 
 found while working ~J73KJ11: those files were under another live lease

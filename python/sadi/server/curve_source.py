@@ -3,11 +3,13 @@
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
 # frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
+# frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
 
 from __future__ import annotations
 
 import threading
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -151,31 +153,71 @@ def load_curve(
 
 
 _MAX_CACHED = 4  # sessions kept warm; evicting one only costs a verified full replay later
+REVERIFY_INTERVAL_S = 30.0  # live views re-verify all applied WAL bytes at least this often
 
 
 class SessionReplayCache:
-    """One IncrementalReplay per session dir, shared by curve, plots and export (thread-safe)."""
+    """One IncrementalReplay per session dir, shared by curve, plots and export (thread-safe).
 
-    def __init__(self) -> None:
+    Incremental tailing never re-reads bytes it already applied, so corruption there would go
+    unnoticed. Hence a cached entry older than `reverify_interval_s` is dropped and rebuilt by a
+    full CRC-verified replay, and `events(..., verify=True)` (used by export) always does so.
+    """
+
+    def __init__(
+        self,
+        reverify_interval_s: float = REVERIFY_INTERVAL_S,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
         """Start empty; replayers are created on first use of a session dir."""
         self._cache: dict[Path, IncrementalReplay] = {}
+        self._verified_at: dict[Path, float] = {}
+        self._interval = reverify_interval_s
+        self._clock = clock
         self._lock = threading.Lock()
 
     def _evict(self) -> None:
         """Drop the oldest-inserted entries beyond the bound (caller holds the lock)."""
         while len(self._cache) > _MAX_CACHED:
-            self._cache.pop(next(iter(self._cache)))
+            old = next(iter(self._cache))
+            self._cache.pop(old)
+            self._verified_at.pop(old, None)
 
-    def events(self, sdir: Path) -> Result[list[LiveEvent], str]:
-        """Return `session_events(sdir)` via the cached replayer (full-replay fallback inside)."""
+    def _replayer(self, sdir: Path, verify: bool) -> IncrementalReplay:
+        """Return the replayer for `sdir`, fresh (so fully verified) if forced or stale."""
+        now = self._clock()
+        have = self._cache.get(sdir)
+        stale = have is not None and now - self._verified_at.get(sdir, 0.0) >= self._interval
+        if have is None or verify or stale:
+            if have is not None:
+                _log.info("replay cache: full re-verify of %s (forced=%s)", sdir.name, verify)
+            have = IncrementalReplay(sdir)  # first state() is a full CRC-verified replay
+            self._cache[sdir] = have
+            self._verified_at[sdir] = now
+        return have
+
+    # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
+    def events(self, sdir: Path, *, verify: bool = False) -> Result[list[LiveEvent], str]:
+        """Return `session_events(sdir)` via the cache; `verify=True` forces a full verified replay.
+
+        Any error drops the cached entry so corrupt state is never served again.
+        """
         with self._lock:
-            replayer = self._cache.setdefault(sdir, IncrementalReplay(sdir))
+            replayer = self._replayer(sdir, verify)
             self._evict()
-            return session_events(sdir, replayer)
+            res = session_events(sdir, replayer)
+            if res.is_err:
+                _log.error("replay cache: dropping %s after error: %s", sdir.name, res.danger_err)
+                self._cache.pop(sdir, None)
+                self._verified_at.pop(sdir, None)
+            return res
 
     def curve(self, data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
         """Return the active-session curve, reading only newly appended WAL frames."""
         with self._lock:
+            sdir = active_session(data_root)
+            if sdir is not None:
+                self._replayer(sdir, False)  # applies the periodic re-verify policy
             res = load_curve(data_root, self._cache)
             self._evict()
             return res

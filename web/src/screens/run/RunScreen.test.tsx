@@ -170,6 +170,7 @@ describe("run F3 export", () => {
 describe("mark load change", () => {
   it("RunView renders the Mark load change button", () => {
     expect(html(<RunView {...props()} />)).toContain("Mark load change");
+    expect(html(<RunView {...props()} />)).toContain("Settled cannot show until you do");
   });
   it("postLoadChange posts to the route and returns the marker seq", async () => {
     const calls: string[] = [];

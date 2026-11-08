@@ -1,3 +1,4 @@
+// frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Run-screen phases and their static wording (docs/ux.md sections 3.2 to 3.5). */
 
@@ -22,7 +23,7 @@ export interface PhaseMeta {
 export const PHASES: Readonly<Record<RunPhase, PhaseMeta>> = {
   calibrate: {
     title: "Calibrate (LVDT)", apiPhase: "calibration", acceptLabel: "Accept point",
-    instruction: "Set the gauge block, wait for Settled, then press Space.", plot: "calibration",
+    instruction: "Set the gauge block, press Mark load change, wait for Settled, then press Space.", plot: "calibration",
   },
   tare: {
     title: "Tare", apiPhase: "tare", acceptLabel: "Record tare",
@@ -30,7 +31,7 @@ export const PHASES: Readonly<Record<RunPhase, PhaseMeta>> = {
   },
   elastic: {
     title: "Elastic", apiPhase: "elastic", acceptLabel: "Accept",
-    instruction: "Add the next load gently. Press Space when Settled.", plot: "stress-strain",
+    instruction: "Add the next load gently, press Mark load change, then press Space when Settled.", plot: "stress-strain",
   },
   plastic: {
     title: "Plastic", apiPhase: "plastic", acceptLabel: "Accept",

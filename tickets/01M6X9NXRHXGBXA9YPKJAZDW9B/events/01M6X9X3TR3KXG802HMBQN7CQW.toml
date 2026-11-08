@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Keyboard-only e2e spec passes (Tab + Enter/Space through guided run)"]
+moved = []
+at = "2026-11-08T10:05:15Z"
+actor = "lognd"
+rev = 1

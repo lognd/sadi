@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:04:49Z"
-updated = "2026-11-08T06:07:03Z"
+updated = "2026-11-08T06:07:05Z"
 scope = ["web/src/api/schema.ts", "web/src/api/openapi.json", "web/src/screens/export/types.ts"]
 
 [[acceptance]]
@@ -16,5 +16,5 @@ bound = true
 
 [[acceptance]]
 text = "export/types.ts uses the generated QuantityProvenance type"
-bound = false
+bound = true
 +++

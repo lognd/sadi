@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/web/plots.md"]
+new = ["docs/web/plots.md", "web/src/plots/a11y-palette.test.ts"]
+at = "2026-11-08T10:32:49Z"
+actor = "lognd"
+rev = 1

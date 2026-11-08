@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/web/plots.md", "web/src/plots/a11y-palette.test.ts", "web/src/plots/core/*.ts", "web/src/plots/theme.ts"]
+new = ["docs/web/plots.md", "web/src/plots/a11y-palette.test.ts", "web/src/plots/core/*.ts", "web/src/plots/theme.ts", "web/src/plots/stressstrain/__snapshots__/*.snap"]
+at = "2026-11-08T10:32:50Z"
+actor = "lognd"
+rev = 1

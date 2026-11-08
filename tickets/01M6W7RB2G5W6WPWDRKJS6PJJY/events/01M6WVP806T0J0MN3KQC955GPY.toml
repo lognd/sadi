@@ -1,0 +1,15 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T05:56:50Z"
+digest = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+exit_code = 1
+head = "f58f987eafd7ba7e14bcc506f1c7a300165d664e"
+inline = ""
+passed = false
+provider = "command"
+ref = 'git grep -q "Which settle value feeds the E fit" -- docs/user-guide.md'
+size = 0
+status = "measured"
+at = "2026-11-08T05:56:50Z"
+actor = "lognd"
+rev = 1

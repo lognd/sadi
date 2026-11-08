@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["F3 resolves to the export KeyAction and is listed in SHORTCUTS"]
+moved = []
+at = "2026-11-08T05:56:42Z"
+actor = "lognd"
+rev = 1

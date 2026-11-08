@@ -7,7 +7,7 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:28:44Z"
-updated = "2026-11-08T04:32:00Z"
+updated = "2026-11-08T04:32:09Z"
 scope = ["python/sadi/cli/plugins.py", "python/sadi/core/phases.py", "python/sadi/core/device.py", "python/sadi/jobs/tasks/_drive.py", "python/sadi/jobs/tasks/gp.py", "python/sadi/jobs/tasks/mc.py", "python/sadi/labs/lctt/calibration.py", "python/sadi/labs/lctt/clamp_check.py", "python/sadi/labs/lctt/loading.py", "python/sadi/plugins/builtin.py", "python/sadi/plugins/local.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/registry.py", "python/sadi/plugins/settings.py", "python/sadi/plugins/sources.py", "python/sadi/plugins/state.py", "python/sadi/server/routes_stress_strain.py", "python/sadi/store/exports.py", "python/pyproject.toml"]
 
 [[acceptance]]

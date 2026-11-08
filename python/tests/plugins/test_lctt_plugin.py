@@ -9,8 +9,10 @@ from pathlib import Path
 from typani import Ok
 
 from sadi.core.lab import LabId
+from sadi.core.models import Phase
 from sadi.core.registry import LabRegistry
-from sadi.labs.lctt.plugin import register
+from sadi.labs.lctt.clamp_check import ClampCheckConfig
+from sadi.labs.lctt.plugin import register, setup_step
 from sadi.plugins import PluginRegistry, PluginState
 from sadi.plugins.builtin import builtin_manifests, builtin_source
 
@@ -42,5 +44,17 @@ def test_loader_and_registry_do_not_mention_lctt() -> None:
 # frob:tests python/sadi/labs/lctt/plugin.py::LcttLab.recompute
 def test_register_yields_working_lab() -> None:
     lab = register()
-    assert [s.id for s in lab.steps()] == ["calibrate", "elastic", "plastic"]
+    assert [s.id for s in lab.steps()] == ["setup", "calibrate", "elastic", "plastic"]
     assert isinstance(lab.recompute(()), Ok)
+
+
+# frob:tests python/sadi/labs/lctt/plugin.py::setup_step
+def test_setup_step_hosts_clamp_check_with_criterion() -> None:
+    """Setup is first on the rail, in Phase.SETUP, gated on one point per cycle."""
+    # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM
+    first = register().steps()[0]
+    assert first.id == "setup" and first.phase is Phase.SETUP
+    assert first.min_points == ClampCheckConfig().cycles
+    custom = setup_step(ClampCheckConfig(cycles=5))
+    assert custom.min_points == 5
+    assert "5 times" in custom.guidance(None)  # type: ignore[arg-type]

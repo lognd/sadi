@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:23:17Z"
+digest = "8cca222d1fda6416ca7059097599b650a69e9b7d8be09a840d04c58d9c61d105"
+exit_code = 0
+head = "0c3b7b2f1e2c371be314fa7f17a64dc9decd93f4"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/uncertainty/crosscheck/test_labs_crosscheck.py ..           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-256734-0.xml ---------------
+============================== 2 passed in 2.04s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_extreme_underflow_denominator_is_typed"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "811ab620db8ae0649c76f9e06fbf1f9d7716c7fd62d866158c5454e110e9de99"
+at = "2026-11-08T03:23:17Z"
+actor = "lognd"
+rev = 1

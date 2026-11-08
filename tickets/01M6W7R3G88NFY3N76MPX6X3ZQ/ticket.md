@@ -2,7 +2,8 @@
 id = "01M6W7R3G88NFY3N76MPX6X3ZQ"
 title = "Progressive background jobs: Monte Carlo interval refinement and GP fit"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"

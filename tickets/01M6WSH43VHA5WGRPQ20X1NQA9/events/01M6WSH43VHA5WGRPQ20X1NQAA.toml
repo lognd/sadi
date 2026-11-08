@@ -1,0 +1,10 @@
+kind = "create"
+title = "Wire LcttLab.recompute and combine_runs into wizard and export"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/labs/lctt/**"]
+body = "found while working ~XMK16Q2: LcttLab.recompute over CapturedPoint is a stub; combine_runs is not wired into the wizard, export or export_formats."
+at = "2026-11-08T05:19:05Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6WJPHV1FMFMMRZ9WXZE3GBF"
 title = "Fix test_labs_import_only_core_public_api: lctt/capture.py imports sadi.store.events"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

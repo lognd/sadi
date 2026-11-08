@@ -14,13 +14,14 @@ from sadi.plugins import (
     PluginRegistry,
     PluginState,
 )
-from sadi.plugins.doctor import SessionPluginRef, check_plugins
+from sadi.plugins.doctor import check_plugins
 from sadi.plugins.errors import (
     PluginImportError,
     PluginManifestError,
     PluginSourceError,
 )
 from sadi.plugins.sources import PluginIssue
+from sadi.store.manifest import SessionPluginRef
 
 
 def _mf(pid: str, **extra: Any) -> dict[str, Any]:
@@ -116,3 +117,12 @@ def test_session_refs_missing_and_version_changed() -> None:
     assert "session.plugin_version_changed" in found
     for fixes in found.values():
         _check_numbered(fixes)
+
+
+def test_session_plugin_ref_is_store_manifest_model() -> None:
+    """Doctor re-exports the single canonical store.manifest SessionPluginRef."""
+    # frob:ticket 01M6WHAKY5X32CK3JXWC13VH4Y
+    import sadi.plugins.doctor as doctor
+    import sadi.store.manifest as manifest
+
+    assert doctor.SessionPluginRef is manifest.SessionPluginRef

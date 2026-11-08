@@ -21,6 +21,7 @@ from sadi.plugins.errors import (
 from sadi.plugins.manifest import PLUGIN_API_VERSION
 from sadi.plugins.registry import PluginRecord, PluginRegistry, PluginState
 from sadi.plugins.sources import PluginIssue
+from sadi.store.manifest import SessionPluginRef  # frob:ticket 01M6WHAKY5X32CK3JXWC13VH4Y
 
 _log = get_logger(__name__)
 
@@ -33,15 +34,6 @@ class Severity(StrEnum):
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
-
-
-class SessionPluginRef(BaseModel):
-    """Plugin id and version a session recorded when it ran."""
-
-    model_config = ConfigDict(frozen=True)
-
-    id: str
-    version: str
 
 
 class DoctorFinding(BaseModel):

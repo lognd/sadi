@@ -2,7 +2,8 @@
 id = "01M6WVQC0SQR7CMCB3V921XDAW"
 title = "User guide: add UI screenshots under docs/img/ui/"
 type = "docs"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

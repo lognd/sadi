@@ -4,7 +4,8 @@ title = "Results: derive the linear E window automatically in the server"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T07:12:11Z"
-updated = "2026-11-08T07:12:11Z"
+updated = "2026-11-08T07:15:34Z"
 +++

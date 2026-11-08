@@ -7,9 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:52:11Z"
-updated = "2026-11-08T09:52:15Z"
+updated = "2026-11-08T09:55:59Z"
 
 [[acceptance]]
 text = "doctor.png contains no host-specific absolute paths and shows no failing checks"
-bound = false
+bound = true
 +++

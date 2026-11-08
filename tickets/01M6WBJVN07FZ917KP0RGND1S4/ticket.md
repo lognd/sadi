@@ -7,5 +7,6 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T01:15:22Z"
-updated = "2026-11-08T04:18:19Z"
+updated = "2026-11-08T04:18:38Z"
+scope = ["crates/sadi-proto/src/session.rs"]
 +++

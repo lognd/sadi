@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0EPXRHEMNEAB9QWVY57"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:20:40Z"
+updated = "2026-11-08T03:20:51Z"
 idempotency_key = "sadi-u5"
 labels = ["ws:unc", "qa", "model:sonnet", "creates:python/tests/uncertainty/crosscheck/**", "creates:docs/uncertainty/crosscheck.md"]
 scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md", "docs/uncertainty/fallbacks.md", "python/sadi/doctor/cli.py"]
@@ -27,7 +27,7 @@ target = "01M6W7R3BBDEXG9CPYWTQ7ZKZW"
 
 [[acceptance]]
 text = "Parametrised test over every @uncertain lab formula (calibration, load from mass, stress, strain, E, fits): analytic vs MC vs finite difference agree within documented tolerances, with and without correlation"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Hypothesis-generated inputs including near-zero denominators produce typed errors, not exceptions"

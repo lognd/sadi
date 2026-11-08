@@ -4,7 +4,8 @@ title = "COV001: sadi-proto session.rs accessors lack test binding (CommandPolic
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T01:15:22Z"
-updated = "2026-11-08T01:15:22Z"
+updated = "2026-11-08T04:18:18Z"
 +++

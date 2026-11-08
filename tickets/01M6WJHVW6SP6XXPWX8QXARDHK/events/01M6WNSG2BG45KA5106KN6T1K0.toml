@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:13:45Z"
+digest = "7860c315dc9d9547224289185f7553976ee2be0a70108f4e16e3a6fa128d1c60"
+exit_code = 0
+head = "89200b5aa620b187de5ba3f2c6b772ee4d3b0159"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/doctor/test_sadi_doctor.py ..                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-372186-0.xml ---------------
+============================== 2 passed in 0.31s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_real_volume_probes_flush_lock_and_clean_up python/tests/doctor/test_sadi_doctor.py::test_data_040_is_skipped_without_the_opt_in"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "0ee09bc7ce1f1fbe82293a58b0ca73bd11dbcacf416525149b96fac51a873197"
+at = "2026-11-08T04:13:45Z"
+actor = "lognd"
+rev = 1

@@ -69,6 +69,16 @@ class LoadInputs(_Inputs):
     u_mass_kg: float = 0.0
 
 
+class PointMeta(BaseModel):
+    """Settle provenance of a point: time since load, drift rate and the settled/forced flags."""
+
+    model_config = ConfigDict(frozen=True)
+    t_since_load_s: float | None = None
+    drift_rate: float | None = None
+    settled: bool = False
+    forced_early: bool = False
+
+
 PointInputs = CalibrationInputs | TareInputs | SpecimenInputs | LoadInputs
 
 
@@ -121,8 +131,27 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
     )
 
 
-def build_point(inputs: PointInputs, window: PointWindow) -> PointV1:
-    """Build the POINT payload for typed inputs; the phase and input keys match `parse_inputs`."""
+def build_point(
+    inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None
+) -> PointV1:
+    """Build the POINT payload for typed inputs (and optional settle meta); keys match parsing."""
     raw = inputs.model_dump(exclude={"phase"})
-    _log.info("point built: phase=%s keys=%s", inputs.phase, sorted(raw))
-    return PointV1(phase=inputs.phase, window=window, inputs=raw)
+    m = meta if meta is not None else PointMeta()
+    _log.info(
+        "point built: phase=%s keys=%s settled=%s forced_early=%s",
+        inputs.phase,
+        sorted(raw),
+        m.settled,
+        m.forced_early,
+    )
+    return PointV1(phase=inputs.phase, window=window, inputs=raw, **m.model_dump())
+
+
+def parse_meta(point: PointV1) -> PointMeta:
+    """Read a POINT's settle meta; events written before the fields existed read as defaults."""
+    return PointMeta(
+        t_since_load_s=point.t_since_load_s,
+        drift_rate=point.drift_rate,
+        settled=point.settled,
+        forced_early=point.forced_early,
+    )

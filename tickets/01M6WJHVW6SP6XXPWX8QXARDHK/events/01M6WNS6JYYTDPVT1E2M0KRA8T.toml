@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Every declared mode of DATA-040..080, RES-040 and CLK-020..040 is reproduced by fault injection with a verified remediation for all four OSes", "DATA-040 writes only with --allow-probe-write and leaves no probe file behind", "docs/doctor-checks.md matches the generated catalog"]
+moved = []
+at = "2026-11-08T04:13:36Z"
+actor = "lognd"
+rev = 1

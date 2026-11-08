@@ -17,7 +17,7 @@ from typani import Err, ErrorSet, Ok, Result
 
 from sadi.core.events import PointWindow
 from sadi.core.pipeline import AcquisitionPipeline, BlockLike, PipelineError
-from sadi.core.point_inputs import PointInputs, build_point
+from sadi.core.point_inputs import PointInputs, PointMeta, build_point
 from sadi.logging_setup import get_logger
 from sadi.store.writer_thread import WriterError
 
@@ -186,10 +186,10 @@ class AcquisitionDriver:
         return Ok(step)
 
     def record_point(
-        self, inputs: PointInputs, window: PointWindow
+        self, inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None
     ) -> Result[str, WriterError | PipelineError]:
-        """Write a POINT event in the shared phase mapping; Ok is the new point id."""
-        point = build_point(inputs, window)
+        """Write a POINT event (inputs plus settle meta) in the shared mapping; Ok is its id."""
+        point = build_point(inputs, window, meta)
         res = self._pipe.record_point(point)
         if res.is_err:
             return Err(res.danger_err)

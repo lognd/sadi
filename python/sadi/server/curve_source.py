@@ -15,6 +15,7 @@ from sadi.core.point_inputs import (
     SpecimenInputs,
     TareInputs,
     parse_inputs,
+    parse_meta,
 )
 from sadi.labs.lctt.export_csv import build_document
 from sadi.labs.lctt.live import (
@@ -90,6 +91,9 @@ def load_curve(data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
         if ev is None:
             _log.warning("curve source: point %s has unusable inputs", cp.point.point_id)
             continue
+        meta = parse_meta(cp.point)
+        if meta.forced_early:
+            _log.warning("curve source: point %s was forced early", cp.point.point_id)
         events.append(ev)
         if cp.excluded and isinstance(ev, LoadPoint):
             events.append(ExcludePoint(point_id=ev.point_id))

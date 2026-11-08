@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:13:44Z"
+digest = "d4938790a0774cf460ce39bef6c9411a3e7b2ac93d315c718992eced4e39261d"
+exit_code = 0
+head = "89200b5aa620b187de5ba3f2c6b772ee4d3b0159"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 153 items / 136 deselected / 17 selected
+
+python/tests/doctor/test_sadi_doctor.py .................                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-372180-0.xml ---------------
+====================== 17 passed, 136 deselected in 0.35s ======================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py -k 'test_fault_injection and (DATA-040 or DATA-050 or DATA-060 or DATA-070 or DATA-080 or CLK-020 or CLK-030 or CLK-040 or RES-040)'"
+size = 554
+status = "measured"
+test_count = 17
+tests_digest = "39eb83543db86ad3b846af88785a1fa916d23e1565f0c71db1d2aa274940eb54"
+at = "2026-11-08T04:13:44Z"
+actor = "lognd"
+rev = 1

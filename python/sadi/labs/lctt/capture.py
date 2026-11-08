@@ -25,7 +25,7 @@ from sadi.logging_setup import get_logger
 # frob:ticket 01M6WJPHV1FMFMMRZ9WXZE3GBF
 from sadi.core.events import EditV1, PointV1, PointWindow
 # frob:ticket 01M6WNEEBBBZVDZ6700RJDN26D
-from sadi.core.point_inputs import LoadInputs, build_point
+from sadi.core.point_inputs import LoadInputs, PointMeta, build_point
 
 _log = get_logger(__name__)
 
@@ -74,13 +74,14 @@ class CaptureConfig(BaseModel):
 class Captured(BaseModel):
     """A captured point event, its load inputs, detector record and operator-facing warnings.
 
-    Record it with `AcquisitionDriver.record_point(captured.inputs, captured.point.window)`.
+    Record it with `AcquisitionDriver.record_point(captured.inputs, captured.point.window, captured.meta)`.
     """
 
     model_config = {"frozen": True}
 
     point: PointV1
     inputs: LoadInputs
+    meta: PointMeta
     record: PointRecord
     warnings: tuple[str, ...] = ()
 
@@ -233,14 +234,13 @@ class CaptureController:
             mass_kg=self._mass_kg,
             u_mass_kg=self._u_mass_kg,
         )
-        point = build_point(inputs, window).model_copy(
-            update={
-                "t_since_load_s": rec.time_since_load,
-                "drift_rate": rec.drift_rate.value if rec.drift_rate is not None else None,
-                "settled": rec.settled,
-                "forced_early": rec.forced_early,
-            }
+        meta = PointMeta(
+            t_since_load_s=rec.time_since_load,
+            drift_rate=rec.drift_rate.value if rec.drift_rate is not None else None,
+            settled=rec.settled,
+            forced_early=rec.forced_early,
         )
+        point = build_point(inputs, window, meta)
         _log.info(
             "captured point %s settled=%s forced_early=%s seq=[%d,%d]",
             point.point_id,
@@ -249,7 +249,7 @@ class CaptureController:
             window.first_raw_seq,
             window.last_raw_seq,
         )
-        return Ok(Captured(point=point, inputs=inputs, record=rec, warnings=warnings))
+        return Ok(Captured(point=point, inputs=inputs, meta=meta, record=rec, warnings=warnings))
 
 
 def set_window_edit(point_id: str, window: PointWindow) -> EditV1:

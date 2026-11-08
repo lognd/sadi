@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["test_ws_results.py types the websocket helper with WebSocketTestSession and ty check is clean"]
+moved = []
+at = "2026-11-08T06:12:05Z"
+actor = "lognd"
+rev = 1

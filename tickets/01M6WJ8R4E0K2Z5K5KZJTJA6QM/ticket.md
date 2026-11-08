@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:12:11Z"
 updated = "2026-11-08T03:50:15Z"
-scope = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py", "docs/core/models.md", "docs/lctt/clamp-check.md"]
+scope = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py", "docs/core/models.md", "docs/lctt/clamp-check.md", "changelog.d/01M6WJ8R4E0K2Z5K5KZJTJA6QM.changed.md"]
 
 [[acceptance]]
 text = "LcttLab.steps() begins with a Phase.SETUP step hosting the clamp-slip sub-check, gated by min_points = cycles"

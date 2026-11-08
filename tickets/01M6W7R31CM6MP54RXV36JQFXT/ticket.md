@@ -2,13 +2,13 @@
 id = "01M6W7R31CM6MP54RXV36JQFXT"
 title = "store/exports: derived exports with provenance, tmp + rename"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:13:17Z"
 idempotency_key = "sadi-ds7"
 labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/exports.py", "creates:python/tests/store/test_exports.py", "creates:docs/store/exports.md"]
 scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md"]

@@ -2,7 +2,8 @@
 id = "01M6WXRTBQ3KWAB1JE0PBZRG82"
 title = "Dedupe plots route derivation with lctt figure_data"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -2,13 +2,13 @@
 id = "01M6WFZQ7GM8RJJNYY43ABXZYQ"
 title = "Plugin docs: plugins.md, lab-modules, doctor, CLI, index"
 type = "docs"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:18Z"
-updated = "2026-11-08T02:32:18Z"
+updated = "2026-11-08T02:57:29Z"
 labels = ["plugins"]
 scope = ["docs/plugins.md", "docs/core/lab-modules.md", "docs/doctor.md", "docs/index.md"]
 

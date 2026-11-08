@@ -3,20 +3,15 @@ Status: draft
 
 Course-specific lab material (reference lab VI, lab data, transcripts) is kept
 out of git: `python/tests/fixtures/real_fp/` and `labview/` are gitignored and
-the tracked docs use generic wording.
+the tracked docs and tickets use generic wording.
 
-Warning: git history STILL contains the old data (the former real_fp
-fixtures and earlier doc wording). The repository must not be made public
-until history is rewritten.
+History was squashed into a single fresh import, so no earlier commit holds
+the removed data or wording. A full backup of the previous private history
+lives outside the repository; never push it anywhere public.
 
-Planned approach:
+Before making the repository public:
 
-1. Work on a fresh mirror clone, never the working repository.
-2. Run `git filter-repo --invert-paths --path python/tests/fixtures/real_fp/`
-   plus a `--replace-text` file for the course and VI names.
-3. Verify with `git log --all -S<term>` for each removed term, then run
-   `frob check` and the test suite on the rewritten clone.
-4. Rewrite or drop the ticket event history that quotes the removed names
-   (tickets/*/events is an audit trail; handle it deliberately).
-5. Force-push to a new remote only after review; leases and worktrees are
-   re-created afterwards.
+1. Run `git log --all -S<term>` for each removed term; expect no hits.
+2. Run `frob check` and the test suite from a clean clone.
+3. Review `git ls-files` for anything course-specific.
+4. Push to a new remote only after review.

@@ -535,13 +535,13 @@ reason = "vitest coverage accepted"
 [[symbol]]
 identity = "web/src/components/wizard/WizardShell.tsx::WizardShell"
 symref = "web/src/components/wizard/WizardShell.tsx::WizardShell"
-sig = "85f2c8adcc4607ab4b74d4c383479c238c96408fa85e85577a534dd56d7c81f0"
-body = "939ba767c4b9e8404332ea034eaf222dc0b7ca640f154d33a3667cd4f252f4cf"
+sig = "55c8cb5c23b4909406453bddfad85a5fad8f7f06339d78de5c78d65d45ce3fac"
+body = "92da6ffd009c959326a60c65f5b64442286dd0dc46eab87a85fd1dd35b394302"
 doc = "73693455a8cdb2b10f900e2fa2c4122fccf48d465aa21fd6836f659db438694d"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "9b521e4a004d38962eae5d7c7298148bf90473dc9a6c679ae8686daa4296ee93"
+contract = "c9be1799da8e779664537fcf298c4b9cffa62db13405b28f457e9f151e5412cd"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T05:37:06.283863239Z"
+acked_at = "2026-11-08T07:05:05.890611466Z"
 
 [[symbol]]
 identity = "web/src/components/wizard/wizardApi.ts::getWizard"

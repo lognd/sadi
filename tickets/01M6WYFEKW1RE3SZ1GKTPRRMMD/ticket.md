@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:45:33Z"
-updated = "2026-11-08T06:47:54Z"
-scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_settle_incremental.py"]
+updated = "2026-11-08T06:50:21Z"
+scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_settle_incremental.py", "docs/testing.md"]
 +++
 
 found while working ~WKK27QJ

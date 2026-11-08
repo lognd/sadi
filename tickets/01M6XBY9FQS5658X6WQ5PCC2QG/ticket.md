@@ -1,0 +1,11 @@
++++
+id = "01M6XBY9FQS5658X6WQ5PCC2QG"
+title = "Web COV001 still unresolved after typedcalls test"
+type = "chore"
+category = "todo"
+priority = "medium"
+points = 2
+reporter = "lognd"
+created = "2026-11-08T10:40:51Z"
+updated = "2026-11-08T10:40:51Z"
++++

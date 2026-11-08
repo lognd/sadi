@@ -1,0 +1,117 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:19:53Z"
+digest = "45c15657b4f6e40af32ddfba06ced45fd617a5160d27a722ca30a88feeba2e2d"
+exit_code = 1
+failed_tests = ["python/tests/core/test_pipeline.py::test_disk_error_halts_loudly_and_display_never_exceeds_wal[28]"]
+head = "cd4acb7f15a559b676f90c38fa8b875407bdd7dc"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 14 items
+
+python/tests/core/test_pipeline.py ...F..........                        [100%]
+
+=================================== FAILURES ===================================
+________ test_disk_error_halts_loudly_and_display_never_exceeds_wal[28] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0')
+code = 28
+
+    @pytest.mark.parametrize("code", [errno.ENOSPC, errno.EIO])
+    def test_disk_error_halts_loudly_and_display_never_exceeds_wal(tmp_path: Path, code: int) -> None:
+        """After an fsync error nothing undurable is shown, acquisition stops, ingest refuses."""
+        h = _open(tmp_path)
+        stopped = threading.Event()
+        pipe = AcquisitionPipeline(h, _config(), stop_device=stopped.set)
+        sub = pipe.bus.subscribe("t")
+        assert pipe.ingest(_Block()).is_ok
+        assert h.wait_durable(1, WAIT_S).is_ok
+        pipe.pump()
+        failpoints.configure({"wal.fsync.before": f"once:error:{code}"})
+        for _ in range(3):
+            pipe.ingest(_Block())
+        assert stopped.wait(WAIT_S)
+        pipe.pump()
+        assert pipe.halted
+        refused = pipe.ingest(_Block())
+        assert refused.is_err
+        assert refused.danger_err == PipelineError.Halted
+        events = sub.drain()
+        stops = [e for e in events if isinstance(e, PipelineStopped)]
+>       assert len(stops) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+python/tests/core/test_pipeline.py:223: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+failpoints cleared
+------------------------------ Captured log setup ------------------------------
+DEBUG    sadi.store.failpoints:failpoints.py:84 failpoints cleared
+----------------------------- Captured stdout call -----------------------------
+created /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal/seg-000001.wal exclusively
+fsync_file(fd=11) ok
+fsync_dir(/tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal) ok
+WAL opened at /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal/seg-000001.wal first_seq=1 session=00000000-0000-0000-0000-0000000060fd
+writer handle ready at /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal
+bus subscriber t added (depth 1024)
+raw block seq=1 packets=100 queued, pending=1
+fsync_file(fd=11) ok
+durable_seq -> 1 (1 records, 864 bytes)
+failpoints configured: ['wal.fsync.before']
+raw block seq=2 packets=100 queued, pending=1
+raw block seq=3 packets=100 queued, pending=2
+raw block seq=4 packets=100 queued, pending=3
+failpoint wal.fsync.before hit #1 fire=True
+WAL writer state RUNNING -> FAILED
+----------------------------- Captured stderr call -----------------------------
+WARNING: failpoint wal.fsync.before firing action error:28
+ERROR: failpoint wal.fsync.before raised [Errno 28] failpoint wal.fsync.before: ENOSPC
+ERROR: WAL writer FAILED: hint='Saving failed. Data already shown is safe; free disk space and retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC' errno=28
+ERROR: writer FAILED: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC' (undurable=3)
+ERROR: acquisition HALTED: store_diskfull (The data disk is full. Data already shown is safe; free space, then retry.)
+ERROR: submit refused: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC'
+ERROR: stop marker not written: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC'
+------------------------------ Captured log call -------------------------------
+INFO     sadi.store.durable:durable.py:243 created /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal/seg-000001.wal exclusively
+DEBUG    sadi.store.durable:durable.py:129 fsync_file(fd=11) ok
+DEBUG    sadi.store.durable:durable.py:192 fsync_dir(/tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal) ok
+INFO     sadi.store.wal:wal.py:380 WAL opened at /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal/seg-000001.wal first_seq=1 session=00000000-0000-0000-0000-0000000060fd
+INFO     sadi.store.writer_thread:writer_thread.py:262 writer handle ready at /tmp/pytest-of-logan/pytest-192/test_disk_error_halts_loudly_a0/wal
+INFO     sadi.core.pipeline:pipeline.py:221 bus subscriber t added (depth 1024)
+DEBUG    sadi.core.pipeline:pipeline.py:339 raw block seq=1 packets=100 queued, pending=1
+DEBUG    sadi.store.durable:durable.py:129 fsync_file(fd=11) ok
+DEBUG    sadi.store.wal:wal.py:701 durable_seq -> 1 (1 records, 864 bytes)
+INFO     sadi.store.failpoints:failpoints.py:76 failpoints configured: ['wal.fsync.before']
+DEBUG    sadi.core.pipeline:pipeline.py:339 raw block seq=2 packets=100 queued, pending=1
+DEBUG    sadi.core.pipeline:pipeline.py:339 raw block seq=3 packets=100 queued, pending=2
+DEBUG    sadi.core.pipeline:pipeline.py:339 raw block seq=4 packets=100 queued, pending=3
+DEBUG    sadi.store.failpoints:failpoints.py:127 failpoint wal.fsync.before hit #1 fire=True
+WARNING  sadi.store.failpoints:failpoints.py:130 failpoint wal.fsync.before firing action error:28
+ERROR    sadi.store.wal:wal.py:192 failpoint wal.fsync.before raised [Errno 28] failpoint wal.fsync.before: ENOSPC
+ERROR    sadi.store.wal:wal.py:778 WAL writer FAILED: hint='Saving failed. Data already shown is safe; free disk space and retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC' errno=28
+INFO     sadi.store.wal:wal.py:592 WAL writer state RUNNING -> FAILED
+ERROR    sadi.store.writer_thread:writer_thread.py:439 writer FAILED: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC' (undurable=3)
+ERROR    sadi.core.pipeline:pipeline.py:394 acquisition HALTED: store_diskfull (The data disk is full. Data already shown is safe; free space, then retry.)
+ERROR    sadi.store.writer_thread:writer_thread.py:298 submit refused: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC'
+ERROR    sadi.core.pipeline:pipeline.py:405 stop marker not written: hint='The data disk is full. Data already shown is safe; free space, then retry.' reason='failpoint wal.fsync.before: [Errno 28] failpoint wal.fsync.before: ENOSPC'
+--------------------------- Captured stdout teardown ---------------------------
+failpoints cleared
+---------------------------- Captured log teardown -----------------------------
+DEBUG    sadi.store.failpoints:failpoints.py:84 failpoints cleared
+-------------- generated xml file: /tmp/frob-pytest-249195-0.xml ---------------
+========================= 1 failed, 13 passed in 2.16s =========================
+'''
+passed = false
+provider = "pytest"
+ref = "python/tests/core/test_pipeline.py"
+size = 7374
+status = "measured"
+test_count = 14
+tests_digest = "364b0b9fde21cc46331814681d1c103094a9b9c60cdfae49a7ec2b9f4af50cf2"
+at = "2026-11-08T03:19:53Z"
+actor = "lognd"
+rev = 1

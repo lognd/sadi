@@ -22,6 +22,14 @@ cannot be completed until every earlier one (Calibrate) is done or skipped expli
 `complete`, `skip` and `revert` return a marker record. `revert` reopens only the most recently
 finished step, by appending a compensating marker; earlier markers stay in the log.
 
+### Completion criteria
+
+`StepSpec.min_points` (default 0) is the number of active (non-excluded) points of the step's
+phase captured since the previous step resolved. `complete` refuses with `NeedPoints` (a UI
+hint) until it is met. The criterion only gates `complete`: `skip`, `revert`, `edit`, `undo`
+and `redo` are never blocked, so the operator can always preserve or skip recorded data
+(ticket ~E6GGFJZ).
+
 ## Step rail
 
 `WizardState.rail` is a tuple of `RailItem(id, title, phase, capture, status, needs_device,

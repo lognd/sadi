@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T09:52:11Z"
 updated = "2026-11-08T09:56:35Z"
-scope = ["docs/img/ui/doctor.png"]
+scope = ["docs/img/ui/doctor.png", "web/docs-shots/screenshots.spec.ts"]
 
 [[acceptance]]
 text = "doctor.png contains no host-specific absolute paths and shows no failing checks"

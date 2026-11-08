@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:25:15Z"
-scope = ["python/sadi/labs/**,python/sadi/server/**", "python/sadi/server/schemas.py", "python/sadi/server/session_points.py"]
+updated = "2026-11-08T06:27:20Z"
+scope = ["python/sadi/labs/**,python/sadi/server/**", "python/sadi/server/schemas.py", "python/sadi/server/session_points.py", "python/tests/server/test_session_points.py"]
 +++
 
 found while working ~J73KJ11: t_since_load and drift are zeroed in results._captured

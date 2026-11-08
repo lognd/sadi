@@ -1,0 +1,74 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:05:24Z"
+digest = "6fc63784642e61e5455815f7b0533c2fcbecd38e4ce4b4d99d5f2c045647b3e5"
+exit_code = 0
+head = "4e1df15d221c403065082ae80d917d2878a87733"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > renders a current analytic value with no marker
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'analytic', dataVersion: 1, latestDataVersion: 1 }
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > shows tightening progress while refining
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'analytic', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied { key: 'E', state: 'refining', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied { key: 'E', state: 'refining', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied { key: 'E', state: 'final', dataVersion: 1, latestDataVersion: 1 }
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > marks a value stale when the server says so
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'analytic', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied { key: 'E', state: 'stale', dataVersion: 1, latestDataVersion: 1 }
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > marks a value stale when another key has newer data, never unmarked
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'final', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied {
+  key: 'slope',
+  state: 'analytic',
+  dataVersion: 2,
+  latestDataVersion: 2
+}
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > suppresses progress on a lagging refining value
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'refining', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.store] envelope applied {
+  key: 'slope',
+  state: 'analytic',
+  dataVersion: 2,
+  latestDataVersion: 2
+}
+
+stdout | web/src/results-stream/results-stream.test.tsx > results stream client > drops out-of-order and malformed envelopes
+[results-stream.hook] subscribing to results stream {}
+[results-stream.store] envelope applied { key: 'E', state: 'analytic', dataVersion: 1, latestDataVersion: 1 }
+
+ \u{2713} web/src/results-stream/results-stream.test.tsx (7 tests) 17ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  01:05:25
+   Duration  679ms (transform 108ms, setup 0ms, collect 141ms, tests 17ms, environment 0ms, prepare 155ms)
+
+JSON report written to /tmp/frob-vitest-579033-0.json
+stderr | web/src/results-stream/results-stream.test.tsx > results stream client > drops out-of-order and malformed envelopes
+[results-stream.store] dropping out-of-order envelope { key: 'E', got: 4, have: 5 }
+[results-stream.hook] bad envelope { error: 'not_json' }
+[results-stream.hook] bad envelope { error: 'bad_protocol' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/results-stream/results-stream.test.tsx"
+size = 3118
+status = "measured"
+test_count = 7
+tests_digest = "47e23a25536b531431beaa97a5faa5597eaf29681ee7f8df695fbda00f0eddda"
+at = "2026-11-08T06:05:24Z"
+actor = "lognd"
+rev = 1

@@ -12,7 +12,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from sadi.core.registry import LabRegistry
-from sadi.labs.lctt.plugin import register
+from sadi.labs.lctt.plugin import LcttLab, register
 from sadi.server.app import AppSettings, create_app
 from sadi.server.routes.results import ResultBudget, provenance_for, to_result_budget
 from sadi.server.schemas import PointView
@@ -128,10 +128,18 @@ def test_budgets_match_web_shape(budget_client: TestClient) -> None:
     assert row["total_std_unc"] == pytest.approx(0.2)
 
 
-def test_budgets_empty_without_source(client: TestClient) -> None:
-    """No budget source -> an empty list, not an error."""
-    _open(client)
-    assert client.get("/api/results/budgets").json() == []
+# frob:tests python/sadi/server/routes/results.py::lab_budgets
+def test_budgets_empty_without_hook(tmp_path: Path) -> None:
+    """A lab with no budgets hook and no injected source -> an empty list, not an error."""
+
+    class Plain(LcttLab):
+        budgets = None  # type: ignore[assignment]
+
+    labs = LabRegistry()
+    assert labs.register(Plain()).is_ok
+    with TestClient(create_app(AppSettings(data_root=tmp_path, labs=labs))) as c:
+        _open(c)
+        assert c.get("/api/results/budgets").json() == []
 
 
 # frob:tests python/sadi/server/routes/results.py::make_results_router
@@ -173,3 +181,12 @@ def test_device_status_attached(tmp_path: Path) -> None:
     for c in _client(tmp_path, device=_FakeDevice()):
         body = c.get("/api/device/status").json()
         assert body == {"status": "simulated", "attached": True, "fault": None, "hint": ""}
+
+
+# frob:tests python/sadi/server/routes/results.py::lab_budgets
+def test_budgets_from_lab_hook(client: TestClient) -> None:
+    """With no injected source, the lctt lab's own budgets are served."""
+    _open(client)
+    rows = client.get("/api/results/budgets").json()
+    assert {r["result"] for r in rows} == {"stress", "E"}
+    assert all(r["rows"] and r["latex"] and r["total_std_unc"] > 0 for r in rows)

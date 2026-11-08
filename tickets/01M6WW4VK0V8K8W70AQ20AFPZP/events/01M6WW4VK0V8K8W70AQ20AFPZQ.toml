@@ -1,0 +1,9 @@
+kind = "create"
+title = "Regenerate web/src/api/schema.ts (openapi-typescript) so provenance appears; drop hand mirror in export/types.ts"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+at = "2026-11-08T06:04:49Z"
+actor = "lognd"
+rev = 1

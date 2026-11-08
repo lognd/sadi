@@ -7,7 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:16:58Z"
+updated = "2026-11-08T10:17:27Z"
+scope = ["web/src/styles.css"]
 
 [[acceptance]]
 text = "A shared stylesheet gives the primary button a distinct, larger style than Skip, with visible focus rings"

@@ -8,4 +8,8 @@ points = 1
 reporter = "lognd"
 created = "2026-11-08T09:57:18Z"
 updated = "2026-11-08T09:57:19Z"
+
+[[acceptance]]
+text = "doctor.png and its caption do not present a check state the simulator cannot produce"
+bound = false
 +++

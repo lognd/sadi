@@ -2,16 +2,16 @@
 id = "01M6W7R432XQSR47M3W61M215J"
 title = "Uncertainty budget and formula panel: dominant input, rendered LaTeX derivation"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T05:38:11Z"
 idempotency_key = "sadi-f17"
 labels = ["ws:web", "uncertainty", "model:sonnet", "creates:web/src/components/budget/**", "creates:docs/web/budget-panel.md"]
-scope = ["web/src/components/budget/**", "docs/web/budget-panel.md"]
+scope = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json", "web/package-lock.json"]
 
 [[links]]
 kind = "blocked-by"

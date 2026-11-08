@@ -105,3 +105,15 @@ def test_fit_exposes_plot_and_decision_inputs() -> None:
     assert again.b.value == f.b.value and again.t_ref == f.t_ref
     assert f.b.interval95().is_ok
     assert f.strain_at_ref.unit == f.b.unit
+
+
+# frob:tests python/sadi/labs/lctt/creep.py::SettleBand
+def test_settle_band_from_threshold_and_backward_compatible() -> None:
+    t = _times()
+    y = [2e-5 * math.log(x - T_LOAD) for x in t]
+    assert _fit(t, y).settle_band is None
+    f = _fit(t, y, cfg=CreepConfig(settle_threshold=1e-5))
+    assert f.settle_band is not None
+    last = 2e-5 * math.log(t[-1] - T_LOAD)
+    assert f.settle_band.lower == pytest.approx(last - 1e-5)
+    assert f.settle_band.upper == pytest.approx(last + 1e-5)

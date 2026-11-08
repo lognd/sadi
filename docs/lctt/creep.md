@@ -20,12 +20,14 @@ increasing times.
 `CreepFit`: `a` and `b` (`Measured`, dimensionless, dof n-2, OLS standard errors),
 `r2`, `n_points`, `t_ref` and `strain_at_ref`, the extrapolated strain at `t_ref` as a
 `Measured` whose uncertainty uses the full (a, b) covariance, so it grows with distance
-from the data.
+from the data. `settle_band` (`SettleBand` with `lower`/`upper`, or `None`) is the
+strain band fitted-final-strain +/- `CreepConfig.settle_threshold`; it feeds the plot's
+`settle_band` field and is omitted (`None`) when no threshold is configured.
 
 ## Config and errors
 
 `CreepConfig` (frozen): `min_points` (default 5, >= 3) and `min_decades` (default 0.5,
-log10 span of `t - t_load`). A hold below either gives `CreepError.HoldTooShort`.
+log10 span of `t - t_load`) and optional `settle_threshold` (strain half-width, > 0). A hold below either gives `CreepError.HoldTooShort`.
 Other `CreepError` members: `LengthMismatch`, `NonFinite`, `NonMonotonicTime`,
 `BeforeLoad`, `BadReference`, `NotRepresentable`.
 

@@ -37,6 +37,7 @@ Status: current
 - [Server export API](server/export.md)
 - [Server results API](server/results.md)
 - [Data-safety design](data-safety.md)
+- [Concurrency testing: race, deadlock and kill-mid-write suite](concurrency-testing.md)
 - [Release process](release.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

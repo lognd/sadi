@@ -32,5 +32,6 @@ no provider 501; all `application/problem+json` with a `hint`.
 
 ## Wiring
 
-The router is not yet mounted by `create_app`; wiring an `AppSettings.inventory` provider is a
-follow-up (app.py was leased elsewhere).
+`create_app` always mounts the router, passing `AppSettings.inventory` (an `InventoryProvider`
+or None). With no provider every route answers 501 problem+json; a plugin supplies the provider by
+setting `AppSettings.inventory`.

@@ -7,12 +7,13 @@ later event and nothing is ever deleted.
 """
 
 # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
+# frob:ticket 01M6WTSF7KQ3YMJP9C0Z75HVRK
 
 from __future__ import annotations
 
 import json
 from collections.abc import Sequence
-from typing import Any, Literal, Protocol
+from typing import Any, Literal, Protocol, runtime_checkable
 
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict, Field
@@ -30,6 +31,7 @@ NOTE_KIND = "inventory"
 EventKind = Literal["weight", "group"]
 
 
+@runtime_checkable
 class InventoryProvider(Protocol):
     """Port a plugin implements to validate inventory events and derive views from them."""
 

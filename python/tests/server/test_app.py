@@ -127,3 +127,11 @@ def test_save_indicator_reachable_and_latches_on_failure() -> None:
     body = client.get("/api/save-indicator").json()
     assert body["state"] == "not_saved"
     assert body["label"] == "NOT SAVED"
+
+
+# frob:ticket 01M6WTSF7KQ3YMJP9C0Z75HVRK
+# frob:tests python/sadi/server/app.py::create_app
+def test_inventory_unmounted_provider_is_501() -> None:
+    """Without AppSettings.inventory the inventory route exists and answers 501."""
+    res = _client().get("/api/session/inventory")
+    assert res.status_code == 501

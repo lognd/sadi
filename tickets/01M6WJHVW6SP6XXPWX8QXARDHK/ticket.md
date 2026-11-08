@@ -2,12 +2,13 @@
 id = "01M6WJHVW6SP6XXPWX8QXARDHK"
 title = "doctor: DATA-040..080, RES-040, CLK-020..040"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:14:09Z"
+updated = "2026-11-08T04:17:43Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]

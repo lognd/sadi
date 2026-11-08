@@ -32,6 +32,7 @@ from sadi.doctor.schema import (
     StepKind,
 )
 from sadi.doctor.sessions import SessionFacts
+from sadi.doctor.volprobe import FlushFacts
 from sadi.doctor.workerprobe import WorkerFacts
 from sadi.plugins.doctor import DoctorFinding
 from sadi.plugins.doctor import Severity as FSev
@@ -74,6 +75,44 @@ def _both(*muts: Mut) -> Mut:
             m(p)
 
     return f
+
+
+def _out_cmd(key: str, text: str) -> Mut:
+    """Mutator: canned stdout for the command whose argv tail is key."""
+
+    def f(p: FakeProbes) -> None:
+        p.commands[key] = Ok(CommandRun(argv=("c",), exit_code=0, stdout_tail=text))
+
+    return f
+
+
+def _with_config(lock: str = "ok", text: str = "") -> Mut:
+    """Mutator: a config.toml under the root with the given text and lock state."""
+
+    def f(p: FakeProbes) -> None:
+        p.files[f"{ROOT}/config.toml"] = text
+        p.lock = lock  # type: ignore[assignment]
+
+    return f
+
+
+def _logs(writable: bool = True, size: int = 10) -> Mut:
+    """Mutator: a logs directory holding one file of the given size."""
+
+    def f(p: FakeProbes) -> None:
+        p.dirs[f"{ROOT}/logs"] = ["sadi.log"]
+        p.files[f"{ROOT}/logs/sadi.log"] = ""
+        p.sizes[f"{ROOT}/logs/sadi.log"] = size
+        if not writable:
+            p.read_only.add(f"{ROOT}/logs")
+
+    return f
+
+
+def _sharing(p: FakeProbes) -> None:
+    """Mutator: a log that mentions a sharing violation."""
+    p.dirs[f"{ROOT}/logs"] = ["a.log"]
+    p.files[f"{ROOT}/logs/a.log"] = "x DurableSharingViolation y"
 
 
 def _set(**kw: object) -> Mut:
@@ -277,6 +316,41 @@ CASES: list[tuple[str, str, Os, Mut]] = [
     ("DATA-020", "fat-exfat", Os.LINUX, _set(fs="vfat")),
     ("DATA-030", "below-minimum", Os.LINUX, _set(free=10**8)),
     ("DATA-030", "low", Os.LINUX, _set(free=5 * 1024**3)),
+    (
+        "DATA-040",
+        "fsync-unsupported",
+        Os.LINUX,
+        _set(flush=FlushFacts("unsupported", detail="EINVAL")),
+    ),
+    (
+        "DATA-040",
+        "fullfsync-fallback",
+        Os.MACOS,
+        _set(flush=FlushFacts("ok", fullfsync=False, p50_ms=1.0)),
+    ),
+    ("DATA-040", "fsync-slow", Os.LINUX, _set(flush=FlushFacts("ok", p50_ms=450.0))),
+    ("DATA-050", "locks-unsupported", Os.LINUX, _with_config(lock="unsupported")),
+    ("DATA-050", "lock-held-by-other", Os.WINDOWS, _with_config(lock="held")),
+    ("DATA-060", "not-excluded-from-defender", Os.WINDOWS, _set()),
+    ("DATA-060", "indexer-scans-root", Os.MACOS, _out_cmd("-s " + ROOT, "Indexing enabled.")),
+    ("DATA-060", "sharing-violations-logged", Os.WINDOWS, _sharing),
+    ("DATA-070", "syntax-error", Os.LINUX, _with_config(text="a = = 1")),
+    ("DATA-080", "not-writable", Os.LINUX, _logs(writable=False)),
+    ("DATA-080", "oversized", Os.WSL, _logs(size=2 * 1024**3)),
+    ("CLK-020", "coarse-monotonic", Os.WINDOWS, _set(mono_res=0.0156)),
+    ("CLK-030", "tz-unknown", Os.LINUX, _set(tz=None)),
+    ("CLK-040", "not-synced", Os.LINUX, _out_cmd("show -p NTPSynchronized", "NTPSynchronized=no")),
+    ("CLK-040", "not-synced", Os.MACOS, _out_cmd("-getusingnetworktime", "Network Time: Off")),
+    ("RES-040", "on-battery", Os.LINUX, _set(battery=True)),
+    (
+        "RES-040",
+        "usb-selective-suspend",
+        Os.WINDOWS,
+        _out_cmd(
+            "/q SCHEME_CURRENT 2a737441-1930-4402-8d77-b2bebba308a3",
+            "Current AC Power Setting Index: 0x00000001",
+        ),
+    ),
     ("DATA-090", "spill-present", Os.LINUX, _set(spills=["/x/a.spill"])),
     ("USB-020", "no-device", Os.LINUX, _no_usb),
     ("USB-020", "unknown-ftdi-pid", Os.LINUX, _odd_pid),
@@ -453,6 +527,15 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/wal.py::wal_040
 # frob:tests python/sadi/doctor/probes.py::Probes.session_facts
 # frob:tests python/sadi/doctor/probes.py::RealProbes.session_facts
+# frob:tests python/sadi/doctor/checks/data.py::data_040
+# frob:tests python/sadi/doctor/checks/data.py::data_050
+# frob:tests python/sadi/doctor/checks/data.py::data_060
+# frob:tests python/sadi/doctor/checks/data.py::data_070
+# frob:tests python/sadi/doctor/checks/data.py::data_080
+# frob:tests python/sadi/doctor/checks/clk.py::clk_020
+# frob:tests python/sadi/doctor/checks/clk.py::clk_030
+# frob:tests python/sadi/doctor/checks/clk.py::clk_040
+# frob:tests python/sadi/doctor/checks/res.py::res_040
 # frob:tests python/sadi/doctor/checks/data.py::data_010
 # frob:tests python/sadi/doctor/checks/data.py::data_020
 # frob:tests python/sadi/doctor/checks/data.py::data_030
@@ -521,6 +604,7 @@ def test_fault_injection_yields_mode_and_remedy(
         stream_seconds=5 if check_id == "DEV-040" else 0,
         with_reset=check_id == "DEV-050",
         running=check_id == "NET-040",
+        allow_probe_write=check_id == "DATA-040",
     )
     result = next(r for r in report.results if r.id == check_id)
     assert result.mode == mode, result.headline
@@ -673,6 +757,7 @@ def test_doctor_is_read_only() -> None:
         and "shutil.which" not in line
         and "import shutil" not in line
         and "chmod 660" not in line
+        and p.name != "volprobe.py"  # opt-in flush probe: one file under <root>/doctor/
         and p.name != "bundle.py"  # the only writer: new path, no-replace, outside the data root
     ]
     assert hits == []
@@ -856,3 +941,52 @@ def test_real_package_integrity_returns_two_lists() -> None:
 
     modified, missing = RealProbes().package_integrity()
     assert isinstance(modified, list) and isinstance(missing, list)
+
+
+# frob:tests python/sadi/doctor/volprobe.py::probe_flush
+# frob:tests python/sadi/doctor/volprobe.py::probe_lock
+def test_real_volume_probes_flush_lock_and_clean_up(tmp_path: Path) -> None:
+    """The real flush probe leaves nothing behind and the lock probe reports ok."""
+    from sadi.doctor.volprobe import probe_flush, probe_lock
+
+    facts = probe_flush(str(tmp_path))
+    assert facts.status == "ok" and facts.p50_ms >= 0
+    assert list((tmp_path / "doctor").iterdir()) == []
+    target = tmp_path / "config.toml"
+    target.write_text("")
+    assert probe_lock(str(target)) == "ok"
+    assert probe_lock(str(tmp_path / "missing")) == "error"
+
+
+def test_data_040_is_skipped_without_the_opt_in() -> None:
+    """DATA-040 writes, so it is skipped unless --allow-probe-write is given."""
+    report = _run(healthy(), Os.LINUX, data_root=ROOT)
+    r = next(x for x in report.results if x.id == "DATA-040")
+    assert r.status is Status.SKIP and r.skip_reason is SkipReason.OPT_IN
+
+
+# frob:tests python/sadi/doctor/probes.py::Probes.flush_facts
+# frob:tests python/sadi/doctor/probes.py::Probes.lock_state
+# frob:tests python/sadi/doctor/probes.py::Probes.file_size
+# frob:tests python/sadi/doctor/probes.py::Probes.on_battery
+# frob:tests python/sadi/doctor/probes.py::Probes.monotonic_resolution
+# frob:tests python/sadi/doctor/probes.py::Probes.tz_name
+# frob:tests python/sadi/doctor/probes.py::RealProbes.flush_facts
+# frob:tests python/sadi/doctor/probes.py::RealProbes.lock_state
+# frob:tests python/sadi/doctor/probes.py::RealProbes.file_size
+# frob:tests python/sadi/doctor/probes.py::RealProbes.on_battery
+# frob:tests python/sadi/doctor/probes.py::RealProbes.monotonic_resolution
+# frob:tests python/sadi/doctor/probes.py::RealProbes.tz_name
+def test_real_probes_answer_the_new_facts(tmp_path: Path) -> None:
+    """The real probes return well-typed answers for the clock, power, size, lock and flush facts."""
+    from sadi.doctor.probes import RealProbes
+
+    rp = RealProbes()
+    f = tmp_path / "a.log"
+    f.write_text("abc")
+    assert rp.file_size(str(f)) == 3 and rp.file_size(str(tmp_path / "none")) is None
+    assert rp.lock_state(str(f)) == "ok"
+    assert rp.flush_facts(str(tmp_path)).status == "ok"
+    assert rp.monotonic_resolution() > 0
+    assert rp.on_battery() in (True, False, None)
+    assert rp.tz_name() is None or isinstance(rp.tz_name(), str)

@@ -2,12 +2,12 @@
 id = "01M6WJHVXTWDD0RA55508QAN2W"
 title = "doctor: USB-010, USB-060..080 and Windows/macOS USB support"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T03:55:16Z"
+updated = "2026-11-08T04:17:58Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 +++
 

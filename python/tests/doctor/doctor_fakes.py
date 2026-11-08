@@ -13,6 +13,7 @@ from sadi.doctor.checks import ext, net
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
+from sadi.doctor.volprobe import FlushFacts, LockState
 from sadi.doctor.workerprobe import WorkerFacts
 from sadi.plugins.doctor import DoctorFinding
 
@@ -75,6 +76,12 @@ class FakeProbes:
     data_dir: str = "/home/u/.local/share/sadi"
     free: int | None = 100 * GIB
     fs: str | None = "ext4"
+    flush: FlushFacts = field(default_factory=FlushFacts)
+    lock: LockState = "ok"
+    sizes: dict[str, int] = field(default_factory=dict)
+    battery: bool | None = False
+    mono_res: float = 1e-9
+    tz: str | None = "UTC"
     spills: list[str] = field(default_factory=list)
     sessions: list[SessionFacts] = field(default_factory=list)
     browser: bool = True
@@ -203,6 +210,32 @@ class FakeProbes:
         """Return the fake open-file limit."""
         return self.nofile
 
+    def flush_facts(self, data_root: str) -> FlushFacts:
+        """Return the fake flush facts."""
+        return self.flush
+
+    def lock_state(self, target: str) -> LockState:
+        """Return the fake lock state."""
+        return self.lock
+
+    def file_size(self, path: str) -> int | None:
+        """Return the fake size, falling back to the fake file text length."""
+        if path in self.sizes:
+            return self.sizes[path]
+        return len(self.files[path]) if path in self.files else None
+
+    def on_battery(self) -> bool | None:
+        """Return the fake battery state."""
+        return self.battery
+
+    def monotonic_resolution(self) -> float:
+        """Return the fake clock resolution."""
+        return self.mono_res
+
+    def tz_name(self) -> str | None:
+        """Return the fake timezone name."""
+        return self.tz
+
     def encoding(self) -> tuple[str, bool]:
         """Return the fake encoding."""
         return self.enc
@@ -262,10 +295,16 @@ def healthy() -> FakeProbes:
             ),
             "-c " + ext.VCRUNTIME_SCRIPT: _json([]),
             "-c " + ext.FEATURES_SCRIPT: _json(["udev"]),
+            "show -p NTPSynchronized": _out("NTPSynchronized=yes\n"),
             "-c " + net.health_script(8000): _json({"status": 200, "version": "0.1.0"}),
         }
     )
     return p
+
+
+def _out(text: str) -> Result[CommandRun, ProbeError]:
+    """Build a canned run whose stdout is the given text."""
+    return Ok(CommandRun(argv=("cmd",), exit_code=0, stdout_tail=text))
 
 
 def _json(value: object) -> Result[CommandRun, ProbeError]:

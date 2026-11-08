@@ -1,0 +1,14 @@
+kind = "create"
+title = "store: data-directory lock so two sadi processes cannot share a data root"
+type = "task"
+category = "todo"
+priority = "high"
+points = 3
+parent = "01M6W7R04QJTECCTSV9EY2JADK"
+idempotency_key = "sadi-store-lock"
+labels = ["creates:python/sadi/store/lock.py", "creates:python/tests/store/test_lock.py", "creates:docs/store/lock.md"]
+scope = ["python/sadi/store/lock.py", "python/tests/store/test_lock.py", "docs/store/lock.md"]
+acceptance = ["A second process opening the same data root gets a typed LockHeld error naming the holder pid; no data is touched", "A stale lock from a dead pid is reported and recoverable only by explicit user action, never silently broken", "Lock acquisition and release are logged; works on Linux, macOS and Windows (OS-level file lock, not pid-file only)"]
+at = "2026-11-08T02:05:58Z"
+actor = "lognd"
+rev = 1

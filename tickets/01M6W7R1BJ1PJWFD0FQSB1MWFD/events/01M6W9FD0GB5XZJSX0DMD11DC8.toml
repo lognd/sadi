@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:38:31Z"
+digest = "1766f71ba664cbdbbadf150032b324fce46737c492b52fe72d12e58162fb0a02"
+exit_code = 0
+head = "faceb56a5edcbad83222dd4d7adfc2a7f8c11af8"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 4fac7a13-1a5c-4e62-893d-46e4f1a3eb1f with nextest profile: default
+    Starting 1 test across 5 binaries (75 tests skipped)
+        PASS [   0.045s] sadi-proto::session_mock gaps_are_reported_and_read_times_out
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.046s] 1 test run: 1 passed, 75 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "gaps_are_reported_and_read_times_out"
+size = 552
+status = "measured"
+test_count = 1
+tests_digest = "373cda7beaf941193084190c45035c13002cd5626dae86a5fcc30fa824fc03ee"
+at = "2026-11-08T00:38:31Z"
+actor = "lognd"
+rev = 1

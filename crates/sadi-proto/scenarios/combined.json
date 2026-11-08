@@ -1,0 +1,54 @@
+{
+  "name": "combined",
+  "description": "Coloured noise, drift, creep, slips and saturation together.",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 7,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0345,
+      "kind": {
+        "kind": "coloured",
+        "window": 8
+      }
+    },
+    "drift": {
+      "linear_v_per_s": 0.003,
+      "thermal_amp_v": 0.05,
+      "thermal_period_s": 300.0
+    },
+    "creep": {
+      "coeff": 3.0,
+      "tau_s": 1.0
+    },
+    "slips": [
+      {
+        "t_s": 200.0,
+        "strain": 0.005
+      },
+      {
+        "t_s": 450.0,
+        "strain": 0.008
+      }
+    ],
+    "saturation": {
+      "limit_v": 4.9,
+      "mode": "clamp"
+    }
+  }
+}

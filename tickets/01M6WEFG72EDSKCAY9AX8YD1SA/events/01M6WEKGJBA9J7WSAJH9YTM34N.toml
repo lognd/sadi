@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T02:08:08Z"
+digest = "e88a0a6ba43e28c9d2df920f0478262b6d05530dbdc3407f9887e26e32651d0e"
+exit_code = 0
+head = "91825425404c96fda36e336957c6ffe7dd07b36d"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/store/test_lock.py .                                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-177773-0.xml ---------------
+============================== 1 passed in 0.48s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_lock.py::test_second_process_gets_lockheld_with_pid"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "e83121e86ba5e9b707c25c00bd4e859d873ba439cc26ce573b397d18adfa8c80"
+at = "2026-11-08T02:08:08Z"
+actor = "lognd"
+rev = 1

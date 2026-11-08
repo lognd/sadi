@@ -1,0 +1,43 @@
++++
+id = "01M6W7R20Q20BHCEP78X42K86Y"
+title = "hwprobe tool: scripted probe, raw capture and replay Transport"
+type = "task"
+category = "done"
+outcome = "done"
+priority = "medium"
+points = 5
+parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
+reporter = "lognd"
+created = "2026-11-08T00:08:18Z"
+updated = "2026-11-08T01:28:43Z"
+idempotency_key = "sadi-hw2"
+labels = ["ws:rust", "needs-board", "model:sonnet", "creates:crates/sadi-proto/examples/hwprobe.rs", "creates:crates/sadi-proto/src/replay.rs", "creates:crates/sadi-proto/tests/replay.rs", "creates:docs/device/hwprobe.md"]
+scope = ["crates/sadi-proto/examples/hwprobe.rs", "crates/sadi-proto/src/replay.rs", "crates/sadi-proto/tests/replay.rs", "docs/device/hwprobe.md", "docs/sadi-proto.md"]
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R0N34FPB5NP8XF4KKZCS"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R10HDC6A2K576Q4YBED4"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1BJ1PJWFD0FQSB1MWFD"
+
+[[acceptance]]
+text = "hwprobe runs each HW1 check as a subcommand (enumerate, query, reset-boot-time, stream-60s-with-gap-stats, range-sweep, encoder-spin, digital-in) and writes a JSON report + raw .bin capture"
+bound = true
+
+[[acceptance]]
+text = "ReplayTransport replays a capture through the normal Session/Decoder so field captures become regression tests"
+bound = true
+
+[[acceptance]]
+text = "Runs against the simulator in CI so the tool itself is tested without a board"
+bound = true
++++
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Rust: safe code only (no hand-written unsafe), thiserror errors, tracing logs, cargo fmt + clippy -D warnings clean, tests incl. proptest where noted.

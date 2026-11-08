@@ -1,0 +1,28 @@
+kind = "evidence"
+accepts = [5]
+captured_at = "2026-11-08T01:15:33Z"
+digest = "7798742149a0e18d7c45806ce03cd5f138edb6a312e2ac1665441e46fe2a3078"
+exit_code = 0
+head = "51831086f311d680a7c904b3ac73a02eed523ab8"
+inline = '''
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.21s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 07916d51-dee2-4b32-99f7-d0e6983ebf5b with nextest profile: default
+    Starting 3 tests across 1 binary
+        PASS [   0.007s] sadi-py errors::tests::kinds_are_stable
+        PASS [   0.007s] sadi-py convert::tests::block_data_flattens_columns
+        PASS [   0.007s] sadi-py convert::tests::device_state_mapping_is_total
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.008s] 3 tests run: 3 passed, 0 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-py"
+size = 722
+status = "measured"
+test_count = 3
+tests_digest = "0fa36175d2081eeb042011adb285ba3c720f29079102568df47711e4d589d16d"
+at = "2026-11-08T01:15:33Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/index.md", "docs/core/models.md"]
+new = ["docs/index.md", "docs/core/models.md", "docs/core/formatting.md"]
+at = "2026-11-08T00:24:20Z"
+actor = "lognd"
+rev = 1

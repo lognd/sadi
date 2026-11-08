@@ -1,0 +1,28 @@
+[package]
+name = "sadi-proto"
+description = "SADI MOM wire protocol, transports and simulator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = ["serial"]
+# Real serial-port backend over the FTDI VCP (pulls in the serialport crate).
+serial = ["dep:serialport"]
+# Linux port enumeration details via libudev (needs libudev-dev).
+udev = ["serial", "serialport/libudev"]
+# Optional firmware 3.41 codec; off by default.
+v3 = []
+
+[dependencies]
+thiserror.workspace = true
+tracing.workspace = true
+serialport = { version = "4", default-features = false, optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+proptest = "1"

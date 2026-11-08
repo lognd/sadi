@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:17:37Z"
+digest = "e461a972634d2b175991d8ac957855b25c990645fbb5fcc7eefd8a2860e5ae9b"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 8 items
+
+python/tests/core/test_models.py ........                                [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-36089-0.xml ---------------
+============================== 8 passed in 0.21s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_models.py::test_errors_are_frozen_and_usable_in_result python/tests/core/test_models.py::test_every_error_code_has_hint_and_problem_json python/tests/core/test_models.py::test_group_weighing_requires_kg python/tests/core/test_models.py::test_inventory_unique_ids_and_lookup python/tests/core/test_models.py::test_json_round_trip_all_models python/tests/core/test_models.py::test_point_flags_window_and_run_state_transitions python/tests/core/test_models.py::test_quantity_rejects_bad_input python/tests/core/test_models.py::test_specimen_area_and_validation"
+size = 521
+status = "measured"
+test_count = 8
+tests_digest = "b8b6261e67e2cf834d34e26d6fe6a1180936ecfb170270391f8f63e437e1eba7"
+at = "2026-11-08T00:17:37Z"
+actor = "lognd"
+rev = 1

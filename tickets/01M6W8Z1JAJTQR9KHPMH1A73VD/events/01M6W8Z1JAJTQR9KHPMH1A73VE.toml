@@ -1,0 +1,17 @@
+kind = "create"
+title = "Settle detector streaming layer: states, load-change markers, per-point record, fixed-dwell, simulator tests"
+type = "task"
+category = "todo"
+priority = "high"
+points = 5
+labels = ["ws:py", "lctt", "creates:python/tests/labs/lctt/test_settle_stream.py"]
+scope = ["python/sadi/labs/lctt/settle_stream.py", "python/tests/labs/lctt/test_settle_stream.py"]
+acceptance = ["Streaming detector over raw LVDT blocks emits loading/creeping/settled with drift rate and time since load change", "Load-change detection from marker events; raw is always recorded regardless of state", "Each point stores window, time-since-load, drift rate and settled/forced-early flag; fixed-dwell mode is a config option", "Tested on simulator scenarios clean/noisy/creeping/drifting: no false settle under noise, settles within expected dwell"]
+body = "Split from ~7Q9BX19, which delivered the pure windowed detector (settle.py). Builds the streaming and per-point layer on top."
+at = "2026-11-08T00:29:36Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1KH0MVS56MX07Q9BX19"

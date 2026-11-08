@@ -1,0 +1,46 @@
+version = 2
+digest_scheme = 2
+
+[[symbol]]
+identity = "docs/web-layout.md#web-layout"
+symref = "docs/web-layout.md#web-layout"
+sig = "051111190b6116bddbbcf7e16b1071cb3b11203a7e0147e069c367ef284c1e6b"
+body = "c2d877a9d276aad208d9bf7ef2e7f55c827a4d4ae086d4528a0bc3a30adda86f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "865789a2aea99b0b3bbe8ee1b903a5e027e37d863f3b2f8e2fbd91677db0bf68"
+contract = "3ef792ecdc4ea6520c6d7efaeec4d23f71e3aad385dafa77e0fe0fbdecca521e"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T00:15:02.391237649Z"
+
+[[symbol]]
+identity = "web/src/App.tsx::App"
+symref = "web/src/App.tsx::App"
+sig = "05ca56c67b0cdd563218f04194e4cd35c4b760d6b9bd7b5c8d05ed0474a0088f"
+body = "0e72385e36dd1313e0586ccca11a52b92b36083417918457ffed59cae04d8bb0"
+doc = "703ae16bcb6b9f46f0241b33af05c12b5feb8ffbfde5d157a47b8e6c85e32889"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "6e4a0de4c6a3bbd1446c598a2b2b7594c60a8455e5ea80d717e31890431c47f5"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T00:14:31.011558348Z"
+
+[[symbol]]
+identity = "web/src/api/log.ts::Logger.info"
+symref = "web/src/api/log.ts::Logger.info"
+sig = "7999b768d2959afe7c8493bb018457a47221a2b79b2aaa1a96328a3cbccbcd17"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "ccac0419c88aaf9d611e362f8ce7ef4e2609017ae74415003dd8d6c0c142e65c"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T00:14:31.049164727Z"
+
+[[symbol]]
+identity = "web/src/api/log.ts::getLogger"
+symref = "web/src/api/log.ts::getLogger"
+sig = "7033ea39d531bf415ae8b6c990fd9998dacbe9bcd42028588cdf619fb78ed71f"
+body = "e0cf8a9f66bfe278878752c6be88f19174a1125694373b92ea53fd1c692b36f5"
+doc = "9ac5c7a41dd0ac387be0f1ae8ea9ebd79b4cb3587bc48625bf252a4429520605"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "e56b6c2b7de54cfc4bff8bf8ce0065955bc5dfdd69b7da579c1d739c95c4585c"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T00:14:31.07875396Z"

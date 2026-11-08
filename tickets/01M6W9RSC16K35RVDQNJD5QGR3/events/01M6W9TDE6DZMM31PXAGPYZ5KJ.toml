@@ -1,0 +1,8 @@
+kind = "transition"
+from = "in-progress"
+to = "done"
+outcome = "done"
+reason = "Comment-only deletion in web/src/api/log.ts; vitest src/api/log.test.ts run manually (1 passed); npm is not in [evidence] allowed_tools"
+at = "2026-11-08T00:44:30Z"
+actor = "lognd"
+rev = 1

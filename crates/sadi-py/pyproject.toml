@@ -1,0 +1,24 @@
+[build-system]
+requires = ["maturin>=1.7,<2"]
+build-backend = "maturin"
+
+[project]
+name = "sadi-py"
+version = "0.1.0"
+description = "SADI MOM wire protocol bindings: sessions, simulator, numpy blocks"
+requires-python = ">=3.11"
+dependencies = ["numpy"]
+classifiers = ["Programming Language :: Rust"]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "sadi_py._native"
+features = ["extension-module"]
+include = [{ path = "python/sadi_py/py.typed", format = "sdist" }]
+exclude = ["python/sadi_py/tests/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["python/sadi_py/tests"]

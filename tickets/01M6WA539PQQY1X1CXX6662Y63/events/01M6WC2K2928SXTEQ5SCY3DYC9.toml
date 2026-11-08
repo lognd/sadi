@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2, 3]
+captured_at = "2026-11-08T01:23:58Z"
+digest = "0239ce499fcdeda88083971dbc7a0f34b6adcf55fd8fa27d03e1de56a2ddcc5f"
+head = "f1f1be13ad1357a2df534c514be14f9526470952"
+provider = "file"
+ref = "packaging/udev/99-sadi.rules"
+size = 1443
+status = "measured"
+at = "2026-11-08T01:23:58Z"
+actor = "lognd"
+rev = 1

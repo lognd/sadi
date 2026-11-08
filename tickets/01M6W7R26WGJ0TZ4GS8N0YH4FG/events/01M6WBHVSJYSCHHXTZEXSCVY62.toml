@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T01:14:47Z"
+digest = "5cd80035669e3d73ceed2cdbdb69e7554c907a32210490ce9eef78b1496a5a58"
+exit_code = 0
+head = "111a426043c5d215f3c8e6fd7abd51bf6197ccf6"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/core/test_inventory.py ...                                  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-135007-0.xml ---------------
+============================== 3 passed in 1.49s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_inventory.py::test_entry_edit_keeps_history python/tests/core/test_inventory.py::test_event_json_round_trip_and_bad python/tests/core/test_inventory.py::test_record_rejects_bad_groups"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "dcf7bfdaa054859dd22436bafa5cbe60c110241db25bb3c2e35d25dfe38c8542"
+at = "2026-11-08T01:14:47Z"
+actor = "lognd"
+rev = 1

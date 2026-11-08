@@ -1,0 +1,44 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:37:35Z"
+digest = "58b6a6a4ad7a42ed8b01bdbd1571691248d5bf342c49c2ea863d427b05b4779f"
+exit_code = 0
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.65s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID d435bdbf-5f3d-446d-8bf0-7a2c61aaa2de with nextest profile: default
+    Starting 21 tests across 5 binaries (55 tests skipped)
+        PASS [   0.015s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.015s] sadi-proto::session_mock duplicate_acks_are_harmless
+        PASS [   0.015s] sadi-proto::serial_loopback pty_round_trip
+        PASS [   0.015s] sadi-proto::session_mock full_sequence_matches_protocol_section_5
+        PASS [   0.015s] sadi-proto::session_mock config_validation
+        PASS [   0.016s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.020s] sadi-proto::session_mock start_is_idempotent_when_already_running
+        PASS [   0.021s] sadi-proto::session_mock stop_is_idempotent_after_observed_stop
+        PASS [   0.009s] sadi-proto::session_mock tap_sees_raw_bytes_including_garbage_and_failure_is_loud
+        PASS [   0.011s] sadi-proto::session_mock transport_closed_during_start_returns_handle
+        PASS [   0.012s] sadi-proto::vectors resync_recovers_after_garbage_and_dropped_bytes
+        PASS [   0.014s] sadi-proto::session_mock truncated_stop_ack_then_full_ack
+        PASS [   0.032s] sadi-proto::session_mock silence_is_retried_then_answered
+        PASS [   0.034s] sadi-proto::serial_loopback pty_read_times_out
+        PASS [   0.046s] sadi-proto::session_mock start_timeout_returns_reusable_handle
+        PASS [   0.046s] sadi-proto::session_mock reset_ignores_stale_version_and_times_out_without_boot
+        PASS [   0.064s] sadi-proto::serial_loopback pty_rx_overflow_is_typed
+        PASS [   0.064s] sadi-proto::session_mock gaps_are_reported_and_read_times_out
+        PASS [   0.087s] sadi-proto::serial_loopback pty_purge_close_semantics
+        PASS [   0.214s] sadi-proto::session_mock phase_utilities_and_restart
+        PASS [   0.865s] sadi-proto::vectors recovers_later_intact_packets
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.883s] 21 tests run: 21 passed, 55 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=config_validation) | test(=duplicate_acks_are_harmless) | test(=error::tests::timeout_message_mentions_duration) | test(=full_sequence_matches_protocol_section_5) | test(=gaps_are_reported_and_read_times_out) | test(=phase_utilities_and_restart) | test(=pty_purge_close_semantics) | test(=pty_read_times_out) | test(=pty_round_trip) | test(=pty_rx_overflow_is_typed) | test(=recovers_later_intact_packets) | test(=reset_ignores_stale_version_and_times_out_without_boot) | test(=resync_recovers_after_garbage_and_dropped_bytes) | test(=silence_is_retried_then_answered) | test(=start_is_idempotent_when_already_running) | test(=start_timeout_returns_reusable_handle) | test(=stop_is_idempotent_after_observed_stop) | test(=tap_sees_raw_bytes_including_garbage_and_failure_is_loud) | test(=transport::tests::trait_is_object_safe_and_send) | test(=transport_closed_during_start_returns_handle) | test(=truncated_stop_ack_then_full_ack)))'"
+size = 2308
+status = "measured"
+test_count = 21
+tests_digest = "a3c20b8eba23fae19b8427f889e754fb7c3a76cf73fd100c1430fbc646c642bb"
+at = "2026-11-08T00:37:35Z"
+actor = "lognd"
+rev = 1

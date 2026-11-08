@@ -1,0 +1,30 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:27:32Z"
+digest = "7dd665eb167d289885fd05abd8fba19781b16613c66b6428c9c42b7731aae0ab"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 14 items
+
+python/tests/core/test_lab_registry.py ........                          [ 57%]
+python/tests/core/test_models.py .                                       [ 64%]
+python/tests/test_scaffold.py ..                                         [ 78%]
+python/tests/uncertainty/test_measured.py ...                            [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-58181-0.xml ---------------
+============================== 14 passed in 1.41s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_lab_registry.py::test_checker_flags_forbidden_imports python/tests/core/test_lab_registry.py::test_discover_registers_good_and_reports_bad python/tests/core/test_lab_registry.py::test_fake_lab_satisfies_protocol python/tests/core/test_lab_registry.py::test_labs_import_only_core_public_api python/tests/core/test_lab_registry.py::test_needs_device_covers_every_kind python/tests/core/test_lab_registry.py::test_register_get_and_duplicate python/tests/core/test_lab_registry.py::test_stepspec_is_frozen_and_typed python/tests/core/test_lab_registry.py::test_validate_rejects_malformed_labs python/tests/core/test_models.py::test_inventory_unique_ids_and_lookup python/tests/test_scaffold.py::test_get_logger_follows_stream_swap python/tests/test_scaffold.py::test_get_logger_routes_levels python/tests/uncertainty/test_measured.py::test_correlation_round_trip_property python/tests/uncertainty/test_measured.py::test_division_by_zero_and_bad_power_are_errs python/tests/uncertainty/test_measured.py::test_operators_and_accessors"
+size = 762
+status = "measured"
+test_count = 14
+tests_digest = "337a3fa75538f4d48b57a2b03eac6da6c911bde17104cc9775ae9103a090c936"
+at = "2026-11-08T00:27:32Z"
+actor = "lognd"
+rev = 1

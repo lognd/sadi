@@ -1,0 +1,32 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:29:38Z"
+digest = "993e6af83088a0218f0d1ae0c4c00b863f9d26bea3bfb5cf2399c7081d70adee"
+exit_code = 2
+head = "a3c5912cbc53bcdaa71b7f644f03d6cf07f84e9a"
+inline = """
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/labs/lctt/test_settle.py ________________
+ImportError while importing test module '<worktree>/python/tests/labs/lctt/test_settle.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/tests/labs/lctt/test_settle.py:11: in <module>
+    from pydantic import ValidationError
+E   ModuleNotFoundError: No module named 'pydantic'
+=========================== short test summary info ============================
+ERROR python/tests/labs/lctt/test_settle.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.11s
+"""
+passed = false
+provider = "command"
+ref = "uv run pytest python/tests/labs/lctt/test_settle.py -q"
+size = 895
+status = "measured"
+at = "2026-11-08T00:29:38Z"
+actor = "lognd"
+rev = 1

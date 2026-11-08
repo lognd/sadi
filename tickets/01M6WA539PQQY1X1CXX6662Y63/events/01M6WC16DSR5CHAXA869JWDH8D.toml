@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/hardware-verification.md"]
+new = ["docs/hardware-verification.md", "packaging/udev/99-sadi.rules"]
+at = "2026-11-08T01:23:12Z"
+actor = "lognd"
+rev = 1

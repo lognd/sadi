@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:16:01Z"
+digest = "475a4c2760f2c724deae5053b2c960d8857df64c9aa72f644d6470e4af524737"
+exit_code = 0
+head = "26fd5c7d0f64823d6bfb4a5907eed1cb1507854e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/store/test_writer_thread.py ..                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-138918-0.xml ---------------
+============================== 2 passed in 0.61s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_writer_thread.py::test_durable_seq_monotonic_under_concurrent_producers python/tests/store/test_writer_thread.py::test_close_drains_queue_and_writes_final_record"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "bdf7e07dd501c664ebfa5e9ea79f17f0cd35af2d3728dc3277a997975e61a695"
+at = "2026-11-08T01:16:01Z"
+actor = "lognd"
+rev = 1

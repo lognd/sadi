@@ -1,0 +1,62 @@
++++
+id = "01M6W7R3XY1B0BF689RX3H80G2"
+title = "FastAPI app: REST endpoints (sessions, inventory, points, results, export)"
+type = "task"
+category = "todo"
+priority = "high"
+points = 8
+parent = "01M6W7R09P668G2VDDAWEDCSRM"
+reporter = "lognd"
+created = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T00:08:20Z"
+idempotency_key = "sadi-b4"
+labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/app.py", "creates:python/sadi/server/routes/**", "creates:python/sadi/server/schemas.py", "creates:python/tests/server/test_routes.py", "creates:docs/server/api.md"]
+scope = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md"]
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R13KW0FFYHZJ7FY28A3R"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1G903HZ7V7JRCYC6ZT7"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R26WGJ0TZ4GS8N0YH4FG"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R335N9GPFD4DYXP2D6HY"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R36G6BYYB4RBC60ZNFTD"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R3J00J2HQ7XPW19WDD6Q"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R3W8RJPVS0VVDG2YNMJB"
+
+[[acceptance]]
+text = "Endpoints: session create/open/resume, wizard state, inventory CRUD + group weighing, capture/accept/undo/redo/edit point, results, guidance, export (CSV + figure data), device status; OpenAPI published, TypeScript client generated into web/src/api"
+bound = false
+
+[[acceptance]]
+text = "All handlers map typani errors to problem+json with a 'what to do' message; no business logic in handlers"
+bound = false
+
+[[acceptance]]
+text = "Tested with httpx against the simulator"
+bound = false
+
+[[acceptance]]
+text = "No CPU-heavy work on the asyncio loop (loop does I/O only); a loop-lag test proves handlers stay under a latency budget while jobs run"
+bound = false
++++
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Python: typani Result[T, E] for every fallible operation (exceptions only for programmer bugs), pydantic models, run python -m typani.lint on new code.

@@ -1,0 +1,9 @@
+kind = "create"
+title = "web/src/api/log.ts: frob:accept COV001 cannot park Unresolved findings (EXC016), blocks land"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/src/api/log.ts"]
+at = "2026-11-08T00:43:39Z"
+actor = "lognd"
+rev = 1

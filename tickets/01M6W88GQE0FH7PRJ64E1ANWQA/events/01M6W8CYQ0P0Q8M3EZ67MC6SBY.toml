@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "wont-fix"
+reason = "duplicate of ~CM9EQSK"
+at = "2026-11-08T00:19:43Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,40 @@
+{
+  "name": "slipping",
+  "description": "Noisy signal with clamp slips (strain jumps, no load change) at 200 s and 450 s.",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 5,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0345,
+      "kind": {
+        "kind": "white"
+      }
+    },
+    "slips": [
+      {
+        "t_s": 200.0,
+        "strain": 0.005
+      },
+      {
+        "t_s": 450.0,
+        "strain": 0.008
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/jobs/__init__.py", "python/sadi/jobs/state.py", "python/sadi/jobs/manager.py", "python/sadi/jobs/pool.py", "python/tests/jobs/test_manager.py", "docs/jobs/jobs.md", "python/sadi/core/errors.py"]
+new = ["python/sadi/jobs/__init__.py", "python/sadi/jobs/state.py", "python/sadi/jobs/manager.py", "python/sadi/jobs/pool.py", "python/tests/jobs/test_manager.py", "docs/jobs/jobs.md", "python/sadi/core/errors.py", "docs/README.md", "changelog.d/01M6W7R1Z1E430ZNZ51V9NMTHC.added.md"]
+at = "2026-11-08T01:09:14Z"
+actor = "lognd"
+rev = 1

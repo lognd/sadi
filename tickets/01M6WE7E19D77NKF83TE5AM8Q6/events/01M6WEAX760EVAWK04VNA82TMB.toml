@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:03:25Z"
+digest = "de4bd6fd71b1d380f3c04ea4b6a5225a81f70e2884038e785871ed1d3497654b"
+exit_code = 0
+head = "7016348a788379035b9ba9f866e919ff8571e697"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_real_data.py .                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-169715-0.xml ---------------
+============================== 1 passed in 1.32s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_real_data.py::test_real_short_data_slip_with_load_finds_no_slip"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "ebb53c600f3f4ea4c20360b1c696e131db4766a35bc24c3fe5966164af871c99"
+at = "2026-11-08T02:03:25Z"
+actor = "lognd"
+rev = 1

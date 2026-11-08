@@ -1,0 +1,58 @@
++++
+id = "01M6W7R36G6BYYB4RBC60ZNFTD"
+title = "Acquisition pipeline: raw -> WAL (durable) -> analysis -> display"
+type = "task"
+category = "todo"
+priority = "critical"
+points = 8
+parent = "01M6W7R09P668G2VDDAWEDCSRM"
+reporter = "lognd"
+created = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T00:08:19Z"
+idempotency_key = "sadi-b3"
+labels = ["ws:srv", "data-safety", "model:sonnet", "creates:python/sadi/core/pipeline.py", "creates:python/tests/core/test_pipeline.py", "creates:docs/core/pipeline.md"]
+scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md"]
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1KH0MVS56MX07Q9BX19"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1VQHABR51SH64668M06"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1XA74780R58PGCJAR1J"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1Z1E430ZNZ51V9NMTHC"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R2DCY0H5XQ9F53F2W55E"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R2NWFTQBK7FRWGX511CP"
+
+[[acceptance]]
+text = "Every raw block is appended to the WAL and only forwarded to display/analysis after durable_seq covers it (or flagged 'unsaved' per DS1); WAL failure stops acquisition loudly"
+bound = false
+
+[[acceptance]]
+text = "Test with fault-injecting store (slow fsync, ENOSPC) proves display never shows data absent from the WAL"
+bound = false
+
+[[acceptance]]
+text = "Pipeline emits settle state, decimated trace frames and result updates onto an internal bus"
+bound = false
+
+[[acceptance]]
+text = "Hands durable-write to the dedicated WAL writer thread (DS8); acquisition never waits on fsync"
+bound = false
++++
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Python: typani Result[T, E] for every fallible operation (exceptions only for programmer bugs), pydantic models, run python -m typani.lint on new code.

@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1, 2, 3]
+captured_at = "2026-11-08T00:29:32Z"
+digest = "a420c8dd8dfcf001c72fa1a18c8610e68fdf87d001193cf3ce34a776ccc9e080"
+exit_code = 0
+head = "76c333a0ba2836a1e3c40b3fbab83238dde7b17c"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 4b3ade7a-75dc-42bb-98e1-827cd4a7613d with nextest profile: default
+    Starting 6 tests across 3 binaries (36 tests skipped)
+        PASS [   0.007s] sadi-proto::serial_loopback pty_round_trip
+        PASS [   0.007s] sadi-proto serial::tests::config_rejects_empty_allow_list
+        PASS [   0.008s] sadi-proto serial::tests::config_rejects_empty_name
+        PASS [   0.027s] sadi-proto::serial_loopback pty_read_times_out
+        PASS [   0.058s] sadi-proto::serial_loopback pty_rx_overflow_is_typed
+        PASS [   0.078s] sadi-proto::serial_loopback pty_purge_close_semantics
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.078s] 6 tests run: 6 passed, 36 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "pty_"
+size = 924
+status = "measured"
+test_count = 6
+tests_digest = "1f633465e8c54b4b63d98ccf38f44758046c7bb39f73e046ab78a25ab84211c7"
+at = "2026-11-08T00:29:32Z"
+actor = "lognd"
+rev = 1

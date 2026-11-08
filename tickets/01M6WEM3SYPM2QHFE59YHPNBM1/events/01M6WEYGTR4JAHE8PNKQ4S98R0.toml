@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:14:10Z"
+digest = "aeab92cf6fedc4e63fd290b241a208581f5d08c93df614c7a0503e4dd321de40"
+head = "965c632fcc3c339bd42537eea492a732de65efee"
+provider = "file"
+ref = "docs/store/lock.md"
+size = 2210
+status = "measured"
+at = "2026-11-08T02:14:10Z"
+actor = "lognd"
+rev = 1

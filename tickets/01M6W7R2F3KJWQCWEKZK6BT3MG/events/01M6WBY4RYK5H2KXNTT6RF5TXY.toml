@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:21:31Z"
+digest = "c6a07321057493bd68a36e34d89ce5ae3e3ddec80ec8af40aa9407782ed3e3f1"
+exit_code = 0
+head = "944d5e97e01b1df3376c6634097bf7282addb9c8"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/store/test_events.py .                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-149994-0.xml ---------------
+============================== 1 passed in 0.86s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_events.py::test_replay_is_deterministic_and_snapshot_resumable"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "7b80b938550c175f59f3850d4a37897d2f04203657d4ef6f0adf7e50142a4152"
+at = "2026-11-08T01:21:31Z"
+actor = "lognd"
+rev = 1

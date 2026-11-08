@@ -1,0 +1,399 @@
+"""Emergency spill import (data-safety 6.5 step 4): spill files become new session versions.
+
+A spill file is a plain segment file (same framing as the WAL). At start we discover them,
+verify header and every frame CRC, and copy the verified prefix into a NEW version directory.
+The spill file is never modified, truncated or deleted; unverifiable trailing bytes are
+reported (offset, length, SHA-256) and stay in the original file.
+"""
+
+# frob:ticket 01M6WEFG8X91K7313MGJQPFW6F
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import sys
+import tempfile
+import uuid
+from datetime import UTC, datetime
+from pathlib import Path
+
+from pydantic import BaseModel, ConfigDict
+from typani import Err, Ok, Result
+
+from sadi.logging_setup import get_logger
+from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
+from sadi.store.manifest import Manifest, read_manifest
+from sadi.store.records import decode_frame
+from sadi.store.session import (
+    SESSIONS_DIRNAME,
+    SessionError,
+    _init_dir,
+    _slug,
+    _take_version,
+)
+from sadi.store.wal import (
+    SEGMENT_HEADER_LEN,
+    SegmentHeader,
+    WalError,
+    WalReader,
+    decode_segment_header,
+    encode_segment_header,
+    segment_name,
+)
+
+_log = get_logger(__name__)
+
+SPILL_DIRNAME = "spill"
+SPILL_GLOB = "*.wal"
+TEMP_SPILL_GLOB = "sadi-spill-*.wal"
+MARKER_SUFFIX = ".imported.json"
+IMPORT_SLUG = "spill-import"
+
+
+class SpillError(BaseModel):
+    """Base of all spill-import failures; `hint` is shown in the UI."""
+
+    model_config = ConfigDict(frozen=True)
+    hint: str = ""
+
+
+class SpillIo(SpillError):
+    """Reading the spill file or writing the new version failed at the OS level."""
+
+    error: DurableError
+    path: Path | None = None
+
+
+class SpillHeaderInvalid(SpillError):
+    """The spill file has no valid segment header; nothing can be imported from it."""
+
+    path: Path
+    error: WalError
+    hint: str = "The spill file is left untouched for manual forensics."
+
+
+class SpillEmpty(SpillError):
+    """The spill file has a valid header but no verified record; nothing to import."""
+
+    path: Path
+    hint: str = "The spill file is left untouched for manual forensics."
+
+
+class SpillSession(SpillError):
+    """Creating the new version directory failed."""
+
+    error: SessionError
+
+
+class SpillVerifyFailed(SpillError):
+    """The imported segment did not re-verify; the new version dir is kept for inspection."""
+
+    version_dir: Path
+    error: WalError
+
+
+class SpillTail(BaseModel):
+    """Unverified bytes at the end of a spill file; left in place, never truncated."""
+
+    model_config = ConfigDict(frozen=True)
+    offset: int
+    length: int
+    sha256: str
+    reason: str
+
+
+class SpillScan(BaseModel):
+    """Read-only verification result of one spill file."""
+
+    model_config = ConfigDict(frozen=True)
+    path: Path
+    size: int
+    sha256: str
+    header: SegmentHeader
+    valid_bytes: int
+    record_count: int
+    first_seq: int | None
+    last_seq: int | None
+    tail: SpillTail | None
+
+
+class ImportReport(BaseModel):
+    """What one import did: where the data went and what (if anything) was left behind."""
+
+    model_config = ConfigDict(frozen=True)
+    source: Path
+    version_dir: Path
+    record_count: int
+    first_seq: int
+    last_seq: int
+    parent: str | None
+    continuity_ok: bool | None
+    tail: SpillTail | None
+    marker_written: bool
+
+
+def user_data_dir() -> Path:
+    """Return the per-user SADI data directory for this OS (data-safety 8.1)."""
+    home = Path.home()
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA")
+        return (
+            Path(base) if base is not None and base != "" else home / "AppData" / "Local"
+        ) / "sadi"
+    if sys.platform == "darwin":
+        return home / "Library" / "Application Support" / "sadi"
+    xdg = os.environ.get("XDG_DATA_HOME")
+    return (Path(xdg) if xdg is not None and xdg != "" else home / ".local" / "share") / "sadi"
+
+
+def discover_spills(
+    data_root: Path, user_dir: Path | None = None, temp_dir: Path | None = None
+) -> list[Path]:
+    """List spill files from data-root, user data dir and OS temp, in that order, de-duplicated."""
+    places = (
+        (data_root / SPILL_DIRNAME, SPILL_GLOB),
+        ((user_dir or user_data_dir()) / SPILL_DIRNAME, SPILL_GLOB),
+        (temp_dir or Path(tempfile.gettempdir()), TEMP_SPILL_GLOB),
+    )
+    found: list[Path] = []
+    seen: set[Path] = set()
+    for directory, pattern in places:
+        try:
+            candidates = sorted(directory.glob(pattern)) if directory.is_dir() else []
+        except OSError as exc:
+            _log.warning("cannot list spill dir %s: %s", directory, exc)
+            continue
+        for path in candidates:
+            real = path.resolve()
+            if path.is_file() and real not in seen:
+                seen.add(real)
+                found.append(path)
+    _log.info("discovered %d spill file(s)", len(found))
+    return found
+
+
+def scan_spill(path: Path) -> Result[SpillScan, SpillError]:
+    """Verify a spill file read-only: header, per-frame CRC-32C and dense seqs; never writes."""
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        _log.error("cannot read spill %s: %s", path, exc)
+        return Err(SpillIo(error=DurableIo(errno=exc.errno or 5, path=path), path=path))
+    header = decode_segment_header(data[:SEGMENT_HEADER_LEN], 1)
+    if header.is_err:
+        _log.error("spill %s: invalid segment header: %s", path, header.danger_err)
+        return Err(SpillHeaderInvalid(path=path, error=header.danger_err))
+    hdr = header.danger_ok
+    pos = SEGMENT_HEADER_LEN
+    expected = hdr.first_seq
+    count = 0
+    reason = ""
+    while pos < len(data):
+        frame = decode_frame(data, pos)
+        if frame.is_err:
+            reason = frame.danger_err.reason
+            break
+        rec, end = frame.danger_ok
+        if rec.seq != expected:
+            reason = f"seq {rec.seq} where {expected} expected"
+            break
+        expected += 1
+        count += 1
+        pos = end
+    tail: SpillTail | None = None
+    if pos < len(data):
+        tail = SpillTail(
+            offset=pos,
+            length=len(data) - pos,
+            sha256=hashlib.sha256(data[pos:]).hexdigest(),
+            reason=reason,
+        )
+        _log.warning(
+            "spill %s: %d unverifiable tail bytes at %d (%s)", path, tail.length, pos, reason
+        )
+    scan = SpillScan(
+        path=path,
+        size=len(data),
+        sha256=hashlib.sha256(data).hexdigest(),
+        header=hdr,
+        valid_bytes=pos,
+        record_count=count,
+        first_seq=hdr.first_seq if count else None,
+        last_seq=expected - 1 if count else None,
+        tail=tail,
+    )
+    _log.info("spill %s: %d verified records, tail=%s", path, count, tail is not None)
+    return Ok(scan)
+
+
+def _marker_path(spill: Path) -> Path:
+    """Return the sidecar marker path recording that `spill` was imported."""
+    return spill.with_name(spill.name + MARKER_SUFFIX)
+
+
+def _already_imported(scan: SpillScan) -> bool:
+    """Return True when a marker next to the spill names this exact file content."""
+    marker = _marker_path(scan.path)
+    try:
+        return bool(json.loads(marker.read_text("utf-8")).get("sha256") == scan.sha256)
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def _write_marker(scan: SpillScan, version_dir: Path) -> bool:
+    """Create the sidecar marker exclusively (the spill file itself is untouched)."""
+    body = {
+        "sha256": scan.sha256,
+        "size": scan.size,
+        "version_dir": str(version_dir),
+        "imported": datetime.now(UTC).isoformat(),
+        "valid_bytes": scan.valid_bytes,
+    }
+    created = create_exclusive(_marker_path(scan.path))
+    if created.is_err:
+        _log.warning("cannot write import marker for %s: %s", scan.path, created.danger_err)
+        return False
+    fd = created.danger_ok
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("marker write for %s failed: %s", scan.path, exc)
+        return False
+    finally:
+        os.close(fd)
+    return True
+
+
+def _find_parent(data_root: Path, session_uuid: uuid.UUID) -> Manifest | None:
+    """Find the newest version whose manifest uuid matches the spill header, if any."""
+    best: Manifest | None = None
+    sessions = data_root / SESSIONS_DIRNAME
+    try:
+        dirs = sorted(p for p in sessions.iterdir() if p.is_dir())
+    except OSError:
+        return None
+    for d in dirs:
+        mf = read_manifest(d)
+        if mf.is_err or mf.danger_ok is None:
+            continue
+        m = mf.danger_ok
+        if m.session_uuid == str(session_uuid) and (best is None or m.version > best.version):
+            best = m
+    return best
+
+
+def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, DurableError]:
+    """Create seg-000001.wal exclusively, write header and verified frames, fsync file and dir."""
+    created = create_exclusive(wal_dir / segment_name(1))
+    if created.is_err:
+        return Err(created.danger_err)
+    fd = created.danger_ok
+    try:
+        os.write(fd, header)
+        view = memoryview(frames)
+        while view:
+            view = view[os.write(fd, view) :]
+        synced = fsync_file(fd)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=wal_dir))
+    finally:
+        os.close(fd)
+    if synced.is_err:
+        return synced
+    return fsync_dir(wal_dir)
+
+
+def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, SpillError]:
+    """Import the verified prefix of `scan` as a new version dir; the spill file is kept."""
+    if scan.record_count == 0 or scan.first_seq is None or scan.last_seq is None:
+        return Err(SpillEmpty(path=scan.path))
+    parent = _find_parent(data_root, scan.header.session_uuid)
+    sessions = data_root / SESSIONS_DIRNAME
+    try:
+        sessions.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        return Err(SpillIo(error=DurableIo(errno=exc.errno or 5, path=sessions), path=sessions))
+    now = datetime.now(UTC)
+    if parent is not None:
+        family, start = parent.family, parent.version + 1
+    else:
+        family, start = f"{now.strftime('%Y%m%dT%H%M%SZ')}-{_slug(IMPORT_SLUG)}", 1
+    taken = _take_version(sessions, family, start)
+    if taken.is_err:
+        return Err(SpillSession(error=taken.danger_err))
+    path, ver = taken.danger_ok
+    new_uuid = uuid.uuid4()
+    manifest = Manifest(
+        session_uuid=str(new_uuid),
+        dir_name=path.name,
+        family=family,
+        version=ver,
+        parent=parent.dir_name if parent is not None else None,
+        parent_last_seq=parent.last_seq if parent is not None else None,
+        created=now,
+        lab_module=parent.lab_module if parent is not None else "",
+        specimen=parent.specimen if parent is not None else {},
+        last_seq=scan.last_seq,
+    )
+    inited = _init_dir(path, manifest)
+    if inited.is_err:
+        return Err(SpillSession(error=inited.danger_err))
+    handle = inited.danger_ok
+    data = scan.path.read_bytes()
+    header = encode_segment_header(1, scan.first_seq, new_uuid)
+    written = _write_segment(path / "wal", header, data[SEGMENT_HEADER_LEN : scan.valid_bytes])
+    if written.is_err:
+        handle.close("crashed")
+        return Err(SpillIo(error=written.danger_err, path=path))
+    verified = WalReader.scan(path / "wal")
+    closed = handle.close("closed")
+    if closed.is_err:
+        _log.warning("closing imported session %s: %s", path, closed.danger_err)
+    if verified.is_err:
+        _log.error("imported segment in %s failed re-verification", path)
+        return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
+    marked = _write_marker(scan, path)
+    continuity = (
+        None if parent is None or parent.last_seq is None else scan.first_seq == parent.last_seq + 1
+    )
+    if continuity is False:
+        _log.warning("spill %s seq does not continue parent %s", scan.path, parent)
+    _log.info("imported %s as %s (%d records)", scan.path, path, scan.record_count)
+    return Ok(
+        ImportReport(
+            source=scan.path,
+            version_dir=path,
+            record_count=scan.record_count,
+            first_seq=scan.first_seq,
+            last_seq=scan.last_seq,
+            parent=manifest.parent,
+            continuity_ok=continuity,
+            tail=scan.tail,
+            marker_written=marked,
+        )
+    )
+
+
+def import_all_spills(
+    data_root: Path, user_dir: Path | None = None, temp_dir: Path | None = None
+) -> list[tuple[Path, Result[ImportReport | None, SpillError]]]:
+    """Discover, verify and import every spill at start; Ok(None) means already imported."""
+    outcomes: list[tuple[Path, Result[ImportReport | None, SpillError]]] = []
+    for spill in discover_spills(data_root, user_dir, temp_dir):
+        scanned = scan_spill(spill)
+        if scanned.is_err:
+            outcomes.append((spill, Err(scanned.danger_err)))
+            continue
+        scan = scanned.danger_ok
+        if _already_imported(scan):
+            _log.info("spill %s already imported, skipping", spill)
+            outcomes.append((spill, Ok(None)))
+            continue
+        imported = import_spill(data_root, scan)
+        if imported.is_err:
+            outcomes.append((spill, Err(imported.danger_err)))
+        else:
+            outcomes.append((spill, Ok(imported.danger_ok)))
+    return outcomes

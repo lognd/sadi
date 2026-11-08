@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1, 2, 3]
+captured_at = "2026-11-08T00:23:50Z"
+digest = "131324d714a5d61d60f0d6abe7ad08356632bc241f43065630072f654c95e613"
+exit_code = 0
+head = "a9d76c6bbbf59d4203cb82bcdcb1e2d82fc7b742"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 47 items
+
+python/tests/core/test_formatting.py ................................... [ 74%]
+............                                                             [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-47555-0.xml ---------------
+============================== 47 passed in 0.24s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_formatting.py"
+size = 602
+status = "measured"
+test_count = 47
+tests_digest = "60de899488947139dbee7865123355bd2be5b0a0be99f4e475761be01fb6df03"
+at = "2026-11-08T00:23:50Z"
+actor = "lognd"
+rev = 1

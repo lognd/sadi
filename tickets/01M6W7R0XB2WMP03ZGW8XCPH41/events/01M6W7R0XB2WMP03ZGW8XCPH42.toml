@@ -1,0 +1,23 @@
+kind = "create"
+title = "Simulator physics and signal faults: wire, LVDT, noise, drift, creep, slip, saturation"
+type = "task"
+category = "todo"
+priority = "high"
+points = 8
+parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
+idempotency_key = "sadi-r4b"
+labels = ["ws:rust", "fault-injection", "model:sonnet", "creates:crates/sadi-proto/src/sim/physics.rs", "creates:crates/sadi-proto/src/sim/signal_faults.rs", "creates:crates/sadi-proto/src/sim/scenario.rs", "creates:crates/sadi-proto/scenarios/**", "creates:crates/sadi-proto/tests/sim_physics.rs", "creates:docs/device/sim-faults.md"]
+scope = ["crates/sadi-proto/src/sim/physics.rs", "crates/sadi-proto/src/sim/signal_faults.rs", "crates/sadi-proto/src/sim/scenario.rs", "crates/sadi-proto/scenarios/**", "crates/sadi-proto/tests/sim_physics.rs", "docs/device/sim-faults.md"]
+acceptance = ["Physical model: load program (timed weight steps) -> stress; copper wire with elastic E, plastic hardening, log-time creep after each load change; LVDT voltage = (length - offset)/slope with sign option; per-sample noise (default sd 0.0345 V from preliminary analysis)", "Serde FaultPlan: gaussian/coloured noise, linear/thermal drift, creep law parameters, slip steps (sudden strain jumps with NO load change, with timestamps), saturation (clamp and folded 'voltage repeats' response beyond |V| > 4.9)", "Ships named scenario files in crates/sadi-proto/scenarios/ (clean, noisy, drifting, creeping, slipping, saturating, combined) used by every downstream test", "Statistical tests: injected creep slope and slip step sizes are recovered from simulator output within tolerance"]
+body = """
+Real data is unavailable, so this crate IS the test oracle for settle, creep and slip logic. the local short-run file is slip-contaminated and is only a slip-detector test case, not a physics calibration source. L0 = 0.08313 m is correct for the short sample (long-sample L0 open question Q8, default 0.5 m).
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Rust: safe code only (no hand-written unsafe), thiserror errors, tracing logs, cargo fmt + clippy -D warnings clean, tests incl. proptest where noted."""
+at = "2026-11-08T00:08:17Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R0KH8QFP4K9PTM197V9E"

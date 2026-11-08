@@ -1,0 +1,584 @@
+Installed 1 package in 67ms
+===== SADI-2-Specifications.pdf
+  
+Electronics and Robotics LLC ootbelec.com 
+ 
+ 
+
+2 
+ 
+  
+Electronics and Robotics LLC ootbelec.com 
+Table of Contents ................................ ................................ ................................ ................................ ... 2
+Prerequisites ................................ ................................ ................................ ................................ .......... 3
+Electrical Specifications ................................ ................................ ................................ ..........................  3
+Table 1 Electrical Specifications ................................ ................................ ..............................  3
+Device Pinout ................................ ................................ ................................ ................................ ......... 4
+Table 2 Digital Pin Function Matrix ................................ ................................ ..........................  4
+Features................................ ................................ ................................ ................................ .................  5
+Analog inputs ................................ ................................ ................................ ................................ ..... 5
+Analog Outputs................................ ................................ ................................ ................................ ... 5
+Digital i/o ................................ ................................ ................................ ................................ ............ 5
+Quadrature Encoder Interface................................ ................................ ................................ ............. 5
+Servo PCM ................................ ................................ ................................ ................................ ......... 5
+Motor PWM ................................ ................................ ................................ ................................ ........ 5
+ 
+  
+
+3 
+ 
+  
+Electronics and Robotics LLC ootbelec.com 
+ 
+The SADI is a USB based data acquisition platform.  For the SADI to be able to communicate with a 
+computer FTDI D2XX drivers must be installed.  A special note to Mac users, please consult this document 
+for further details about installing these drivers on that platform. 
+ 
+ 
+Table 1 Electrical Specifications 
+Parameter Min Nom Max Unit 
+Idle Current  ~70  mA 
+Analog Input 
+Range 
+-10  10 V 
+Analog Output 
+Range 
+0.00  5.00 V 
+REF Voltage  4.096  V 
+REF Current  ~15  mA 
+ 
+  
+
+4 
+ 
+  
+Electronics and Robotics LLC ootbelec.com 
+ 
+ 
+Table 2 Digital Pin Function Matrix  
+Digital 
+Pin 
+Digital 
+Input 
+Digital 
+Output 
+Actuator 
+Signal 
+ENC 
+PLOC 
+0 
+ENC 
+PLOC 
+1 
+ENC 
+PLOC 
+2 
+ENC 
+PLOC 
+3 
+ENC 
+PLOC 
+4 
+ENC 
+PLOC 
+5 
+ENC 
+PLOC 
+6* 
+ENC 
+PLOC 
+8 
+ENC 
+PLOC 
+9 
+ENC 
+PLOC 
+10* 
+D0 Yes Yes SERVO0 CHA          
+D1 Yes Yes SERVO1 CHB CHA         
+D2 Yes Yes SERVO2 INDEX CHB CHA        
+D3 Yes Yes SERVO3  INDEX CHB CHA       
+D4 Yes Yes    INDEX CHB CHA      
+D5 Yes Yes     INDEX CHB CHA     
+D6 Yes Yes      INDEX CHB CHA    
+D7 Yes Yes       INDEX CHB    
+D8 Yes Yes MOTOR0        CHA   
+D9 Yes Yes MOTOR1        CHB CHA  
+D10 Yes Yes MOTOR2        INDEX CHB CHA 
+D11 Yes Yes MOTOR3         INDEX CHB 
+*ENC PLOC 6 and 10 do not support INDEX signals 
+  
+
+5 
+ 
+  
+Electronics and Robotics LLC ootbelec.com 
+ 
+The SADI contains both analog inputs, analog outputs, and digital io with some pins having special 
+features. 
+SADI has 4 differential analog input channels with 14-bit resolution.  The input range of the analog inputs is 
+±10V.  The analog inputs also have several gain settings in order to measure smaller voltages without 
+losing resolution.  SADI supports 1x, 2x, 4x, 8x, and 16x gains. 
+SADI has 2 single ended analog outputs with 12-bit resolution.  These output range 0-5.0V. 
+SADI has 12 digital pins.  All these pins can be either inputs or outputs.  There are also special functions 
+available for certain pins.  Reference the Digital Pin Function Matrix for details. 
+SADI supports up to 2 quadrature encoders.  Encoders can be configured as either incremental 2-3 pin or 
+absolute 3 pin. 
+SADI supports 4 dedicated hobby servo outputs at 50Hz.  These pins send out PCM (Pulse Code 
+Modulation) signals used to set servo positions. 
+SADI supports 4 dedicated PWM outputs used for controlling DC motors and other PWM devices.  0 to 
+%100 duty cycle is controllable with 10-bit precision. 
+
+===== LIB-30-Reference.pdf
+  
+Electronics and Robotics LLC ootbrobotics.com 
+ 
+ 
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Table of Contents ................................ ................................ ................................ ................................ ... 2
+SADI Software Overview ................................ ................................ ................................ ........................  6
+SADI Connection and Info Calls................................ ................................ ................................ .............. 6
+Prerequisites ................................ ................................ ................................ ................................ .......... 7
+Instance ................................ ................................ ................................ ................................ ............. 7
+SADI States................................ ................................ ................................ ................................ ........ 7
+Opened_state ................................ ................................ ................................ ................................ . 7
+Ready_state ................................ ................................ ................................ ................................ ... 7
+InitSent_state ................................ ................................ ................................ ................................ . 7
+Setup_state ................................ ................................ ................................ ................................ .... 7
+Start_initiated_state ................................ ................................ ................................ ........................  8
+Run_state ................................ ................................ ................................ ................................ ....... 8
+StopInitiated_state ................................ ................................ ................................ ..........................  8
+Stopped_state ................................ ................................ ................................ ................................  8
+Error_state ................................ ................................ ................................ ................................ ..... 8
+SADI Connection and Info ................................ ................................ ................................ ......................  9
+getNumberOfSADI() ................................ ................................ ................................ .......................  9
+Return Type: unsigned int ................................ ................................ ................................ ........... 9
+getDeviceNumber (int instanceNumber) ................................ ................................ ..........................  9
+Return Type: unsigned int ................................ ................................ ................................ ........... 9
+openSADI_LV (int instance,int deviceNumber) ................................ ................................ ................  9
+Return Type: FT_STATUS ................................ ................................ ................................ .......... 9
+getDllVersionNumber() ................................ ................................ ................................ ...................  9
+Return Type: float ................................ ................................ ................................ .......................  9
+getFWVersionNumber_LV (int instance) ................................ ................................ .........................  9
+Return Type: float ................................ ................................ ................................ .....................  10
+closeSADI_LV (int instance) ................................ ................................ ................................ ......... 10
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Return Type: FT_STATUS ................................ ................................ ................................ ........ 10
+requestReady_LV (int instance) ................................ ................................ ................................ .... 10
+Return Type: void ................................ ................................ ................................ .....................  10
+sendReset_LV (int instance) ................................ ................................ ................................ ......... 10
+Return Type: void ................................ ................................ ................................ .....................  10
+SADI Configuration................................ ................................ ................................ ...............................  11
+Predefined Initializations ................................ ................................ ................................ ...................  11
+Pendulum mode ................................ ................................ ................................ ...........................  11
+MOM mode ................................ ................................ ................................ ................................ .. 11
+sendPredefInit_LV (int instance, uint16_t selection,  uint16_t freq) ................................ ................  11
+Return Type: void ................................ ................................ ................................ .....................  11
+General Initialization ................................ ................................ ................................ .........................  12
+setupADC_LV (int instance, uint8_t adcNum,  uint8_t adcSetting) ................................ .................  12
+Return Type: unsigned int ................................ ................................ ................................ ......... 12
+setupLoopFrequency_LV (int instance, uint16_t frequency) ................................ ..........................  12
+Return Type: unsigned int ................................ ................................ ................................ ......... 12
+setupEncoder_LV ( int instance, uint8_t encoderNum,  uint8_t pinLocation, uint8_t index, uint8_t 
+ABS,  uint8_t filterDepth, uint16_t resolution ) ................................ ................................ ............... 13
+Return Type: unsigned int ................................ ................................ ................................ ......... 13
+setupServoPWM_LV ( int instance, uint8_t servoEnables,  uint16_t servoFrequency ) ..................  14
+Return Type: unsigned int ................................ ................................ ................................ ......... 14
+setupMotorPWM_LV ( int instance, uint8_t motorEnables,  uint16_t motorFrequency )..................  14
+Return Type: unsigned int ................................ ................................ ................................ ......... 14
+setupOutputPinMsk_LV ( int instance,uint16_t outputPinMsk) ................................ .......................  15
+Return Type: unsigned int ................................ ................................ ................................ ......... 15
+sendInit_LV (int instance) ................................ ................................ ................................ ............. 15
+Return Type: void ................................ ................................ ................................ .....................  15
+Runtime Operations ................................ ................................ ................................ .............................  16
+Start/Stop Acquisition ................................ ................................ ................................ .......................  16
+sendStart_LV (int instance) ................................ ................................ ................................ ........... 16
+Return Type: void ................................ ................................ ................................ .....................  16
+  
+Electronics and Robotics LLC ootbrobotics.com 
+sendStop_LV (int instance) ................................ ................................ ................................ ........... 16
+Return Type: void ................................ ................................ ................................ .....................  16
+Loop Maintenance ................................ ................................ ................................ ............................  16
+sadiMaintenance_LV (int instance) ................................ ................................ ...............................  16
+Return Type: unsigned int ................................ ................................ ................................ ......... 16
+Reading................................ ................................ ................................ ................................ ............ 17
+getData (int instance)................................ ................................ ................................ ....................  17
+Return Type: unsigned int ................................ ................................ ................................ ......... 17
+getDataLatest (int instance) ................................ ................................ ................................ .......... 17
+Return Type: unsigned int ................................ ................................ ................................ ......... 17
+extractFromInputPacket_ADC (int instance,int channel) ................................ ................................  17
+Return Type: uint16_t ................................ ................................ ................................ ............... 17
+extractFromInputPacket_ENCPos (int instance,int channel) ................................ ..........................  17
+Return Type: int32_t ................................ ................................ ................................ .................  17
+extractFromInputPacket_ENCVel (int instance,int channel) ................................ ...........................  18
+Return Type: uint16_t ................................ ................................ ................................ ............... 18
+extractFromInputPacket_inputCapture (int instance) ................................ ................................ ..... 18
+Return Type: uint16_t ................................ ................................ ................................ ............... 18
+extractFromInputPacket_Inputs (int instance)................................ ................................ ................  18
+Return Type: uint16_t ................................ ................................ ................................ ............... 18
+extractFromInputPacket_msgCNT (int instance) ................................ ................................ ........... 19
+Return Type: uint32_t ................................ ................................ ................................ ............... 19
+Writing ................................ ................................ ................................ ................................ .............. 19
+Return Type: void ................................ ................................ ................................ .....................  19
+Return Type: void ................................ ................................ ................................ .....................  20
+setupWrite_OutSET_LV (int instance, uint16_t outMsk ) ................................ ...............................  20
+Return Type: void ................................ ................................ ................................ .....................  20
+setupWrite_OutTGL_LV (int instance, uint16_t outMsk ) ................................ ...............................  20
+Return Type: void ................................ ................................ ................................ .....................  20
+setupWrite_Servo_LV (int instance, uint8_t servoNum, uint16_t value ) ................................ ........ 20
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Return Type: void ................................ ................................ ................................ .....................  20
+setupWrite_Motor_LV ( int instance, uint8_t motorNum, uint16_t value ) ................................ ....... 21
+Return Type: void ................................ ................................ ................................ .....................  21
+void sendWrite_LV(int instance)................................ ................................ ................................ .... 21
+Return Type: void ................................ ................................ ................................ .....................  21
+Utilities ................................ ................................ ................................ ................................ .................  22
+getLatestStatus (int instance)................................ ................................ ................................ ........ 22
+Return Type: FT_STATUS ................................ ................................ ................................ ........ 22
+getState (int instance) ................................ ................................ ................................ ...................  22
+Return Type: sadiState ................................ ................................ ................................ ............. 22
+convertToVoltage (int instance, unsigned int adcCh, uint16_t value) ................................ ............. 22
+Return Type: double ................................ ................................ ................................ .................  22
+Appendix I ................................ ................................ ................................ ................................ ............ 23
+FT_STATUS ................................ ................................ ................................ ................................ . 23
+ 
+  
+  
+Electronics and Robotics LLC ootbrobotics.com 
+The interface of the SADI is handled by the DLL provided with the device.  This library contains all the 
+function calls used for communicating with the device.  SADI was designed to interface with LabView 
+however, C/C++, Python, Matlab/Simulink or any other software platform capable of interfacing with 
+external DLLs will likely work. 
+  
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+ 
+New in V3 of the SADI DLL there is the capability of connecting multiple SADI devices.  This is handled by 
+using an instance number for the device.  Nearly all functions use this instance number so it should be 
+stored as a program variable. 
+SADI has various states that can be queried using getState. 
+getState = 1 
+This is the default state, and is set when sadiSendReset.  Before this time the state cannot be queried.  So 
+a variable should be 
+getState = 2 
+This state is reached when the SADI replies to requestReady_LV.  In This state the SADI is able to be 
+initialized. 
+getState = 4 
+This is an intermediary state that happens as soon as an initialization has been sent.  The device will 
+proceed to Setup_state as soon as a acknowledgement of the initialization being successful has been 
+received. 
+getState = 3 
+once the device is initialized and the SADI has acknowledged.  This state means the SADI is sitting idle 
+until a start command is sent. 
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+getState = 5 
+This state is reached once sendStart_LV has been called. 
+getState = 6 
+This state is reached once sendStart_LV has been acknowledged by SADI.  During Run_state the SADI will 
+report data per the initialization of the device and may also be written to. 
+getState = 7 
+This state is reached once sendStop_LV has been called. 
+getState = 8 
+This state is reached once sendStop_LV has been acknowledged.  This state is equivalent to Setup state 
+getState = 9 
+This state indicates an error has occurred. 
+  
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Use this function/VI to determine how many SADI devices are connected to the system. 
+Use this function/VI to determine the device number of a device instance. 
+The device number is the number assigned by the system OS while Instance is related to programming 
+environment utilizing SADI_FW3.dll to communicate with the SADI(s).  These numbers likely the same but 
+this function exists in case they are not. 
+This function/VI opens a SADI for communication.  To verify that the device was opened successfully verify 
+that the return value is 0 which corresponds to FT_OK. 
+set instance and device number to the value of the SADI you want to open.  If only one SADI device is 
+connected use 0. 
+This function/VI returns the DLL version number. 
+This function/VI returns the firmware version of the SADI.  
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+This function/VI closes communication with a SADI.  Use the same instance number used to open the 
+device to close it. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This call is used to query the SADI to see if it is ready.  If it is this will cause a state change in getState. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+Calling this will reset the SADI. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+SADI is designed to be highly configurable.  However to simplify initialization some predefined 
+configurations exist.  Currently the two options are as follows. 
+Mode pre-configured for the interface of the SADI to the Out of the Box pendulum plant. 
+Mode pre-configured for use in MOM Lab 3301C. 
+Call to initialize the SADI for pre-defined configurations.  Simply enter the mode value into the selection 
+value and set the loop frequency (freq) in Hz. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+The following functions should be used when creating a custom SADI configuration. 
+Use this function/VI to setup the sensitivity of the ADC.  adcNum is the channel number 0-3.  Acceptable 
+values for adcSetting are as follows. 
+Range Value 
+OFF 0 
+± 10.24V 1 
+± 5.12V 2 
+± 2.56V 3 
+± 1.28V 4 
+± 0.64V 5 
+0 to 10.24V 9 
+0 to 5.12V 10 
+0 to 2.56V 11 
+0 to 1.28V 12 
+ 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+A value of 0 corresponds to a successful configuration. 
+Use this function/VI to set the loop frequency for the SADI.  For read only operation frequencies can be as 
+high as 20KHz.  For read and write operation 10KHz is the max. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+A value of 0 corresponds to a successful configuration. 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+encoderNum corresponds to one of two encoders 0 or 1.  pinLocaion sets the location for CHA, CHB, and 
+INDEX signals if applicable.  Follow the chart for applicable locations respective to the pinLocation value.  
+Values of 6 and 10 don’t support INDEX. 
+pinLocation (value) CHA Pin CHB Pin INDEX Pin 
+0 0 1 2 
+1 1 2 3 
+2 2 3 4 
+3 3 4 5 
+4 4 5 6 
+5 5 6 7 
+6 6 7 N/A 
+8 8 9 10 
+9 9 10 11 
+10 10 11 N/A 
+ 
+index if set to 1 will configure the encoder to use an index signal.  Note from the above not all pin locations 
+support an index signal.  ABS if set to 1 means the encoder will be absolute.  This means that the encoder 
+value will always be positive, and it will only as high as resolution.  The filterDepth value is used to prevent 
+erroneous counting a value of 3 is recommended and a value of 7 is the maximum.  Last, resolution is the 
+resolution of the encoder to be connected.  The math for resolution of a motor output shaft is: 
+resolution = gear_ratio*encoder_resolution*4 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+A value of 0 corresponds to a successful configuration. 
+  
+  
+Electronics and Robotics LLC ootbrobotics.com 
+servoEnables is a 4-bit mask 
+Servo Number Mask value 
+0 1, 0b0001 
+1 2, 0b0010 
+2 4, 0b0100 
+3 8, 0b1000 
+ 
+Add together the masks of all the servos to be enabled and set to servoEnables.  Currently servoFrequency 
+is fixed so this parameter can be ignored. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+A value of 0 corresponds to a successful configuration. 
+motorEnables is a 4-bit mask 
+Motor Number Mask value 
+0 1, 0b0001 
+1 2, 0b0010 
+2 4, 0b0100 
+3 8, 0b1000 
+ 
+Add together the masks of all the motors to be enabled and set to motorEnables.  Currently 
+motorFrequency is fixed so this parameter can be ignored. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0 
+A value of 0 corresponds to a successful configuration. 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+The outputPinMsk parameter is a 12-bit mask used to configure all desired pins to be outputs.  The 
+corresponding values are 2^n where n is the pin of Dn. 
+Pin Mask value 
+D0 1, 0x001, 0b0000 0000 0001 
+D1 2, 0x002, 0b0000 0000 0010 
+D2 4, 0x004, 0b0000 0000 0100 
+D3 8, 0x008, 0b0000 0000 1000 
+D4 16, 0x010, 0b0000 0001 0000 
+D5 32, 0x020, 0b0000 0010 0000 
+D6 64, 0x040, 0b0000 0100 0000 
+D7 128, 0x080, 0b0000 1000 0000 
+D8 256, 0x100, 0b0001 0000 0000 
+D9 512, 0x200, 0b0010 0000 0000 
+D10 1024, 0x400, 0b0100 0000 0000 
+D11 2048, 0x800, 0b1000 0000 0000 
+ 
+Add all the desired output pin masks together for the outputPinMsk parameter. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+A value of 0 corresponds to a successful configuration. 
+Once all the desired setup functions/Vis have been called, and they have been deemed successful by their 
+return values sendInit_LV can be called to configure the SADI accordingly. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Calling this function/VI will trigger acquisition.  Reference SADI States for details. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+Calling this function/VI will stop acquisition.  Reference SADI States for details. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI needs to be called each loop to handle incoming data from the SADI hardware. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+The output value can be disregarded. 
+  
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+not currently functional use getDataLatest 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+this function/VI pulls the latest data packet from the stack.  Once pulled use “extractFromInputPacket” calls 
+to retrieve specific values. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+Use this function/VI to retrieve ADC data from the current data set.  The parameter channel 0-3 
+corresponds to the ADC the respective ADC channels of the SADI.  To get a voltage more easily use the 
+function/VI convertToVoltage on the value returned by extractFromInputPacket_ADC. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+Use this function/VI to retrieve encoder data from the current data set.  The parameter channel can be 
+either 0 or 1 corresponding to the two encoders possibly connected. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+Use this function/VI to retrieve encoder velocity data from the current data set.  Encoder velocity is a count 
+of pulses per a full period of the CHA encoder signal.  As of v3.22 the clock frequency used to sample the 
+pendulum motor encoder velocity is 8MHz. 
+Example math: 
+100 rpm of a 30:1 gear motor with an encoder resolution of 12 pulses per revolution of the back shaft. 
+100 outputRevs/min *1 min/60 sec *30 revs/1 outputRevs *12 pulsesQuad/revs 1pulseSingleChannel/4 pulsesQuad = 150Hz 
+(1/150)/(1/8,000,000) = 53,333 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0 
+This function/VI is used specifically for the pendulum plant.  The value corresponds to the pendulum 
+encoder value.  
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI returns a 12-bit value respective to the 12 i/o pins.  A ‘1’ represents a “HIGH” (5V) voltage 
+at the pin. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+This function/VI returns the count value of the given data set.  This can be used to determine how much 
+time has elapsed since the last data set was sampled based on the loop frequency the SADI was set to. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+setupWrite functions/Vis are used to set the next desired values of various writable settings.  These 
+functions don’t have any effect to the SADI by themselves.  The data is only written once sendWrite_LV is 
+called.  This methodology is used to keep USB throughput to the device as high as possible. 
+This function/VI is used to setup the analog output value of a given channel aoutNum (values 0-1).  The 
+output value is assigned by AOUT.  The value will take effect after sendWrite_LV is called. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI is used to clear (0V LOW) the output of pins as defined by outMsk .  Use the expression 
+∑ 2^n = outMsk 
+where n is between 0 and 11.  Only sum the expression for pins you wish to clear.  The value will take 
+effect after sendWrite_LV is called. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+This function/VI is used to set (5V HIGH) the output of pins as defined by outMsk .  Use the expression 
+∑ 2^n = outMsk 
+where n is between 0 and 11.  Only sum the expression for pins you wish to set.  The value will take effect 
+after sendWrite_LV is called. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI is used to toggle the output of pins as defined by outMsk .  Use the expression 
+ ∑ 2^n = outMsk 
+where n is between 0 and 11.  Only sum the expression for pins you wish to toggle.  The value will take 
+effect after sendWrite_LV is called. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI assigns value to the servo servoNum (value 0-3).  The value will take effect after 
+sendWrite_LV is called. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+ 
+  
+Electronics and Robotics LLC ootbrobotics.com 
+This function/VI assigns value to the motor motorNum (value 0-3).  The value will take effect after 
+sendWrite_LV is called. 
+Note this function/VI serves a special function in pendulum mode.  In this mode the motorNum parameter 
+controls the direction of the motor. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+This function/VI sends all the write data from all the setupWrite function/VI calls. 
+Note the same data for a given setupWrite function/VI will be retained if it is not overwritten by a setupWrite 
+before a subsequent call of sendWrite_LV.  For this reason, take care when using setupWrite_OutTGL_LV. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0. 
+  
+  
+Electronics and Robotics LLC ootbrobotics.com 
+This function/VI returns the latest status of the USB transceiver.  This call  
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0 
+This function/VI returns the current state of the connected SADI.  For reference consult the following. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0 
+This function/VI returns the voltage of a give ADC value of channel adcCh (values 0-3) and value.  Connect 
+this function/VI with extractFromInputPacket_ADC where function return is value of convertToVoltage. 
+Instance is the number relating to a specific SADI connected to the system.  If only one device is connected 
+this number will be 0 
+  
+
+  
+Electronics and Robotics LLC ootbrobotics.com 
+ 
+Error Code Value 
+FT_OK 0 
+FT_INVALID HANDLE 1 
+FT_DEVICE_NOT_FOUND 2 
+FT_DEVICE_NOT_OPENED 3 
+FT_IO_ERROR 4 
+FT_INSUFFICIENT_RESOURCES 5 
+FT_INVALID_PARAMETER 6 
+FT_INVALID_BAUD_RATE 7 
+FT_DEVICE_NOT_OPENED_FOR_ERASE 8 
+FT_DEVICE_NOT_OPENED_FOR_WRITE 9 
+FT_FAILED_TO_WRITE_DEVICE 10 
+FT_EEPROM_READ_FAILED 11 
+FT_EEPROM_WRITE_FAILED 12 
+FT_EEPROM_ERASE_FAILED 13 
+FT_EEPROM_NOT_PRESENT 14 
+FT_EEPROM_NOT_PROGRAMMED 15 
+FT_INVALID_ARGS 16 
+FT_NOT_SUPPORTED 17 
+FT_OTHER_ERROR 18 
+FT_DEVICE_LIST_NOT_READY 19 
+ 
+

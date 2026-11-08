@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:08:11Z"
+digest = "3c502ec88ccfc68ec136482a4b4bf5505f28ccfb070752b79c3d273b46443f31"
+exit_code = 0
+head = "22632c0368806e764bf1f52b7e20a493424f347a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 24 items / 22 deselected / 2 selected
+
+python/tests/store/test_durable.py ..                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-178088-0.xml ---------------
+======================= 2 passed, 22 deselected in 0.24s =======================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_durable.py -k fsync_dir"
+size = 551
+status = "measured"
+test_count = 2
+tests_digest = "1ed1272c8450d1dcab43cd35d8ca0e7579dc18b39acf0c4693149675f106285b"
+at = "2026-11-08T02:08:11Z"
+actor = "lognd"
+rev = 1

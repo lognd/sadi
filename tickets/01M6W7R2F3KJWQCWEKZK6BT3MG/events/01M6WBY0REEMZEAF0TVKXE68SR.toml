@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T01:21:27Z"
+digest = "77772e747e6f1d967fcea1eb0dd3b33f2467bc838fef9098aed67290a1ae5198"
+exit_code = 0
+head = "944d5e97e01b1df3376c6634097bf7282addb9c8"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/store/test_events.py ...                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-149045-0.xml ---------------
+============================== 3 passed in 0.45s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_events.py::test_current_state_is_replay_with_full_history python/tests/store/test_events.py::test_undo_redo_and_include_are_appended_edits python/tests/store/test_events.py::test_replay_from_wal_never_modifies_it"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "3328b3a11c78e9cc6572dfc1a94a3d546b1d6c8efecc535a245263dcdc0669f8"
+at = "2026-11-08T01:21:27Z"
+actor = "lognd"
+rev = 1

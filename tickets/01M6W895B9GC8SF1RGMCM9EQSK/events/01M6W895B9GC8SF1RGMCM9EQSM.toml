@@ -1,0 +1,10 @@
+kind = "create"
+title = "logging_setup binds sys.stdout at first get_logger call, breaking capsys tests"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/logging_setup.py"]
+body = "found while working ~SP19B1H: importing a module that calls get_logger at collection time attaches handlers to the then-current sys.stdout/stderr, so tests/test_scaffold.py::test_get_logger_routes_levels fails afterwards. Fix: resolve sys.stdout/sys.stderr per emit; then uncertainty modules can switch back to get_logger."
+at = "2026-11-08T00:17:39Z"
+actor = "lognd"
+rev = 1

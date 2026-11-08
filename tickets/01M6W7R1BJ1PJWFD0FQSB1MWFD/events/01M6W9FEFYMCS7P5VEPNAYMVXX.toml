@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:38:33Z"
+digest = "e4755da5c6078d2c6b9cffafc4668dc098ed5d65f899c7b80324da2739a3ad13"
+exit_code = 0
+head = "faceb56a5edcbad83222dd4d7adfc2a7f8c11af8"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 560bfe4d-bc07-40d5-a727-4c4afddf5e55 with nextest profile: default
+    Starting 1 test across 5 binaries (75 tests skipped)
+        PASS [   0.035s] sadi-proto::session_mock start_timeout_returns_reusable_handle
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.036s] 1 test run: 1 passed, 75 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "start_timeout_returns_reusable_handle"
+size = 553
+status = "measured"
+test_count = 1
+tests_digest = "faa9b224b86486a27957c42669626c76245af257ee5f6b874cc2198047c6f9ab"
+at = "2026-11-08T00:38:33Z"
+actor = "lognd"
+rev = 1

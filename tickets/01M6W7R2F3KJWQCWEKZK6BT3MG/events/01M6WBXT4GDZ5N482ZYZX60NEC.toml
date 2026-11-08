@@ -1,0 +1,35 @@
+kind = "evidence"
+captured_at = "2026-11-08T01:21:07Z"
+digest = "97bd7090da7a2101665897f04955acde33d110f1cacac7e559e8115b2602d478"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 58 items
+
+python/tests/core/test_lab_registry.py .                                 [  1%]
+python/tests/store/test_durable.py ......                                [ 12%]
+python/tests/store/test_events.py ..................                     [ 43%]
+python/tests/store/test_session.py ................                      [ 70%]
+python/tests/store/test_writer_thread.py ....                            [ 77%]
+python/tests/test_scaffold.py ..                                         [ 81%]
+python/tests/test_typani_collisions.py .                                 [ 82%]
+python/tests/uncertainty/test_measured.py .                              [ 84%]
+python/tests/uncertainty/test_uncertain.py .........                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-147258-0.xml ---------------
+============================= 58 passed in 11.26s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_lab_registry.py::test_discover_registers_good_and_reports_bad python/tests/store/test_durable.py::test_atomic_replace_dir_fsync_failure_reported python/tests/store/test_durable.py::test_atomic_replace_rename_failure_keeps_original python/tests/store/test_durable.py::test_fsync_dir_windows_noop python/tests/store/test_durable.py::test_plain_permission_error_not_retried python/tests/store/test_durable.py::test_sharing_violation_gives_up python/tests/store/test_durable.py::test_sharing_violation_retried_then_succeeds python/tests/store/test_events.py::test_ahead_of_wal_is_refused_and_ref_is_best_effort python/tests/store/test_events.py::test_all_snapshots_bad_replays_from_wal python/tests/store/test_events.py::test_corrupt_stale_and_ahead_snapshots_are_ignored_not_deleted python/tests/store/test_events.py::test_corrupt_wal_is_err_and_untouched python/tests/store/test_events.py::test_current_state_is_replay_with_full_history python/tests/store/test_events.py::test_failure_at_each_step_never_leaves_a_bad_final_file python/tests/store/test_events.py::test_gap_after_base_is_an_error python/tests/store/test_events.py::test_never_overwrites_an_existing_snapshot python/tests/store/test_events.py::test_odd_content_is_reported_not_fatal python/tests/store/test_events.py::test_replay_from_wal_never_modifies_it python/tests/store/test_events.py::test_replay_is_deterministic_and_snapshot_resumable python/tests/store/test_events.py::test_snapshot_roundtrip_and_recovery_matches_full_replay python/tests/store/test_events.py::test_snapshot_with_unusable_state_falls_back_to_full_replay python/tests/store/test_events.py::test_undo_redo_and_include_are_appended_edits python/tests/store/test_session.py::test_close_writes_closed_manifest_and_is_idempotent python/tests/store/test_session.py::test_collision_takes_next_version_and_never_touches_existing python/tests/store/test_session.py::test_crash_during_create_never_reuses_directory python/tests/store/test_session.py::test_create_layout_lock_and_manifest python/tests/store/test_session.py::test_live_lock_is_not_stolen_and_released_on_close python/tests/store/test_session.py::test_manifest_is_frozen python/tests/store/test_session.py::test_manifest_replace_failure_keeps_old_manifest python/tests/store/test_session.py::test_mkdir_io_error_is_result python/tests/store/test_session.py::test_open_readonly_is_byte_identical python/tests/store/test_session.py::test_resume_creates_new_version_with_parent_link python/tests/store/test_session.py::test_resume_refuses_locked_incomplete_corrupt_and_bad_name python/tests/store/test_session.py::test_version_exhaustion python/tests/store/test_writer_thread.py::test_close_drains_queue_and_writes_final_record python/tests/store/test_writer_thread.py::test_slow_fsync_applies_backpressure_and_never_drops python/tests/store/test_writer_thread.py::test_stall_detected_without_progress_and_clears_on_recovery python/tests/store/test_writer_thread.py::test_wait_durable_timeout_is_stalled python/tests/test_scaffold.py::test_get_logger_follows_stream_swap python/tests/test_scaffold.py::test_get_logger_routes_levels python/tests/test_typani_collisions.py::test_typani_and_sadi_names_coexist python/tests/uncertainty/test_measured.py::test_operators_and_accessors python/tests/uncertainty/test_uncertain.py::test_argument_errors_and_units python/tests/uncertainty/test_uncertain.py::test_cache_reuses_compiled_expression python/tests/uncertainty/test_uncertain.py::test_correlation_changes_answer python/tests/uncertainty/test_uncertain.py::test_exposes_symbolic_partials_latex_sensitivities python/tests/uncertainty/test_uncertain.py::test_hypothesis_product_closed_form python/tests/uncertainty/test_uncertain.py::test_matches_hand_derived_partials python/tests/uncertainty/test_uncertain.py::test_monte_carlo_cross_check python/tests/uncertainty/test_uncertain.py::test_not_differentiable_and_signature_errors python/tests/uncertainty/test_uncertain.py::test_untraceable_function_is_typed_error"
+size = 1162
+status = "measured"
+test_count = 58
+tests_digest = "d1f134565df92e24443351b36d7921d2eedd9fa3b6cb64e0b18fccaa87c0ad28"
+at = "2026-11-08T01:21:07Z"
+actor = "lognd"
+rev = 1

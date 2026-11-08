@@ -1,0 +1,27 @@
+kind = "create"
+title = "store/session: versioned O_EXCL session dirs, manifest, lock, resume"
+type = "task"
+category = "todo"
+priority = "critical"
+points = 5
+parent = "01M6W7R04QJTECCTSV9EY2JADK"
+idempotency_key = "sadi-ds4"
+labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/session.py", "creates:python/sadi/store/manifest.py", "creates:python/tests/store/test_session.py", "creates:docs/store/session.md"]
+scope = ["python/sadi/store/session.py", "python/sadi/store/manifest.py", "python/tests/store/test_session.py", "docs/store/session.md"]
+acceptance = ["create_session never reuses or overwrites a directory (O_EXCL; collision gets next version); resume creates a new version with parent link", "Manifest (pydantic) written via atomic replace; single-writer lock file with stale-lock handling per OS", "Opening a session read-only for review never mutates it; tests prove existing sessions are byte-identical after open/close"]
+body = """
+
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Python: typani Result[T, E] for every fallible operation (exceptions only for programmer bugs), pydantic models, run python -m typani.lint on new code."""
+at = "2026-11-08T00:08:18Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R0T0AC47BJGF2CKTER59"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1883HHXY4XYEJA5DMTN"

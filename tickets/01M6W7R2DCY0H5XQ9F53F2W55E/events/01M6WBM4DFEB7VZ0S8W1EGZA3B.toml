@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:16:03Z"
+digest = "81961e4e84f97d53ef364f68559e689517cf729bfa0e714358ed0d737d636c80"
+exit_code = 0
+head = "26fd5c7d0f64823d6bfb4a5907eed1cb1507854e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/store/test_writer_thread.py .....                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-138958-0.xml ---------------
+============================== 5 passed in 0.57s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_writer_thread.py::test_disk_errors_fail_loudly_and_keep_records python/tests/store/test_writer_thread.py::test_slow_fsync_applies_backpressure_and_never_drops"
+size = 521
+status = "measured"
+test_count = 5
+tests_digest = "25c615e983550d0e2e5dc25aceaea2c8993b72361e95139fe2c9419078efc763"
+at = "2026-11-08T01:16:03Z"
+actor = "lognd"
+rev = 1

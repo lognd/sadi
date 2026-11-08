@@ -1,0 +1,23 @@
+kind = "create"
+title = "Portability audit: serial ports, drivers, udev, paths, line endings"
+type = "docs"
+category = "todo"
+priority = "medium"
+points = 3
+parent = "01M6W7R00Z87A80RZB3JCC7HDM"
+idempotency_key = "sadi-port1"
+labels = ["ws:docs", "model:sonnet", "creates:docs/portability.md", "creates:packaging/udev/**"]
+scope = ["docs/portability.md", "packaging/udev/**"]
+acceptance = ["docs/portability.md covers COMx vs /dev/ttyUSB* vs /dev/cu.usbserial*, FTDI VCP vs D2XX driver conflicts per OS, WSL USB passthrough (usbipd), Windows reserved names/long paths, CRLF in CSV, antivirus sharing violations", "packaging/udev/99-sadi.rules grants non-root access to FTDI 0403:6010/6014 devices (marked unverified)"]
+body = """
+ The wire protocol is UNVERIFIED until a hardware session (docs/protocol.md section 10); do not hard-code unverified behaviour without a config switch.
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001)."""
+at = "2026-11-08T00:08:18Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R10HDC6A2K576Q4YBED4"

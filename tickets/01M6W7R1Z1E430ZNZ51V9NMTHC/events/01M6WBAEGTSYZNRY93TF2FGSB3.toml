@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:10:45Z"
+digest = "45694b9979c4c76bd0707333c55ff05bd6648ee18a152f24c618008a41d205aa"
+exit_code = 0
+head = "7a14b66deb3097c500aab4af1910803ccc29462c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/jobs/test_manager.py ...                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-126074-0.xml ---------------
+============================== 3 passed in 0.92s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_manager.py::test_progress_streams_as_refining_then_final python/tests/jobs/test_manager.py::test_worker_crash_fails_job_with_typed_error_and_server_survives python/tests/jobs/test_manager.py::test_task_exception_and_bad_task_path_are_typed_failures"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "1d310ca058ed3a3b22ec4de1ad76dc390f0465b41fd15de11dbd655d48b9070c"
+at = "2026-11-08T01:10:45Z"
+actor = "lognd"
+rev = 1

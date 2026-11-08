@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:38:31Z"
+digest = "875a3552ee7cba37ee072cc6f8a2d2690bf93e58e73d0414f5aa515980848077"
+exit_code = 0
+head = "faceb56a5edcbad83222dd4d7adfc2a7f8c11af8"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID c520d374-2103-4c1e-9be6-d5104e1aa08f with nextest profile: default
+    Starting 1 test across 5 binaries (75 tests skipped)
+        PASS [   0.015s] sadi-proto::session_mock silence_is_retried_then_answered
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.016s] 1 test run: 1 passed, 75 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "silence_is_retried_then_answered"
+size = 548
+status = "measured"
+test_count = 1
+tests_digest = "0890110b517c989d398ce1b60be15600f9c9a791986089ef8c53a384ed38a030"
+at = "2026-11-08T00:38:31Z"
+actor = "lognd"
+rev = 1

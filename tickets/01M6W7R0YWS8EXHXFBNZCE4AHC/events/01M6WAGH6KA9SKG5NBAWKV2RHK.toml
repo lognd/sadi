@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:56:37Z"
+digest = "57ee0733cce224849e4b2c5bb1bfc190f6fdc73f96c68adda9d8ecbb2f83449b"
+head = "394c910686a44565f895f37dd7ea51cc3ca12549"
+provider = "file"
+ref = "docs/device/sim-byte-faults.md"
+size = 2127
+status = "measured"
+at = "2026-11-08T00:56:37Z"
+actor = "lognd"
+rev = 1

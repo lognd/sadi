@@ -1,0 +1,7 @@
+kind = "transition"
+from = "in-progress"
+to = "todo"
+reason = "blocked: Cargo.toml lease held by 8XCPH41; redo after sim lands"
+at = "2026-11-08T00:21:41Z"
+actor = "lognd"
+rev = 1

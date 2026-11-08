@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/package.json", "web/tsconfig.json", "web/vite.config.ts", "web/index.html", "web/eslint.config.js", "web/src/main.tsx", "web/src/App.tsx", "web/src/api/**", "web/src/state/**", "docs/web-layout.md", "web/src/App.test.tsx"]
+new = ["web/package.json", "web/tsconfig.json", "web/vite.config.ts", "web/index.html", "web/eslint.config.js", "web/src/main.tsx", "web/src/App.tsx", "web/src/api/**", "web/src/state/**", "docs/web-layout.md", "web/src/App.test.tsx", "frob.lock"]
+at = "2026-11-08T00:14:31Z"
+actor = "lognd"
+rev = 1

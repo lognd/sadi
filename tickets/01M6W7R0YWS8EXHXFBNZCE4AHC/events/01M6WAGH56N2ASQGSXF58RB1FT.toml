@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:56:37Z"
+digest = "143927df707370e51c00e7046c7440874deb7b8f62cbb430a59dc670409b24c8"
+exit_code = 0
+head = "394c910686a44565f895f37dd7ea51cc3ca12549"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID d8e7a9b0-7c96-4a72-9ddf-fc2b856bd1e9 with nextest profile: default
+    Starting 2 tests across 7 binaries (102 tests skipped)
+        PASS [   0.006s] sadi-proto::byte_faults same_seed_reproduces_exact_fault_sequence
+        PASS [   0.007s] sadi-proto::byte_faults different_seeds_diverge
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.008s] 2 tests run: 2 passed, 102 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E 'test(same_seed_reproduces_exact_fault_sequence) | test(different_seeds_diverge)'"
+size = 633
+status = "measured"
+test_count = 2
+tests_digest = "64074bf96076008bedc79851f7309d8dec2549f0764a5f86847241b22d79b419"
+at = "2026-11-08T00:56:37Z"
+actor = "lognd"
+rev = 1

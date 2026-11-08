@@ -1,0 +1,8 @@
+kind = "land"
+base_ref = "refs/heads/main"
+commit = "77ca2cd399274737ddd2f74c3095997fc5bdc50c"
+branch = "ticket/JPRPASC"
+pushed = false
+at = "2026-11-08T01:02:38Z"
+actor = "lognd"
+rev = 1

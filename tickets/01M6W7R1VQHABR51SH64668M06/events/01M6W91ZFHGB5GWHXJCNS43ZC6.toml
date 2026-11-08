@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["WalWriter.append(record) -> Result[Seq, WalError]; group commit per DS1; durable_seq advances only after fsync; rotation with directory fsync", "WalReader iterates verified records; recovery truncates torn tail, rejects any record with a bad CRC mid-log and reports it (never silently skips)", "Throughput test: sustains 612 kB/s plus markers with p99 append latency documented", "Property tests: random truncation and bit flips never yield an accepted corrupt record"]
+new = ["WalWriter.append(record) -> Result[Seq, WalError]; group commit per DS1; durable_seq advances only after fsync; rotation with directory fsync", "Throughput test: sustains 612 kB/s plus markers with p99 append latency documented", "Property tests: random truncation and bit flips never yield an accepted corrupt record", "WalReader iterates verified records and stops at the verified prefix; a torn tail is reported (offset, length, SHA-256) and NEVER truncated or modified (docs/data-safety.md: resume opens a new version dir); a bad CRC mid-log is rejected and reported, never silently skipped"]
+moved = [1, 0, 2, 3]
+at = "2026-11-08T00:31:12Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T00:19:29Z"
+digest = "01683ebd4747acaf43ee223da9993e6aa42b761adbde0c0f943053e4371130ee"
+exit_code = 0
+head = "af08df76e4bcce1f412c73d1acb71d6913779fe7"
+inline = """
+
+running 3 tests
+test parsers_never_panic ... ok
+test never_panics_on_arbitrary_bytes ... ok
+test recovers_later_intact_packets ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.76s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/vectors.rs (target/debug/deps/vectors-28a2437cb3b5381e)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --test vectors -- never_panics_on_arbitrary_bytes parsers_never_panic recovers_later_intact_packets"
+size = 379
+status = "measured"
+at = "2026-11-08T00:19:29Z"
+actor = "lognd"
+rev = 1

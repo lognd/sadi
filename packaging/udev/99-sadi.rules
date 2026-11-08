@@ -1,0 +1,22 @@
+# SADI: non-root access to FTDI interfaces. UNVERIFIED until a hardware
+# session (docs/protocol.md section 10, docs/portability.md).
+#
+# Install: sudo cp 99-sadi.rules /etc/udev/rules.d/
+#          sudo udevadm control --reload-rules && sudo udevadm trigger
+# Then add the user to the group: sudo usermod -aG dialout $USER (re-login).
+#
+# 0403:6010 FT2232H, 0403:6014 FT232H/FT4232H class (per ticket allow-list),
+# 0403:6001 FT232R (added, UNVERIFIED: no such part confirmed on the board;
+# see docs/hardware-verification.md row 16).
+# Rows 12-16 of that checklist track every rule here; all UNVERIFIED.
+# Match the tty node (ftdi_sio VCP) and the raw usb device (libusb/D2XX).
+# MODE 0660 + GROUP dialout; TAG uaccess grants the active local seat user.
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="dialout", TAG+="uaccess"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="dialout", TAG+="uaccess"
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0660", GROUP="dialout", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", MODE="0660", GROUP="dialout", TAG+="uaccess"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0660", GROUP="dialout", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0660", GROUP="dialout", TAG+="uaccess"

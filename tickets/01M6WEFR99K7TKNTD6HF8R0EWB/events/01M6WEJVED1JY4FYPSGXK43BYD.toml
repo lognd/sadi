@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T02:07:48Z"
+digest = "3cd8d4e80846e5dcc1da0953bf753a30842e24597d0a1b478f81ea0f9404588d"
+head = "08275a2d79fd3ec414454d021c7ba66fe03231f2"
+provider = "file"
+ref = "docs/doctor.md"
+size = 68903
+status = "measured"
+at = "2026-11-08T02:07:48Z"
+actor = "lognd"
+rev = 1

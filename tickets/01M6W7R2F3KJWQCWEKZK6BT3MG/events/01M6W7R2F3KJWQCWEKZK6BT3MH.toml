@@ -1,0 +1,31 @@
+kind = "create"
+title = "store/events+snapshot: point/edit event log, atomic snapshots, replay"
+type = "task"
+category = "todo"
+priority = "high"
+points = 5
+parent = "01M6W7R04QJTECCTSV9EY2JADK"
+idempotency_key = "sadi-ds5"
+labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/events.py", "creates:python/sadi/store/snapshot.py", "creates:python/tests/store/test_events.py", "creates:docs/store/events.md"]
+scope = ["python/sadi/store/events.py", "python/sadi/store/snapshot.py", "python/tests/store/test_events.py", "docs/store/events.md"]
+acceptance = ["Points, window edits, exclusions, settings and markers are WAL records (never in-place edits); current state = replay; edits keep full history", "Snapshot of derived state written tmp + atomic rename with hash of covered WAL seq; recovery ignores stale/corrupt snapshots and replays from WAL", "Replay is deterministic: same WAL -> identical state (property test)"]
+body = """
+
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Python: typani Result[T, E] for every fallible operation (exceptions only for programmer bugs), pydantic models, run python -m typani.lint on new code."""
+at = "2026-11-08T00:08:19Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R13KW0FFYHZJ7FY28A3R"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1VQHABR51SH64668M06"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R1XA74780R58PGCJAR1J"

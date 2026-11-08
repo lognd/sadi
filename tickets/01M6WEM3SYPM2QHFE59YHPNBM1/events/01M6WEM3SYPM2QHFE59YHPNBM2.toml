@@ -1,0 +1,13 @@
+kind = "create"
+title = "Wire data-root lock (store.lock.acquire) into session open and launcher startup"
+type = "task"
+category = "todo"
+priority = "high"
+points = 2
+parent = "01M6W7R04QJTECCTSV9EY2JADK"
+idempotency_key = "sadi-lock-wiring"
+scope = ["python/sadi/store/session.py", "python/tests/store/test_session.py", "docs/store/lock.md"]
+acceptance = ["Opening or creating a session takes the data-root lock; a second process gets LockHeld with the holder pid and touches no data", "LockStale surfaces to the caller with the recover_stale choice left to the user; docs/store/lock.md lists the callers"]
+at = "2026-11-08T02:08:29Z"
+actor = "lognd"
+rev = 1

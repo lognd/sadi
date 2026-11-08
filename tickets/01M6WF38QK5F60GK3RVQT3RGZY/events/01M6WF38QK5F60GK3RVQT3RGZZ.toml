@@ -1,0 +1,10 @@
+kind = "create"
+title = "Flaky: test_property_slope_recovered_within_standard_error fails in full suite"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/tests/labs/lctt/test_calibration.py"]
+acceptance = ["Test passes reliably in full suite"]
+at = "2026-11-08T02:16:46Z"
+actor = "lognd"
+rev = 1

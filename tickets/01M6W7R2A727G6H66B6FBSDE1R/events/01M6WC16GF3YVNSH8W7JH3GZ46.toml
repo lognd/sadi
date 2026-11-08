@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:23:10Z"
+digest = "85e147ac2970dfb2074e8977fa82df756dd61fa52a5ba0a463df00566848a7ad"
+exit_code = 0
+head = "03066578f94ee716ee6be619a14dc6e0b4ca047c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/uncertainty/test_fallbacks.py .....                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-153330-0.xml ---------------
+============================== 5 passed in 1.54s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_fallbacks.py::test_seeded_and_reproducible python/tests/uncertainty/test_fallbacks.py::test_resumable_equals_single_run python/tests/uncertainty/test_fallbacks.py::test_cancel_is_cooperative_and_resumable python/tests/uncertainty/test_fallbacks.py::test_decorator_mc_uses_registry_covariance python/tests/uncertainty/test_fallbacks.py::test_non_gaussian_marginals_match_moments"
+size = 521
+status = "measured"
+test_count = 5
+tests_digest = "25b968002ea850f8f1cfa5605509522343e1c32dd215206caecb7c3d95c31335"
+at = "2026-11-08T01:23:10Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/live-view.md"]
+new = ["docs/live-view.md", "docs/ux.md"]
+at = "2026-11-08T02:04:27Z"
+actor = "lognd"
+rev = 1

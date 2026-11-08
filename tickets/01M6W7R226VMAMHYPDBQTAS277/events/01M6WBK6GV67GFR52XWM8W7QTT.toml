@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2, 3, 4]
+captured_at = "2026-11-08T01:15:32Z"
+digest = "faf9951dc793daf79731cde16bcee657886f4245028a6cd37a6c2da484988f82"
+exit_code = 0
+head = "51831086f311d680a7c904b3ac73a02eed523ab8"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/crates/sadi-py
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 15 items
+
+crates/sadi-py/python/sadi_py/tests/test_smoke.py ...............        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-137282-0.xml ---------------
+============================== 15 passed in 0.29s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "crates/sadi-py/python/sadi_py/tests/test_smoke.py"
+size = 530
+status = "measured"
+test_count = 15
+tests_digest = "55d937d9c39c23f065c385153bccf71042ee2423470c9be9677118cddb615f5a"
+at = "2026-11-08T01:15:32Z"
+actor = "lognd"
+rev = 1

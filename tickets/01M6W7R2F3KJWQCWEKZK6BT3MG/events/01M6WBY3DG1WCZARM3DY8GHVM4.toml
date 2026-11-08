@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:21:28Z"
+digest = "6401804f986ca57ebc9551e546e597031f69e78adcbd199283de7117a340a501"
+exit_code = 0
+head = "944d5e97e01b1df3376c6634097bf7282addb9c8"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 7 items
+
+python/tests/store/test_events.py .......                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-149069-0.xml ---------------
+============================== 7 passed in 2.13s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_events.py::test_snapshot_roundtrip_and_recovery_matches_full_replay python/tests/store/test_events.py::test_corrupt_stale_and_ahead_snapshots_are_ignored_not_deleted python/tests/store/test_events.py::test_failure_at_each_step_never_leaves_a_bad_final_file"
+size = 521
+status = "measured"
+test_count = 7
+tests_digest = "94196b73e180472eee4d00d70e6308159a83612ec9b407e1634de8a66167d7fd"
+at = "2026-11-08T01:21:28Z"
+actor = "lognd"
+rev = 1

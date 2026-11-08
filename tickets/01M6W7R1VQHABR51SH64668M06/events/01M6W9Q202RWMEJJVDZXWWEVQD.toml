@@ -1,0 +1,102 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:42:14Z"
+digest = "18767fb118bf4215e8fda6946b6dc5d982d3ec21f294498fe93d6607b8cf13bd"
+exit_code = 0
+inline = '''
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling libc v0.2.191
+   Compiling cfg-if v1.0.5
+   Compiling rand_core v0.10.1
+   Compiling bitflags v2.13.2
+   Compiling once_cell v1.21.4
+   Compiling getrandom v0.4.3
+   Compiling serde_core v1.0.229
+   Compiling thiserror v2.0.21
+   Compiling rustix v1.1.6
+   Compiling autocfg v1.5.1
+   Compiling zmij v1.0.23
+   Compiling linux-raw-sys v0.12.1
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling bitflags v1.3.2
+   Compiling fastrand v2.5.0
+   Compiling bit-vec v0.10.1
+   Compiling tracing-core v0.1.36
+   Compiling itoa v1.0.18
+   Compiling cpufeatures v0.3.1
+   Compiling memchr v2.8.3
+   Compiling quick-error v1.2.3
+   Compiling scopeguard v1.2.0
+   Compiling fnv v1.0.7
+   Compiling pin-project-lite v0.2.17
+   Compiling chacha20 v0.10.2
+   Compiling rand_xorshift v0.5.0
+   Compiling core_detect v1.0.0
+   Compiling unarray v0.1.4
+   Compiling bit-set v0.11.1
+   Compiling num-traits v0.2.19
+   Compiling regex-syntax v0.8.11
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling nix v0.26.4
+   Compiling wait-timeout v0.2.1
+   Compiling tempfile v3.27.0
+   Compiling rand v0.10.3
+   Compiling thiserror-impl v2.0.21
+   Compiling serde_derive v1.0.229
+   Compiling rusty-fork v0.3.1
+   Compiling proptest v1.12.0
+   Compiling unescaper v0.1.10
+   Compiling serialport v4.10.1
+   Compiling tracing-attributes v0.1.31
+   Compiling tracing v0.1.44
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.60s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 0b124367-118b-4130-9476-ef2eb242b43f with nextest profile: default
+    Starting 30 tests across 4 binaries (33 tests skipped)
+        PASS [   0.062s] sadi-proto codec::adc::tests::dll_unipolar_upper_half_is_negative
+        PASS [   0.062s] sadi-proto codec::command::tests::decode_rejects_bad_frames
+        PASS [   0.061s] sadi-proto codec::command::tests::command_round_trips
+        PASS [   0.062s] sadi-proto error::tests::overflow_message_mentions_counts
+        PASS [   0.061s] sadi-proto codec::packet::tests::unknown_state_is_preserved
+        PASS [   0.059s] sadi-proto codec::decoder::tests::buffered_and_reset
+        PASS [   0.048s] sadi-proto codec::decoder::tests::byte_at_a_time_and_garbage
+        PASS [   0.062s] sadi-proto codec::adc::tests::every_raw_code_is_finite
+        PASS [   0.059s] sadi-proto codec::packet::tests::data_round_trips
+        PASS [   0.062s] sadi-proto codec::packet::tests::version_and_ack_round_trip
+        PASS [   0.063s] sadi-proto codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale
+        PASS [   0.062s] sadi-proto codec::packet::tests::rejects_malformed_frames
+        PASS [   0.058s] sadi-proto codec::command::tests::rejects_invalid_codes
+        PASS [   0.062s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.049s] sadi-proto codec::decoder::tests::counts_msg_gaps
+        PASS [   0.062s] sadi-proto codec::command::tests::code_round_trips
+        PASS [   0.013s] sadi-proto error::tests::transport_error_converts_into_proto_error
+        PASS [   0.013s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.017s] sadi-proto::serial_loopback pty_round_trip
+        PASS [   0.017s] sadi-proto::vectors invalid_range_codes_rejected
+        PASS [   0.018s] sadi-proto::vectors host_commands_match_vectors
+        PASS [   0.017s] sadi-proto::vectors adc_conversion_cases_match_in_both_modes
+        PASS [   0.018s] sadi-proto::vectors device_packets_match_vectors
+        PASS [   0.018s] sadi-proto::vectors data_packets_match_vectors_in_both_modes
+        PASS [   0.018s] sadi-proto::vectors framing_cases_match_vectors
+        PASS [   0.019s] sadi-proto::vectors resync_recovers_after_garbage_and_dropped_bytes
+        PASS [   0.056s] sadi-proto::vectors parsers_never_panic
+        PASS [   0.086s] sadi-proto::serial_loopback pty_purge_close_semantics
+        PASS [   0.162s] sadi-proto::vectors never_panics_on_arbitrary_bytes
+        PASS [   0.758s] sadi-proto::vectors recovers_later_intact_packets
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.827s] 30 tests run: 30 passed, 33 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=adc_conversion_cases_match_in_both_modes) | test(=codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale) | test(=codec::adc::tests::dll_unipolar_upper_half_is_negative) | test(=codec::adc::tests::every_raw_code_is_finite) | test(=codec::command::tests::code_round_trips) | test(=codec::command::tests::command_round_trips) | test(=codec::command::tests::decode_rejects_bad_frames) | test(=codec::command::tests::rejects_invalid_codes) | test(=codec::decoder::tests::buffered_and_reset) | test(=codec::decoder::tests::byte_at_a_time_and_garbage) | test(=codec::decoder::tests::counts_msg_gaps) | test(=codec::packet::tests::data_round_trips) | test(=codec::packet::tests::rejects_malformed_frames) | test(=codec::packet::tests::unknown_state_is_preserved) | test(=codec::packet::tests::version_and_ack_round_trip) | test(=data_packets_match_vectors_in_both_modes) | test(=device_packets_match_vectors) | test(=error::tests::overflow_message_mentions_counts) | test(=error::tests::timeout_message_mentions_duration) | test(=error::tests::transport_error_converts_into_proto_error) | test(=framing_cases_match_vectors) | test(=host_commands_match_vectors) | test(=invalid_range_codes_rejected) | test(=never_panics_on_arbitrary_bytes) | test(=parsers_never_panic) | test(=pty_purge_close_semantics) | test(=pty_round_trip) | test(=recovers_later_intact_packets) | test(=resync_recovers_after_garbage_and_dropped_bytes) | test(=transport::tests::trait_is_object_safe_and_send)))'"
+size = 4442
+status = "measured"
+test_count = 30
+tests_digest = "eb28338fb133663b2e11ed841ee12fed59e93bf097a3fe723ca9fa0500957e6a"
+at = "2026-11-08T00:42:14Z"
+actor = "lognd"
+rev = 1

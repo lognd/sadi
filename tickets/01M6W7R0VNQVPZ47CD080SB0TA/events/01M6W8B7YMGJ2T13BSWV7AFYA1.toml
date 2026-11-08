@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/codec/**", "crates/sadi-proto/tests/vectors.rs", "docs/device/codec.md", "crates/sadi-proto/Cargo.toml", "Cargo.lock", "docs/sadi-proto.md", "docs/index.md"]
+new = ["crates/sadi-proto/src/codec/**", "crates/sadi-proto/tests/vectors.rs", "docs/device/codec.md", "crates/sadi-proto/Cargo.toml", "Cargo.lock", "docs/sadi-proto.md", "docs/index.md", "changelog.d/01M6W7R0VNQVPZ47CD080SB0TA.changed.md"]
+at = "2026-11-08T00:18:47Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:19:28Z"
+digest = "fa1006181414c63052f4009e06832da44f65b554d8bd4a804e98c7db1eb6d148"
+exit_code = 0
+head = "af08df76e4bcce1f412c73d1acb71d6913779fe7"
+inline = """
+
+running 2 tests
+test invalid_range_codes_rejected ... ok
+test host_commands_match_vectors ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+     Running tests/vectors.rs (target/debug/deps/vectors-28a2437cb3b5381e)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --test vectors -- host_commands_match_vectors invalid_range_codes_rejected"
+size = 404
+status = "measured"
+at = "2026-11-08T00:19:28Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,139 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: "1"
+
+jobs:
+  rust:
+    name: rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      # Reads rust-toolchain.toml (channel and components).
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@nextest
+      - name: cargo fmt
+        run: cargo fmt --all --check
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: cargo nextest
+        run: cargo nextest run --workspace
+      # nextest does not run doctests.
+      - name: cargo test --doc
+        run: cargo test --workspace --doc
+      # The udev feature needs libudev-dev; Linux only.
+      - name: install libudev-dev
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev pkg-config
+      - name: cargo clippy (udev feature)
+        if: runner.os == 'Linux'
+        run: cargo clippy -p sadi-proto --features udev --all-targets -- -D warnings
+
+  python:
+    name: python (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: python/uv.lock
+      - name: uv sync
+        run: uv sync --frozen
+      - name: ruff check
+        run: uv run ruff check .
+      - name: ruff format
+        run: uv run ruff format --check .
+      - name: typani lint
+        run: uv run python -m typani.lint sadi
+      - name: typani collision check
+        # Activates once tools/check_typani_collisions.py lands (ticket 66MX8BW).
+        shell: bash
+        run: |
+          if [ -f ../tools/check_typani_collisions.py ]; then
+            uv run python ../tools/check_typani_collisions.py
+          else
+            echo "tools/check_typani_collisions.py not present yet; skipping"
+          fi
+      - name: type check (ty)
+        run: uv run ty check
+      - name: pytest
+        run: uv run pytest
+
+  # frob:ticket 01M6W7R226VMAMHYPDBQTAS277
+  sadi-py:
+    name: sadi-py (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: astral-sh/setup-uv@v6
+      - name: build wheel and run pytest
+        shell: bash
+        working-directory: crates/sadi-py
+        run: |
+          uv venv
+          uv pip install maturin numpy pytest
+          source .venv/bin/activate 2>/dev/null || source .venv/Scripts/activate
+          maturin develop --uv
+          pytest
+
+  web:
+    name: web (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: npm ci
+        run: npm ci
+      - name: eslint
+        run: npm run lint
+      - name: tsc
+        run: npm run typecheck
+      - name: vitest
+        run: npm test
+      - name: vite build
+        run: npx vite build

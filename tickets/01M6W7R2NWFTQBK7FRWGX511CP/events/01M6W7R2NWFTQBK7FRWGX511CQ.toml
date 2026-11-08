@@ -1,0 +1,27 @@
+kind = "create"
+title = "Device service: sadi_py wrapper returning typani Results, reconnect, sim/real select"
+type = "task"
+category = "todo"
+priority = "high"
+points = 5
+parent = "01M6W7R09P668G2VDDAWEDCSRM"
+idempotency_key = "sadi-b2"
+labels = ["ws:srv", "model:sonnet", "creates:python/sadi/core/device.py", "creates:python/tests/core/test_device.py", "creates:docs/core/device.md"]
+scope = ["python/sadi/core/device.py", "python/tests/core/test_device.py", "docs/core/device.md"]
+acceptance = ["DeviceService opens simulator or serial port (auto-detect FTDI), start/stop streaming, converts sadi_py exceptions to typani Results with 'what to do' hints, reconnect/backoff, status (connected|simulated|error)", "Reader runs in a dedicated thread/task; no data loss under slow consumers (bounded queue with loud overflow error, never silent drop)"]
+body = """
+
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Python: typani Result[T, E] for every fallible operation (exceptions only for programmer bugs), pydantic models, run python -m typani.lint on new code."""
+at = "2026-11-08T00:08:19Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R13KW0FFYHZJ7FY28A3R"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R226VMAMHYPDBQTAS277"

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:23:12Z"
+digest = "fd77a6f48a114fbaecc1c8d872a28c1dca01a9ee2845b607ae957e71f8b1fd52"
+exit_code = 0
+head = "03066578f94ee716ee6be619a14dc6e0b4ca047c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/uncertainty/test_fallbacks.py ..                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-153837-0.xml ---------------
+============================== 2 passed in 1.47s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_fallbacks.py::test_cross_check_flags_only_real_disagreement python/tests/uncertainty/test_fallbacks.py::test_decorator_cross_check_linear_agrees_nonlinear_flags"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "cdf44478fb74c5454ff0b2600a82157d4053ba3a3ef75dab128d296eb4730f4c"
+at = "2026-11-08T01:23:12Z"
+actor = "lognd"
+rev = 1

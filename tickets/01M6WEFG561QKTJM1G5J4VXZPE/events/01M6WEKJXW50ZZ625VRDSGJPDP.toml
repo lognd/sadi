@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T02:08:12Z"
+digest = "30319d9a203f2cfd33a83c6d26b6bc2fdf4085ae876f1621b93e69118d778923"
+head = "22632c0368806e764bf1f52b7e20a493424f347a"
+provider = "file"
+ref = "docs/store/durable.md"
+size = 3158
+status = "measured"
+at = "2026-11-08T02:08:12Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/csv_export.py", "python/tests/store/test_csv_export.py", "docs/store/csv-export.md", "docs/portability.md"]
+new = ["python/sadi/store/csv_export.py", "python/tests/store/test_csv_export.py", "docs/store/csv-export.md", "docs/portability.md", "docs/README.md"]
+at = "2026-11-08T01:23:11Z"
+actor = "lognd"
+rev = 1

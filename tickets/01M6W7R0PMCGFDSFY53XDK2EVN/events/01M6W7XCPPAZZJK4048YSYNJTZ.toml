@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/XDK2EVN; scope: python/pyproject.toml, python/sadi/__init__.py, python/sadi/core/__init__.py, python/sadi/labs/__init__.py, python/sadi/logging_setup.py, python/tests/conftest.py, docs/python-layout.md; ttl 7200s"
+at = "2026-11-08T00:11:13Z"
+actor = "lognd"
+rev = 1

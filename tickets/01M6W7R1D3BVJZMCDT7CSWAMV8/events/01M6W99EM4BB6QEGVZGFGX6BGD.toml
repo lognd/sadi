@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:35:15Z"
+digest = "f9ad86fec630e34f486d2604aa50ed1c6a741fb8cfd813ac79ae4ec791c88a4d"
+exit_code = 0
+head = "196c6be717b71e9706e12562894345b30fc09717"
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.15s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID c2c56c2e-75cc-4e27-8736-83a7b57510ed with nextest profile: default
+    Starting 5 tests across 5 binaries (72 tests skipped)
+        PASS [   0.007s] sadi-proto::sim_device boot_packet_then_query_reports_version_and_state
+        PASS [   0.007s] sadi-proto::sim_device small_reads_split_packets_and_idle_read_times_out
+        PASS [   0.008s] sadi-proto::sim_device partial_and_garbage_writes_are_reassembled
+        PASS [   0.009s] sadi-proto::sim_device commands_in_every_state_follow_firmware
+        PASS [   0.018s] sadi-proto::sim_device start_stream_stop_round_trip_with_counter_continuity
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.019s] 5 tests run: 5 passed, 72 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E 'package(=sadi-proto) & (test(=boot_packet_then_query_reports_version_and_state) | test(=commands_in_every_state_follow_firmware) | test(=partial_and_garbage_writes_are_reassembled) | test(=start_stream_stop_round_trip_with_counter_continuity) | test(=small_reads_split_packets_and_idle_read_times_out))'"
+size = 1004
+status = "measured"
+test_count = 5
+tests_digest = "f474182d789d93547763a71c6fc658584db0e5b50e8dc5db254df19285b12d57"
+at = "2026-11-08T00:35:15Z"
+actor = "lognd"
+rev = 1

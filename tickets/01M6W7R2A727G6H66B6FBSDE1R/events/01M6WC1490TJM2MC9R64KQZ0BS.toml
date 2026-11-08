@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T01:23:07Z"
+digest = "b6f220d058d3ada0f3bcaa61115434cf10e7d334c699ff964e1f67318ad83036"
+exit_code = 0
+head = "03066578f94ee716ee6be619a14dc6e0b4ca047c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/uncertainty/test_fallbacks.py ...                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-153277-0.xml ---------------
+============================== 3 passed in 1.59s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_fallbacks.py::test_complex_step_used_for_smooth_numpy_function python/tests/uncertainty/test_fallbacks.py::test_branching_function_falls_back_to_central_differences python/tests/uncertainty/test_fallbacks.py::test_decorator_numeric_matches_analytic_and_auto_falls_back"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "840885781995c8ec5036083a04ec4578d0992c225efe0aaf1f391851c8caa2bf"
+at = "2026-11-08T01:23:07Z"
+actor = "lognd"
+rev = 1

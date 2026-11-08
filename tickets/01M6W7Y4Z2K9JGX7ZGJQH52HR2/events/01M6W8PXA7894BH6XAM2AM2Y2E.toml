@@ -1,0 +1,8 @@
+kind = "transition"
+from = "in-progress"
+to = "done"
+outcome = "done"
+reason = "docs-only Status headers: no test or code path reaches docs/*.md, and the change has no user-visible effect; DOC003 clearance verified by frob check --ticket"
+at = "2026-11-08T00:25:07Z"
+actor = "lognd"
+rev = 1

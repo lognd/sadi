@@ -1,0 +1,18 @@
++++
+id = "01M6W7R0G9VM8M2C0QQNX209CZ"
+title = "Concurrency: acquisition thread, WAL writer thread, job pool, versioned results stream"
+type = "epic"
+category = "todo"
+priority = "high"
+parent = "01M6W78507Q819RQ7VXNFZEVFY"
+reporter = "lognd"
+created = "2026-11-08T00:08:17Z"
+updated = "2026-11-08T00:08:17Z"
+idempotency_key = "sadi-e_conc"
+labels = ["ws:conc"]
++++
+
+Workstream: nothing blocks the UI or the acquisition path. Rust acquisition thread (GIL released), dedicated WAL writer thread, asyncio loop does I/O only, CPU work in a cancellable/supersedable worker process pool, versioned results stream.
+
+Suggested model: n/a.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001).

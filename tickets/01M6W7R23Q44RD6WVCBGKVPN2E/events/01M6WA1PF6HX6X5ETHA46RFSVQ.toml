@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:48:31Z"
+digest = "e699b666835004b20b19a588a2d55bfd685c97e6abcad0367dc23b148de4806b"
+head = "b4cc4572ac3d66a4c3b310ca8f654557b97ab8f0"
+provider = "file"
+ref = "docs/ux.md"
+size = 22608
+status = "measured"
+at = "2026-11-08T00:48:31Z"
+actor = "lognd"
+rev = 1

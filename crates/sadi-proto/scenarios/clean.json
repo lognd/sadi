@@ -1,0 +1,30 @@
+{
+  "name": "clean",
+  "description": "Noise-free elastic/plastic wire; the physics baseline.",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 1,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0,
+      "kind": {
+        "kind": "white"
+      }
+    }
+  }
+}

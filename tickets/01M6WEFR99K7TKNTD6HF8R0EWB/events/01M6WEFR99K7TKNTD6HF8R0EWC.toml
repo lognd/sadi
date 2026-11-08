@@ -1,0 +1,13 @@
+kind = "create"
+title = "Doctor: apply approved decisions (psutil, read-only data-dir fix, exit codes, unverified channel probe) and promote drafts"
+type = "docs"
+category = "todo"
+priority = "medium"
+points = 3
+parent = "01M6W7R00Z87A80RZB3JCC7HDM"
+idempotency_key = "sadi-doctor-decisions"
+scope = ["docs/doctor.md", "docs/gp-selector.md", "docs/portability.md", "python/pyproject.toml"]
+acceptance = ["docs/doctor.md states: psutil is the system-metrics dependency; doctor fix never modifies the user data dir; runs with warnings only exit 0; the FTDI channel A/B probe is reported as unverified until hardware exists", "psutil is added to python/pyproject.toml dependencies and uv.lock is regenerated", "docs/doctor.md, docs/gp-selector.md and docs/portability.md move from Status: draft to current once the decisions above are applied"]
+at = "2026-11-08T02:06:06Z"
+actor = "lognd"
+rev = 1

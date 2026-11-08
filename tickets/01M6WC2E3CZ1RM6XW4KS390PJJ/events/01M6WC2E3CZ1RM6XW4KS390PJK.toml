@@ -1,0 +1,10 @@
+kind = "create"
+title = "portability.md: point udev section and findings at checklist rows 12-16, mention 0403:6001 rules"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["docs/portability.md"]
+body = "found while working ~6662Y63; section 4 still says 0403:6001 is not in the rules file, and findings item 4 should link rows 12-16."
+at = "2026-11-08T01:23:53Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "labels"
+old = ["ws:srv", "model:sonnet", "creates:python/sadi/core/device.py", "creates:python/tests/core/test_device.py", "creates:docs/core/device.md"]
+new = ["ws:srv", "model:sonnet", "creates:python/sadi/core/device.py", "creates:python/tests/core/test_device.py", "creates:docs/core/device.md", "creates:python/sadi/core/phases.py", "creates:python/tests/core/test_phases.py"]
+at = "2026-11-08T02:06:12Z"
+actor = "lognd"
+rev = 1

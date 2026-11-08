@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:12:20Z"
+digest = "856d87c18340fb26adc4292c1b4c6d1cd2f6d98c005d15989ca8c9bc0cdc0514"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/test_scaffold.py ...                                        [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-22081-0.xml ---------------
+============================== 3 passed in 0.14s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/test_scaffold.py::test_get_logger_routes_levels python/tests/test_scaffold.py::test_packages_import python/tests/test_scaffold.py::test_typani_names_not_shadowed"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "cbf2e0dae4e5f6aa51d304e6d0a17b5f63c431975602183cf76d7b7168417232"
+at = "2026-11-08T00:12:20Z"
+actor = "lognd"
+rev = 1

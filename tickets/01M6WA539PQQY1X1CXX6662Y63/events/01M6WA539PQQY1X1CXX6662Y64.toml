@@ -1,0 +1,8 @@
+kind = "create"
+title = "Hardware checklist rows: udev, by-id naming, FTDI channel A/B, ftdi_sio on WSL, add 0403:6001 to udev rules"
+type = "task"
+category = "todo"
+priority = "low"
+at = "2026-11-08T00:50:23Z"
+actor = "lognd"
+rev = 1

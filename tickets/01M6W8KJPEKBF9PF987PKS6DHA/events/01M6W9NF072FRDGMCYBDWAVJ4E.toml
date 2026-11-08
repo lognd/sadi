@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/codec/**", "crates/sadi-proto/src/session.rs", "crates/sadi-proto/src/transport.rs", "crates/sadi-proto/src/error.rs", "docs/rust-type-design.md", "crates/sadi-proto/src/lib.rs", "docs/sadi-proto.md"]
+new = ["crates/sadi-proto/src/codec/**", "crates/sadi-proto/src/session.rs", "crates/sadi-proto/src/transport.rs", "crates/sadi-proto/src/error.rs", "docs/rust-type-design.md", "crates/sadi-proto/src/lib.rs", "docs/sadi-proto.md", "python/tests/labs/lctt/test_settle_stream.py"]
+at = "2026-11-08T00:41:50Z"
+actor = "lognd"
+rev = 1

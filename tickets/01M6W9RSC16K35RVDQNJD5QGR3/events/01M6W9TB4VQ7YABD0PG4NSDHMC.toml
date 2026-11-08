@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["web/src/api/log.ts has no ineffective frob:accept COV001 comments and src/api/log.test.ts still passes"]
+moved = []
+at = "2026-11-08T00:44:30Z"
+actor = "lognd"
+rev = 1

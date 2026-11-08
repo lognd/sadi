@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T01:16:00Z"
+digest = "92f3ebdd7bc66a83a96f6aec0fda8290ac7f111e2fc15f0e0ed3a0793f0c2bad"
+exit_code = 0
+head = "26fd5c7d0f64823d6bfb4a5907eed1cb1507854e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/store/test_writer_thread.py ..                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-138832-0.xml ---------------
+============================== 2 passed in 0.77s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_writer_thread.py::test_slow_fsync_applies_backpressure_and_never_drops python/tests/store/test_writer_thread.py::test_submit_assigns_dense_seq_and_metrics_track_durability"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "b68202a9aef4e90d9b1777ee64b6475fe8643e963db7c21a648f183ac3511851"
+at = "2026-11-08T01:16:00Z"
+actor = "lognd"
+rev = 1

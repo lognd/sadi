@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/portability.md", "packaging/udev/**"]
+new = ["docs/portability.md", "packaging/udev/**", "docs/hardware-verification.md"]
+at = "2026-11-08T00:49:20Z"
+actor = "lognd"
+rev = 1

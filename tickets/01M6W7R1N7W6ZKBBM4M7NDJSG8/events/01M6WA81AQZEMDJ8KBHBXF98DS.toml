@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:51:57Z"
+digest = "6f0ea194ea4079fd6cc6b24f42940c5909bb17c809a012741c53ed74b9ade40b"
+exit_code = 0
+head = "eeaa314357cf51d35d79bb04d4dc401154758aa8"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_creep.py .                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-112444-0.xml ---------------
+============================== 1 passed in 1.35s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_creep.py::test_fit_exposes_plot_and_decision_inputs"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "05ce51457b8bbde146641503e79d1235fbf1326ffe8c5a3b760f1d6962c38c5b"
+at = "2026-11-08T00:51:57Z"
+actor = "lognd"
+rev = 1

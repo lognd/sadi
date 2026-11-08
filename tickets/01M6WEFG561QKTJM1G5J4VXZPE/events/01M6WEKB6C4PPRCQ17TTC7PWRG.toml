@@ -1,0 +1,33 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:08:03Z"
+digest = "4f509171779a17f9625309688b50a96d1cab8101cc77a63ccdadc3ec14315b6b"
+exit_code = 0
+head = "b50869472cfaca4e66d957a520568505d300a0eb"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 24 items
+
+python/tests/store/test_durable.py .......................s              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-177439-0.xml ---------------
+======================== 23 passed, 1 skipped in 0.33s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_durable.py"
+size = 522
+status = "measured"
+test_count = 23
+tests_digest = "e743c7b7ab5cc3e94a9b505b14e5e3e31860e3c4667a98d93015e6f73c0aaf59"
+at = "2026-11-08T02:08:03Z"
+actor = "lognd"
+rev = 1
+
+[non_passing]
+skipped = 1
+xfailed = 0
+xpassed = 0

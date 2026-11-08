@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:22:28Z"
+digest = "bf22cd95f109e44f56b62774f70345ac35f881d0d9d60e6f5febbecde83d49e7"
+exit_code = 0
+head = "0c1818416ca051d6be69c8b0a0213f9a4ad6023e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/store/test_names.py .....                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-151825-0.xml ---------------
+============================== 5 passed in 0.50s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_names.py::test_idempotent python/tests/store/test_names.py::test_distinct_inputs_stay_distinct python/tests/store/test_names.py::test_unique_never_returns_taken python/tests/store/test_names.py::test_unique_case_insensitive_and_chained python/tests/store/test_names.py::test_unique_exhaustion_is_err"
+size = 521
+status = "measured"
+test_count = 5
+tests_digest = "0cb3471b18d2168e294a85d9f36441cce4706db7bddb8b55f37b413c10de133a"
+at = "2026-11-08T01:22:28Z"
+actor = "lognd"
+rev = 1

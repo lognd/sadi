@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/portability.md section 4 states 0403:6001 is present in packaging/udev/99-sadi.rules and labelled UNVERIFIED", "docs/portability.md findings item 4 references hardware-verification.md rows 12-16"]
+moved = []
+at = "2026-11-08T01:24:29Z"
+actor = "lognd"
+rev = 1

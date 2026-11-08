@@ -1,0 +1,70 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:30:14Z"
+digest = "f256e10a3a0b72514e988b019476a94397d41b312c70d660fe2fcb0d4c6b2710"
+exit_code = 0
+inline = '''
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling libc v0.2.191
+   Compiling rand_core v0.10.1
+   Compiling once_cell v1.21.4
+   Compiling cfg-if v1.0.5
+   Compiling getrandom v0.4.3
+   Compiling serde_core v1.0.229
+   Compiling rustix v1.1.6
+   Compiling zmij v1.0.23
+   Compiling bitflags v2.13.2
+   Compiling linux-raw-sys v0.12.1
+   Compiling autocfg v1.5.1
+   Compiling serde v1.0.229
+   Compiling fastrand v2.5.0
+   Compiling thiserror v2.0.21
+   Compiling serde_json v1.0.154
+   Compiling memchr v2.8.3
+   Compiling bit-vec v0.10.1
+   Compiling tracing-core v0.1.36
+   Compiling quick-error v1.2.3
+   Compiling cpufeatures v0.3.1
+   Compiling pin-project-lite v0.2.17
+   Compiling fnv v1.0.7
+   Compiling itoa v1.0.18
+   Compiling chacha20 v0.10.2
+   Compiling rand_xorshift v0.5.0
+   Compiling regex-syntax v0.8.11
+   Compiling core_detect v1.0.0
+   Compiling unarray v0.1.4
+   Compiling num-traits v0.2.19
+   Compiling bit-set v0.11.1
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling wait-timeout v0.2.1
+   Compiling rand v0.10.3
+   Compiling tempfile v3.27.0
+   Compiling rusty-fork v0.3.1
+   Compiling proptest v1.12.0
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling tracing-attributes v0.1.31
+   Compiling tracing v0.1.44
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.62s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 0325b4a9-ce9f-4dd8-8200-07e4eeabac78 with nextest profile: default
+    Starting 3 tests across 3 binaries (46 tests skipped)
+        PASS [   0.007s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.007s] sadi-proto error::tests::transport_error_converts_into_proto_error
+        PASS [   0.012s] sadi-proto codec::decoder::tests::buffered_and_reset
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.016s] 3 tests run: 3 passed, 46 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=codec::decoder::tests::buffered_and_reset) | test(=error::tests::timeout_message_mentions_duration) | test(=error::tests::transport_error_converts_into_proto_error)))'"
+size = 2127
+status = "measured"
+test_count = 3
+tests_digest = "c7269bc7a900c96b46b674f8193981cb718207ea608ee7d3060e8e3c5883ba0e"
+at = "2026-11-08T00:30:14Z"
+actor = "lognd"
+rev = 1

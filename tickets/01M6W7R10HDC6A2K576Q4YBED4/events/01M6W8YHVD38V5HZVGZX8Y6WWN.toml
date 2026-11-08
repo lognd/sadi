@@ -1,0 +1,38 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:29:18Z"
+digest = "32cf7dfbe05f462d27af3d18451405e9ba9588940a6c48cfbd07e62e61c38118"
+exit_code = 0
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 985ff990-c216-4c29-98bd-e6342283d797 with nextest profile: default
+    Starting 15 tests across 3 binaries (27 tests skipped)
+        PASS [   0.012s] sadi-proto serial::tests::builders_replace_values
+        PASS [   0.013s] sadi-proto error::tests::transport_error_converts_into_proto_error
+        PASS [   0.013s] sadi-proto error::tests::overflow_message_mentions_counts
+        PASS [   0.013s] sadi-proto serial::tests::candidate_accessors
+        PASS [   0.014s] sadi-proto serial::tests::config_rejects_empty_allow_list
+        PASS [   0.015s] sadi-proto serial::tests::usb_id_display_is_hex
+        PASS [   0.014s] sadi-proto::serial_loopback pty_round_trip
+        PASS [   0.015s] sadi-proto serial::tests::config_rejects_empty_name
+        PASS [   0.015s] sadi-proto serial::tests::newtypes_reject_zero
+        PASS [   0.015s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.016s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.017s] sadi-proto::serial_loopback list_ports_runs_without_hardware
+        PASS [   0.034s] sadi-proto::serial_loopback pty_read_times_out
+        PASS [   0.063s] sadi-proto::serial_loopback pty_rx_overflow_is_typed
+        PASS [   0.087s] sadi-proto::serial_loopback pty_purge_close_semantics
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.090s] 15 tests run: 15 passed, 27 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=error::tests::overflow_message_mentions_counts) | test(=error::tests::timeout_message_mentions_duration) | test(=error::tests::transport_error_converts_into_proto_error) | test(=hw_enumerate_finds_sadi) | test(=hw_open_purge_close) | test(=list_ports_runs_without_hardware) | test(=pty_purge_close_semantics) | test(=pty_read_times_out) | test(=pty_round_trip) | test(=pty_rx_overflow_is_typed) | test(=serial::tests::builders_replace_values) | test(=serial::tests::candidate_accessors) | test(=serial::tests::config_rejects_empty_allow_list) | test(=serial::tests::config_rejects_empty_name) | test(=serial::tests::newtypes_reject_zero) | test(=serial::tests::usb_id_display_is_hex) | test(=transport::tests::trait_is_object_safe_and_send)))'"
+size = 1709
+status = "measured"
+test_count = 15
+tests_digest = "76302f6b1d3354f31008889c99ebbfc6a4ff3237a6379b5ff8190fe09de166df"
+at = "2026-11-08T00:29:18Z"
+actor = "lognd"
+rev = 1

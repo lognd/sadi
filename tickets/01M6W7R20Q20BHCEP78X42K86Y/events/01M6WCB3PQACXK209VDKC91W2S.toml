@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:28:36Z"
+digest = "db7e9625d1db10727b8b6cbc71479eac43f5e81c2c5279ebe52e414418a91f8c"
+exit_code = 0
+head = "b6a8ba9979007aaf9084835b5a4bcf511293a69c"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID db69ec1e-4ab4-40f3-825c-a0af25d5cfe2 with nextest profile: default
+    Starting 1 test across 9 binaries (115 tests skipped)
+        PASS [   0.061s] sadi-proto::replay field_capture_replays_as_regression_test
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.061s] 1 test run: 1 passed, 115 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "field_capture_replays"
+size = 552
+status = "measured"
+test_count = 1
+tests_digest = "176447e7f8fd39868f7834b15a769a56f44db22fbaa5b4c624bf8060d8680782"
+at = "2026-11-08T01:28:36Z"
+actor = "lognd"
+rev = 1

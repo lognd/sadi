@@ -1,0 +1,40 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:42:14Z"
+digest = "6ece121d10487facc98c8ee275b66565a4d17685c01411d2c85dba93336a55e5"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 95 items
+
+python/tests/core/test_formatting.py ..........                          [ 10%]
+python/tests/core/test_lab_registry.py ......                            [ 16%]
+python/tests/core/test_models.py ....                                    [ 21%]
+python/tests/labs/lctt/test_settle.py .......                            [ 28%]
+python/tests/store/test_durable.py ...............s                      [ 45%]
+python/tests/store/test_failpoints.py ........                           [ 53%]
+python/tests/store/test_wal.py ..........................                [ 81%]
+python/tests/test_scaffold.py ..                                         [ 83%]
+python/tests/uncertainty/test_measured.py ................               [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-99377-0.xml ---------------
+======================== 94 passed, 1 skipped in 12.40s ========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_formatting.py::test_confidence_errors python/tests/core/test_formatting.py::test_confidence_label python/tests/core/test_formatting.py::test_plain_language_confidence python/tests/core/test_lab_registry.py::test_checker_flags_forbidden_imports python/tests/core/test_lab_registry.py::test_discover_registers_good_and_reports_bad python/tests/core/test_lab_registry.py::test_fake_lab_satisfies_protocol python/tests/core/test_lab_registry.py::test_labs_import_only_core_public_api python/tests/core/test_lab_registry.py::test_register_get_and_duplicate python/tests/core/test_lab_registry.py::test_validate_rejects_malformed_labs python/tests/core/test_models.py::test_every_error_code_has_hint_and_problem_json python/tests/core/test_models.py::test_inventory_unique_ids_and_lookup python/tests/core/test_models.py::test_json_round_trip_all_models python/tests/core/test_models.py::test_point_flags_window_and_run_state_transitions python/tests/labs/lctt/test_settle.py::test_bad_inputs python/tests/labs/lctt/test_settle.py::test_dwell_boundary python/tests/labs/lctt/test_settle.py::test_exponential_settle python/tests/labs/lctt/test_settle.py::test_flat_noisy_uncertain_slope python/tests/labs/lctt/test_settle.py::test_linear_drift_never_settles python/tests/labs/lctt/test_settle.py::test_noise_does_not_false_settle python/tests/labs/lctt/test_settle.py::test_too_short python/tests/store/test_durable.py::test_atomic_replace_cross_dir python/tests/store/test_durable.py::test_atomic_replace_dir_fsync_failure_reported python/tests/store/test_durable.py::test_atomic_replace_fsync_failure_keeps_original python/tests/store/test_durable.py::test_atomic_replace_ok python/tests/store/test_durable.py::test_atomic_replace_rename_failpoint python/tests/store/test_durable.py::test_atomic_replace_rename_failure_keeps_original python/tests/store/test_durable.py::test_create_exclusive_never_overwrites python/tests/store/test_durable.py::test_fsync_dir_ok_and_missing python/tests/store/test_durable.py::test_fsync_dir_windows_noop python/tests/store/test_durable.py::test_fsync_failpoint_injection python/tests/store/test_durable.py::test_fsync_file_error_is_result python/tests/store/test_durable.py::test_fsync_file_ok python/tests/store/test_durable.py::test_plain_permission_error_not_retried python/tests/store/test_durable.py::test_sharing_violation_gives_up python/tests/store/test_durable.py::test_sharing_violation_retried_then_succeeds python/tests/store/test_durable.py::test_windows_held_handle_sharing_violation python/tests/store/test_failpoints.py::test_bad_action_rejected python/tests/store/test_failpoints.py::test_env_loading python/tests/store/test_failpoints.py::test_error_action_raises_oserror python/tests/store/test_failpoints.py::test_inactive_is_noop python/tests/store/test_failpoints.py::test_kill_exits_137 python/tests/store/test_failpoints.py::test_once_and_nth python/tests/store/test_failpoints.py::test_prob_zero_never_fires python/tests/store/test_failpoints.py::test_sleep_action python/tests/store/test_wal.py::test_append_assigns_dense_seq_and_is_durable python/tests/store/test_wal.py::test_append_batch_and_accessors python/tests/store/test_wal.py::test_closed_writer_refuses python/tests/store/test_wal.py::test_decode_frame_rejects_flip python/tests/store/test_wal.py::test_durable_seq_only_after_fsync python/tests/store/test_wal.py::test_explicit_rotate python/tests/store/test_wal.py::test_fsync_error_enters_failed_and_keeps_undurable python/tests/store/test_wal.py::test_group_commit_batches_many_records_per_fsync python/tests/store/test_wal.py::test_invalid_records_refused python/tests/store/test_wal.py::test_kill_at_failpoint_leaves_recoverable_log python/tests/store/test_wal.py::test_mid_log_bad_crc_rejected_not_skipped python/tests/store/test_wal.py::test_missing_middle_segment_is_corrupt python/tests/store/test_wal.py::test_property_bit_flip_never_accepts_corrupt_record python/tests/store/test_wal.py::test_property_truncation_yields_only_a_prefix python/tests/store/test_wal.py::test_record_known_and_seal_roundtrip python/tests/store/test_wal.py::test_rotation_seals_segments_and_reads_back python/tests/store/test_wal.py::test_throughput_sustains_612_kbps_with_markers python/tests/store/test_wal.py::test_torn_tail_reported_not_truncated python/tests/store/test_wal.py::test_typed_records_roundtrip python/tests/test_scaffold.py::test_get_logger_follows_stream_swap python/tests/test_scaffold.py::test_get_logger_routes_levels python/tests/uncertainty/test_measured.py::test_add_rss_property python/tests/uncertainty/test_measured.py::test_bad_inputs_return_errors python/tests/uncertainty/test_measured.py::test_correlation_round_trip_property python/tests/uncertainty/test_measured.py::test_declared_correlation_changes_sum python/tests/uncertainty/test_measured.py::test_derived_keeps_correlation_with_sources python/tests/uncertainty/test_measured.py::test_dimension_mismatch_is_err python/tests/uncertainty/test_measured.py::test_division_by_zero_and_bad_power_are_errs python/tests/uncertainty/test_measured.py::test_json_round_trip_and_bad_json python/tests/uncertainty/test_measured.py::test_json_round_trip_property python/tests/uncertainty/test_measured.py::test_mul_div_relative_property python/tests/uncertainty/test_measured.py::test_no_typani_name_reuse python/tests/uncertainty/test_measured.py::test_offset_unit_uncertainty_is_a_difference python/tests/uncertainty/test_measured.py::test_operators_and_accessors python/tests/uncertainty/test_measured.py::test_product_units_and_uncertainty python/tests/uncertainty/test_measured.py::test_self_subtraction_is_exactly_zero python/tests/uncertainty/test_measured.py::test_si_conversion"
+size = 1162
+status = "measured"
+test_count = 94
+tests_digest = "0627d2d51844a9ec3317df44eaa252c7820c260994bbd4de567ffba0b279a62e"
+at = "2026-11-08T00:42:14Z"
+actor = "lognd"
+rev = 1
+
+[non_passing]
+skipped = 1
+xfailed = 0
+xpassed = 0

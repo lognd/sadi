@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:38:32Z"
+digest = "ecd00a3b41579be3b8b1fa48ab196c587ec98cc3e44bd74e85816f6e2deb34a7"
+exit_code = 0
+head = "faceb56a5edcbad83222dd4d7adfc2a7f8c11af8"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 54cac460-be29-478c-af34-3aa52c002c38 with nextest profile: default
+    Starting 1 test across 5 binaries (75 tests skipped)
+        PASS [   0.010s] sadi-proto::session_mock truncated_stop_ack_then_full_ack
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.011s] 1 test run: 1 passed, 75 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "truncated_stop_ack_then_full_ack"
+size = 548
+status = "measured"
+test_count = 1
+tests_digest = "9ff9fa6a66f8caa4031fe3e02a87040f9f9e3a0be84fd7156b6c0b9bbf401244"
+at = "2026-11-08T00:38:32Z"
+actor = "lognd"
+rev = 1

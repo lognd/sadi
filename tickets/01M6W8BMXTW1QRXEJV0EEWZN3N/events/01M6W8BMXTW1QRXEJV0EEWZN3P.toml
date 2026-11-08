@@ -1,0 +1,10 @@
+kind = "create"
+title = "Link docs/uncertainty/measured.md from docs/index.md and drop DOC007 waiver"
+type = "docs"
+category = "todo"
+priority = "medium"
+scope = ["docs/index.md", "docs/uncertainty/measured.md"]
+body = "found while working ~SP19B1H: index was leased by another ticket. Add '- [Uncertainty core: Measured](uncertainty/measured.md)' to docs/index.md and remove the frob:waive DOC007 line from the doc."
+at = "2026-11-08T00:19:00Z"
+actor = "lognd"
+rev = 1

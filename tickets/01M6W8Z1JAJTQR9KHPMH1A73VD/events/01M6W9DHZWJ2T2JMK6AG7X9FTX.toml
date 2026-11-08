@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [1, 2, 3, 4]
+captured_at = "2026-11-08T00:37:28Z"
+digest = "c796dbe2ec40664d553d6b4983a5c169958bb2c92b488b7cf342393ebb99485b"
+exit_code = 0
+head = "c09efea2f13e9f626bd84a7b45c4d1c3e8d6b8ae"
+inline = """
+................                                                         [100%]
+16 passed in 2.23s
+"""
+passed = true
+provider = "command"
+ref = "uv run --project python pytest -q python/tests/labs/lctt/test_settle_stream.py"
+size = 99
+status = "measured"
+at = "2026-11-08T00:37:28Z"
+actor = "lognd"
+rev = 1

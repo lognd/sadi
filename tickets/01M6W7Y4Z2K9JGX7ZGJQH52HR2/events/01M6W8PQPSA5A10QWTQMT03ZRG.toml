@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given the five docs listed in scope, when frob check --ticket runs, then no DOC003 finding is reported for any of them"]
+moved = []
+at = "2026-11-08T00:25:03Z"
+actor = "lognd"
+rev = 1

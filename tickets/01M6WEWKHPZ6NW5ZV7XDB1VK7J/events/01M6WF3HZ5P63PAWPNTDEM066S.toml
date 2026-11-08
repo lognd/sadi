@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:16:52Z"
+digest = "7120f826302a18167fd18849d531e94513aef69da7358e6d2ca6c1abffc022d0"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 18 items
+
+python/tests/labs/lctt/test_calibration.py ..............                [ 77%]
+python/tests/labs/lctt/test_real_data.py ....                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-188480-0.xml ---------------
+============================== 18 passed in 2.17s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_calibration.py::test_ci_band_matches_hand_formula python/tests/labs/lctt/test_calibration.py::test_displacement_uses_slope_only python/tests/labs/lctt/test_calibration.py::test_errors_in_both_matches_effective_variance_fixed_point python/tests/labs/lctt/test_calibration.py::test_height_at_uses_slope_intercept_covariance python/tests/labs/lctt/test_calibration.py::test_matches_hand_linest_reference python/tests/labs/lctt/test_calibration.py::test_matches_reference_vi_oracle python/tests/labs/lctt/test_calibration.py::test_measured_carries_dof_and_covariance python/tests/labs/lctt/test_calibration.py::test_offset_is_the_intercept python/tests/labs/lctt/test_calibration.py::test_property_slope_recovered_within_standard_error python/tests/labs/lctt/test_calibration.py::test_property_weighted_fit_recovers_slope python/tests/labs/lctt/test_calibration.py::test_rank_deficient_when_one_point_carries_all_weight python/tests/labs/lctt/test_calibration.py::test_typed_errors python/tests/labs/lctt/test_calibration.py::test_uniform_height_uncertainty_equals_unweighted python/tests/labs/lctt/test_calibration.py::test_voltage_uncertainty_ignored_without_flag python/tests/labs/lctt/test_real_data.py::test_fit_matches_vi_slope_intercept_r2_t95_n python/tests/labs/lctt/test_real_data.py::test_fit_matches_vi_standard_errors_at_full_precision python/tests/labs/lctt/test_real_data.py::test_real_short_data_slip_with_load_finds_no_slip python/tests/labs/lctt/test_real_data.py::test_real_short_data_slip_without_load_flags_only_load_steps"
+size = 602
+status = "measured"
+test_count = 18
+tests_digest = "88e27936f202d7d001e3717cf0833365bfc132632dc21a664d978a530f4bed3e"
+at = "2026-11-08T02:16:52Z"
+actor = "lognd"
+rev = 1

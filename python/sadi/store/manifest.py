@@ -1,0 +1,103 @@
+"""Session manifest cache (data-safety 8.4): frozen pydantic model and atomic-replace writer."""
+
+# frob:ticket 01M6W7R1VQHABR51SH64668M06
+from __future__ import annotations
+
+import os
+import secrets
+from datetime import datetime
+from pathlib import Path
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, ValidationError
+from typani import Err, Ok, Result
+
+from sadi.logging_setup import get_logger
+from sadi.store.durable import DurableError, DurableIo, atomic_replace, create_exclusive, fsync_file
+from sadi.store.failpoints import failpoint
+
+_log = get_logger(__name__)
+
+MANIFEST_NAME = "manifest.json"
+MANIFEST_VERSION = 1
+
+SessionState = Literal["open", "closed", "crashed", "corrupt"]
+
+
+class Manifest(BaseModel):
+    """Derived, losable description of one session version (never primary data, invariant I7)."""
+
+    model_config = ConfigDict(frozen=True)
+    v: int = MANIFEST_VERSION
+    format_version: int = 1
+    session_uuid: str
+    dir_name: str
+    family: str
+    version: int
+    parent: str | None = None
+    parent_last_seq: int | None = None
+    created: datetime
+    lab_module: str = ""
+    specimen: dict[str, str] = {}
+    state: SessionState = "open"
+    closed: datetime | None = None
+    last_seq: int | None = None
+
+
+class ManifestInvalid(BaseModel):
+    """manifest.json exists but is unreadable or fails validation; the file is left untouched."""
+
+    model_config = ConfigDict(frozen=True)
+    path: Path
+    reason: str
+    hint: str = "The manifest is only a cache; it is regenerated when the session is resumed."
+
+
+def read_manifest(session_dir: Path) -> Result[Manifest | None, ManifestInvalid]:
+    """Read manifest.json without side effects; Ok(None) when it does not exist."""
+    path = session_dir / MANIFEST_NAME
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        _log.debug("no manifest at %s", path)
+        return Ok(None)
+    except OSError as exc:
+        _log.error("cannot read manifest %s: %s", path, exc)
+        return Err(ManifestInvalid(path=path, reason=str(exc)))
+    try:
+        return Ok(Manifest.model_validate_json(raw))
+    except ValidationError as exc:
+        _log.error("invalid manifest %s: %s", path, exc)
+        return Err(ManifestInvalid(path=path, reason=str(exc)))
+
+
+def write_manifest(session_dir: Path, manifest: Manifest) -> Result[None, DurableError]:
+    """Atomically write manifest.json via an exclusive same-directory tmp file and replace."""
+    dst = session_dir / MANIFEST_NAME
+    tmp = session_dir / f"{MANIFEST_NAME}.tmp-{os.getpid()}-{secrets.token_hex(4)}"
+    created = create_exclusive(tmp)
+    if created.is_err:
+        return Err(created.danger_err)
+    fd = created.danger_ok
+    data = manifest.model_dump_json(indent=2).encode("ascii") + b"\n"
+    try:
+        try:
+            failpoint("session.manifest.write")
+            os.write(fd, data)
+        except OSError as exc:
+            _log.error("manifest tmp write %s failed: %s", tmp, exc)
+            return Err(DurableIo(errno=exc.errno or 5, path=tmp))
+        synced = fsync_file(fd)
+    finally:
+        os.close(fd)
+    if synced.is_err:
+        return synced
+    try:
+        failpoint("session.manifest.before_replace")
+    except OSError as exc:
+        _log.error("manifest replace aborted for %s: %s", dst, exc)
+        return Err(DurableIo(errno=exc.errno or 5, path=dst))
+    replaced = atomic_replace(tmp, dst)
+    if replaced.is_ok:
+        _log.info("manifest written: %s state=%s", dst, manifest.state)
+    return replaced

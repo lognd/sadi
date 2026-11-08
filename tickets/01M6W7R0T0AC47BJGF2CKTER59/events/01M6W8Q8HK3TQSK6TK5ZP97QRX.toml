@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/data-safety.md"]
+new = ["docs/data-safety.md", "docs/index.md"]
+at = "2026-11-08T00:25:21Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/uncertainty/uncertain.py", "python/sadi/uncertainty/symbolic.py", "python/sadi/uncertainty/cache.py", "python/tests/uncertainty/test_uncertain.py", "docs/uncertainty/uncertain.md", "python/sadi/uncertainty/__init__.py"]
+new = ["python/sadi/uncertainty/uncertain.py", "python/sadi/uncertainty/symbolic.py", "python/sadi/uncertainty/cache.py", "python/tests/uncertainty/test_uncertain.py", "docs/uncertainty/uncertain.md", "python/sadi/uncertainty/__init__.py", "docs/uncertainty/measured.md"]
+at = "2026-11-08T00:31:44Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:12:02Z"
+digest = "690f286e56317c8851bcab2524742776ebad9a1491805d3a12144c4da55df8f0"
+exit_code = 0
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.31s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID efca3107-4576-4246-b53b-0d55fa645183 with nextest profile: default
+    Starting 4 tests across 1 binary
+        PASS [   0.005s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.005s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.005s] sadi-proto sim::signal::tests::signal_source_is_usable_as_object
+        PASS [   0.005s] sadi-proto error::tests::transport_error_converts_into_proto_error
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.007s] 4 tests run: 4 passed, 0 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=error::tests::timeout_message_mentions_duration) | test(=error::tests::transport_error_converts_into_proto_error) | test(=sim::signal::tests::signal_source_is_usable_as_object) | test(=transport::tests::trait_is_object_safe_and_send)))'"
+size = 857
+status = "measured"
+test_count = 4
+tests_digest = "297934c85575d19a300982e835246c592d62d204788b8a95676066627e6f0e80"
+at = "2026-11-08T00:12:02Z"
+actor = "lognd"
+rev = 1

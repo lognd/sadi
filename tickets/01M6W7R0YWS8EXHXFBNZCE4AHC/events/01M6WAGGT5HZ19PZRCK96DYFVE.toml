@@ -1,0 +1,28 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:56:37Z"
+digest = "405c396627e5eae701eea5c9e6efdd99fcec3eceb3207a724d7d195752237857"
+exit_code = 0
+head = "394c910686a44565f895f37dd7ea51cc3ca12549"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 0a76c999-a181-4632-adcd-2010fd8aa3db with nextest profile: default
+    Starting 4 tests across 7 binaries (100 tests skipped)
+        PASS [   0.005s] sadi-proto::byte_faults certain_drop_loses_everything
+        PASS [   0.005s] sadi-proto::byte_faults writes_and_control_calls_pass_through
+        PASS [   0.005s] sadi-proto::byte_faults certain_stall_never_delivers
+        PASS [   0.005s] sadi-proto::byte_faults plan_serde_roundtrip_and_active_kinds
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.006s] 4 tests run: 4 passed, 100 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E 'test(plan_serde_roundtrip_and_active_kinds) | test(certain_drop_loses_everything) | test(certain_stall_never_delivers) | test(writes_and_control_calls_pass_through)'"
+size = 800
+status = "measured"
+test_count = 4
+tests_digest = "96fd37955f6a8f24a28dd0bb08d2fe6a140359791f521239502f7c73327c8d2c"
+at = "2026-11-08T00:56:37Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,27 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:35:17Z"
+digest = "01dd796a987ba7a4f9e1e637613eb5ff73f2193cae501db6a06cc7ca4995f967"
+exit_code = 0
+head = "196c6be717b71e9706e12562894345b30fc09717"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID b68ac743-b8b7-4e84-8c33-f831448cbedb with nextest profile: default
+    Starting 3 tests across 5 binaries (74 tests skipped)
+        PASS [   0.008s] sadi-proto::sim_device small_reads_split_packets_and_idle_read_times_out
+        PASS [   0.009s] sadi-proto::sim_device custom_rate_changes_packet_pacing
+        PASS [   0.018s] sadi-proto::sim_device paced_clock_sleeps_in_real_time
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.019s] 3 tests run: 3 passed, 74 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E 'package(=sadi-proto) & (test(=paced_clock_sleeps_in_real_time) | test(=custom_rate_changes_packet_pacing) | test(=small_reads_split_packets_and_idle_read_times_out))'"
+size = 727
+status = "measured"
+test_count = 3
+tests_digest = "d00a23a8d7e107746c8c5ea128cf1608c5a3dbc083b5077cc8fcdcce8c9f3754"
+at = "2026-11-08T00:35:17Z"
+actor = "lognd"
+rev = 1

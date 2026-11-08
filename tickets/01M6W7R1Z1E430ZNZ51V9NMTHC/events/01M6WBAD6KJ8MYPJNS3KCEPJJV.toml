@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T01:10:43Z"
+digest = "4e2008190ee4bdb60b98d0937b8fd8e70c19ca81f92c0651d6b0f77bb7c56101"
+exit_code = 0
+head = "7a14b66deb3097c500aab4af1910803ccc29462c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 7 items
+
+python/tests/jobs/test_manager.py .......                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-126018-0.xml ---------------
+============================== 7 passed in 2.00s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_manager.py::test_done_result_and_worker_never_imports_store python/tests/jobs/test_manager.py::test_cooperative_cancel_needs_no_kill python/tests/jobs/test_manager.py::test_hard_kill_after_grace_and_slot_is_respawned python/tests/jobs/test_manager.py::test_supersede_running_job_discards_old_result python/tests/jobs/test_manager.py::test_supersede_queued_job_never_runs python/tests/jobs/test_manager.py::test_shutdown_cancels_running_kills_stubborn_and_rejects_new python/tests/jobs/test_manager.py::test_state_table_is_total_and_terminals_are_sinks"
+size = 521
+status = "measured"
+test_count = 7
+tests_digest = "1552d0e68c1033ae7654f6a9c7d02cdfa2916eb215effa14abe1e3c462cc4203"
+at = "2026-11-08T01:10:43Z"
+actor = "lognd"
+rev = 1

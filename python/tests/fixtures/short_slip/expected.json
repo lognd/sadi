@@ -1,0 +1,8 @@
+{
+  "note": "Synthetic stand-in for slip-contaminated prelim data (the local short-run file, L0=0.08313 m, believed clamp slip). Never use for E or physics calibration.",
+  "t_load": 100.0,
+  "slips": [
+    {"index": 40, "time": 305.0, "size": 4.0e-5},
+    {"index": 85, "time": 530.0, "size": 2.5e-5}
+  ]
+}

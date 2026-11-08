@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:21:42Z"
+digest = "236e3f31138d99875ac93dae69e174843ac57c6b1666d94e5249aca4df71b9ee"
+exit_code = 0
+head = "be0979d8cb7caf0ba2ca7bd0e849f45877071a77"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 70 items
+
+python/tests/jobs/test_harness.py ...................................... [ 54%]
+................................                                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-150581-0.xml ---------------
+============================== 70 passed in 0.48s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_harness.py"
+size = 602
+status = "measured"
+test_count = 70
+tests_digest = "1873f68230fe1c4e00dbe48bca6b40aa294e50c0e962c98e7d9fbabde89a1f9c"
+at = "2026-11-08T01:21:42Z"
+actor = "lognd"
+rev = 1

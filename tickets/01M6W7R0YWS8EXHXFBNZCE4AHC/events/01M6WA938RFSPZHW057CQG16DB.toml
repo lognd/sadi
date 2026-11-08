@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/sim/byte_faults.rs", "crates/sadi-proto/tests/byte_faults.rs", "docs/device/sim-byte-faults.md", "crates/sadi-proto/src/sim/mod.rs"]
+new = ["crates/sadi-proto/src/sim/byte_faults.rs", "crates/sadi-proto/tests/byte_faults.rs", "docs/device/sim-byte-faults.md", "crates/sadi-proto/src/sim/mod.rs", "crates/sadi-proto/src/sim/signal_faults.rs"]
+at = "2026-11-08T00:52:34Z"
+actor = "lognd"
+rev = 1

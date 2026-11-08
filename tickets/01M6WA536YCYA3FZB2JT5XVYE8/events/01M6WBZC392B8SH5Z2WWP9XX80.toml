@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Output valid on Windows/Linux/macOS (reserved names, forbidden chars, length)", "Idempotent and distinct inputs do not collide; unique_name never returns a taken name"]
+moved = []
+at = "2026-11-08T01:22:12Z"
+actor = "lognd"
+rev = 1

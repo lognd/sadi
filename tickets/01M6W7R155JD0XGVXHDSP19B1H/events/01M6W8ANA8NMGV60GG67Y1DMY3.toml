@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:18:25Z"
+digest = "ac61bb434510c8b39c0f80549826482b5aa3a90dd37bccd6d5df836b48181800"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 20 items
+
+python/tests/uncertainty/test_measured.py ....................           [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-38532-0.xml ---------------
+============================== 20 passed in 1.90s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_measured.py::test_add_rss_property python/tests/uncertainty/test_measured.py::test_bad_inputs_return_errors python/tests/uncertainty/test_measured.py::test_correlation_round_trip_property python/tests/uncertainty/test_measured.py::test_declared_correlation_changes_sum python/tests/uncertainty/test_measured.py::test_derived_keeps_correlation_with_sources python/tests/uncertainty/test_measured.py::test_dimension_mismatch_is_err python/tests/uncertainty/test_measured.py::test_division_by_zero_and_bad_power_are_errs python/tests/uncertainty/test_measured.py::test_interval_is_symmetric_and_widens_with_small_dof python/tests/uncertainty/test_measured.py::test_json_round_trip_and_bad_json python/tests/uncertainty/test_measured.py::test_json_round_trip_property python/tests/uncertainty/test_measured.py::test_mul_div_relative_property python/tests/uncertainty/test_measured.py::test_no_typani_name_reuse python/tests/uncertainty/test_measured.py::test_offset_unit_uncertainty_is_a_difference python/tests/uncertainty/test_measured.py::test_operators_and_accessors python/tests/uncertainty/test_measured.py::test_product_units_and_uncertainty python/tests/uncertainty/test_measured.py::test_relative_uncertainty_zero_value python/tests/uncertainty/test_measured.py::test_self_subtraction_is_exactly_zero python/tests/uncertainty/test_measured.py::test_si_conversion python/tests/uncertainty/test_measured.py::test_t95_known_values python/tests/uncertainty/test_measured.py::test_welch_satterthwaite_example"
+size = 522
+status = "measured"
+test_count = 20
+tests_digest = "c8250cd7cd7252f3f34f47a7761c04a1dc69e82526085fbd0175c93960c8a89b"
+at = "2026-11-08T00:18:25Z"
+actor = "lognd"
+rev = 1

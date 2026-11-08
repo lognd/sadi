@@ -1,0 +1,11 @@
+kind = "create"
+title = "Doctor UI screen: show checks and guided fix steps in the web app"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+labels = ["model:sonnet", "ws:web"]
+acceptance = ["Doctor screen lists checks with status and expandable numbered fix steps, re-run per check", "Reachable from any wizard step and from device-connection errors"]
+at = "2026-11-08T00:53:00Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:51:21Z"
+digest = "c0787ed2d2abc582441a02e3a4fcbe686ead1a5aa9d0ab7915ac50dbc2c322c5"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 6 items
+
+python/tests/labs/lctt/test_creep.py ......                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-111743-0.xml ---------------
+============================== 6 passed in 1.33s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_creep.py::test_bad_inputs_typed_errors python/tests/labs/lctt/test_creep.py::test_config_frozen_and_validated python/tests/labs/lctt/test_creep.py::test_exact_log_law_recovered python/tests/labs/lctt/test_creep.py::test_extrapolation_uncertainty_grows_with_distance python/tests/labs/lctt/test_creep.py::test_injected_slope_recovered_within_noise python/tests/labs/lctt/test_creep.py::test_short_hold_typed_error"
+size = 521
+status = "measured"
+test_count = 6
+tests_digest = "d646dd6ca855f845cf9b8ba98c93d76c66d6ac29478539473480fff1aa0592bc"
+at = "2026-11-08T00:51:21Z"
+actor = "lognd"
+rev = 1

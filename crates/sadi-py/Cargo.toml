@@ -1,0 +1,25 @@
+[package]
+name = "sadi-py"
+description = "PyO3/maturin bindings over sadi-proto (sessions, simulator, numpy blocks)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+name = "_native"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Set by maturin (pyproject.toml): do not link libpython into the extension.
+extension-module = ["pyo3/extension-module"]
+
+[dependencies]
+sadi-proto = { path = "../sadi-proto" }
+pyo3 = { version = "0.30", features = ["abi3-py311"] }
+numpy = "0.30"
+thiserror.workspace = true
+tracing.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,85 @@
+kind = "evidence"
+captured_at = "2026-11-08T01:14:56Z"
+digest = "c122e8f3b7f4f50c6f8d822acb3f0dd15a403d392adadcb9220254ec17570a54"
+exit_code = 0
+inline = '''
+   Compiling pyo3-ffi v0.30.1
+   Compiling pyo3 v0.30.1
+   Compiling numpy v0.30.0
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.37s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID d4e304fc-6290-49c2-a44e-a41200a2d91a with nextest profile: default
+    Starting 59 tests across 8 binaries (48 tests skipped)
+        PASS [   0.014s] sadi-proto::byte_faults certain_drop_loses_everything
+        PASS [   0.014s] sadi-proto codec::adc::tests::dll_unipolar_upper_half_is_negative
+        PASS [   0.015s] sadi-proto codec::command::tests::decode_rejects_bad_frames
+        PASS [   0.015s] sadi-proto codec::packet::tests::data_round_trips
+        PASS [   0.015s] sadi-proto codec::decoder::tests::counts_msg_gaps
+        PASS [   0.015s] sadi-proto codec::decoder::tests::buffered_and_reset
+        PASS [   0.016s] sadi-proto::byte_faults certain_duplicate_doubles_every_byte
+        PASS [   0.017s] sadi-proto codec::command::tests::command_round_trips
+        PASS [   0.017s] sadi-proto codec::decoder::tests::byte_at_a_time_and_garbage
+        PASS [   0.018s] sadi-proto sim::device::tests::raw_from_volts_inverts_convert
+        PASS [   0.020s] sadi-proto codec::packet::tests::rejects_malformed_frames
+        PASS [   0.020s] sadi-proto codec::adc::tests::every_raw_code_is_finite
+        PASS [   0.020s] sadi-proto codec::packet::tests::channel_try_from_validates
+        PASS [   0.021s] sadi-proto serial::tests::config_rejects_empty_allow_list
+        PASS [   0.024s] sadi-proto codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale
+        PASS [   0.025s] sadi-proto codec::packet::tests::version_and_ack_round_trip
+        PASS [   0.014s] sadi-proto::byte_faults certain_short_read_never_fills_buffer_but_loses_nothing
+        PASS [   0.014s] sadi-proto::session_mock duplicate_acks_are_harmless
+        PASS [   0.014s] sadi-proto::serial_loopback list_ports_runs_without_hardware
+        PASS [   0.016s] sadi-proto::byte_faults certain_truncate_always_loses_a_tail
+        PASS [   0.018s] sadi-proto::session_mock full_sequence_matches_protocol_section_5
+        PASS [   0.020s] sadi-proto::byte_faults certain_flip_changes_exactly_one_bit_per_byte
+        PASS [   0.013s] sadi-proto::session_mock tap_sees_raw_bytes_including_garbage_and_failure_is_loud
+        PASS [   0.016s] sadi-proto::session_mock start_is_idempotent_when_already_running
+        PASS [   0.023s] sadi-proto::session_mock silence_is_retried_then_answered
+        PASS [   0.014s] sadi-proto::sim_device boot_packet_then_query_reports_version_and_state
+        PASS [   0.013s] sadi-proto::sim_device commands_in_every_state_follow_firmware
+        PASS [   0.022s] sadi-proto::session_mock stop_is_idempotent_after_observed_stop
+        PASS [   0.013s] sadi-proto::sim_device custom_rate_changes_packet_pacing
+        PASS [   0.018s] sadi-proto::session_mock transport_closed_during_start_returns_handle
+        PASS [   0.014s] sadi-proto::sim_device decoded_samples_match_signal_source
+        PASS [   0.011s] sadi-proto::sim_device scenario_device_streams_and_unknown_scenario_errors
+        PASS [   0.019s] sadi-proto::session_mock truncated_stop_ack_then_full_ack
+        PASS [   0.012s] sadi-proto::sim_device small_reads_split_packets_and_idle_read_times_out
+        PASS [   0.014s] sadi-proto::sim_device partial_and_garbage_writes_are_reassembled
+        PASS [   0.023s] sadi-proto::sim_device paced_clock_sleeps_in_real_time
+        PASS [   0.014s] sadi-proto::sim_physics active_fault_kinds_match_scenarios
+        PASS [   0.014s] sadi-proto::sim_physics creep_slope_is_recovered_through_noise
+        PASS [   0.016s] sadi-proto::sim_physics creep_slope_vs_log_time_is_recovered_exactly_without_noise
+        PASS [   0.043s] sadi-proto::session_mock reset_ignores_stale_version_and_times_out_without_boot
+        PASS [   0.017s] sadi-proto::vectors adc_conversion_cases_match_in_both_modes
+        PASS [   0.018s] sadi-proto::vectors data_packets_match_vectors_in_both_modes
+        PASS [   0.018s] sadi-proto::vectors device_packets_match_vectors
+        PASS [   0.018s] sadi-proto::vectors framing_cases_match_vectors
+        PASS [   0.024s] sadi-proto::sim_physics linear_drift_slope_is_recovered
+        PASS [   0.049s] sadi-proto::session_mock start_timeout_returns_reusable_handle
+        PASS [   0.013s] sadi-proto::vectors host_commands_match_vectors
+        PASS [   0.053s] sadi-proto::session_mock gaps_are_reported_and_read_times_out
+        PASS [   0.029s] sadi-proto::sim_physics coloured_noise_keeps_sd_but_is_correlated
+        PASS [   0.007s] sadi-py convert::tests::device_state_mapping_is_total
+        PASS [   0.033s] sadi-proto::sim_device start_stream_stop_round_trip_with_counter_continuity
+        PASS [   0.007s] sadi-py errors::tests::kinds_are_stable
+        PASS [   0.014s] sadi-proto::vectors resync_recovers_after_garbage_and_dropped_bytes
+        PASS [   0.012s] sadi-py convert::tests::block_data_flattens_columns
+        PASS [   0.031s] sadi-proto::sim_physics noise_sd_matches_preliminary_value
+        PASS [   0.056s] sadi-proto::vectors parsers_never_panic
+        PASS [   0.218s] sadi-proto::session_mock phase_utilities_and_restart
+        PASS [   0.187s] sadi-proto::vectors never_panics_on_arbitrary_bytes
+        PASS [   0.840s] sadi-proto::vectors recovers_later_intact_packets
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.901s] 59 tests run: 59 passed, 48 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -p sadi-py -E '(package(=sadi-proto) & (test(=active_fault_kinds_match_scenarios) | test(=adc_conversion_cases_match_in_both_modes) | test(=boot_packet_then_query_reports_version_and_state) | test(=certain_drop_loses_everything) | test(=certain_duplicate_doubles_every_byte) | test(=certain_flip_changes_exactly_one_bit_per_byte) | test(=certain_short_read_never_fills_buffer_but_loses_nothing) | test(=certain_truncate_always_loses_a_tail) | test(=codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale) | test(=codec::adc::tests::dll_unipolar_upper_half_is_negative) | test(=codec::adc::tests::every_raw_code_is_finite) | test(=codec::command::tests::command_round_trips) | test(=codec::command::tests::decode_rejects_bad_frames) | test(=codec::decoder::tests::buffered_and_reset) | test(=codec::decoder::tests::byte_at_a_time_and_garbage) | test(=codec::decoder::tests::counts_msg_gaps) | test(=codec::packet::tests::channel_try_from_validates) | test(=codec::packet::tests::data_round_trips) | test(=codec::packet::tests::rejects_malformed_frames) | test(=codec::packet::tests::version_and_ack_round_trip) | test(=coloured_noise_keeps_sd_but_is_correlated) | test(=commands_in_every_state_follow_firmware) | test(=creep_slope_is_recovered_through_noise) | test(=creep_slope_vs_log_time_is_recovered_exactly_without_noise) | test(=custom_rate_changes_packet_pacing) | test(=data_packets_match_vectors_in_both_modes) | test(=decoded_samples_match_signal_source) | test(=device_packets_match_vectors) | test(=duplicate_acks_are_harmless) | test(=framing_cases_match_vectors) | test(=full_sequence_matches_protocol_section_5) | test(=gaps_are_reported_and_read_times_out) | test(=host_commands_match_vectors) | test(=hw_enumerate_finds_sadi) | test(=hw_open_purge_close) | test(=linear_drift_slope_is_recovered) | test(=list_ports_runs_without_hardware) | test(=never_panics_on_arbitrary_bytes) | test(=noise_sd_matches_preliminary_value) | test(=paced_clock_sleeps_in_real_time) | test(=parsers_never_panic) | test(=partial_and_garbage_writes_are_reassembled) | test(=phase_utilities_and_restart) | test(=recovers_later_intact_packets) | test(=reset_ignores_stale_version_and_times_out_without_boot) | test(=resync_recovers_after_garbage_and_dropped_bytes) | test(=scenario_device_streams_and_unknown_scenario_errors) | test(=serial::tests::config_rejects_empty_allow_list) | test(=silence_is_retried_then_answered) | test(=sim::device::tests::raw_from_volts_inverts_convert) | test(=small_reads_split_packets_and_idle_read_times_out) | test(=start_is_idempotent_when_already_running) | test(=start_stream_stop_round_trip_with_counter_continuity) | test(=start_timeout_returns_reusable_handle) | test(=stop_is_idempotent_after_observed_stop) | test(=tap_sees_raw_bytes_including_garbage_and_failure_is_loud) | test(=transport_closed_during_start_returns_handle) | test(=truncated_stop_ack_then_full_ack))) | (package(=sadi-py) & (test(=convert::tests::block_data_flattens_columns) | test(=convert::tests::device_state_mapping_is_total) | test(=errors::tests::kinds_are_stable)))'"
+size = 5666
+status = "measured"
+test_count = 59
+tests_digest = "f1fd8e35b50d8ae98d5ea893d4b1f32dc6b9241f112802d2c729326b65af21fd"
+at = "2026-11-08T01:14:56Z"
+actor = "lognd"
+rev = 1

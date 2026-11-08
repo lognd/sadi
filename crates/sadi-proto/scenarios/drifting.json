@@ -1,0 +1,35 @@
+{
+  "name": "drifting",
+  "description": "Noisy signal with linear plus thermal LVDT drift.",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 3,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0345,
+      "kind": {
+        "kind": "white"
+      }
+    },
+    "drift": {
+      "linear_v_per_s": 0.001,
+      "thermal_amp_v": 0.05,
+      "thermal_period_s": 300.0
+    }
+  }
+}

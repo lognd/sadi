@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/NQKWT3Y; scope: python/sadi/labs/lctt/calibration.py, python/tests/labs/lctt/test_calibration.py, docs/lctt/calibration.md; ttl 7200s"
+at = "2026-11-08T01:03:10Z"
+actor = "lognd"
+rev = 1

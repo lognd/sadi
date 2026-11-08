@@ -1,0 +1,34 @@
+{
+  "name": "creeping",
+  "description": "Noisy signal with strong log-time creep after each load change.",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 4,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0345,
+      "kind": {
+        "kind": "white"
+      }
+    },
+    "creep": {
+      "coeff": 3.0,
+      "tau_s": 1.0
+    }
+  }
+}

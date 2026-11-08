@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T00:44:24Z"
+digest = "6c0bf1fef31588ef603ab378b19fd22764b690e4582bf60ac9c46654f4e0b877"
+head = "e1e16e1cd010decf4d1adf7098f54f70610ea817"
+provider = "file"
+ref = "docs/concurrency.md"
+size = 45576
+status = "measured"
+at = "2026-11-08T00:44:24Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:40:47Z"
+digest = "1eacfa6eec395df0df5d603f424d7c5e24290d14fdeec59ccb856ef3c7989d24"
+exit_code = 0
+head = "040e283d2e1abbdd340d3d20f8c1b799421f02cd"
+inline = """
+
+running 7 tests
+test crates/sadi-proto/src/session.rs - session (line 56) - compile fail ... ok
+test crates/sadi-proto/src/session.rs - session (line 96) - compile fail ... ok
+test crates/sadi-proto/src/codec/packet.rs - codec::packet::AdcChannel (line 106) - compile fail ... ok
+test crates/sadi-proto/src/session.rs - session (line 37) - compile fail ... ok
+test crates/sadi-proto/src/session.rs - session (line 76) - compile fail ... ok
+test crates/sadi-proto/src/session.rs - session (line 13) ... ok
+test crates/sadi-proto/src/codec/packet.rs - codec::packet::AdcChannel (line 112) ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+   Doc-tests sadi_proto
+"""
+passed = true
+provider = "command"
+ref = "cargo test --doc -p sadi-proto"
+size = 788
+status = "measured"
+at = "2026-11-08T00:40:47Z"
+actor = "lognd"
+rev = 1

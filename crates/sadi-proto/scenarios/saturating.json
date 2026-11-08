@@ -1,0 +1,39 @@
+{
+  "name": "saturating",
+  "description": "Fast drift pushes the LVDT past 4.9 V; response folds back (voltages repeat).",
+  "load": {
+    "steps": [
+      {
+        "t_s": 10.0,
+        "mass_kg": 1.0
+      },
+      {
+        "t_s": 310.0,
+        "mass_kg": 2.0
+      },
+      {
+        "t_s": 610.0,
+        "mass_kg": 1.5
+      }
+    ]
+  },
+  "faults": {
+    "seed": 6,
+    "sample_rate_hz": 10.0,
+    "noise": {
+      "sd_v": 0.0345,
+      "kind": {
+        "kind": "white"
+      }
+    },
+    "drift": {
+      "linear_v_per_s": 0.006,
+      "thermal_amp_v": 0.0,
+      "thermal_period_s": 0.0
+    },
+    "saturation": {
+      "limit_v": 4.9,
+      "mode": "fold"
+    }
+  }
+}

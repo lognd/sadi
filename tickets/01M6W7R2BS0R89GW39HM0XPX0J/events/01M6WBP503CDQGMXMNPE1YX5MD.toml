@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:17:06Z"
+digest = "f68b86daf635c3215fd7ee6d2d0b1b13b9bc104af26cd2b06feba3efc30729c5"
+exit_code = 0
+head = "247ed1afac304f202da29714098d6788adf9d490"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/uncertainty/test_budget.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-141821-0.xml ---------------
+============================== 1 passed in 3.22s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_budget.py::test_budget_sums_to_total_variance"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "e99a0cd2cbba146b0caf3c601705aa9a33554e0aac5373a8f31ae00997551ffd"
+at = "2026-11-08T01:17:06Z"
+actor = "lognd"
+rev = 1

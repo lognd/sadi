@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "wont-fix"
+reason = "redundant: U1 landed with its own index link"
+at = "2026-11-08T00:21:50Z"
+actor = "lognd"
+rev = 1

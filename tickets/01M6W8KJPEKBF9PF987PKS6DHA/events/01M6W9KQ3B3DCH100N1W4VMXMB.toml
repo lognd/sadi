@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:40:53Z"
+digest = "0b5a243e6fb9e06ce59bec974213d287f074406352ad836065988ba6026a19b5"
+head = "e1f359d1317bfba21c6c79aa728cb65267ca2fef"
+provider = "file"
+ref = "docs/rust-type-design.md"
+size = 2341
+status = "measured"
+at = "2026-11-08T00:40:53Z"
+actor = "lognd"
+rev = 1

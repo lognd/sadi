@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/concurrency.md"]
+new = ["docs/concurrency.md", "docs/README.md"]
+at = "2026-11-08T00:44:41Z"
+actor = "lognd"
+rev = 1

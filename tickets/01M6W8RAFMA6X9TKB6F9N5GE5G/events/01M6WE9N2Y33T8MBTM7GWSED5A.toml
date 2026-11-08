@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T02:02:46Z"
+digest = "aa1c0d408e3d30db0234eb24dab075920cdd82b55ba585ad6b3e7cd3e5934326"
+exit_code = 0
+head = "0595813ceaec860939c992931fb4550c8deda344"
+inline = """
+docs/python-layout.md:43:| `sadi/store/` (durable, wal, session, events, snapshot, exports) | DS2-DS7 |
+"""
+passed = true
+provider = "command"
+ref = "git grep -n -F sadi/store/ -- docs/python-layout.md"
+size = 104
+status = "measured"
+at = "2026-11-08T02:02:46Z"
+actor = "lognd"
+rev = 1

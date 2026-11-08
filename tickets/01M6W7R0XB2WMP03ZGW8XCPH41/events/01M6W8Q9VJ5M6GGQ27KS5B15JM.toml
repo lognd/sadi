@@ -1,0 +1,51 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:25:21Z"
+digest = "7a80b6f16c748245e2531ba35bccb665024dd0aa3f15a9ab2ca6f2df24b18dff"
+exit_code = 0
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 3f5d49f8-8ac0-4457-a499-79f03fa229ee with nextest profile: default
+    Starting 28 tests across 3 binaries (21 tests skipped)
+        PASS [   0.015s] sadi-proto codec::adc::tests::dll_unipolar_upper_half_is_negative
+        PASS [   0.015s] sadi-proto codec::adc::tests::every_raw_code_is_finite
+        PASS [   0.016s] sadi-proto::sim_physics elastic_modulus_is_recovered_below_yield
+        PASS [   0.015s] sadi-proto::sim_physics active_fault_kinds_match_scenarios
+        PASS [   0.016s] sadi-proto codec::packet::tests::version_and_ack_round_trip
+        PASS [   0.016s] sadi-proto codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale
+        PASS [   0.016s] sadi-proto sim::physics::tests::mass_follows_steps
+        PASS [   0.015s] sadi-proto sim::signal_faults::tests::noise_is_deterministic
+        PASS [   0.016s] sadi-proto sim::signal::tests::signal_source_is_usable_as_object
+        PASS [   0.017s] sadi-proto::sim_physics all_named_scenarios_load
+        PASS [   0.018s] sadi-proto sim::physics::tests::lvdt_round_trips
+        PASS [   0.024s] sadi-proto::sim_physics creep_slope_vs_log_time_is_recovered_exactly_without_noise
+        PASS [   0.024s] sadi-proto::sim_physics creep_slope_is_recovered_through_noise
+        PASS [   0.012s] sadi-proto::sim_physics unknown_fields_and_bad_values_are_rejected
+        PASS [   0.028s] sadi-proto sim::signal_faults::tests::fold_reflects_and_repeats
+        PASS [   0.029s] sadi-proto::sim_physics linear_drift_slope_is_recovered
+        PASS [   0.014s] sadi-proto::sim_physics saturation_clamps_and_folds
+        PASS [   0.015s] sadi-proto::sim_physics scenario_json_round_trips
+        PASS [   0.015s] sadi-proto::sim_physics plastic_hardening_adds_permanent_strain
+        PASS [   0.015s] sadi-proto::sim_physics polarity_flips_sign_about_offset
+        PASS [   0.016s] sadi-proto::sim_physics saturating_scenario_actually_saturates
+        PASS [   0.015s] sadi-proto::sim_physics unloaded_clean_voltage_reads_one_volt_by_default
+        PASS [   0.017s] sadi-proto::sim_physics slip_step_sizes_are_recovered_with_no_load_change
+        PASS [   0.033s] sadi-proto::sim_physics coloured_noise_keeps_sd_but_is_correlated
+        PASS [   0.015s] sadi-proto::vectors adc_conversion_cases_match_in_both_modes
+        PASS [   0.019s] sadi-proto::sim_physics same_seed_is_identical_and_different_seed_differs
+        PASS [   0.011s] sadi-proto::vectors device_packets_match_vectors
+        PASS [   0.028s] sadi-proto::sim_physics noise_sd_matches_preliminary_value
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.045s] 28 tests run: 28 passed, 21 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=active_fault_kinds_match_scenarios) | test(=adc_conversion_cases_match_in_both_modes) | test(=all_named_scenarios_load) | test(=codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale) | test(=codec::adc::tests::dll_unipolar_upper_half_is_negative) | test(=codec::adc::tests::every_raw_code_is_finite) | test(=codec::packet::tests::version_and_ack_round_trip) | test(=coloured_noise_keeps_sd_but_is_correlated) | test(=creep_slope_is_recovered_through_noise) | test(=creep_slope_vs_log_time_is_recovered_exactly_without_noise) | test(=device_packets_match_vectors) | test(=elastic_modulus_is_recovered_below_yield) | test(=linear_drift_slope_is_recovered) | test(=noise_sd_matches_preliminary_value) | test(=plastic_hardening_adds_permanent_strain) | test(=polarity_flips_sign_about_offset) | test(=same_seed_is_identical_and_different_seed_differs) | test(=saturating_scenario_actually_saturates) | test(=saturation_clamps_and_folds) | test(=scenario_json_round_trips) | test(=sim::physics::tests::lvdt_round_trips) | test(=sim::physics::tests::mass_follows_steps) | test(=sim::signal::tests::signal_source_is_usable_as_object) | test(=sim::signal_faults::tests::fold_reflects_and_repeats) | test(=sim::signal_faults::tests::noise_is_deterministic) | test(=slip_step_sizes_are_recovered_with_no_load_change) | test(=unknown_fields_and_bad_values_are_rejected) | test(=unloaded_clean_voltage_reads_one_volt_by_default)))'"
+size = 2955
+status = "measured"
+test_count = 28
+tests_digest = "2c53e02b36b40b852a7f0221fb09a64cbad1abdc767d28e2970ed9605742d26f"
+at = "2026-11-08T00:25:21Z"
+actor = "lognd"
+rev = 1

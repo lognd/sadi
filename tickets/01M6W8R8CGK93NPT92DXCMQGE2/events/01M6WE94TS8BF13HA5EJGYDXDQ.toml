@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:02:30Z"
+digest = "804e6908eef3aa3b9d8ba942f31bb2d0cab7a6d33194209612da997173dbae1e"
+exit_code = 0
+head = "438dc6f4c98bb9dfe26d3ffe79996fb4bddcdd0e"
+inline = """
+docs/preliminary-data-analysis.md:2:Status: draft
+"""
+passed = true
+provider = "command"
+ref = "git grep -n ^Status:.draft$ -- docs/preliminary-data-analysis.md"
+size = 50
+status = "measured"
+at = "2026-11-08T02:02:30Z"
+actor = "lognd"
+rev = 1

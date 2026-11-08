@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/serial.rs", "crates/sadi-proto/tests/serial_loopback.rs", "docs/device/serial.md", "Cargo.toml", "crates/sadi-proto/Cargo.toml", "Cargo.lock", "crates/sadi-proto/src/error.rs", "docs/sadi-proto.md"]
+new = ["crates/sadi-proto/src/serial.rs", "crates/sadi-proto/tests/serial_loopback.rs", "docs/device/serial.md", "Cargo.toml", "crates/sadi-proto/Cargo.toml", "Cargo.lock", "crates/sadi-proto/src/error.rs", "docs/sadi-proto.md", "docs/README.md"]
+at = "2026-11-08T00:26:54Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:40:52Z"
+digest = "1effa0e0bfc8ec5e515ca827416a7af97d220ac84209c1681daf428d38e63738"
+exit_code = 0
+head = "e1f359d1317bfba21c6c79aa728cb65267ca2fef"
+inline = """
+    Checking sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.95s
+"""
+passed = true
+provider = "command"
+ref = "cargo clippy -j2 -p sadi-proto --all-targets -- -D warnings"
+size = 134
+status = "measured"
+at = "2026-11-08T00:40:52Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,10 @@
+kind = "create"
+title = "Add Backpressure/DiskFull/Closed/Stalled to StoreCode"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/core/errors.py"]
+body = "found while working ~3F2W55E; writer_thread.py defines these errors locally"
+at = "2026-11-08T01:15:57Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,18 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:35:04Z"
+digest = "098d85ff5d15be8d3c41231ff4de445783e52d6071cd82200b751dcb4e6c9da7"
+exit_code = 0
+head = "d314e779b23aa961578f55310981311ed1c8b693"
+inline = """
+........                                                                 [100%]
+8 passed in 1.90s
+"""
+passed = true
+provider = "command"
+ref = "uv run --project python pytest -q python/tests/test_typani_collisions.py"
+size = 98
+status = "measured"
+at = "2026-11-08T00:35:04Z"
+actor = "lognd"
+rev = 1

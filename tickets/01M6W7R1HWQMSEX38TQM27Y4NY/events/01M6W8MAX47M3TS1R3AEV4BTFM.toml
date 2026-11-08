@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:23:44Z"
+digest = "77086b196726f6cf308b7ccd7b7afcf59a57e83dd9c4267f1daf06cf12c95986"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 47 items
+
+python/tests/core/test_formatting.py ................................... [ 74%]
+............                                                             [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-47410-0.xml ---------------
+============================== 47 passed in 0.25s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_formatting.py::test_confidence_errors python/tests/core/test_formatting.py::test_confidence_label python/tests/core/test_formatting.py::test_config_rejects_bad_counts python/tests/core/test_formatting.py::test_configurable_sig_figs python/tests/core/test_formatting.py::test_format_quantity python/tests/core/test_formatting.py::test_format_result_scientific python/tests/core/test_formatting.py::test_format_result_table python/tests/core/test_formatting.py::test_negative_uncertainty_is_err python/tests/core/test_formatting.py::test_non_finite_is_err python/tests/core/test_formatting.py::test_plain_language_confidence python/tests/core/test_formatting.py::test_round_sig"
+size = 602
+status = "measured"
+test_count = 47
+tests_digest = "dd75d7ea2d1f314458a6662600a0b32af3755f900437d705dab018798d5e2660"
+at = "2026-11-08T00:23:44Z"
+actor = "lognd"
+rev = 1

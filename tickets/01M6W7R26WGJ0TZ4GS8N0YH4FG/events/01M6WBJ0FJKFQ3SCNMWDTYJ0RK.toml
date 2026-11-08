@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:14:52Z"
+digest = "badedc18b15bf903b6189413c93d402512d347fd596379f3917e9c90dd0a42ae"
+exit_code = 0
+head = "111a426043c5d215f3c8e6fd7abd51bf6197ccf6"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/core/test_inventory.py ....                                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-135093-0.xml ---------------
+============================== 4 passed in 1.43s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_inventory.py::test_combo_individual_only_rss python/tests/core/test_inventory.py::test_combo_errors python/tests/core/test_inventory.py::test_group_beats_individual_when_more_precise python/tests/core/test_inventory.py::test_individual_beats_group_when_more_precise"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "5678b70582e6ce9a7348f045310e0fba88d62a60b17fdb00d69ea9cceb3fc1b8"
+at = "2026-11-08T01:14:52Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,30 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:31:02Z"
+digest = "b0ddf0982285e04d1754f9021004738619929bfcaa1f14e563c6adccd1651c69"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 15 items
+
+python/tests/core/test_lab_registry.py .                                 [  6%]
+python/tests/test_scaffold.py ..                                         [ 20%]
+python/tests/uncertainty/test_measured.py .                              [ 26%]
+python/tests/uncertainty/test_uncertain.py ...........                   [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-71868-0.xml ---------------
+============================== 15 passed in 3.03s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_lab_registry.py::test_discover_registers_good_and_reports_bad python/tests/test_scaffold.py::test_get_logger_follows_stream_swap python/tests/test_scaffold.py::test_get_logger_routes_levels python/tests/uncertainty/test_measured.py::test_operators_and_accessors python/tests/uncertainty/test_uncertain.py::test_argument_errors_and_units python/tests/uncertainty/test_uncertain.py::test_cache_reuses_compiled_expression python/tests/uncertainty/test_uncertain.py::test_correlation_changes_answer python/tests/uncertainty/test_uncertain.py::test_exposes_symbolic_partials_latex_sensitivities python/tests/uncertainty/test_uncertain.py::test_hint_direct python/tests/uncertainty/test_uncertain.py::test_hypothesis_product_closed_form python/tests/uncertainty/test_uncertain.py::test_matches_hand_derived_partials python/tests/uncertainty/test_uncertain.py::test_monte_carlo_cross_check python/tests/uncertainty/test_uncertain.py::test_name_hygiene python/tests/uncertainty/test_uncertain.py::test_not_differentiable_and_signature_errors python/tests/uncertainty/test_uncertain.py::test_untraceable_function_is_typed_error"
+size = 762
+status = "measured"
+test_count = 15
+tests_digest = "0ec4ab8c5f6f7329795ff1854268b88141fea781ff0d2e66b3dd2a239b7c68ea"
+at = "2026-11-08T00:31:02Z"
+actor = "lognd"
+rev = 1

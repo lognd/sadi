@@ -1,0 +1,8 @@
+kind = "create"
+object = "cycle"
+goal = "Scaffolds, device layer, data-safety core, uncertainty engine"
+start = "2026-11-07"
+end = "2026-11-13"
+at = "2026-11-08T00:10:16Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/python-layout.md names the store package sadi/store/ (python/sadi/store/), matching DS2-DS8 scopes, data-safety.md and the on-disk layout", "No remaining reference to sadi/core/store/ in docs/python-layout.md"]
+moved = []
+at = "2026-11-08T02:02:46Z"
+actor = "lognd"
+rev = 1

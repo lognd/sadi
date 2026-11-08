@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:19:29Z"
+digest = "46f47600657bd0578afd1a1a1b07b51a5ca727f61ae1975d292a4fd7ce8f3b28"
+exit_code = 0
+head = "af08df76e4bcce1f412c73d1acb71d6913779fe7"
+inline = """
+
+running 3 tests
+test device_packets_match_vectors ... ok
+test framing_cases_match_vectors ... ok
+test resync_recovers_after_garbage_and_dropped_bytes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.01s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/vectors.rs (target/debug/deps/vectors-28a2437cb3b5381e)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --test vectors -- device_packets_match_vectors framing_cases_match_vectors resync_recovers_after_garbage_and_dropped_bytes"
+size = 402
+status = "measured"
+at = "2026-11-08T00:19:29Z"
+actor = "lognd"
+rev = 1

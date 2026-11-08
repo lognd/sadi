@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["tools/check_typani_collisions.py", "python/tests/test_typani_collisions.py", "docs/uncertainty/naming.md"]
+new = ["tools/check_typani_collisions.py", "python/tests/test_typani_collisions.py", "docs/uncertainty/naming.md", "docs/uncertainty/uncertain.md"]
+at = "2026-11-08T00:35:09Z"
+actor = "lognd"
+rev = 1

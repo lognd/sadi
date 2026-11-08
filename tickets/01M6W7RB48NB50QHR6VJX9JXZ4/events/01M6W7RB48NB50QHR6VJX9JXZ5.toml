@@ -1,0 +1,31 @@
+kind = "create"
+title = "Wheels and release workflow with install smoke test (maturin, 3 OS)"
+type = "chore"
+category = "todo"
+priority = "medium"
+points = 5
+parent = "01M6W7R00Z87A80RZB3JCC7HDM"
+idempotency_key = "sadi-c2"
+labels = ["ws:ci", "model:sonnet", "creates:.github/workflows/wheels.yml", "creates:docs/release.md"]
+scope = [".github/workflows/wheels.yml", "docs/release.md"]
+acceptance = ["maturin builds sadi-py wheels for linux (manylinux), windows, macOS (x86_64 + arm64); pure-Python sadi wheel bundles the built UI", "Smoke job: fresh venv, pip install wheel, `sadi --version`, `sadi --sim --no-browser --selftest` exits 0 on all 3 OS", "docs/release.md documents the release procedure"]
+body = """
+
+
+Suggested model: Sonnet.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001)."""
+at = "2026-11-08T00:08:28Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R226VMAMHYPDBQTAS277"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7RAFMFB5NMWGZY0VYJVFZ"
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7RAW944RFCMESYZKJSYXC"

@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T00:47:59Z"
+digest = "a12f867db66f4ce28d53b6fb119d06aafb79bbf7ebb79663a822eca87124f960"
+head = "8fea6c4a5a292a46e0d980da35baf6f09001cf69"
+provider = "file"
+ref = "docs/gp-selector.md"
+size = 11053
+status = "measured"
+at = "2026-11-08T00:47:59Z"
+actor = "lognd"
+rev = 1

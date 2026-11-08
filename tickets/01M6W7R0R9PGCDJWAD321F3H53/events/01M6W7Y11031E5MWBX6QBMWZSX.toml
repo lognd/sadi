@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/21F3H53; scope: web/package.json, web/tsconfig.json, web/vite.config.ts, web/index.html, web/eslint.config.js, web/src/main.tsx, web/src/App.tsx, web/src/api/**, web/src/state/**, docs/web-layout.md; ttl 7200s"
+at = "2026-11-08T00:11:34Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T00:27:23Z"
+digest = "44ca9b50648833821bee254dcab04ae757ae4d33ca20502db260d31b4df058e5"
+head = "c4ea5f1a6913c8a985310c46f71fe92f48121168"
+provider = "file"
+ref = "docs/core/lab-modules.md"
+size = 2142
+status = "measured"
+at = "2026-11-08T00:27:23Z"
+actor = "lognd"
+rev = 1

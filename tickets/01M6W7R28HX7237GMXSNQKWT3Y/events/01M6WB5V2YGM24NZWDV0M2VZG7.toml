@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T01:08:13Z"
+digest = "39d367022245ba877378258289fa451000e1da7067e41deb8b202f59199f9639"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 14 items
+
+python/tests/labs/lctt/test_calibration.py ..............                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-122224-0.xml ---------------
+============================== 14 passed in 2.06s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_calibration.py::test_ci_band_matches_hand_formula python/tests/labs/lctt/test_calibration.py::test_displacement_uses_slope_only python/tests/labs/lctt/test_calibration.py::test_errors_in_both_matches_effective_variance_fixed_point python/tests/labs/lctt/test_calibration.py::test_height_at_uses_slope_intercept_covariance python/tests/labs/lctt/test_calibration.py::test_matches_hand_linest_reference python/tests/labs/lctt/test_calibration.py::test_matches_labview_oracle python/tests/labs/lctt/test_calibration.py::test_measured_carries_dof_and_covariance python/tests/labs/lctt/test_calibration.py::test_offset_is_the_intercept python/tests/labs/lctt/test_calibration.py::test_property_slope_recovered_within_standard_error python/tests/labs/lctt/test_calibration.py::test_property_weighted_fit_recovers_slope python/tests/labs/lctt/test_calibration.py::test_rank_deficient_when_one_point_carries_all_weight python/tests/labs/lctt/test_calibration.py::test_typed_errors python/tests/labs/lctt/test_calibration.py::test_uniform_height_uncertainty_equals_unweighted python/tests/labs/lctt/test_calibration.py::test_voltage_uncertainty_ignored_without_flag"
+size = 522
+status = "measured"
+test_count = 14
+tests_digest = "a0c407baf0b71378a60b28e47d1a6d5b81461f39d06234622879bb6d6a0ed4aa"
+at = "2026-11-08T01:08:13Z"
+actor = "lognd"
+rev = 1

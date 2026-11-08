@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:29:14Z"
+digest = "9862976a9b77632545943d136dad80a64f2a25d7aa2f18a98b43edf1ef6e2b55"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 8 items
+
+python/tests/labs/lctt/test_settle.py ........                           [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-62754-0.xml ---------------
+============================== 8 passed in 1.43s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_settle.py::test_bad_inputs python/tests/labs/lctt/test_settle.py::test_config_bounds_and_frozen python/tests/labs/lctt/test_settle.py::test_dwell_boundary python/tests/labs/lctt/test_settle.py::test_exponential_settle python/tests/labs/lctt/test_settle.py::test_flat_noisy_uncertain_slope python/tests/labs/lctt/test_settle.py::test_linear_drift_never_settles python/tests/labs/lctt/test_settle.py::test_noise_does_not_false_settle python/tests/labs/lctt/test_settle.py::test_too_short"
+size = 521
+status = "measured"
+test_count = 8
+tests_digest = "edbb811eb15bde536d9d304fe2fcfaa7729c5f8132ed8032b685bab9163a552d"
+at = "2026-11-08T00:29:14Z"
+actor = "lognd"
+rev = 1

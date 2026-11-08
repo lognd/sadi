@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:10:47Z"
+digest = "594bd8bf35a4d33580a34c8713fa91bd36db83e64c068813755cde13c3dced51"
+exit_code = 0
+head = "7a14b66deb3097c500aab4af1910803ccc29462c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/jobs/test_manager.py ..                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-126100-0.xml ---------------
+============================== 2 passed in 0.60s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_manager.py::test_jobs_package_has_no_web_or_store_imports python/tests/jobs/test_manager.py::test_done_result_and_worker_never_imports_store"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "79f11cc397c4d805f787e0d87ed1fff6d782ac14073bc4c7e3496c3280d30e63"
+at = "2026-11-08T01:10:47Z"
+actor = "lognd"
+rev = 1

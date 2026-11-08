@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T01:09:13Z"
+digest = "59d137b6ce76f601839bff97f1fcd4b01fd303334335d604c7ab95debb57988e"
+exit_code = 0
+head = "3583c6dc2d4f8c814210d3ac17f44385573639cf"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_calibration.py ..                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-123385-0.xml ---------------
+============================== 2 passed in 1.54s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = " python/tests/labs/lctt/test_calibration.py::test_height_at_uses_slope_intercept_covariance python/tests/labs/lctt/test_calibration.py::test_measured_carries_dof_and_covariance"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "8df326b54e51b8a40dcb6e4a23742412cc58af76f94b2bc5e684e13e70f9658e"
+at = "2026-11-08T01:09:13Z"
+actor = "lognd"
+rev = 1

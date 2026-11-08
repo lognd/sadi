@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T01:09:11Z"
+digest = "5c4bbd48403835711ec729617664c59ab7f5bf8f9733cc6bd9b9fefe80230909"
+exit_code = 0
+head = "3583c6dc2d4f8c814210d3ac17f44385573639cf"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_calibration.py ..                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-123349-0.xml ---------------
+============================== 2 passed in 1.47s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = " python/tests/labs/lctt/test_calibration.py::test_typed_errors python/tests/labs/lctt/test_calibration.py::test_rank_deficient_when_one_point_carries_all_weight"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "c65981a10dce881fc4928c9976f8f51ddd1c495238427f6080674f821f780edd"
+at = "2026-11-08T01:09:11Z"
+actor = "lognd"
+rev = 1

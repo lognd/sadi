@@ -1,0 +1,49 @@
++++
+id = "01M6W7R0T0AC47BJGF2CKTER59"
+title = "Data-safety design: WAL format, sessions, snapshots, per-OS durability, recovery"
+type = "docs"
+category = "done"
+outcome = "done"
+priority = "critical"
+points = 8
+parent = "01M6W7R04QJTECCTSV9EY2JADK"
+reporter = "lognd"
+created = "2026-11-08T00:08:17Z"
+updated = "2026-11-08T00:27:06Z"
+idempotency_key = "sadi-ds1"
+labels = ["ws:store", "design", "model:fable", "creates:docs/data-safety.md"]
+scope = ["docs/data-safety.md", "docs/index.md"]
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R0HZCA3MXA7231DQHSR7"
+
+[[acceptance]]
+text = "Specifies WAL record framing (magic, type, length, seq, crc32c over header+payload), segment files and rotation, sealed-segment footer/hash, torn-tail detection and truncate-on-recovery rules, record-type registry (raw bytes block, marker, point, edit, settings, note)"
+bound = true
+
+[[acceptance]]
+text = "Defines durability contract: what 'durable' means (fsync policy / group commit window, fsync of file AND directory on create/rotate), the durable_seq gate that the display pipeline must wait for, and disk-full / I/O error behaviour (stop acquiring loudly, never drop silently)"
+bound = true
+
+[[acceptance]]
+text = "Session directories: versioned names, O_EXCL (create-new) creation, never overwritten, resume = new version with parent link, manifest format, single-writer lock, snapshot atomic rename procedure, exports always derived (tmp + rename, provenance, regenerable)"
+bound = true
+
+[[acceptance]]
+text = "Per-OS table: Linux (fsync + dir fsync), macOS (F_FULLFSYNC), Windows (FlushFileBuffers, MoveFileExW REPLACE_EXISTING|WRITE_THROUGH, no dir fsync, sharing violations/antivirus retry), WSL /mnt/c and network-FS caveats; each with the chosen primitive and the residual risk"
+bound = true
+
+[[acceptance]]
+text = "Decides implementation language (default: Python, python/sadi/store, since 612 kB/s is trivial) with rationale; failure-injection hooks (failpoints) needed by DS6 are specified"
+bound = true
+
+[[acceptance]]
+text = "Crash-recovery test plan with named invariants (prefix property, no acknowledged-record loss, no accepted corrupt record, no overwrite, snapshot old-or-new)"
+bound = true
++++
+
+Design before code; DS2-DS7 implement exactly this. Raw stream is written before display; analysis only ever recomputes from raw. Fable ticket: this is the highest-risk design in the project.
+
+Suggested model: Fable.
+Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001).

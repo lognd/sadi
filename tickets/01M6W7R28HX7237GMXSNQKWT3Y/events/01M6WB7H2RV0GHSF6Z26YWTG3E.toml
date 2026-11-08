@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T01:09:09Z"
+digest = "ddd27188ea99e4812a96ffdb1257aef6006a5e108d790b13ae626883e046cb53"
+exit_code = 0
+head = "3583c6dc2d4f8c814210d3ac17f44385573639cf"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/labs/lctt/test_calibration.py ....                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-123308-0.xml ---------------
+============================== 4 passed in 1.57s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = " python/tests/labs/lctt/test_calibration.py::test_errors_in_both_matches_effective_variance_fixed_point python/tests/labs/lctt/test_calibration.py::test_displacement_uses_slope_only python/tests/labs/lctt/test_calibration.py::test_offset_is_the_intercept python/tests/labs/lctt/test_calibration.py::test_voltage_uncertainty_ignored_without_flag"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "363e2d5d3c3fb936683b0afe81c564e66cbfbaa8c017f460ce76694782b600f3"
+at = "2026-11-08T01:09:09Z"
+actor = "lognd"
+rev = 1

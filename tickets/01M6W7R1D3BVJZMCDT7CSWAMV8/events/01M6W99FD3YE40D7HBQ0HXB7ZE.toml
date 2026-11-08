@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T00:35:18Z"
+digest = "9457342066185af4986be88192d3dbaadd9ae2b03e570b468f321df89cd84a4e"
+head = "196c6be717b71e9706e12562894345b30fc09717"
+provider = "file"
+ref = "docs/device/simulator.md"
+size = 3532
+status = "measured"
+at = "2026-11-08T00:35:18Z"
+actor = "lognd"
+rev = 1

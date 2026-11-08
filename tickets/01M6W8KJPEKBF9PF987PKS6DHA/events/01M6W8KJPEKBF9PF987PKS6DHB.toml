@@ -1,0 +1,13 @@
+kind = "create"
+title = "Rust type-driven audit: typestate devices, exhaustive enums, newtypes in sadi-proto"
+type = "task"
+category = "todo"
+priority = "high"
+points = 5
+labels = ["ws:rust", "model:sonnet"]
+scope = ["crates/sadi-proto/src/codec/mod.rs,crates/sadi-proto/src/codec/command.rs,crates/sadi-proto/src/codec/packet.rs,crates/sadi-proto/src/codec/adc.rs,crates/sadi-proto/src/session.rs,crates/sadi-proto/src/transport.rs,crates/sadi-proto/src/error.rs,docs/rust-type-design.md"]
+acceptance = ["Audit landed codec/transport/error for integer-coded kinds, wildcard arms on protocol enums, bare f64/u8 units and channel ids; convert to TryFrom enums and newtypes", "Clippy lints enforced crate-wide (wildcard_enum_match_arm, must_use_candidate); compile-fail tests show misuse of device/session handles is rejected", "docs/rust-type-design.md states the conventions (typestate session consuming self, linear device handle, newtypes) and is linked from docs/sadi-proto.md"]
+body = "User directive: leverage the type and borrow checker to the fullest. Coordinate with ~SB1MWFD (session typestate) and ~Q4YBED4 (serial); start after ~8XCPH41 lands."
+at = "2026-11-08T00:23:20Z"
+actor = "lognd"
+rev = 1

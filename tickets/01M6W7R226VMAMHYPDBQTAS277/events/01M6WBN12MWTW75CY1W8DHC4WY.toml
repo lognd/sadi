@@ -1,0 +1,8 @@
+kind = "land"
+base_ref = "refs/heads/main"
+commit = "da8d6b28c65b2b19c8a49ea68e05f98e5e79d2af"
+branch = "ticket/QTAS277"
+pushed = false
+at = "2026-11-08T01:16:27Z"
+actor = "lognd"
+rev = 1

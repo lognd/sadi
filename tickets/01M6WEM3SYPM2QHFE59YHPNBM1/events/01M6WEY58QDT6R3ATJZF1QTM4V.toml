@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T02:13:57Z"
+digest = "6025c25ea7faafc651fb3c50c9fc1a9e950c4c139bc3c9ccb91027cbfb619ebb"
+exit_code = 0
+head = "de2ca0742f2a1055be94ad226e255aa92a656d4e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/store/test_session.py ..                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-185171-0.xml ---------------
+============================== 2 passed in 0.69s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_session.py::test_second_open_of_same_root_is_lock_held python/tests/store/test_session.py::test_close_releases_data_root_lock"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "ac68a0f937f7bd1f45edb49fd63c5614611031f300d64160eb5b4f924ee0258f"
+at = "2026-11-08T02:13:57Z"
+actor = "lognd"
+rev = 1

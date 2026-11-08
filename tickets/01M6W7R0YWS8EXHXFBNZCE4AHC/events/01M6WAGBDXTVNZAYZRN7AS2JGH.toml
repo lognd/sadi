@@ -1,0 +1,36 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:56:30Z"
+digest = "b4c7e4c115ae715bd78875cfad2c3cf78ce642184d6de2b479631b9e17918dd2"
+exit_code = 0
+head = "394c910686a44565f895f37dd7ea51cc3ca12549"
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.38s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 24a71922-e62d-4e40-8394-0c1210b45b90 with nextest profile: default
+    Starting 12 tests across 1 binary (6 binaries skipped)
+        PASS [   0.010s] sadi-proto::byte_faults certain_flip_changes_exactly_one_bit_per_byte
+        PASS [   0.010s] sadi-proto::byte_faults plan_serde_roundtrip_and_active_kinds
+        PASS [   0.010s] sadi-proto::byte_faults certain_drop_loses_everything
+        PASS [   0.011s] sadi-proto::byte_faults zero_plan_is_transparent
+        PASS [   0.011s] sadi-proto::byte_faults probability_rejects_out_of_range_and_non_finite
+        PASS [   0.011s] sadi-proto::byte_faults writes_and_control_calls_pass_through
+        PASS [   0.011s] sadi-proto::byte_faults certain_duplicate_doubles_every_byte
+        PASS [   0.012s] sadi-proto::byte_faults same_seed_reproduces_exact_fault_sequence
+        PASS [   0.012s] sadi-proto::byte_faults certain_stall_never_delivers
+        PASS [   0.012s] sadi-proto::byte_faults different_seeds_diverge
+        PASS [   0.011s] sadi-proto::byte_faults certain_truncate_always_loses_a_tail
+        PASS [   0.010s] sadi-proto::byte_faults certain_short_read_never_fills_buffer_but_loses_nothing
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.013s] 12 tests run: 12 passed, 0 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E 'binary(byte_faults)'"
+size = 1569
+status = "measured"
+test_count = 12
+tests_digest = "e277dae665d84d0f81000737cda9c3bf3ba1ef88ec1312c25a28993a46c4d554"
+at = "2026-11-08T00:56:30Z"
+actor = "lognd"
+rev = 1

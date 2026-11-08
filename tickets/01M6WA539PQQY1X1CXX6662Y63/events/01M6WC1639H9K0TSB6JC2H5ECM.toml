@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["hardware-verification.md has checklist rows for udev rules, by-id naming, FTDI channel A/B selection and ftdi_sio on WSL, all marked pending/unverified", "99-sadi.rules includes 0403:6001 (tty and usb), labelled unverified", "portability.md section 4 and findings reference the new rows and rules"]
+moved = []
+at = "2026-11-08T01:23:12Z"
+actor = "lognd"
+rev = 1

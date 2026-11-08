@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:18:32Z"
+digest = "101af713cf545cf8084f59658f7187f801b3b37b293a8a2b131a0d0f0cfcef5d"
+exit_code = 0
+head = "3210c945c6583599fe58341f2e93303941cbe855"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 20 items
+
+python/tests/uncertainty/test_measured.py ....................           [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-38649-0.xml ---------------
+============================== 20 passed in 1.82s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/test_measured.py"
+size = 522
+status = "measured"
+test_count = 20
+tests_digest = "1d75caf6f682c2004109e1f66c8ccc3160bcdda1a339add97bd28441af0fa679"
+at = "2026-11-08T00:18:32Z"
+actor = "lognd"
+rev = 1

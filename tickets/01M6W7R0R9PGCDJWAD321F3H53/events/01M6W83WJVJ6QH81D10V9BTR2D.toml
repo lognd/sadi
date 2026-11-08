@@ -1,0 +1,53 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:14:45Z"
+digest = "bfd25df05cf852ca56cfadae35016b4eb49bb666914b2e90916505e84a907c6a"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/state/store.test.ts > store > updates connection
+[state.store] connection changed { next: 'up' }
+
+stdout | src/state/store.test.ts > store > updates session id
+[state.store] session changed { id: 's1' }
+
+ \u{2713} src/state/store.test.ts (2 tests) 4ms
+stdout | src/api/client.test.ts > getHealth > returns the parsed payload on 200
+[api.client] request { path: '/api/health' }
+
+stdout | src/api/client.test.ts > getHealth > returns the parsed payload on 200
+[api.client] response ok { path: '/api/health', status: 200 }
+
+stdout | src/api/client.test.ts > getHealth > maps non-2xx to an http error
+[api.client] request { path: '/api/health' }
+
+stdout | src/api/client.test.ts > getHealth > maps a thrown fetch to a network error
+[api.client] request { path: '/api/health' }
+
+ \u{2713} src/api/client.test.ts (3 tests) 10ms
+ \u{2713} src/App.test.tsx (1 test) 8ms
+
+ Test Files  3 passed (3)
+      Tests  6 passed (6)
+   Start at  19:14:45
+   Duration  758ms (transform 211ms, setup 0ms, collect 300ms, tests 22ms, environment 1ms, prepare 778ms)
+
+JSON report written to /tmp/frob-vitest-29371-0.json
+stderr | src/api/client.test.ts > getHealth > maps non-2xx to an http error
+[api.client] http error { path: '/api/health', status: 500 }
+
+stderr | src/api/client.test.ts > getHealth > maps a thrown fetch to a network error
+[api.client] network failure { path: '/api/health', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/App.test.tsx web/src/api/client.test.ts web/src/state/store.test.ts"
+size = 1435
+status = "measured"
+test_count = 6
+tests_digest = "ee987fd05f5c56211e1451131b46aa0ba43d1acf873f12f3138fa73bb7200fc2"
+at = "2026-11-08T00:14:45Z"
+actor = "lognd"
+rev = 1

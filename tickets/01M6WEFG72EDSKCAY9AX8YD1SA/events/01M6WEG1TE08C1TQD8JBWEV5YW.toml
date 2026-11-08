@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/X8YD1SA; scope: python/sadi/store/lock.py, python/tests/store/test_lock.py, docs/store/lock.md; ttl 7200s"
+at = "2026-11-08T02:06:16Z"
+actor = "lognd"
+rev = 1

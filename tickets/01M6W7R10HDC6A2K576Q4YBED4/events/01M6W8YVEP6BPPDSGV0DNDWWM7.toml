@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-08T00:29:29Z"
+digest = "ebac31cd4c2f787ce34d444b4b88a8f3d17be94e731b8fde4fdb36d1df68961f"
+head = "76c333a0ba2836a1e3c40b3fbab83238dde7b17c"
+provider = "file"
+ref = "docs/device/serial.md"
+size = 2356
+status = "measured"
+at = "2026-11-08T00:29:29Z"
+actor = "lognd"
+rev = 1

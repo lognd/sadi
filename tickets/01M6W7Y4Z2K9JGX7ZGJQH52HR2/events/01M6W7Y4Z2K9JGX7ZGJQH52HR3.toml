@@ -1,0 +1,10 @@
+kind = "create"
+title = "Add Status header lines to pre-existing docs (DOC003)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["docs/domain.md", "docs/open-questions.md", "docs/plan.md", "docs/preliminary-data-analysis.md", "docs/protocol.md"]
+body = "found while working ~1DQHSR7: DOC003 fires on 5 pre-existing docs lacking a Status: line"
+at = "2026-11-08T00:11:38Z"
+actor = "lognd"
+rev = 1

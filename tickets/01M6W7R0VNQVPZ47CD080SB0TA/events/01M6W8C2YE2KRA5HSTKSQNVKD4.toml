@@ -1,0 +1,48 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:19:13Z"
+digest = "962ebacc5a66cc764eb00af4df46e2185b0ee638eb7b47527471ebf2585ae9f9"
+exit_code = 0
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID b124e989-f0dd-4d54-98ee-87841d993f55 with nextest profile: default
+    Starting 26 tests across 2 binaries (2 tests skipped)
+        PASS [   0.015s] sadi-proto codec::command::tests::code_round_trips
+        PASS [   0.016s] sadi-proto codec::adc::tests::every_raw_code_is_finite
+        PASS [   0.017s] sadi-proto codec::command::tests::rejects_invalid_codes
+        PASS [   0.017s] sadi-proto codec::adc::tests::dll_unipolar_upper_half_is_negative
+        PASS [   0.017s] sadi-proto codec::command::tests::decode_rejects_bad_frames
+        PASS [   0.017s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.017s] sadi-proto codec::packet::tests::rejects_malformed_frames
+        PASS [   0.017s] sadi-proto codec::command::tests::command_round_trips
+        PASS [   0.016s] sadi-proto codec::decoder::tests::buffered_and_reset
+        PASS [   0.016s] sadi-proto sim::signal::tests::signal_source_is_usable_as_object
+        PASS [   0.015s] sadi-proto codec::decoder::tests::counts_msg_gaps
+        PASS [   0.018s] sadi-proto codec::packet::tests::unknown_state_is_preserved
+        PASS [   0.018s] sadi-proto codec::packet::tests::version_and_ack_round_trip
+        PASS [   0.016s] sadi-proto codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale
+        PASS [   0.018s] sadi-proto codec::packet::tests::data_round_trips
+        PASS [   0.016s] sadi-proto codec::decoder::tests::byte_at_a_time_and_garbage
+        PASS [   0.011s] sadi-proto::vectors host_commands_match_vectors
+        PASS [   0.011s] sadi-proto::vectors invalid_range_codes_rejected
+        PASS [   0.011s] sadi-proto::vectors device_packets_match_vectors
+        PASS [   0.012s] sadi-proto::vectors framing_cases_match_vectors
+        PASS [   0.013s] sadi-proto::vectors resync_recovers_after_garbage_and_dropped_bytes
+        PASS [   0.013s] sadi-proto::vectors adc_conversion_cases_match_in_both_modes
+        PASS [   0.014s] sadi-proto::vectors data_packets_match_vectors_in_both_modes
+        PASS [   0.048s] sadi-proto::vectors parsers_never_panic
+        PASS [   0.168s] sadi-proto::vectors never_panics_on_arbitrary_bytes
+        PASS [   0.755s] sadi-proto::vectors recovers_later_intact_packets
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.776s] 26 tests run: 26 passed, 2 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=adc_conversion_cases_match_in_both_modes) | test(=codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale) | test(=codec::adc::tests::dll_unipolar_upper_half_is_negative) | test(=codec::adc::tests::every_raw_code_is_finite) | test(=codec::command::tests::code_round_trips) | test(=codec::command::tests::command_round_trips) | test(=codec::command::tests::decode_rejects_bad_frames) | test(=codec::command::tests::rejects_invalid_codes) | test(=codec::decoder::tests::buffered_and_reset) | test(=codec::decoder::tests::byte_at_a_time_and_garbage) | test(=codec::decoder::tests::counts_msg_gaps) | test(=codec::packet::tests::data_round_trips) | test(=codec::packet::tests::rejects_malformed_frames) | test(=codec::packet::tests::unknown_state_is_preserved) | test(=codec::packet::tests::version_and_ack_round_trip) | test(=data_packets_match_vectors_in_both_modes) | test(=device_packets_match_vectors) | test(=framing_cases_match_vectors) | test(=host_commands_match_vectors) | test(=invalid_range_codes_rejected) | test(=never_panics_on_arbitrary_bytes) | test(=parsers_never_panic) | test(=recovers_later_intact_packets) | test(=resync_recovers_after_garbage_and_dropped_bytes) | test(=sim::signal::tests::signal_source_is_usable_as_object) | test(=transport::tests::trait_is_object_safe_and_send)))'"
+size = 2570
+status = "measured"
+test_count = 26
+tests_digest = "9336db3f4ae22d0b4147d4a8092cb5e5cbe1a6e246ae9f7df9247ec0cf02ea0e"
+at = "2026-11-08T00:19:13Z"
+actor = "lognd"
+rev = 1

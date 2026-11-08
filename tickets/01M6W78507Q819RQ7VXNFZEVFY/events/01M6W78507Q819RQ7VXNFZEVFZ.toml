@@ -1,0 +1,10 @@
+kind = "create"
+title = "SADI: replace LabVIEW the reference VI with portable web app"
+type = "epic"
+category = "todo"
+priority = "high"
+idempotency_key = "sadi-root"
+body = "Root epic. See docs/plan.md."
+at = "2026-11-07T23:59:37Z"
+actor = "lognd"
+rev = 1

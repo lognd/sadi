@@ -1,0 +1,33 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:30:14Z"
+digest = "e6890fe15bbc3745201ec49c3736789311ee12375aadab2805a0570bba0bae29"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 25 items
+
+python/tests/store/test_durable.py ................s                     [ 68%]
+python/tests/store/test_failpoints.py ........                           [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-68965-0.xml ---------------
+======================== 24 passed, 1 skipped in 0.50s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_durable.py::test_atomic_replace_cross_dir python/tests/store/test_durable.py::test_atomic_replace_dir_fsync_failure_reported python/tests/store/test_durable.py::test_atomic_replace_fsync_failure_keeps_original python/tests/store/test_durable.py::test_atomic_replace_ok python/tests/store/test_durable.py::test_atomic_replace_rename_failpoint python/tests/store/test_durable.py::test_atomic_replace_rename_failure_keeps_original python/tests/store/test_durable.py::test_create_exclusive_never_overwrites python/tests/store/test_durable.py::test_durability_downgraded_default python/tests/store/test_durable.py::test_fsync_dir_ok_and_missing python/tests/store/test_durable.py::test_fsync_dir_windows_noop python/tests/store/test_durable.py::test_fsync_failpoint_injection python/tests/store/test_durable.py::test_fsync_file_error_is_result python/tests/store/test_durable.py::test_fsync_file_ok python/tests/store/test_durable.py::test_plain_permission_error_not_retried python/tests/store/test_durable.py::test_sharing_violation_gives_up python/tests/store/test_durable.py::test_sharing_violation_retried_then_succeeds python/tests/store/test_durable.py::test_windows_held_handle_sharing_violation python/tests/store/test_failpoints.py::test_bad_action_rejected python/tests/store/test_failpoints.py::test_env_loading python/tests/store/test_failpoints.py::test_error_action_raises_oserror python/tests/store/test_failpoints.py::test_inactive_is_noop python/tests/store/test_failpoints.py::test_kill_exits_137 python/tests/store/test_failpoints.py::test_once_and_nth python/tests/store/test_failpoints.py::test_prob_zero_never_fires python/tests/store/test_failpoints.py::test_sleep_action"
+size = 602
+status = "measured"
+test_count = 24
+tests_digest = "4dc0cf728810388d80a8fcf8a8d37301e37edb91b9416561a2b92e1183f3f955"
+at = "2026-11-08T00:30:14Z"
+actor = "lognd"
+rev = 1
+
+[non_passing]
+skipped = 1
+xfailed = 0
+xpassed = 0

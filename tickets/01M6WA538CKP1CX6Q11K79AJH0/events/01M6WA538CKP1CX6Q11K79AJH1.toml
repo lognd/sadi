@@ -1,0 +1,8 @@
+kind = "create"
+title = "CSV export eol policy: .gitattributes text/eol rules + CRLF byte test"
+type = "task"
+category = "todo"
+priority = "low"
+at = "2026-11-08T00:50:23Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,8 @@
+kind = "create"
+title = "Replace mypy with ty in Python tooling"
+type = "chore"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T00:13:41Z"
+actor = "lognd"
+rev = 1

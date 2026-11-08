@@ -1,0 +1,8 @@
+kind = "land"
+base_ref = "refs/heads/main"
+commit = "48515a5a56d011986a2580ae47380846343f01e2"
+branch = "ticket/CSWAMV8"
+pushed = false
+at = "2026-11-08T00:35:19Z"
+actor = "lognd"
+rev = 1

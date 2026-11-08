@@ -1,0 +1,41 @@
+kind = "evidence"
+captured_at = "2026-11-08T00:35:00Z"
+digest = "dd30539bde5693dc0fdd2def0b4d332cedd09203f58e72172c292ceaf15ce90f"
+exit_code = 0
+inline = '''
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.33s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 2c91eb35-87c6-4599-9d7b-649ad21a5ab0 with nextest profile: default
+    Starting 18 tests across 5 binaries (59 tests skipped)
+        PASS [   0.018s] sadi-proto::sim_device small_reads_split_packets_and_idle_read_times_out
+        PASS [   0.017s] sadi-proto::sim_device output_is_deterministic_across_runs
+        PASS [   0.020s] sadi-proto sim::device::tests::packet_index_wraps_msg_count_at_32_bits
+        PASS [   0.020s] sadi-proto::sim_device custom_rate_changes_packet_pacing
+        PASS [   0.020s] sadi-proto::serial_loopback pty_round_trip
+        PASS [   0.020s] sadi-proto sim::device::tests::zero_rate_rejected
+        PASS [   0.019s] sadi-proto transport::tests::trait_is_object_safe_and_send
+        PASS [   0.019s] sadi-proto::sim_device commands_in_every_state_follow_firmware
+        PASS [   0.018s] sadi-proto::sim_device scenario_device_streams_and_unknown_scenario_errors
+        PASS [   0.020s] sadi-proto::sim_device boot_packet_then_query_reports_version_and_state
+        PASS [   0.021s] sadi-proto::sim_device paced_clock_sleeps_in_real_time
+        PASS [   0.019s] sadi-proto sim::device::tests::raw_from_volts_inverts_convert
+        PASS [   0.020s] sadi-proto::sim_device decoded_samples_match_signal_source
+        PASS [   0.024s] sadi-proto::sim_device close_and_purge_behave
+        PASS [   0.022s] sadi-proto::sim_device partial_and_garbage_writes_are_reassembled
+        PASS [   0.008s] sadi-proto::sim_physics saturation_clamps_and_folds
+        PASS [   0.019s] sadi-proto::sim_device start_stream_stop_round_trip_with_counter_continuity
+        PASS [   0.085s] sadi-proto::serial_loopback pty_purge_close_semantics
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.086s] 18 tests run: 18 passed, 59 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -E '(package(=sadi-proto) & (test(=boot_packet_then_query_reports_version_and_state) | test(=close_and_purge_behave) | test(=commands_in_every_state_follow_firmware) | test(=custom_rate_changes_packet_pacing) | test(=decoded_samples_match_signal_source) | test(=output_is_deterministic_across_runs) | test(=paced_clock_sleeps_in_real_time) | test(=partial_and_garbage_writes_are_reassembled) | test(=pty_purge_close_semantics) | test(=pty_round_trip) | test(=saturation_clamps_and_folds) | test(=scenario_device_streams_and_unknown_scenario_errors) | test(=sim::device::tests::packet_index_wraps_msg_count_at_32_bits) | test(=sim::device::tests::raw_from_volts_inverts_convert) | test(=sim::device::tests::zero_rate_rejected) | test(=small_reads_split_packets_and_idle_read_times_out) | test(=start_stream_stop_round_trip_with_counter_continuity) | test(=transport::tests::trait_is_object_safe_and_send)))'"
+size = 2074
+status = "measured"
+test_count = 18
+tests_digest = "8df35a1ac043d2c9d852e697dacf112de6e932b8a580f93cf65a4a8a7e57b590"
+at = "2026-11-08T00:35:00Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T02:04:16Z"
+digest = "0a455ff987006ca049efbe8d0d36fe447b5983965d73af08e2692d568b2861a9"
+head = "1544aacb53c8b3e4e5feb2ebdb719674df65b8f1"
+provider = "file"
+ref = "docs/live-view.md"
+size = 32983
+status = "measured"
+at = "2026-11-08T02:04:16Z"
+actor = "lognd"
+rev = 1

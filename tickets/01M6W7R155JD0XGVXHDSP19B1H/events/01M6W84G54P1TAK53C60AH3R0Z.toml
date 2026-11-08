@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/SP19B1H; scope: python/sadi/uncertainty/__init__.py, python/sadi/uncertainty/measured.py, python/sadi/uncertainty/covariance.py, python/sadi/uncertainty/units.py, python/sadi/uncertainty/errors.py, python/sadi/uncertainty/coverage.py, python/tests/uncertainty/test_measured.py, docs/uncertainty/measured.md; ttl 7200s"
+at = "2026-11-08T00:15:06Z"
+actor = "lognd"
+rev = 1

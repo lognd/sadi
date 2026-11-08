@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given other modules imported first, when get_logger routes INFO and WARNING under capsys, then INFO is on stdout and WARNING on stderr"]
+moved = []
+at = "2026-11-08T00:20:37Z"
+actor = "lognd"
+rev = 1

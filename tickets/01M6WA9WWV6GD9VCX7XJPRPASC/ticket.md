@@ -1,0 +1,28 @@
++++
+id = "01M6WA9WWV6GD9VCX7XJPRPASC"
+title = "Doctor design: check catalog and step-by-step remediation format (sadi doctor)"
+type = "docs"
+category = "done"
+outcome = "done"
+priority = "high"
+points = 3
+reporter = "lognd"
+created = "2026-11-08T00:53:00Z"
+updated = "2026-11-08T01:02:38Z"
+labels = ["model:fable", "ws:srv", "creates:docs/doctor.md"]
+scope = ["docs/doctor.md", "docs/index.md", "changelog.d/*JPRPASC*.md"]
+
+[[acceptance]]
+text = "Check catalog lists every check with id, layer, severity, how it is detected, and the failure modes it distinguishes"
+bound = true
+
+[[acceptance]]
+text = "Remediation format specified: ordered numbered steps, exact per-OS commands, expected output after each step, and a re-verify step; no step mutates user data without explicit confirmation"
+bound = true
+
+[[acceptance]]
+text = "Defines result schema (pydantic) for CLI text, JSON and the UI Doctor screen, plus the fixture/fault-injection test strategy"
+bound = true
++++
+
+Design for a 'sadi doctor' that checks EVERYTHING and instructs the user STEP-BY-STEP how to fix each problem. Covers: check catalog by layer (OS/platform, Python+uv env, Rust extension sadi-py import, web bundle present, ports, data dir writable+free space+fs type+fsync support, session locks and torn-tail/orphan sessions, WAL integrity scan, USB/FTDI presence, udev/driver/permissions per OS incl. WSL usbipd, device firmware/protocol probe, simulator self-test, clock/timezone, CPU/RAM, worker pool spawn test, browser launch); check API (id, severity, status pass/warn/fail/skip, evidence, ordered remediation steps with exact copy-paste commands per OS, verify-step re-run); read-only by default, never mutates data, fixes only on explicit user action; machine-readable JSON plus human text; usable from CLI and as a UI Doctor screen; fixture-driven tests; links to docs/portability.md and docs/hardware-verification.md.

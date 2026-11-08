@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1, 2, 3]
+captured_at = "2026-11-08T00:11:31Z"
+digest = "3d6566960e60c42f160feaba38fc895b5a1309b5a6d91c0e08016e40e41d490f"
+head = "0ecdab50feb67b85fd05a355ecc7b70bc35e0efb"
+provider = "file"
+ref = "docs/hardware-verification.md"
+size = 8737
+status = "measured"
+at = "2026-11-08T00:11:31Z"
+actor = "lognd"
+rev = 1

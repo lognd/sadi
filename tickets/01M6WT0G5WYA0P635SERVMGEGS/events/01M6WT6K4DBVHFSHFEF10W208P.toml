@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/doctor/checks/sess.py"]
+new = ["python/sadi/doctor/checks/sess.py", "python/tests/doctor/test_sess_names.py"]
+at = "2026-11-08T05:30:49Z"
+actor = "lognd"
+rev = 1

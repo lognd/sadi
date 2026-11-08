@@ -2,7 +2,7 @@
 id = "01M6WX3GPBQA22B9AAJK7BN9MY"
 title = "CSV export: store raw calibration points in metadata for full re-analysis"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

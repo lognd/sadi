@@ -2,12 +2,12 @@
 id = "01M6WSQ57BQ8EZYECPGPFQFWB7"
 title = "ad3: FakeDwf simulated device backend and SADI signal-injection bench"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T05:22:23Z"
-updated = "2026-11-08T05:24:11Z"
+updated = "2026-11-08T05:28:11Z"
 labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/ad3/fake.py", "creates:python/sadi/bench/inject.py", "creates:python/tests/bench/test_ad3_fake.py", "creates:docs/bench/injection.md"]
 
 [[acceptance]]

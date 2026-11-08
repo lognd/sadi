@@ -2,12 +2,12 @@
 id = "01M6XBHBTGXTE4TT5A9BE5FMFS"
 title = "COV001 in python/sadi/server and sadi_py acq.pyi"
 type = "chore"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:33:48Z"
-updated = "2026-11-08T10:34:49Z"
+updated = "2026-11-08T10:34:51Z"
 scope = ["python/sadi/server/**"]
 
 [[acceptance]]

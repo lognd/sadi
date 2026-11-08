@@ -50,6 +50,9 @@ export async function acceptWhenSettled(page: Page, inputs: Record<string, strin
   await fillInputs(page, inputs);
   // The detector only leaves "loading" once a load change is marked (docs/e2e.md).
   await page.getByRole("button", { name: "Mark load change" }).click();
+  // frob:ticket 01M6XAW4FBAE1EB5P808FA58BP
+  // Space/Enter belong to a focused button (keys/keymap controlFocus), so release focus or Space would re-mark instead of accept.
+  await page.evaluate(() => { (document.activeElement as HTMLElement | null)?.blur(); });
   // Wait for the marker ack so a stale "Captured" from the previous point cannot satisfy the final assertion.
   await expect(page.getByTestId("run-message")).toContainText("Load change marked");
   // The previous point's [Settled] may still be on screen; let the marker take effect first (best effort).

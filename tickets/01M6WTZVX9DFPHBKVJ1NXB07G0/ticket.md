@@ -7,8 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:50:23Z"
+updated = "2026-11-08T05:51:28Z"
 labels = ["ws:srv"]
+scope = ["python/sadi/launcher.py"]
 +++
 
 found in ~0VYJVFZ. launcher exports SADI_SIM=1 but nothing in server/app reads it. Also add python/sadi/__main__.py for python -m sadi.

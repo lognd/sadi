@@ -7,7 +7,7 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T04:38:18Z"
-updated = "2026-11-08T05:06:29Z"
+updated = "2026-11-08T05:06:37Z"
 scope = ["python/tests/server/test_spill_isolation.py"]
 
 [[acceptance]]

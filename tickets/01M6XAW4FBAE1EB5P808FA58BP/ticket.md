@@ -2,7 +2,8 @@
 id = "01M6XAW4FBAE1EB5P808FA58BP"
 title = "Re-run full Playwright suite after usability changes and fix regressions"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

@@ -7,6 +7,6 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T07:12:11Z"
-updated = "2026-11-08T07:18:31Z"
+updated = "2026-11-08T07:18:34Z"
 scope = ["python/sadi/labs/lctt/live.py", "python/tests/labs/lctt/test_live.py", "docs/lctt/lab-module.md", "docs/lctt/live.md"]
 +++

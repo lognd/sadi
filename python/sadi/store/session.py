@@ -6,6 +6,7 @@ version directory with a parent link; read-only open performs no write of any ki
 
 # frob:ticket 01M6W7R1VQHABR51SH64668M06
 # frob:ticket 01M6WEM3SYPM2QHFE59YHPNBM1
+# frob:ticket 01M6WFZFBK0KYAGBM1CD5GGH60
 from __future__ import annotations
 
 import os
@@ -14,6 +15,7 @@ import socket
 import subprocess
 import sys
 import uuid
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -25,7 +27,15 @@ from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
 from sadi.store.failpoints import failpoint
 from sadi.store.lock import DataRootLock, LockError, acquire
-from sadi.store.manifest import Manifest, ManifestInvalid, read_manifest, write_manifest
+from sadi.store.manifest import (
+    Manifest,
+    ManifestInvalid,
+    PluginWarning,
+    SessionPluginRef,
+    plugin_warnings,
+    read_manifest,
+    write_manifest,
+)
 from sadi.store.wal import ScanReport, WalError, WalReader
 
 _log = get_logger(__name__)
@@ -107,6 +117,7 @@ class SessionMeta(BaseModel):
     slug: str = "session"
     lab_module: str = ""
     specimen: dict[str, str] = {}
+    plugins: tuple[SessionPluginRef, ...] = ()
 
 
 def _io(exc: OSError, path: Path) -> SessionIo:
@@ -292,6 +303,7 @@ class ReadOnlySession:
     lock_holder: str
     holder_alive: bool | None
     manifest_stale: bool
+    plugin_warnings: tuple[PluginWarning, ...] = ()
 
 
 def _take_version(
@@ -418,16 +430,21 @@ def _create_locked(
         created=when,
         lab_module=meta.lab_module,
         specimen=meta.specimen,
+        plugins=meta.plugins,
     )
     return _init_dir(path, manifest)
 
 
 def resume_session(
-    parent_dir: Path, *, recover_stale: bool = False
+    parent_dir: Path,
+    *,
+    recover_stale: bool = False,
+    plugins: Sequence[SessionPluginRef] | None = None,
 ) -> Result[SessionHandle, SessionError]:
     """Lock the data root, then create the next version dir linked to `parent_dir`.
 
     The parent is never modified; a stale data-root lock needs explicit `recover_stale`.
+    `plugins` records provenance for the new version; None inherits the parent's list.
     """
     m = _DIR_RE.match(parent_dir.name)
     if m is None:
@@ -437,10 +454,12 @@ def resume_session(
     locked = _take_root_lock(parent_dir.parent.parent, recover_stale)
     if locked.is_err:
         return Err(locked.danger_err)
-    return _attach_root_lock(_resume_locked(parent_dir, m), locked.danger_ok)
+    return _attach_root_lock(_resume_locked(parent_dir, m, plugins), locked.danger_ok)
 
 
-def _resume_locked(parent_dir: Path, m: re.Match[str]) -> Result[SessionHandle, SessionError]:
+def _resume_locked(
+    parent_dir: Path, m: re.Match[str], plugins: Sequence[SessionPluginRef] | None = None
+) -> Result[SessionHandle, SessionError]:
     """Resume once the data-root lock is held."""
     locked = probe_lock(parent_dir)
     if locked.is_err:
@@ -470,13 +489,19 @@ def _resume_locked(parent_dir: Path, m: re.Match[str]) -> Result[SessionHandle, 
         created=now,
         lab_module=pmf.lab_module if pmf is not None else "",
         specimen=pmf.specimen if pmf is not None else {},
+        plugins=tuple(plugins) if plugins is not None else (pmf.plugins if pmf is not None else ()),
     )
     _log.info("resuming %s as %s (parent_last_seq=%s)", parent_dir.name, path.name, report.last_seq)
     return _init_dir(path, manifest)
 
 
-def open_readonly(session_dir: Path) -> Result[ReadOnlySession, SessionError]:
-    """Open for review: reads manifest, lock text and WAL only; writes nothing, repairs nothing."""
+def open_readonly(
+    session_dir: Path, available_plugins: Mapping[str, str] | None = None
+) -> Result[ReadOnlySession, SessionError]:
+    """Open for review: reads manifest, lock text and WAL only; writes nothing, repairs nothing.
+
+    With `available_plugins` (id -> version), missing or differing plugins only warn.
+    """
     if not session_dir.is_dir():
         return Err(NotASession(path=session_dir))
     mf = read_manifest(session_dir)
@@ -494,6 +519,11 @@ def open_readonly(session_dir: Path) -> Result[ReadOnlySession, SessionError]:
     stale = manifest is None or (scan is not None and manifest.last_seq != scan.last_seq)
     if stale:
         _log.info("manifest of %s is missing or stale (not repaired: read-only)", session_dir)
+    warnings = (
+        plugin_warnings(manifest.plugins, available_plugins)
+        if manifest is not None and available_plugins is not None
+        else ()
+    )
     return Ok(
         ReadOnlySession(
             path=session_dir,
@@ -504,5 +534,6 @@ def open_readonly(session_dir: Path) -> Result[ReadOnlySession, SessionError]:
             lock_holder=holder,
             holder_alive=alive,
             manifest_stale=stale,
+            plugin_warnings=warnings,
         )
     )

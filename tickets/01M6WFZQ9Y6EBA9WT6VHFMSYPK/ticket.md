@@ -2,13 +2,13 @@
 id = "01M6WFZQ9Y6EBA9WT6VHFMSYPK"
 title = "Final-project plugin skeleton (untracked) plus tracked absent-plugin test"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:18Z"
-updated = "2026-11-08T02:32:18Z"
+updated = "2026-11-08T02:52:48Z"
 labels = ["plugins", "creates:private/final-project/plugin/**", "creates:python/tests/plugins/test_plugin_absent.py"]
 scope = ["private/final-project/plugin/**", "python/tests/plugins/test_plugin_absent.py"]
 

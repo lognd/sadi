@@ -7,8 +7,8 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:38:34Z"
-updated = "2026-11-08T07:43:51Z"
-scope = ["python/sadi/server/**", "python/tests/server/**"]
+updated = "2026-11-08T07:43:52Z"
+scope = ["python/sadi/server/**", "python/tests/server/**", "python/tests/cli/**"]
 
 [[acceptance]]
 text = "POST /api/session/load-change records a WAL marker and 409s with no live session; Run screen has a Mark load change button; guided-run e2e passes"

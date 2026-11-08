@@ -13,6 +13,10 @@ default empty) and `data_root` (a `Path`, default `data`). The settings are stor
 `app.state.settings`. Unknown paths return HTTP 404. The `sadi` launcher ([launcher.md](launcher.md)) mounts the built web assets.
 
 `AppSettings.bus` (a pipeline `Bus`) optionally enables `WS /api/stream`; see [websocket.md](websocket.md).
+`AppSettings.live` (a `LiveAcquisition`, see `sadi/server/live.py`) binds a per-session acquisition
+pipeline to the session writer through `SessionService.set_hooks`: it starts after a session opens
+and is stopped (tail drained into the WAL) before the writer closes. Samples always go through the
+session WAL. With no session open nothing is streamed or recorded.
 
 ## Data-root lock
 

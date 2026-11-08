@@ -49,3 +49,11 @@ Verification status: `open_sim_device` was exercised against a real `sadi_py` bu
 `test_open_sim_device_real_simulator_streams_samples` re-runs this and is skipped when `sadi_py`
 is not importable. The other launcher tests inject a fake device.
 The app never reads the environment itself. `python -m sadi` runs the same launcher.
+
+## Live acquisition
+
+When a device is present (`--sim` or real; the real path is UNVERIFIED on hardware) the launcher
+builds a `Bus` and a `LiveAcquisition` (`sadi/server/live.py`) and passes both in `AppSettings`,
+which mounts `WS /api/stream`. The pipeline is created per open session, writes raw blocks to that
+session's WAL (decimated by 25 for analysis) and publishes to the Bus. Device or pipeline failures
+are logged and recorded as a fault; they never crash the app.

@@ -25,6 +25,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from typani import Err, Ok, Result
 
+from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
 from sadi.doctor import exit_code, run
 from sadi.doctor.cli import main as doctor_main
@@ -34,6 +35,7 @@ from sadi.logging_setup import get_logger
 from sadi.plugins.builtin import builtin_source
 from sadi.plugins.registry import PluginRegistry, PluginState
 from sadi.server.app import AppSettings, RootLockStartupError, create_app
+from sadi.server.live import LiveAcquisition
 
 if TYPE_CHECKING:
     from sadi.core.device import DeviceService
@@ -342,7 +344,17 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             return EXIT_DEVICE
         device = opened.danger_ok
     plugins, labs = load_builtin_plugins()
-    app = create_app(AppSettings(data_root=data_root, device=device, registry=plugins, labs=labs))
+    live = LiveAcquisition(device, Bus()) if device is not None else None
+    app = create_app(
+        AppSettings(
+            data_root=data_root,
+            device=device,
+            registry=plugins,
+            labs=labs,
+            bus=live.bus if live is not None else None,
+            live=live,
+        )
+    )
     mount_web(app, resolve_web_dist(args.web_dist))
     _out(f"sadi: serving at http://{args.host}:{port}/\n")
     if not args.no_browser:

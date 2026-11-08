@@ -28,6 +28,7 @@ from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
+from sadi.server.live import LiveAcquisition
 from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
@@ -61,6 +62,7 @@ class AppSettings(BaseModel):
     curve_source: CurveSource | None = None
     labs: LabRegistry | None = None
     bus: Bus | None = None
+    live: LiveAcquisition | None = None
     device: DeviceProbe | None = None
     budgets: BudgetSource | None = None
     inventory: InventoryProvider | None = None
@@ -160,6 +162,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_save_indicator_router(indicator))
     app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry())
     install_problem_handlers(app)
+    if cfg.live is not None:
+        app.state.sessions.set_hooks(cfg.live.on_session_open, cfg.live.on_session_close)
     app.include_router(make_sessions_router(app.state.sessions))
     app.include_router(
         make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)

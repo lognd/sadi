@@ -50,6 +50,7 @@ skip. `serve.mjs` passes `--web-dist web/dist` (run `npm run build` first); the 
 python venv. Playwright output dirs `test-results/` and `playwright-report/` are gitignored.
 
 Setup needs captured clamp-check points and the UI has no capture screen for it yet, so the specs
-leave Setup with "Skip this step" (`skipSetup`). Known gap: the launcher does not provide an
-acquisition bus, so `/api/stream` is not mounted and the live readout stays "(stale)"; the specs
-fail at the first `[Settled]` wait until that is wired (see the follow-up bug ticket ~F4YK7XN).
+leave Setup with "Skip this step" (`skipSetup`). The launcher now wires a live acquisition pipeline (simulator under `--sim`), so `/api/stream`
+is mounted and the readout updates once a session is open (see server/launcher.md).
+Known gap: no route or UI marks a load change, so the detector stays "loading" and the readout
+never reaches `[Settled]`; `guided-run.spec.ts` fails at `acceptWhenSettled` until that is added.

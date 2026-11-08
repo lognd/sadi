@@ -122,6 +122,17 @@ class SessionService:
         self._labs = labs
         self._lock = threading.RLock()
         self._open: _Open | None = None
+        self._on_open: Callable[[WriterHandle, Path], None] | None = None
+        self._before_close: Callable[[], None] | None = None
+
+    def set_hooks(
+        self,
+        on_open: Callable[[WriterHandle, Path], None],
+        before_close: Callable[[], None],
+    ) -> None:
+        """Register live-acquisition hooks: after a session opens, and before its writer closes."""
+        self._on_open = on_open
+        self._before_close = before_close
 
     # ---- discovery --------------------------------------------------------------------
 
@@ -202,6 +213,8 @@ class SessionService:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
+            if self._before_close is not None:
+                self._before_close()
             closed = cur.writer.close()
             self._open = None
             if closed.is_err:
@@ -395,6 +408,8 @@ class SessionService:
                 return Err(folded.danger_err)
         self._open = _Open(handle, opened.danger_ok, lab, wiz.danger_ok)
         _log.info("session %s open (lab %s)", handle.path.name, lab.id)
+        if self._on_open is not None:
+            self._on_open(opened.danger_ok, handle.path)
         return Ok(self._info(self._open))
 
     def _replay(self, cur: _Open) -> Result[ReplayState, ApiProblem]:

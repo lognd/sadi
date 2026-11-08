@@ -12,7 +12,7 @@ scope = ["python/sadi/core/**", "python/sadi/labs/lctt/lab.py", "python/tests/la
 
 [[acceptance]]
 text = "Phase has tare, results and export members distinct from calibration and plastic"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "LCTT steps bind tare/results/export to their own phases"

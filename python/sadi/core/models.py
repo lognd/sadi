@@ -79,6 +79,8 @@ class Specimen(_Frozen):
 class Phase(StrEnum):
     """Guided-run phase."""
 
+    # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM
+    SETUP = "setup"
     CALIBRATION = "calibration"
     ELASTIC = "elastic"
     PLASTIC = "plastic"

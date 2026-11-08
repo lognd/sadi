@@ -923,6 +923,16 @@ class _Walker:
                     if is_last and idx > 0 and prev_sealed and size <= SEGMENT_HEADER_LEN:
                         self._set_tail(f, no, 0, size, "partial segment header (crash in rotation)")
                         return
+                    # frob:ticket 01M6WJQV8ZG969CCJ9XRGHGDN9
+                    if is_last and idx == 0 and _is_torn_first_header(head, size):
+                        _log.warning(
+                            "WAL %s: first segment header torn (%d bytes), no acked data; "
+                            "treating as empty, file left in place",
+                            self.dir,
+                            size,
+                        )
+                        self._set_tail(f, no, 0, size, "partial first segment header (zero acks)")
+                        return
                     self.error = err
                     return
                 h = hdr.danger_ok
@@ -1092,6 +1102,11 @@ class _SegState:
             sealed=self.sealed,
             verified_bytes=self.pos,
         )
+
+
+def _is_torn_first_header(head: bytes, size: int) -> bool:
+    """True when a lone first segment is a short magic-prefix header (crash before first ack)."""
+    return size < SEGMENT_HEADER_LEN and SEGMENT_MAGIC.startswith(head[: len(SEGMENT_MAGIC)])
 
 
 def _valid_frame_after(f: BinaryIO, size: int, start: int, expected_seq: int) -> bool:

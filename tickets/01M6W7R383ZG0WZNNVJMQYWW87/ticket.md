@@ -2,16 +2,17 @@
 id = "01M6W7R383ZG0WZNNVJMQYWW87"
 title = "Plot renderer core: publication-quality canvas, annotations, one-click PNG/SVG export"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:39:40Z"
+updated = "2026-11-08T03:43:38Z"
 idempotency_key = "sadi-f3"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/core/**", "creates:web/src/plots/theme.ts", "creates:docs/web/plots.md"]
-scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md"]
+scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,15 +24,15 @@ target = "01M6W7R2S1S08W0QG20KR3SSE1"
 
 [[acceptance]]
 text = "Canvas renderer (uPlot-like performance, 100k points) with title, axis labels with units, legend, confidence bands, fit lines, annotation box with equations and values, nice tick formatting, light theme, device-pixel-ratio aware"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "exportFigure(format: png|svg, dpi) renders from the SAME scene description at high DPI (e.g. 300) with identical layout; golden-image tests (png) and SVG snapshot tests"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Scene API documented so F4-F7 only supply data and annotations"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

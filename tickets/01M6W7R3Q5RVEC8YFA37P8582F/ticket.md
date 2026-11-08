@@ -2,16 +2,17 @@
 id = "01M6W7R3Q5RVEC8YFA37P8582F"
 title = "CSV export in the 32-column LabVIEW schema"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:36:41Z"
+updated = "2026-11-08T03:41:48Z"
 idempotency_key = "sadi-x1"
 labels = ["ws:py", "lctt", "oq:Q2", "model:sonnet", "creates:python/sadi/labs/lctt/export_csv.py", "creates:python/tests/labs/lctt/test_export_csv.py", "creates:docs/lctt/export-csv.md"]
-scope = ["python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/test_export_csv.py", "docs/lctt/export-csv.md"]
+scope = ["python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/test_export_csv.py", "docs/lctt/export-csv.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,15 +24,15 @@ target = "01M6W7R3J00J2HQ7XPW19WDD6Q"
 
 [[acceptance]]
 text = "Writes title/metadata block and 32-column header exactly per docs/domain.md section 4 (target VI the reference VI, Q2), derived from session events via DS7 (never the source of truth)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Round-trip test: export of the the local short-run file inputs matches the original file field-by-field within float formatting; reader parses LabVIEW CSVs back to a session for post-processing (Q1)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "CRLF/encoding handling documented and tested on all OS"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

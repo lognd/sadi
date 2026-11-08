@@ -4,9 +4,10 @@ title = "Wizard has no step that captures the specimen; LCTT CSV export 422 NotR
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T09:09:25Z"
-updated = "2026-11-08T09:09:25Z"
+updated = "2026-11-08T09:26:09Z"
 scope = ["web/src/**", "python/sadi/server/**"]
 +++
 

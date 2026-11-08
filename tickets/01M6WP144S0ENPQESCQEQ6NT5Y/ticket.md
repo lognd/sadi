@@ -2,7 +2,8 @@
 id = "01M6WP144S0ENPQESCQEQ6NT5Y"
 title = "Replay: carry settled/forced-early/drift flags from WAL POINT onto LoadPoint events used by the fit"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

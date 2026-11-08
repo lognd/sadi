@@ -23,7 +23,8 @@ This rejects silent wrong answers such as `np.abs`. Otherwise Ridders extrapolat
 differences are used, with step control (stop when the error estimate grows) and a convergence
 requirement (relative error at most 1e-3, else `NumericError.NoConvergence`). Result:
 `NumericGradient(value, gradient, methods, errors)`. Errors: `NumEvalFailed`, `NumNonFinite`,
-`NoConvergence`.
+`NoConvergence`. A step that underflows to zero (for example a 1e-300 argument) returns
+`NumNonFinite` instead of dividing by zero.
 
 ## Monte Carlo
 
@@ -41,6 +42,7 @@ requirement (relative error at most 1e-3, else `NumericError.NoConvergence`). Re
   identical to a fresh run to the same total (totals round up to whole batches).
 - Cancellable: `run_to(total, cancel)` polls `cancel()` before each batch and returns
   `Err(Cancelled)`, keeping finished batches so a later call resumes.
+- Finite samples whose mean or sd overflow (outputs near 1e300) return `McNonFinite`, silently.
 - Errors: `Cancelled`, `McNotMeasured`, `BadSize`, `BadCovariance`, `BadDistribution`,
   `McEvalFailed`, `McNonFinite`.
 

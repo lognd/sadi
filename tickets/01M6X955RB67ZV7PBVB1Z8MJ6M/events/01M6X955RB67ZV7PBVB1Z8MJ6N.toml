@@ -1,0 +1,8 @@
+kind = "create"
+title = "Doctor screenshot leaks host paths and shows failing checks; regenerate with redacted paths"
+type = "bug"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T09:52:11Z"
+actor = "lognd"
+rev = 1

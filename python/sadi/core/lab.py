@@ -21,6 +21,7 @@ from typani import Result
 from sadi.core.errors import ComputeError
 from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
 from sadi.logging_setup import get_logger
+from sadi.uncertainty.budget import Budget
 
 _log = get_logger(__name__)
 
@@ -102,4 +103,22 @@ class LabModule(Protocol):
 
     def recompute(self, points: tuple[CapturedPoint, ...]) -> Result[AnalysisResult, ComputeError]:
         """Recompute the lab's results from the captured points."""
+        ...
+
+
+class LabBudget(_Frozen):
+    """One result's uncertainty budget a lab offers: result id, label, budget and LaTeX."""
+
+    result: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    budget: Budget
+    latex: str
+
+
+@runtime_checkable
+class BudgetedLab(Protocol):
+    """Optional lab hook: a lab that can state its results' uncertainty budgets."""
+
+    def budgets(self) -> list[LabBudget]:
+        """Return the budgets of the lab's results (empty when none are available)."""
         ...

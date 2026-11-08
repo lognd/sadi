@@ -14,6 +14,7 @@ from sadi.core.lab import (
     AnalysisResult,
     CaptureKind,
     ExportFormat,
+    LabBudget,
     LabId,
     StepId,
     StepSpec,
@@ -27,6 +28,7 @@ from sadi.core.point_inputs import (
     TareInputs,
 )
 from sadi.core.results import ResultValue
+from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
 from sadi.labs.lctt.live import (
     CalPoint,
@@ -280,3 +282,7 @@ class LcttLab:
         """Recompute core analysis from captured points; two-specimen results use combine_runs."""
         _log.debug("lctt recompute over %d points", len(points))
         return Ok(AnalysisResult(values={}))
+
+    def budgets(self) -> list[LabBudget]:
+        """Return nominal stress and modulus budgets from the public uncertainty engine."""
+        return nominal_budgets()

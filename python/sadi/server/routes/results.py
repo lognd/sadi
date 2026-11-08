@@ -12,7 +12,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
 
-from sadi.core.lab import LabId, LabModule
+from sadi.core.lab import BudgetedLab, LabId, LabModule
 from sadi.core.models import CapturedPoint, SettleStatus, TimeWindow
 from sadi.core.point_inputs import PHASE_CALIBRATION, PHASE_SPECIMEN, PHASE_TARE
 from sadi.core.registry import LabRegistry
@@ -65,8 +65,23 @@ def to_result_budget(result: str, label: str, budget: Budget, latex: str) -> Res
     )
 
 
-#: Supplies the budgets of the open session's results (a lab hook; none exist yet).
+#: Supplies the budgets of the open session's results (overrides the lab's own `budgets` hook).
 BudgetSource = Callable[[], list[ResultBudget]]
+
+
+def lab_budgets(svc: SessionService, labs: LabRegistry) -> list[ResultBudget]:
+    """Budgets from the open session's lab when it implements `BudgetedLab`, else empty."""
+    # frob:ticket 01M6WV1BBQYWGMK7W6KDD8P2N2
+    info = svc.info()
+    if info.is_err:
+        return []
+    got = labs.get(LabId(info.danger_ok.lab))
+    if got.is_err or not isinstance(got.danger_ok, BudgetedLab):
+        _log.debug("lab %s supplies no budgets", info.danger_ok.lab)
+        return []
+    out = [to_result_budget(b.result, b.label, b.budget, b.latex) for b in got.danger_ok.budgets()]
+    _log.info("lab %s supplied %d budgets", info.danger_ok.lab, len(out))
+    return out
 
 
 @runtime_checkable
@@ -217,9 +232,9 @@ def make_results_router(
 
     @r.get("/results/budgets")
     def result_budgets() -> list[ResultBudget]:
-        """Per-result uncertainty budgets; empty until the lab supplies a budget source."""
+        """Per-result uncertainty budgets from the injected source, else the lab's own hook."""
         unwrap(svc.info())
-        return budgets() if budgets is not None else []
+        return budgets() if budgets is not None else lab_budgets(svc, labs)
 
     @r.get("/results/guidance")
     def guidance(

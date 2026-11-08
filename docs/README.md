@@ -112,6 +112,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/web/live-trace.md` | ~7KWS2S7 | Live trace plot: scrolling binary-WebSocket trace with settle markers |
 | `docs/web/plots.md` | ~MQYWW87 | Plot renderer core: publication-quality canvas, annotations, one-click PNG/SVG export |
 | `docs/web/results-panel.md` | ~9PMPWH8 | Results panel: best value +/- U, 95% interval, plain-language confidence |
+| `docs/web/wizard.md` | ~2ZQVKAB | Wizard shell: step rail, next-action panel, status bar, keyboard map |
 | `docs/web/results-stream.md` | ~4XEGRNJ | Results-stream client: version/stale marker and refinement progress in the UI |
 | `docs/web/review-screen.md` | ~FHNEDX8 | Review screen: re-edit points, window edits, undo/redo, results recompute |
 | `docs/web/run-screens.md` | ~74FQXWT | Run screens: calibrate, tare, elastic, plastic capture screens with live view |

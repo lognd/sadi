@@ -1,0 +1,6 @@
+kind = "field"
+field = "labels"
+new = ["creates:python/sadi/server/routes/inventory.py", "creates:python/tests/server/test_inventory_routes.py", "creates:docs/server/inventory.md"]
+at = "2026-11-08T05:39:30Z"
+actor = "lognd"
+rev = 1

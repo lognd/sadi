@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Binary frame spec (magic, type, seq, channel float32 min/max-decimated arrays, timestamp) documented byte-for-byte and mirrored by the TS decoder in F4; JSON side-channel for state/results/guidance", "Back-pressure: slow clients drop display frames (never WAL data) with a counter; reconnect resumes from latest frame", "Tested with 50 kS/s simulator at real time, frame rate and latency budget documented", "Frame type reserved for the versioned results envelope defined by J4 (version, stale flag, progress)"]
+new = ["Binary frame spec (magic, type, seq, channel float32 min/max-decimated arrays, timestamp) documented byte-for-byte and mirrored by the TS decoder in F4; JSON side-channel for state/results/guidance", "Back-pressure: slow clients drop display frames (never WAL data) with a counter; reconnect resumes from latest frame", "Tested with 50 kS/s simulator at real time, frame rate and latency budget documented", "Frame type reserved for the versioned results envelope defined by J4 (version, stale flag, progress)", "Server tests cover codec round-trip, back-pressure counter, resume and 50 kS/s budget"]
+moved = [1, 2, 3, 4]
+at = "2026-11-08T05:38:31Z"
+actor = "lognd"
+rev = 1

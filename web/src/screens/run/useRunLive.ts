@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 /** Live feed for the run screens: wraps useTrace and taps the settle state and newest raw seq. */
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTrace, type TraceView, type UseTraceOptions } from "../../hooks/useTrace";

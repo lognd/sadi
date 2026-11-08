@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/GW7ER11; scope: web/e2e/**, .github/workflows/e2e.yml, docs/e2e.md; ttl 7200s"
+at = "2026-11-08T06:57:21Z"
+actor = "lognd"
+rev = 1

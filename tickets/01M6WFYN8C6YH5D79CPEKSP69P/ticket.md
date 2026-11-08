@@ -8,7 +8,7 @@ points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:43Z"
-updated = "2026-11-08T02:49:49Z"
+updated = "2026-11-08T02:49:53Z"
 labels = ["plugins", "creates:python/sadi/plugins/registry.py", "creates:python/sadi/plugins/sources.py", "creates:python/tests/plugins/test_registry.py"]
 scope = ["python/sadi/core/registry.py", "python/sadi/core/lab.py", "python/tests/core/test_lab_registry.py", "python/sadi/plugins/registry.py", "python/sadi/plugins/sources.py", "python/tests/plugins/test_registry.py", "python/sadi/plugins/__init__.py", "python/sadi/plugins/errors.py"]
 
@@ -18,7 +18,7 @@ target = "01M6WFYFTBG9T5MNPJJC0E4R63"
 
 [[acceptance]]
 text = "Existing test_lab_registry.py passes unchanged"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A plugin raising at import yields a failed record; other plugins and core still load"

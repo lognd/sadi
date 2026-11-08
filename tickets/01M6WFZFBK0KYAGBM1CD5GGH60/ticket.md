@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:53:19Z"
+updated = "2026-11-08T02:53:20Z"
 labels = ["plugins", "creates:python/tests/store/test_session_plugin_provenance.py"]
 scope = ["python/sadi/store/manifest.py", "python/sadi/store/session.py", "python/tests/store/test_session_plugin_provenance.py"]
 
@@ -26,7 +26,7 @@ bound = true
 
 [[acceptance]]
 text = "Reopen with plugin absent opens successfully with a warning naming the plugin"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Existing store tests pass"

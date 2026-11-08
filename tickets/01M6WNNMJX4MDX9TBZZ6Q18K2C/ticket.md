@@ -13,7 +13,7 @@ scope = ["python/sadi/core/point_inputs.py", "python/sadi/api/acquisition.py", "
 
 [[acceptance]]
 text = "POINT events persist settled, forced_early, drift_rate and t_since_load_s and recover_state returns them unchanged"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "POINT events without the meta fields still parse (defaults)"

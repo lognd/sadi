@@ -7,12 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:09:53Z"
-updated = "2026-11-08T03:24:43Z"
+updated = "2026-11-08T03:24:47Z"
 scope = ["docs/README.md", "python/tests/test_docs_index.py"]
 
 [[acceptance]]
 text = "docs/README.md links docs/jobs/tasks.md"
-bound = false
+bound = true
 +++
 
 found while working ~PX6X3ZQ

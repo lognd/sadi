@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T07:11:46Z"
-updated = "2026-11-08T07:16:01Z"
+updated = "2026-11-08T07:18:13Z"
 scope = ["creates:python/sadi/server/routes_health.py", "creates:python/tests/server/test_routes_health.py", "python/sadi/server/app.py", "docs/server/app.md", "web/src/api/openapi.json"]
+
+[[acceptance]]
+text = "GET /api/health returns 200 {status, version} with no session"
+bound = false
 +++

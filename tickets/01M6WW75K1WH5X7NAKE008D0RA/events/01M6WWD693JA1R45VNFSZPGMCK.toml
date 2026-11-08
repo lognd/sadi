@@ -1,0 +1,51 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T06:09:20Z"
+digest = "64f06dd9dfd8a172da864a4195352b258432ddae3efdbc373987badd12f07b06"
+exit_code = 0
+head = "28e9b38f3b4c2657cce3cca87337769746953dc5"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/results-stream/wsSubscribe.test.ts > wsSubscribe > forwards envelope frames only, ignoring trace frames and junk
+[ws.client] connecting { url: 'ws://x', attempt: 1 }
+
+stdout | web/src/results-stream/wsSubscribe.test.ts > wsSubscribe > survives reconnects: replays are dropped, newer results apply, unsubscribe closes
+[results-stream.hook] subscribing to results stream {}
+[ws.client] connecting { url: 'ws://x', attempt: 1 }
+[ws.client] stream open {}
+[results-stream.store] envelope applied { key: 'E', state: 'final', dataVersion: 1, latestDataVersion: 1 }
+[ws.client] connecting { url: 'ws://x', attempt: 2 }
+[ws.client] stream open {}
+[results-stream.store] envelope applied { key: 'E', state: 'final', dataVersion: 1, latestDataVersion: 1 }
+[results-stream.hook] unsubscribing from results stream {}
+[ws.client] stream closed by caller {}
+
+ \u{2713} web/src/results-stream/wsSubscribe.test.ts (2 tests) 16ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  01:09:21
+   Duration  1.22s (transform 210ms, setup 0ms, collect 253ms, tests 16ms, environment 0ms, prepare 198ms)
+
+JSON report written to /tmp/frob-vitest-590261-0.json
+stderr | web/src/results-stream/wsSubscribe.test.ts > wsSubscribe > forwards envelope frames only, ignoring trace frames and junk
+[ws.client] bad frame { error: 'short' }
+[results-stream.ws] dropping undecodable stream input { error: 'short' }
+
+stderr | web/src/results-stream/wsSubscribe.test.ts > wsSubscribe > survives reconnects: replays are dropped, newer results apply, unsubscribe closes
+[ws.client] stream lost; will reconnect { next_attempt: 2, delayMs: 250 }
+[results-stream.store] dropping out-of-order envelope { key: 'E', got: 1, have: 2 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/results-stream/wsSubscribe.test.ts"
+size = 1747
+status = "measured"
+test_count = 2
+tests_digest = "1a1226d55989cd6760d364f37914ba0cfed4c9250e0ac3faf5f931649815dbb2"
+at = "2026-11-08T06:09:20Z"
+actor = "lognd"
+rev = 1

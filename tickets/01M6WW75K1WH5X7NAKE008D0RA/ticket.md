@@ -7,14 +7,14 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:06:05Z"
-updated = "2026-11-08T06:09:04Z"
+updated = "2026-11-08T06:09:20Z"
 scope = ["web/src/results-stream/wsSubscribe.ts", "web/src/results-stream/wsSubscribe.test.ts", "web/src/results-stream/index.ts", "docs/web/results-stream.md"]
 
 [[acceptance]]
 text = "wsSubscribe forwards only RESULTS_ENVELOPE frame bodies from WS /api/stream"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "reconnect replays never regress state and unsubscribe closes the socket"
-bound = false
+bound = true
 +++

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["creates:python/sadi/core/point_inputs.py"]
+new = ["creates:python/sadi/core/point_inputs.py", "python/sadi/core/pipeline.py"]
+at = "2026-11-08T04:05:28Z"
+actor = "lognd"
+rev = 1

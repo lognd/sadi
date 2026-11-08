@@ -7,7 +7,11 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:38:34Z"
-updated = "2026-11-08T07:43:05Z"
+updated = "2026-11-08T07:43:51Z"
+
+[[acceptance]]
+text = "POST /api/session/load-change records a WAL marker and 409s with no live session; Run screen has a Mark load change button; guided-run e2e passes"
+bound = false
 +++
 
 found while working ~F4YK7XN: the stream now flows, but nothing calls AcquisitionPipeline.mark_load_change (no server route, no web call), so the settle detector stays at loading and the readout never shows [Settled]. web/e2e/guided-run.spec.ts fails at acceptWhenSettled; run-capture specs skip.

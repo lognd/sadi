@@ -1,0 +1,10 @@
+kind = "create"
+title = "e2e specs share one backend session: a failed spec poisons the next (run-capture second test skipped)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/e2e/**"]
+body = "found while working ~PQBZCCN: openWizard resumes the existing session when the server is shared, so run-capture specs start mid-run (e.g. at Tare) and get skipped or fail. Needs a fresh data dir/session per spec (or per-test server)."
+at = "2026-11-08T08:10:26Z"
+actor = "lognd"
+rev = 1

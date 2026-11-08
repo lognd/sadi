@@ -43,7 +43,7 @@ def test_register_derived_cost_independent_of_unrelated_entries() -> None:
             calls += 1
             return orig(x, y)
 
-        reg.covariance = spy  # type: ignore[method-assign]
+        reg.covariance = spy  # ty: ignore[invalid-assignment]  # spy wraps the bound method
         reg.register_derived("d", [(a.id, 1.0), (b.id, 2.0)])
         assert noise
         return calls

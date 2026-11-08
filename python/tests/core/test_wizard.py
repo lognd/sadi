@@ -4,9 +4,12 @@
 
 from __future__ import annotations
 
+from typani import Result
+
 from sadi.core.lab import CaptureKind, StepId, StepSpec
 from sadi.core.models import Phase
 from sadi.core.wizard import (
+    Command,
     StepStatus,
     Wizard,
     WizardError,
@@ -35,9 +38,9 @@ class Log:
         self.recs: list[Record] = []
         self.state = ReplayState()
 
-    def apply(self, cmd_result: object) -> None:
-        assert cmd_result.is_ok, cmd_result  # type: ignore[attr-defined]
-        for nr in cmd_result.danger_ok.records:  # type: ignore[attr-defined]
+    def apply(self, cmd_result: Result[Command, WizardError]) -> None:
+        assert cmd_result.is_ok, cmd_result
+        for nr in cmd_result.danger_ok.records:
             self.recs.append(_rec(nr, len(self.recs) + 1))
         self.state = replay(self.recs).danger_ok
 

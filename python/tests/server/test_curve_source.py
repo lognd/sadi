@@ -14,13 +14,14 @@ from sadi.server.app import AppSettings, create_app
 from sadi.server.curve_source import active_session, load_curve
 from sadi.server.routes_stress_strain import RefitError
 from sadi.store.events import PointV1, PointWindow, point_record
+from sadi.store.records import NewRecord
 from sadi.store.session import SessionMeta, create_session
 from sadi.store.writer_thread import WriterHandle
 
 K = 1.0e-3  # m per volt
 
 
-def _pt(phase: str, **inputs: float) -> object:
+def _pt(phase: str, **inputs: float) -> NewRecord:
     """Build a POINT record for `phase` with raw `inputs`."""
     p = PointV1(phase=phase, window=PointWindow(first_raw_seq=1, last_raw_seq=1), inputs=inputs)
     return point_record(p)
@@ -38,7 +39,7 @@ def _record_session(root: Path, n: int = 8) -> Path:
         for i in range(n)
     ]
     for r in recs:
-        assert w.submit(r).is_ok  # type: ignore[arg-type]
+        assert w.submit(r).is_ok
     assert w.close().is_ok
     return h.path
 

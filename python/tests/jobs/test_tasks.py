@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import threading
-from collections.abc import Generator
+from collections.abc import Callable, Generator
+from typing import Any, cast
 from uuid import UUID
 
 import pytest
-from typani import Err, Ok
+from typani import Err, Ok, Result
 
 from sadi.jobs import JobState, ResultState
 from sadi.jobs.pool import CancelToken
@@ -18,7 +19,7 @@ from sadi.jobs.tasks.mc import mc_steps, run_mc
 from sadi.jobs.testing import Interleaver, JobHarness, Step, make_spec
 from sadi.uncertainty.montecarlo import McSampler
 
-MC_INPUTS: dict[str, object] = {
+MC_INPUTS: dict[str, Any] = {
     "fn": "numpy:multiply",
     "means": [3.0, 2.0],
     "cov": [[0.04, 0.0], [0.0, 0.01]],
@@ -28,7 +29,9 @@ MC_INPUTS: dict[str, object] = {
 }
 
 
-def as_script(steps_fn):  # noqa: ANN001, ANN201
+def as_script(
+    steps_fn: Callable[[dict[str, object]], Steps],
+) -> Callable[[dict[str, object]], Generator[Step, bool, dict[str, object]]]:
     """Adapt a task core to a harness script (Tick -> Step; Err -> raise)."""
 
     def script(inputs: dict[str, object]) -> Generator[Step, bool, dict[str, object]]:
@@ -39,7 +42,7 @@ def as_script(steps_fn):  # noqa: ANN001, ANN201
                 cancelled = yield Step(fraction=tick.fraction, partial=tick.partial)
                 tick = gen.send(cancelled)
         except StopIteration as stop:
-            res = stop.value
+            res = cast("Result[dict[str, object], TaskError]", stop.value)
         if isinstance(res, Err):
             raise RuntimeError(str(res.danger_err))
         return res.danger_ok
@@ -54,9 +57,9 @@ def make_token() -> tuple[CancelToken, list[dict[str, object]], threading.Event]
     return CancelToken(UUID(int=1), flag, sent.append, 0), sent, flag
 
 
-def collect(steps: Steps) -> tuple[list[dict[str, object]], object]:
+def collect(steps: Steps) -> tuple[list[dict[str, Any]], Any]:
     """Drive a core to the end with no cancel, returning partials and the final Result."""
-    partials: list[dict[str, object]] = []
+    partials: list[dict[str, Any]] = []
     try:
         tick = next(steps)
         while True:
@@ -71,7 +74,7 @@ def collect(steps: Steps) -> tuple[list[dict[str, object]], object]:
 def test_mc_interval_tightens_and_matches_single_shot() -> None:
     partials, res = collect(mc_steps(MC_INPUTS))
     assert isinstance(res, Ok)
-    widths = [float(p["halfwidth_mean"]) for p in partials]  # type: ignore[arg-type]
+    widths = [float(p["halfwidth_mean"]) for p in partials]
     assert len(partials) == 20
     assert widths[-1] < widths[0]
     assert [p["n"] for p in partials] == list(range(100, 2001, 100))
@@ -91,7 +94,7 @@ def test_mc_interval_tightens_and_matches_single_shot() -> None:
 def test_mc_chunking_does_not_change_result() -> None:
     _, a = collect(mc_steps(MC_INPUTS))
     _, b = collect(mc_steps({**MC_INPUTS, "batches_per_tick": 7}))
-    assert a.danger_ok == b.danger_ok  # type: ignore[union-attr]
+    assert a.danger_ok == b.danger_ok
 
 
 # frob:tests python/sadi/jobs/tasks/mc.py::mc_steps
@@ -139,7 +142,7 @@ def test_new_data_version_supersedes_inflight_mc() -> None:
         assert isinstance(h.manager.submit(make_spec(1, key="mc", task="mc", **MC_INPUTS)), Ok)
         for _ in range(4):  # started + 3 progress points
             h.step(0)
-        newer = {**MC_INPUTS, "seed": 8}
+        newer: dict[str, Any] = {**MC_INPUTS, "seed": 8}
         assert isinstance(
             h.manager.submit(make_spec(2, key="mc", task="mc", data_version=2, **newer)), Ok
         )
@@ -168,9 +171,8 @@ def test_mc_supersede_interleavings_are_deterministic(seed: int) -> None:
             h.register("mc", as_script(mc_steps))
             h.start()
             h.manager.submit(make_spec(1, key="mc", task="mc", **MC_INPUTS))
-            h.manager.submit(
-                make_spec(2, key="mc", task="mc", data_version=2, **{**MC_INPUTS, "seed": 9})
-            )
+            newer: dict[str, Any] = {**MC_INPUTS, "seed": 9}
+            h.manager.submit(make_spec(2, key="mc", task="mc", data_version=2, **newer))
             il = Interleaver(h, seed)
             assert isinstance(il.run_until_idle(), Ok)
             final = [e for e in h.envelopes if e.state is ResultState.FINAL]
@@ -182,7 +184,7 @@ def test_mc_supersede_interleavings_are_deterministic(seed: int) -> None:
     assert run() == run()
 
 
-GP_INPUTS: dict[str, object] = {
+GP_INPUTS: dict[str, Any] = {
     "x": [[0.0], [0.4], [1.0], [2.0]],
     "y": [0.0, 0.38, 0.84, 0.91],
     "candidates": [[0.2], [0.7], [1.5], [4.0]],
@@ -193,7 +195,7 @@ GP_INPUTS: dict[str, object] = {
 def test_gp_progressive_best_fit_and_suggestion() -> None:
     partials, res = collect(gp_steps(GP_INPUTS))
     assert isinstance(res, Ok)
-    lml = [float(p["log_marginal"]) for p in partials]  # type: ignore[arg-type]
+    lml = [float(p["log_marginal"]) for p in partials]
     assert lml == sorted(lml)
     assert partials[-1]["lengthscale"] == res.danger_ok["lengthscale"]
     sugg = res.danger_ok["suggestion"]
@@ -229,7 +231,7 @@ def test_run_gp_cancel_and_supersede() -> None:
         h.manager.submit(make_spec(1, key="gp", task="gp", **GP_INPUTS))
         for _ in range(3):
             h.step(0)
-        extra = {
+        extra: dict[str, Any] = {
             **GP_INPUTS,
             "x": [[0.0], [0.4], [1.0], [2.0], [3.0]],
             "y": [0, 0.38, 0.84, 0.9, 0.5],

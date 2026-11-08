@@ -86,7 +86,7 @@ def _mk_zero(reg: CovarianceRegistry) -> Measured:
 def test_errors_propagate() -> None:
     """Bad arguments surface as typed errors, not exceptions."""
     f = uncertain(lambda a, b: a + b)
-    assert isinstance(f.budget(1.0, 2.0), Err)  # type: ignore[arg-type]
+    assert isinstance(f.budget(1.0, 2.0), Err)  # ty: ignore[invalid-argument-type]  # deliberately bad arguments
     reg = CovarianceRegistry()
     assert f.budget(_mk(reg, 1.0, 0.1)).err is UncertainError.Arity
 

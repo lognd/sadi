@@ -57,4 +57,4 @@ def test_setup_step_hosts_clamp_check_with_criterion() -> None:
     assert first.min_points == ClampCheckConfig().cycles
     custom = setup_step(ClampCheckConfig(cycles=5))
     assert custom.min_points == 5
-    assert "5 times" in custom.guidance(None)  # type: ignore[arg-type]
+    assert "5 times" in custom.guidance(None)  # ty: ignore[invalid-argument-type]  # guidance ignores state here

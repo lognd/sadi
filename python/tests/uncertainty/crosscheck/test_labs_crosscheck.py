@@ -18,6 +18,7 @@ from sadi.logging_setup import get_logger
 from sadi.uncertainty import Measured, Uncertain, UncertainError, UncertaintyError
 from sadi.uncertainty.montecarlo import MonteCarloError
 from sadi.uncertainty.numeric import NumericError, central_difference
+from sadi.uncertainty.uncertain import Method
 
 _log = get_logger(__name__)
 
@@ -103,12 +104,12 @@ _TYPED = (UncertaintyError, UncertainError, NumericError, MonteCarloError)
 @given(strain_v=_SMALL, stress_v=st.floats(1.0, 1e6))
 @pytest.mark.parametrize("method", ["analytic", "numeric", "mc"])
 def test_near_zero_denominator_is_typed_not_raised(
-    method: str, strain_v: float, stress_v: float
+    method: Method, strain_v: float, stress_v: float
 ) -> None:
     """A near-zero divisor yields Ok or a typed Err on every method; it never raises."""
     fn = Uncertain(
         lambda stress, strain: stress / strain,
-        method=method,  # type: ignore[arg-type]
+        method=method,
     )
     s = Measured.create(stress_v, stress_v * REL_UNC).unwrap()
     e = Measured.create(strain_v, abs(strain_v) * REL_UNC).unwrap()
@@ -136,9 +137,9 @@ def test_si_small_stress_numeric_path() -> None:
 
 # frob:tests python/sadi/uncertainty/uncertain.py::Uncertain.__call__
 @pytest.mark.parametrize("method", ["analytic", "numeric"])
-def test_extreme_underflow_denominator_is_typed(method: str) -> None:
+def test_extreme_underflow_denominator_is_typed(method: Method) -> None:
     """A 1e-80 divisor gives Ok or a typed Err on the analytic and numeric paths."""
-    fn = Uncertain(lambda a, b: a / b, method=method)  # type: ignore[arg-type]
+    fn = Uncertain(lambda a, b: a / b, method=method)
     a = Measured.create(1.0, 0.01).unwrap()
     b = Measured.create(8.7e-80, 8.7e-82).unwrap()
     result = fn(a, b)

@@ -7,6 +7,7 @@ import threading
 import uuid
 from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -17,6 +18,7 @@ from sadi.store.wal import (
     WalClosed,
     WalConfig,
     WalDurable,
+    WalError,
     WalFailed,
     WalInternal,
     WalInvalidRecord,
@@ -78,13 +80,13 @@ class _Gate:
         return self.real(fd)
 
 
-def _open(tmp_path: Path, **kw: object) -> WriterHandle:
+def _open(tmp_path: Path, **kw: Any) -> WriterHandle:
     """Open a handle in tmp_path/wal; WalConfig fields and handle kwargs are split by name."""
     wal = tmp_path / "wal"
     wal.mkdir(exist_ok=True)
     handle_kw = {k: v for k, v in kw.items() if k in ("stall_timeout_s", "clock")}
     cfg = {k: v for k, v in kw.items() if k not in handle_kw}
-    res = WriterHandle.open(wal, SESSION, 1, WalConfig(**cfg), **handle_kw)  # type: ignore[arg-type]
+    res = WriterHandle.open(wal, SESSION, 1, WalConfig(**cfg), **handle_kw)
     assert res.is_ok, res
     return res.danger_ok
 
@@ -343,9 +345,9 @@ def test_invalid_record_is_typed_error(tmp_path: Path) -> None:
         (WalDurable(error=DurableIo(errno=errno.EIO)), IoError),
     ],
 )
-def test_map_wal_error(wal_err: object, expected: type[WriterError]) -> None:
+def test_map_wal_error(wal_err: WalError, expected: type[WriterError]) -> None:
     """Every WAL error maps to its documented writer error."""
-    assert isinstance(map_wal_error(wal_err), expected)  # type: ignore[arg-type]
+    assert isinstance(map_wal_error(wal_err), expected)
 
 
 # frob:ticket 01M6W7R2DCY0H5XQ9F53F2W55E

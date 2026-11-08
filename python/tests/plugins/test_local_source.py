@@ -32,9 +32,9 @@ def make():
 def _plugin(root: Path, pid: str, lid: str | None = None) -> None:
     d = root / pid
     d.mkdir(parents=True)
-    labs = '["labmod:make"]' if lid else "[]"
+    labs = '["labmod:make"]' if lid is not None else "[]"
     (d / "sadi_plugin.toml").write_text(MANIFEST.format(pid=pid, labs=labs))
-    if lid:
+    if lid is not None:
         (d / "labmod.py").write_text(LAB_SRC.format(lid=lid))
 
 
@@ -72,7 +72,9 @@ def test_broken_plugin_isolated(tmp_path: Path) -> None:
     assert by["good"].manifest is not None
     assert by["bad"].issues and by["boom"].issues
     reg = PluginRegistry.discover([LocalDirSource(paths=[tmp_path])])
-    assert reg.get("good").state == PluginState.ENABLED  # type: ignore[union-attr]
+    good = reg.get("good")
+    assert good is not None
+    assert good.state == PluginState.ENABLED
 
 
 # frob:tests python/sadi/plugins/settings.py::PluginSettings.effective_paths

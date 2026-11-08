@@ -89,7 +89,7 @@ def test_numeric_errors_are_typed() -> None:
     """Singular and raising functions give Err values, never exceptions."""
     r = gradient(lambda x: np.log(x), [0.0])
     assert isinstance(r, Err) and r.danger_err is NumericError.NumNonFinite
-    r2 = gradient(lambda x: 1 / 0, [1.0])
+    r2 = gradient(lambda x: 1 / 0, [1.0])  # ty: ignore[division-by-zero]  # intentional failing function
     assert isinstance(r2, Err) and r2.danger_err is NumericError.NumEvalFailed
 
 
@@ -140,7 +140,7 @@ def test_numeric_path_honours_correlation_and_arity() -> None:
     expect = math.sqrt(0.1**2 + 0.2**2 - 2 * 0.6 * 0.1 * 0.2)
     assert math.isclose(out.std_unc, expect, rel_tol=1e-8)
     assert isinstance(f(x), Err)
-    assert isinstance(f(x, 3.0), Err)  # type: ignore[arg-type]
+    assert isinstance(f(x, 3.0), Err)  # ty: ignore[invalid-argument-type]  # deliberately bad argument
 
 
 # ---- Monte Carlo (criterion 2) ----------------------------------------------
@@ -260,7 +260,7 @@ def test_branchy_function_and_failures() -> None:
     """Branching code falls back to a row loop; exceptions and nan are typed errors."""
     branchy = _sampler(lambda a: a if a > 0 else 0.0, [10.0], [[1.0]]).run_to(8000).unwrap()
     assert abs(branchy.mean - 10.0) <= K * branchy.se_mean
-    raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)
+    raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # ty: ignore[division-by-zero]  # intentional
     assert isinstance(raising, Err) and raising.danger_err is MonteCarloError.McEvalFailed
     nan = _sampler(lambda a: np.log(a), [0.0], [[1.0]]).run_to(100)
     assert isinstance(nan, Err) and nan.danger_err is MonteCarloError.McNonFinite
@@ -299,7 +299,7 @@ def test_montecarlo_module_is_web_and_store_free() -> None:
             mods: list[str] = []
             if isinstance(node, ast.Import):
                 mods = [a.name for a in node.names]
-            elif isinstance(node, ast.ImportFrom) and node.module:
+            elif isinstance(node, ast.ImportFrom) and node.module is not None:
                 mods = [node.module]
             assert not [m for m in mods if m.startswith(banned)], (name, mods)
 

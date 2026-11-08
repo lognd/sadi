@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import cast
 from unittest.mock import patch
 
 import pytest
@@ -27,7 +28,7 @@ def listing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> list[dict[str
     """Return `list --json` output."""
     capsys.readouterr()  # drop earlier output
     assert run(tmp_path, "list", "--json") == Exit.OK
-    return json.loads(capsys.readouterr().out)
+    return cast("list[dict[str, object]]", json.loads(capsys.readouterr().out))
 
 
 # frob:tests python/sadi/cli/plugins.py::cmd_list

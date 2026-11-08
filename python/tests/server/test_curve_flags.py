@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
+from typing import Any
 
 from sadi.labs.lctt.live import LoadPoint
 from sadi.server.curve_source import session_events
@@ -19,18 +20,18 @@ def _record(root: Path, points: list[PointV1]) -> Path:
     h = create_session(root, SessionMeta(slug="fl")).danger_ok
     w = WriterHandle.open(h.path / "wal", uuid.uuid4(), 1).danger_ok
     for p in points:
-        assert w.submit(point_record(p)).is_ok  # type: ignore[arg-type]
+        assert w.submit(point_record(p)).is_ok
     assert w.close().is_ok
     return h.path
 
 
-def _load(**kw: object) -> PointV1:
+def _load(**kw: Any) -> PointV1:
     """Build a load POINT with optional settle meta."""
     return PointV1(
         phase="load",
         window=PointWindow(first_raw_seq=1, last_raw_seq=1),
         inputs={"volts": 0.1, "mass_kg": 1.0},
-        **kw,  # type: ignore[arg-type]
+        **kw,
     )
 
 

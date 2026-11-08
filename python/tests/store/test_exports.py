@@ -72,7 +72,8 @@ def test_export_has_versioned_name_and_provenance(tmp_path: Path) -> None:
     ).expect("export")
     assert res.path.name == "0001-20261108T153000Z-run.csv"
     assert res.path.read_bytes() == data
-    prov = ExportProvenanceV1.model_validate_json(res.sidecar.read_bytes())  # type: ignore[union-attr]
+    assert res.sidecar is not None
+    prov = ExportProvenanceV1.model_validate_json(res.sidecar.read_bytes())
     assert prov.sha256 == hashlib.sha256(data).hexdigest() and prov.size == len(data)
     assert prov.covers_seq == 3
     assert prov.prefix_hash == prefix_hash(h.path / "wal", 3).danger_ok
@@ -162,11 +163,13 @@ def test_regenerate_from_wal_after_deleting_exports(tmp_path: Path) -> None:
     wal_before = tree(h.path / "wal")
     first = write_export(h, "csv", "run", "csv", render(h), now=NOW).expect("export")
     original = first.path.read_bytes()
-    original_prov = json.loads(first.sidecar.read_bytes())  # type: ignore[union-attr]
+    assert first.sidecar is not None
+    original_prov = json.loads(first.sidecar.read_bytes())
     shutil.rmtree(h.path / "exports")
     again = write_export(h, "csv", "run", "csv", render(h), now=NOW).expect("regen")
     assert again.path.read_bytes() == original and again.path.name == first.path.name
-    prov = json.loads(again.sidecar.read_bytes())  # type: ignore[union-attr]
+    assert again.sidecar is not None
+    prov = json.loads(again.sidecar.read_bytes())
     assert prov["sha256"] == original_prov["sha256"]
     assert prov["prefix_hash"] == original_prov["prefix_hash"]
     assert tree(h.path / "wal") == wal_before

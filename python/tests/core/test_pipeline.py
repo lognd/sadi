@@ -6,8 +6,9 @@ import errno
 import threading
 import time
 import uuid
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
@@ -95,13 +96,13 @@ def _config() -> PipelineConfig:
     )
 
 
-def _open(tmp_path: Path, **kw: object) -> WriterHandle:
+def _open(tmp_path: Path, **kw: Any) -> WriterHandle:
     """Open a real WAL writer handle under tmp_path."""
     wal = tmp_path / "wal"
     wal.mkdir(exist_ok=True)
     handle_kw = {k: v for k, v in kw.items() if k in ("stall_timeout_s", "clock")}
     cfg = {k: v for k, v in kw.items() if k not in handle_kw}
-    res = WriterHandle.open(wal, SESSION, 1, WalConfig(**cfg), **handle_kw)  # type: ignore[arg-type]
+    res = WriterHandle.open(wal, SESSION, 1, WalConfig(**cfg), **handle_kw)
     assert res.is_ok, res
     return res.danger_ok
 
@@ -115,7 +116,7 @@ def _wal_raw_seqs(tmp_path: Path) -> set[int]:
     }
 
 
-def _frames(events: list[object]) -> list[TraceFrame]:
+def _frames(events: Sequence[object]) -> list[TraceFrame]:
     """Filter trace frames out of drained bus events."""
     return [e for e in events if isinstance(e, TraceFrame)]
 

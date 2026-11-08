@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import uuid
 from pathlib import Path
+from typing import Any
 
 from fastapi.testclient import TestClient
+from typani import Result
 
 from sadi.api.acquisition import AcquisitionDriver
 from sadi.core.events import PointWindow
@@ -31,7 +33,10 @@ WINDOW = PointWindow(first_raw_seq=1, last_raw_seq=1)
 
 
 class _NoSource:
-    def next_block(self, timeout: float | None = 0.0) -> object:
+    def next_block(self, timeout: float | None = 0.0) -> Result[Any, Any]:
+        raise AssertionError("not streaming")
+
+    def stop_streaming(self) -> Result[list[Any], Any]:
         raise AssertionError("not streaming")
 
 
@@ -39,7 +44,7 @@ def _driver(sdir: Path) -> tuple[AcquisitionDriver, WriterHandle]:
     wal = WriterHandle.open(sdir / "wal", uuid.uuid4(), 1).danger_ok
     settle = SettleConfig(window_s=0.05, threshold=1.0, min_dwell_s=0.05, min_points=5)
     cfg = PipelineConfig(stream=StreamConfig(settle=settle), sample_rate_hz=1000.0, packet_len=8)
-    return AcquisitionDriver(_NoSource(), AcquisitionPipeline(wal, cfg)), wal  # type: ignore[arg-type]
+    return AcquisitionDriver(_NoSource(), AcquisitionPipeline(wal, cfg)), wal
 
 
 def _inputs() -> list[PointInputs]:

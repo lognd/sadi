@@ -165,6 +165,8 @@ def test_mc_crosscheck_flag() -> None:
     e = rs.get("E")
     assert e is not None and e.mc.status is McStatus.PENDING
     agree = with_mc(rs, {"E": e.std_unc * 1.02})
-    assert agree.get("E").mc.status is McStatus.AGREES  # type: ignore[union-attr]
+    agree_e = agree.get("E")
+    assert agree_e is not None
+    assert agree_e.mc.status is McStatus.AGREES
     assert agree.refinement == ()
     assert mc_crosscheck(1.0, 1.5).status is McStatus.DISAGREES

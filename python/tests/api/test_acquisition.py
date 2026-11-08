@@ -51,7 +51,7 @@ class _Source:
         if self.left:
             self.left -= 1
             return Ok(_Block())
-        if self.fault:
+        if self.fault is not None:
             return Err(self.fault)
         time.sleep(min(timeout or 0.01, 0.01))
         return Ok(None)

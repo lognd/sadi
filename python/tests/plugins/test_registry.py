@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import sys
 import types
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from typani import Err, Ok
@@ -45,9 +45,7 @@ def fake_module(monkeypatch: pytest.MonkeyPatch) -> None:
     def boom() -> Any:
         raise RuntimeError("boom")
 
-    mod.good = lambda: FakeLab("good-lab")  # type: ignore[attr-defined]
-    mod.boom = boom  # type: ignore[attr-defined]
-    mod.notalab = lambda: object()  # type: ignore[attr-defined]
+    vars(mod).update(good=lambda: FakeLab("good-lab"), boom=boom, notalab=lambda: object())
     monkeypatch.setitem(sys.modules, "fake_plugin_mod", mod)
 
 
@@ -112,7 +110,7 @@ def test_disabled_recorded_not_imported() -> None:
 def test_incompatible_and_bad_manifest() -> None:
     bad = _mf("old")
     bad["api_version"] = ">=9"
-    reg = PluginRegistry.discover([BuiltinSource([bad, {"id": "nover"}, 42])])  # type: ignore[list-item]
+    reg = PluginRegistry.discover([BuiltinSource(cast("Any", [bad, {"id": "nover"}, 42]))])
     states = [r.state for r in reg.records()]
     assert states == [PluginState.INCOMPATIBLE, PluginState.FAILED, PluginState.FAILED]
 

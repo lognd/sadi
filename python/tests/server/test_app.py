@@ -5,7 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from fastapi.testclient import TestClient
 
@@ -102,9 +104,9 @@ class _FakeWriter:
     def __init__(self) -> None:
         self.durable_seq = 0
         self.enqueued_seq = 0
-        self.listeners: list = []
+        self.listeners: list[Callable[..., Any]] = []
 
-    def on_failure(self, listener) -> None:  # type: ignore[no-untyped-def]
+    def on_failure(self, listener: Callable[..., Any]) -> None:
         self.listeners.append(listener)
 
 

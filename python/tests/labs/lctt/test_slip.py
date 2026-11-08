@@ -9,10 +9,11 @@ import json
 import math
 import random
 from pathlib import Path
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
-from typani import Err, Ok
+from typani import Err, Ok, Result
 
 from sadi.labs.lctt.slip import SlipConfig, SlipError, SlipReport, detect_slip
 
@@ -37,7 +38,7 @@ def _hold(
     return t, y
 
 
-def _ok(res: object) -> SlipReport:
+def _ok(res: Result[SlipReport, SlipError]) -> SlipReport:
     assert isinstance(res, Ok)
     return res.danger_ok
 
@@ -126,13 +127,13 @@ def test_slip_fixture_flags_documented_rows() -> None:
     ],
 )
 def test_bad_input_errors(kwargs: dict[str, object], err: SlipError) -> None:
-    args: dict[str, object] = {
+    args: dict[str, Any] = {
         "times": [101.0 + i for i in range(30)],
         "strain": [0.0] * 30,
         "t_load": T_LOAD,
     }
     args.update(kwargs)
-    res = detect_slip(**args)  # type: ignore[arg-type]
+    res = detect_slip(**args)
     assert isinstance(res, Err) and res.danger_err == err
 
 
@@ -141,4 +142,4 @@ def test_config_frozen_and_validated() -> None:
     with pytest.raises(ValidationError):
         SlipConfig(window=1)
     with pytest.raises(ValidationError):
-        SlipConfig().window = 3  # type: ignore[misc]
+        SlipConfig().window = 3  # ty: ignore[invalid-assignment]  # frozen model: assignment must raise

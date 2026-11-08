@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "After each captured point the analytic result is pushed immediately (stale refinements are discarded), then MC/GP refinements stream until final"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Reconnecting clients get the latest snapshot; protocol documented and versioned (protocol_version field)"

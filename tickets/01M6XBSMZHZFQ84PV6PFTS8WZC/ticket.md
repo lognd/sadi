@@ -2,7 +2,8 @@
 id = "01M6XBSMZHZFQ84PV6PFTS8WZC"
 title = "COV001 in web (log, canvas, window, ws client)"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

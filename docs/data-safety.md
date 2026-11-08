@@ -642,6 +642,17 @@ last_seq: int | None
 tail: {kind: "none" | "torn" | "partial" | "corrupt", segment: int, offset: int, bytes: int} | None
 ```
 
+#### 8.4.1 Optional `plugins` field (provenance)
+
+The manifest may carry `plugins: [{id: str, version: str}, ...]`, the plugins active when
+that session version was made (see [Plugins](plugins.md)). It is optional and backward
+compatible: absent means empty, and the manifest `v` stays 1. The WAL is untouched: this
+is derived cache data only (I7), so no record type or frame changes. `create` takes the
+list; `resume` takes a new list or inherits the parent's. On reopen the caller may pass the
+available plugins (id to version); a recorded plugin that is missing or at a different
+version produces `PluginWarning`s alongside an `Ok` result. It never fails the open, and
+stored data stays readable without the plugin.
+
 ### 8.5 Families, versions and seq continuity
 
 All versions of a family share one seq space: v001 starts at 1; v(n+1)

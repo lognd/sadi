@@ -12,7 +12,7 @@ scope = ["python/sadi/launcher.py", "python/tests/cli/test_launcher.py", "docs/p
 
 [[acceptance]]
 text = "GET /api/labs on the launcher-built app is non-empty and includes lctt; a plugin load failure is logged and surfaced without crashing startup"
-bound = false
+bound = true
 +++
 
 found while working ~E2BTRN2: launcher.main builds AppSettings(data_root, device) without labs, so LabRegistry is empty and the Setup screen cannot create a session (e2e guided-run/run-capture skip). Wire LabRegistry.from_plugins(builtin plugins) into AppSettings.

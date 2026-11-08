@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:13:31Z"
-updated = "2026-11-08T06:17:35Z"
+updated = "2026-11-08T06:17:41Z"
 scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/routes/export.py"]
 
 [[acceptance]]

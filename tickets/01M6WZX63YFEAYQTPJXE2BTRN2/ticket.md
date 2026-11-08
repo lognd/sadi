@@ -7,8 +7,8 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:10:32Z"
-updated = "2026-11-08T07:16:40Z"
-scope = ["web/e2e/**", ".gitignore", "web/src/screens/**", "docs/web/wizard.md"]
+updated = "2026-11-08T07:16:41Z"
+scope = ["web/e2e/**", ".gitignore", "web/src/screens/**", "docs/web/wizard.md", "docs/e2e.md"]
 
 [[acceptance]]
 text = "With no open session the UI shows Setup: lists existing sessions to resume and a form to create a new one; after create/resume the step rail appears; e2e guided-run no longer skips"

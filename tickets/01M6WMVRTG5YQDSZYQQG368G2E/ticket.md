@@ -2,12 +2,12 @@
 id = "01M6WMVRTG5YQDSZYQQG368G2E"
 title = "Add public halt() to AcquisitionPipeline"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:57:31Z"
-updated = "2026-11-08T03:57:31Z"
+updated = "2026-11-08T03:59:35Z"
 labels = ["refactor"]
 +++
 

@@ -7,8 +7,12 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:01:31Z"
-updated = "2026-11-08T07:03:10Z"
+updated = "2026-11-08T07:04:43Z"
 scope = ["web/src/App.tsx", "web/src/main.tsx", "web/src/screens/**", "web/src/components/wizard/**", "web/src/App*.tsx", "web/e2e/**", "docs/e2e.md", "docs/web/**"]
+
+[[acceptance]]
+text = "App mounts the wizard shell and run/review/export screens with the step rail visible, Doctor reachable"
+bound = false
 +++
 
 found while working ~GW7ER11: App only renders health page and Doctor; guided-run e2e specs skip until mounted

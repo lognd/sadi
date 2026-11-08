@@ -31,7 +31,9 @@ def _frame(i: int, n: int = 256, t0: float | None = None) -> TraceFrame:
 
 
 def _client(bus: Bus) -> TestClient:
-    return TestClient(create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False)))
+    return TestClient(
+        create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False))
+    )
 
 
 # frob:tests python/sadi/server/framing.py::encode_trace
@@ -153,7 +155,9 @@ def test_50ksps_real_time_budget() -> None:
             if msg.get("bytes"):
                 fr = framing.decode(msg["bytes"]).danger_ok
                 lat.append(time.monotonic() - fr.t0_s)
-            elif msg.get("text") and json.loads(msg["text"])["kind"] == "stats" and not t.is_alive():
+            elif (
+                msg.get("text") and json.loads(msg["text"])["kind"] == "stats" and not t.is_alive()
+            ):
                 break
         t.join()
     assert len(lat) >= 0.95 * n_frames

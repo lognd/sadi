@@ -81,7 +81,8 @@ def _real_call(fn: Callable[..., object], xs: Sequence[float]) -> Result[float, 
 def _scale(x: float) -> float:
     """Characteristic magnitude of an argument used to size steps (1.0 only when x == 0).
 
-    frob:ticket 01M6WJQ4A9Q9MTK0XQQSJ9VQC9 - a floor of 1.0 made steps cross the pole of a/x for |x| < 1.
+    frob:ticket 01M6WJQ4A9Q9MTK0XQQSJ9VQC9 - a floor of 1.0 made steps cross the pole of a/x
+    for |x| < 1.
     """
     return abs(x) if x != 0.0 else 1.0
 

@@ -1,0 +1,11 @@
+kind = "create"
+title = "ad3: FakeDwf simulated device backend and SADI signal-injection bench"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 5
+labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/ad3/fake.py", "creates:python/sadi/bench/inject.py", "creates:python/tests/bench/test_ad3_fake.py", "creates:docs/bench/injection.md"]
+body = "In-memory FakeDwf implementing the DwfBackend Protocol (from ~SHEH6FP) with a deterministic model: analog out channels generate waveforms (dc/sine/ramp/custom), scope channels sample them with configurable gain/offset/noise, so tests run with no hardware. Plus sadi.bench.inject: helpers that drive a DwfBackend to inject LVDT-like and load-channel analog signals toward a SADI board and capture its outputs, written against the Protocol so the same test runs on real AD3 hardware later. Wiring/pin mapping is configuration (pydantic) not hard-coded; real-board mapping is unknown and left as TODO ticket for the hardware session. Compose with the existing sadi simulator where useful (loopback test: FakeDwf waveform -> expected SADI ADC counts via the simulator model). Standards: ASCII only; module logger never print; docstring on every public symbol; docs Status: header; tests in same change; Python only. typani Result/ErrorSet, pydantic. NEVER add Co-Authored-By."
+at = "2026-11-08T05:22:23Z"
+actor = "lognd"
+rev = 1

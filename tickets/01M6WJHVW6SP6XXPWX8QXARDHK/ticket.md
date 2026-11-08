@@ -2,7 +2,8 @@
 id = "01M6WJHVW6SP6XXPWX8QXARDHK"
 title = "doctor: DATA-040..080, RES-040, CLK-020..040"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

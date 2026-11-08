@@ -90,7 +90,7 @@ def complex_step(
     """Return df/dx_i as Im f(x + i h e_i)/h; fails if `fn` cannot take complex input."""
     h = _CS_STEP * _scale(xs[i])
     if h <= 0.0 or not math.isfinite(h):
-        # frob:ticket ~5T2MJV9
+        # frob:ticket 01M6WK9WBZ01A4XA77S5T2MJV9
         # 1e-30 * 1e-300 underflows to 0, so Im f / h would raise.
         _log.warning("complex-step increment underflowed for x=%g", xs[i])
         return Err(NumericError.NumNonFinite)

@@ -242,7 +242,7 @@ class McSampler:
         """Summarise samples so far (needs two); McNonFinite if statistics overflow."""
         y = np.concatenate(self._outputs)
         n = len(y)
-        # frob:ticket ~5T2MJV9
+        # frob:ticket 01M6WK9WBZ01A4XA77S5T2MJV9
         # finite samples near 1e300 overflow sum/square; type it, don't warn.
         with np.errstate(over="ignore", invalid="ignore"):
             sd = float(np.std(y, ddof=1))

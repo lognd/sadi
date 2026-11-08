@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["LCTT LabModule registered via PL1: steps Setup, Weights, Calibrate, Tare, Elastic, Plastic, Results, Export bound to phases (a) LVDT calibration, (b) elastic sample run, (c) plastic sample run", "Long sample (default L0 0.5 m, editable) supplies E; short sample (L0 0.08313 m) supplies plastic region/yield; results combine both with each sample's source stated", "Swapped weights between calibration and experiment supported through the inventory (no re-entry)"]
+new = ["Long sample (default L0 0.5 m, editable) supplies E; short sample (L0 0.08313 m) supplies plastic region/yield; results combine both with each sample's source stated", "LCTT LabModule registered via PL1: steps Setup, Calibrate, Tare, Elastic, Plastic, Results, Export bound to phases (a) LVDT calibration, (b) elastic sample run, (c) plastic sample run (no Weights step: the weights/height inventory is a separate final-project plugin)", "Calibration and experiment loads come from the core point inputs (heights, masses), so a plugin-supplied inventory with swapped weights needs no re-entry in the lab"]
+moved = [0, 1, 0]
+at = "2026-11-08T05:17:48Z"
+actor = "lognd"
+rev = 1

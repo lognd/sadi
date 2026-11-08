@@ -35,7 +35,7 @@ text = "Statistical tests: injected creep slope and slip step sizes are recovere
 bound = true
 +++
 
-Real data is unavailable, so this crate IS the test oracle for settle, creep and slip logic. the local short-run file is slip-contaminated and is only a slip-detector test case, not a physics calibration source. L0 = 0.08313 m is correct for the short sample (long-sample L0 open question Q8, default 0.5 m).
+Real data is unavailable, so this crate IS the test oracle for settle, creep and slip logic. The local short-run file is slip-contaminated and is only a slip-detector test case, not a physics calibration source.
 
 Suggested model: Sonnet.
 Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; update the ticket's docs file in the same change; tests in the same change; stay inside scope (frob lease widen on SCOPE001). Rust: safe code only (no hand-written unsafe), thiserror errors, tracing logs, cargo fmt + clippy -D warnings clean, tests incl. proptest where noted.

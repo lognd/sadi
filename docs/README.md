@@ -11,7 +11,6 @@ then [plan.md](plan.md) (delivery map).
 
 Pages: [architecture](architecture.md), [domain](domain.md),
 [open questions](open-questions.md),
-[preliminary analysis](preliminary-data-analysis.md),
 [protocol](protocol.md).
 
 ## Existing reference docs
@@ -22,13 +21,11 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | [concurrency.md](concurrency.md) | Concurrency model: threads, GIL, queues, job lifecycle, versioned results (~DK06Q2F) |
 | [jobs/jobs.md](jobs/jobs.md) | Job system core: lifecycle, process pool, cancel and supersede (~V9NMTHC) |
 | [plan.md](plan.md) | Delivery plan and ticket map |
-| [domain.md](domain.md) | Domain facts and the LabVIEW VI schema |
+| [domain.md](domain.md) | LCTT domain facts and formulas |
 | [open-questions.md](open-questions.md) | Open questions and confirmed defaults |
-| [preliminary-data-analysis.md](preliminary-data-analysis.md) | Analysis of the sample data |
 | [protocol.md](protocol.md) | SADI wire protocol (section 10: hardware checklist source) |
 | [protocol-vectors.json](protocol-vectors.json) | Protocol test vectors |
 | [vendor-lib30-reference.txt](vendor-lib30-reference.txt) | Vendor library reference |
-| `img/` | Images used by docs |
 
 ## Planned docs and owning tickets
 

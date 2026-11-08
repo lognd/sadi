@@ -36,32 +36,28 @@ false-positive rate stays at or below 1% (`FP_BOUND` in the test; measured 0).
 
 ## Fixture: short-run stand-in
 
-The preliminary short-run run (L0 = 0.08313 m) is believed to be clamp slip and is not in
-the repo; it must never calibrate E or other physics. `short_slip/short_slip.csv` is a
-seeded synthetic stand-in with the same failure shape (load constant at 50 N, two
-steps). `expected.json` lists the rows that must be flagged: index 40 (t = 305 s, 4.0e-5)
-and index 85 (t = 530 s, 2.5e-5), and nothing else. Used only as a detection test case.
+A slip-contaminated short run (clamp slip suspected) is not in the repo; it must never
+calibrate E or other physics. `short_slip/short_slip.csv` is a seeded synthetic stand-in
+with the same failure shape (load constant at 50 N, two steps). `expected.json` lists the
+rows that must be flagged: index 40 (t = 305 s, 4.0e-5) and index 85 (t = 530 s, 2.5e-5),
+and nothing else. Used only as a detection test case.
 
-## Real data: local short-run run
+## Real data: local short run
 
-Ticket ~E5AM8Q6. The 41-row time series (t = 38.7 to 3211 s, strain 0 to -0.043, load
-2.7 to 7.7 N in 20 load segments) was run through `detect_slip` with `t_load = 0`
-(trimmed local copy, gitignored; test `tests/labs/lctt/test_real_data.py`).
-The raw file is read-only and not copied whole.
+Ticket ~E5AM8Q6. A 41-row local time series (a concatenated multi-load ramp) was run
+through `detect_slip` with `t_load = 0` (trimmed local copy, gitignored; test
+`tests/labs/lctt/test_real_data.py`, skipped when the data is absent).
 
-- Without `load`: 3 events, at index 28 (t = 2030.8 s, size -4.29e-3, z = 6.4), index 31
-  (t = 2455.6 s, -5.12e-3, z = 7.6) and index 39 (t = 3067.1 s, -5.27e-3, z = 7.9). All
-  three coincide with a load increase (F steps 6.78->7.12, 7.12->7.46 and 7.46->7.65 N), so they are load steps, not slip.
+- Without `load`: 3 events, each coinciding with a load increase, so they are load
+  steps, not slip.
 - With `load` (`load_tol = 0`): all three are classed as load changes; 0 events.
-- Noise sigma is 4.7e-4 strain, far above the detector's design regime, because the
-  series is one concatenated multi-load ramp, not a single constant-load hold; each
-  constant-load segment has 1 to 8 samples, fewer than `2*window + 1` for a per-hold
-  run.
+- Noise sigma is far above the detector's design regime because the series is one
+  concatenated ramp, not a single constant-load hold; each constant-load segment has
+  fewer than `2*window + 1` samples.
 
-Conclusion: the detector finds no clamp slip that is separable from load steps in this
-series. That does not clear the run: the strain is negative and secant E is negative, so
-the run is unusable for physics (L0 = 0.08313 m is believed wrong), and the series is too
-sparse per hold to confirm or exclude slip. It stays a detector test case only.
+Conclusion: the detector finds no clamp slip separable from load steps in this series.
+The series is too sparse per hold to confirm or exclude slip, so it stays a detector
+test case only.
 
 ## Consumers
 

@@ -14,9 +14,9 @@ The user's requirement, verbatim:
 > AT NO POINT SHOULD WE BE ABLE TO LOSE ANY DATA. EVERYTHING MUST BE ATOMIC
 > AND RECOVERABLE AND NOT AUTOMATICALLY OVERWRITTEN.
 
-Context: the LabVIEW VI it replaces holds every row in memory and writes the
+Context: a conventional DAQ front end holds every row in memory and writes the
 CSV only at Stop; an abort, a crash or a cancelled save dialog loses the run
-(docs/domain.md section 4 and 8). This design makes the opposite choice at
+(docs/domain.md section 8). This design makes the opposite choice at
 every layer: the raw byte stream is durable before it is displayed, nothing
 is ever edited in place, and everything the user sees is derived from the
 durable record.

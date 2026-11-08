@@ -2,7 +2,7 @@
 Status: current
 
 Target: Out of the Box Electronics "SADI" data-acquisition board as used in
-a university lab course, firmware `SADI_MOM_v1.003.hex` (ATxmega64A3U) with host library
+teaching labs, firmware `SADI_MOM_v1.003.hex` (ATxmega64A3U) with host library
 `momLab.dll` v1.003. A secondary section covers the generic firmware
 `SADI-3.41HS.hex` with `SADI_FW3.dll`.
 

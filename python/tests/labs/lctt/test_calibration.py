@@ -17,7 +17,7 @@ from typani import Err, Ok
 from sadi.labs.lctt.calibration import CalibrationError, CalibrationFit, fit_calibration
 from sadi.uncertainty import Measured
 
-# lvdt_calibration.txt (local lab data), 12 points; LINEST oracle values from the same file
+# 12-point local calibration set; LINEST reference values from the same set
 CAL_V = [
     -1.099891e0, 4.720703e0, 5.341562e-1, -4.327925e0, 2.937594e0, -1.976520e0,
     4.553981e0, -3.008625e-1, 1.265852e0, -3.615362e0, 2.882964e0, -1.973938e0,

@@ -70,7 +70,7 @@ def test_quantity_rejects_bad_input() -> None:
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
 # frob:tests python/sadi/core/models.py::Specimen.area
 def test_specimen_area_and_validation() -> None:
-    """Area matches domain.md (3.2016e-8 m^2) and non-metre lengths are refused."""
+    """Area matches pi d^2 / 4 (3.2016e-8 m^2) and non-metre lengths are refused."""
     a = _specimen().area
     assert a.unit == "m^2"
     assert a.value == pytest.approx(3.2016e-8, rel=1e-4)

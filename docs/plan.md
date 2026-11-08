@@ -37,8 +37,8 @@ contract (PL1). It is a clean boundary, not a general plugin system.
   drift slope, threshold, minimum dwell); human confirm key or auto-capture
   with max wait; each point stores window, time-since-load, drift rate and a
   settled/forced-early flag; points re-editable, analysis recomputes from raw.
-- Facts: L0 = 0.08313 m is correct for the short sample. the local short-run run is
-  slip-contaminated, so it is used only as a slip-detector test case.
+- Facts: the local short-run data is slip-contaminated, so it is used only as a
+  slip-detector test case.
 - Protocol is unverified: HW1 maps protocol.md section 10 to a hardware
   checklist; HW3 needs the board. v3.41 (R6) is optional.
 
@@ -228,7 +228,7 @@ answer only changes a config value.
 | Q | Default used | Tickets affected |
 |---|---|---|
 | Q1 live DAQ vs post-processing | both, plus simulator | B2, X1 |
-| Q2 target VI | 32-column reference VI | X1 |
+| Q2 CSV layout | 32-column layout | X1 |
 | Q3 E window | manual first/last; auto only a hint | A3, F6 |
 | Q4 rate/block | configurable, 50 kS/s, 2500 samples | R4A, B2, S1 |
 | Q5 U_V | 2 s of block, SEM optional | A2 |

@@ -6,7 +6,6 @@ Status: current
 - [Plan](plan.md)
 - [Protocol](protocol.md)
 - [Open questions](open-questions.md)
-- [Preliminary data analysis](preliminary-data-analysis.md)
 - [Publishing checklist](publishing.md)
 - [Hardware-verification checklist](hardware-verification.md)
 - [sadi doctor: check catalog and remediation](doctor.md)

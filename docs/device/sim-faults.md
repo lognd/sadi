@@ -2,9 +2,8 @@
 Status: draft
 
 `sadi_proto::sim` is the test oracle for settle, creep and slip logic
-(real data is unavailable; the local short-run run is slip-contaminated and is
-only a slip-detector case). L0 = 0.08313 m is the short sample; the long
-sample L0 is open question Q8 (default 0.5 m, set in the scenario).
+(real data is unavailable; the local short run is slip-contaminated and is
+only a slip-detector case). Gauge length L0 is set in the scenario.
 
 ## Modules
 - `sim::physics`: wire, load program, LVDT. Strain is the sum of elastic

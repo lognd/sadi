@@ -35,8 +35,8 @@ contract in [core/lab-modules.md](core/lab-modules.md).
 +--------------------------------------------------------------------------+
 | SADI  LCTT   Run: 2026-11-08 A        [Guided|Expert]   [Help ?] [Save *]|
 +--------------------------------------------------------------------------+
-| (1)Setup > (3)Calibrate > (4)Tare > (5)Elastic > (6)Plastic |
-|            > (7)Results > (8)Export                                       |
+| (1)Setup > (2)Calibrate > (3)Tare > (4)Elastic > (5)Plastic |
+|            > (6)Results > (7)Export                                       |
 +-----------------------------------------------+--------------------------+
 |                                               |  NEXT ACTION             |
 |  WORK AREA                                    |  One sentence.           |
@@ -69,7 +69,7 @@ Each step shows one of five states, by glyph and word, never by colour alone:
  [x]Setup  [x]Calibrate  [>]Tare  [ ]Elastic  [ ]Plastic ...
 ```
 
-Rules: done steps are clickable (review, redo with confirmation, section 3.2);
+Rules: done steps are clickable (review, redo with confirmation, section 3.1);
 upcoming steps are not clickable in Guided mode (the next-action button is the
 only way forward) and are clickable in Expert mode. The current step is
 bold and boxed. A step turns `[!]` when its data was changed after a later
@@ -104,7 +104,7 @@ Defaults skip questions: device auto-selected when exactly one is found, L0
 and hanger weight from the last run, data folder from config. Continue stays
 disabled until required fields validate; the panel names what is missing.
 
-### 3.3 Step 3 Calibrate (LVDT)
+### 3.2 Step 2 Calibrate (LVDT)
 
 Purpose: capture (voltage, length) points to fit the LVDT calibration.
 
@@ -127,7 +127,7 @@ Defaults: five points suggested at evenly spaced lengths; the user may add
 more. Continue is enabled at 3 or more points; the panel says "4 points is
 enough; more only narrows the slope uncertainty a little".
 
-### 3.4 Step 4 Tare
+### 3.3 Step 3 Tare
 
 Purpose: record the empty-hanger voltage (domain.md 3.2).
 
@@ -148,7 +148,7 @@ Pressing Record again replaces the tare after a one-line confirmation. While
 averaging, a progress bar shows seconds left; Esc cancels and keeps the old
 tare.
 
-### 3.5 Step 5 Elastic (long specimen)
+### 3.4 Step 4 Elastic (long specimen)
 
 Purpose: step through loads on the long specimen; fit E from the linear part.
 
@@ -170,7 +170,7 @@ Live-view detail (trace, indicators, guidance placement) is owned by F0B
 ~KR3SSE1, see [live-view.md](live-view.md). This file fixes only placement: trace and table in the work area,
 guidance and confidence in the panel.
 
-### 3.6 Step 6 Plastic (short specimen)
+### 3.5 Step 5 Plastic (short specimen)
 
 Same layout and keys as Elastic, on the short specimen, run until yield or the
 user stops. Differences:
@@ -191,7 +191,7 @@ A swap prompt precedes capture. The saturation indicator (section 5) matters
 most here; on SATURATED the point cannot be accepted and the panel says what
 to do (section 6).
 
-### 3.7 Step 7 Results (review screen)
+### 3.6 Step 6 Results (review screen)
 
 The review screen: every number with its uncertainty, and a way back to fix it.
 
@@ -216,7 +216,7 @@ plain-language sentence ("The data support E between 108 and 117 GPa; more
 points would narrow this"). Each row links to the step that produced it.
 The checklist is advisory; Export is never blocked by it.
 
-### 3.8 Step 8 Export
+### 3.7 Step 7 Export
 
 ```
 +-----------------------------------------------+--------------------------+

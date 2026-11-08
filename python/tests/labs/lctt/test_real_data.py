@@ -1,4 +1,4 @@
-"""Local lab data validation (skipped when the data is absent): calibration fit vs the VI and detect_slip on short-run."""
+"""Local lab data validation (skipped when absent): calibration fit and detect_slip on short-run."""
 
 # frob:ticket 01M6WE7E19D77NKF83TE5AM8Q6
 # frob:ticket 01M6WEWKHPZ6NW5ZV7XDB1VK7J
@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from pathlib import Path
 
 import pytest
@@ -23,7 +24,7 @@ needs_data = pytest.mark.skipif(
     not FIX.is_dir(), reason="local lab data (real_fp fixtures) not present; kept out of git"
 )
 
-# lvdt_calibration.txt as printed by the VI (6 significant digits)
+# Reference calibration values as printed (6 significant digits)
 VI_TXT = {
     "slope": 2.114583e-3,
     "intercept": 2.472866e-2,
@@ -33,7 +34,7 @@ VI_TXT = {
     "t95": 2.228139,
     "n": 12,
 }
-# Same VI run at full precision, from the the local short-run file header block ("Cal ..." rows)
+# Same run at full precision, from the local short-run file header block ("Cal ..." rows)
 VI_CSV = {
     "se_slope": 6.734591237e-6,
     "se_intercept": 1.97073156e-5,
@@ -50,7 +51,7 @@ def _points() -> tuple[list[float], list[float]]:
 
 
 def _series() -> tuple[list[float], list[float], list[float]]:
-    """Read (t, load, strain) columns of the real the local short-run file time series."""
+    """Read (t, load, strain) columns of the real local short-run file time series."""
     with (FIX / "short_data_series.csv").open(newline="", encoding="ascii") as fh:
         rows = list(csv.DictReader(fh))
     return (
@@ -78,7 +79,7 @@ def test_fit_matches_vi_slope_intercept_r2_t95_n() -> None:
 # frob:tests python/sadi/labs/lctt/calibration.py::fit_calibration
 @needs_data
 def test_fit_matches_vi_standard_errors_at_full_precision() -> None:
-    """The .txt se values (6.734580E-6, 1.970728E-5) differ from the VI's own full-precision
+    """The printed se values (6.734580E-6, 1.970728E-5) differ from the full-precision
     csv-header values by ~1.7e-6 relative; we match the latter to < 1e-8 and the former to 2e-6."""
     v, h = _points()
     res = fit_calibration(v, h)
@@ -114,12 +115,22 @@ def test_real_short_data_slip_with_load_finds_no_slip() -> None:
 
 
 def test_tracked_docs_do_not_name_course_material() -> None:
-    """Tracked docs must use generic wording for the course VI and lab data path."""
+    """Tracked docs must use generic wording for course material (VI names, handouts, data path)."""
     root = Path(__file__).resolve().parents[4]
-    banned = ("final_" + "project.vi", "EML" + "3301", "labview" + "/data")
-    hits = [
-        str(p)
-        for p in (root / "docs").rglob("*.md")
-        if p.name != "publishing.md" and any(b in p.read_text(encoding="utf-8") for b in banned)
-    ]
+    banned = (
+        "final_" + "project.vi",
+        "EML" + "3301",
+        "labview" + "/data",
+        "IN" + "LAB",
+        "lctt_" + "tare",
+        "preliminary-" + "data",
+    )
+    banned_re = re.compile(r"lctt_\w+\.vi|lab[12]\.vi|\bT2[027] [0-9]{2}:|\bGU" + r"IDE\b")
+    hits = []
+    for p in (root / "docs").rglob("*.md"):
+        if p.name == "publishing.md":
+            continue
+        text = p.read_text(encoding="utf-8")
+        if any(b in text for b in banned) or banned_re.search(text):
+            hits.append(str(p))
     assert hits == []

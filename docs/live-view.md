@@ -18,7 +18,7 @@ stress-strain plot ~3MJNBZY, results ~9PMPWH8. A deviation is a change to this
 file in the same ticket.
 
 Scope: the live work area of the Calibrate, Tare, Elastic and Plastic steps
-(ux.md 3.3 to 3.6). The wizard shell, step rail and next-action panel frame are
+(ux.md 3.2 to 3.5). The wizard shell, step rail and next-action panel frame are
 owned by ux.md and are not redesigned here; this file fills the work area and
 the panel's guidance and confidence slots.
 

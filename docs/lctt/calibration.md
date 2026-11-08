@@ -6,7 +6,7 @@ Owner: ~NQKWT3Y. Code: `python/sadi/labs/lctt/calibration.py`.
 Tests: `python/tests/labs/lctt/test_calibration.py`.
 
 The LVDT calibration fits `height = slope * volts + intercept` through the captured
-(V, L) points, equivalent to LabVIEW `LINEST(L, V, TRUE, TRUE)` (formulas in
+(V, L) points, equivalent to spreadsheet `LINEST(L, V, TRUE, TRUE)` (formulas in
 [domain.md](../domain.md) section 3.3). Pure and deterministic, no I/O.
 
 ## API
@@ -50,8 +50,8 @@ below 2), `BadUncertainty`, `MissingVoltUnc`, `NotRepresentable`.
 
 ## Validation
 
-Tests compare with a hand-written LINEST on the 12-point `lvdt_calibration.txt` set
-and with the LabVIEW values from that file. Slope, intercept, r^2 and t95 agree to 6
+Tests compare with a hand-written LINEST on the 12-point local calibration set
+and with the reference values printed for that set. Slope, intercept, r^2 and t95 agree to 6
 digits; standard errors agree to 1e-5 relative, since the file's 7-digit rounded inputs
 limit the oracle (the exact refit of the printed points gives se slope 6.734591E-6
 against the file's 6.734580E-6). Hypothesis tests cover slope recovery under noise and

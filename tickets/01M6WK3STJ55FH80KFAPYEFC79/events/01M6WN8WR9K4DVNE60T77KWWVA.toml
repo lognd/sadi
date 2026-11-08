@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "ErrorSet: DeviceCode InputCode StoreCode ComputeCode JobCode (wire = lowercase name). StrEnum kept (states/modes/labels, not errors): ErrorFamily JobState Outcome ResultState DeviceStatus WriterState McStatus Notation SettleState SettleMode SettleStatus SaveState StepStatus PluginState Phase Severity CaptureKind CaptureMode Marginal SettleSource VoltageUncertainty SignPolicy Specimen NotSettledReason. doctor/ and server/ not audited (leased elsewhere)."
+at = "2026-11-08T04:04:41Z"
+actor = "lognd"
+rev = 1

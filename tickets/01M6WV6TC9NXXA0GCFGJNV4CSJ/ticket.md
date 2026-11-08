@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:56:42Z"
+updated = "2026-11-08T05:57:06Z"
 scope = ["web/src/keys/**", "docs/web/wizard.md"]
 
 [[acceptance]]

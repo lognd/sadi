@@ -31,3 +31,4 @@ Status: current
 - [UX design](ux.md)
 - [LCTT capture modes](lctt/capture.md)
 - [LCTT loading: tare, load, stress, strain](lctt/loading.md)
+- [LCTT pre-test clamp-slip check](lctt/clamp-check.md)

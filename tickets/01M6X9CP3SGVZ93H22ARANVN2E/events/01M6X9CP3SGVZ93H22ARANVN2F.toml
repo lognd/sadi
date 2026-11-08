@@ -1,0 +1,8 @@
+kind = "create"
+title = "SessionReplayCache: periodically re-verify already-applied WAL bytes (export must never serve unverified data)"
+type = "task"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T09:56:17Z"
+actor = "lognd"
+rev = 1

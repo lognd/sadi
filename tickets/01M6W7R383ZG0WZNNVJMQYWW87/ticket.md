@@ -8,10 +8,10 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:39:40Z"
+updated = "2026-11-08T03:43:09Z"
 idempotency_key = "sadi-f3"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/core/**", "creates:web/src/plots/theme.ts", "creates:docs/web/plots.md"]
-scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md"]
+scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"

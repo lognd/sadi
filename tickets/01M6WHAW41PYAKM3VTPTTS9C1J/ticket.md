@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T02:55:52Z"
-updated = "2026-11-08T02:56:33Z"
+updated = "2026-11-08T02:56:43Z"
 scope = ["python/sadi/plugins/local.py", "python/tests/plugins/test_local_source.py"]
 +++
 

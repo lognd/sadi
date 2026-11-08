@@ -2,12 +2,12 @@
 id = "01M6WVADB5YKXAVC43CQNBQVJW"
 title = "LcttLab.export_formats is empty so /api/export lists nothing"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:50:23Z"
-updated = "2026-11-08T05:50:23Z"
+updated = "2026-11-08T06:18:07Z"
 labels = ["lab"]
 +++
 

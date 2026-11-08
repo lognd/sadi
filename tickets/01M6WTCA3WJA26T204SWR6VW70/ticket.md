@@ -21,7 +21,7 @@ bound = false
 
 [[acceptance]]
 text = "GET /api/export lists formats; GET /api/export/{format} streams CSV with Content-Disposition and figure JSON inline"
-bound = false
+bound = true
 +++
 
 found while working ~X3H80G2 (split out of its original acceptance). Use LabModule export_formats.

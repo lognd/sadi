@@ -2,7 +2,8 @@
 id = "01M6W7RATGKGPEYSMC5H8WGMBV"
 title = "Results/Export screen: report view, figure export, CSV download"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

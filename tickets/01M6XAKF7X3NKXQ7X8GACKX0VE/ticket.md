@@ -7,5 +7,9 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:17:28Z"
-updated = "2026-11-08T10:18:05Z"
+updated = "2026-11-08T10:22:47Z"
+
+[[acceptance]]
+text = "COV001 count under python/sadi reduced from 128 to 40, no test weakened"
+bound = false
 +++

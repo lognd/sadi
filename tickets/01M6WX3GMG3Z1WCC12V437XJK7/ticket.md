@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
 updated = "2026-11-08T07:14:56Z"
-scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**"]
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**", "docs/lctt/export-csv.md"]
 
 [[acceptance]]
 text = "Decision recorded in docs/lctt/export-csv.md"

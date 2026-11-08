@@ -7,8 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:13:34Z"
+updated = "2026-11-08T06:14:09Z"
 scope = ["python/sadi/server/**"]
+
+[[acceptance]]
+text = "Without a device the launcher injects none, so status stays honestly unattached"
+bound = false
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

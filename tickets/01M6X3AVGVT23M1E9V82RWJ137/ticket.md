@@ -7,8 +7,8 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:10:26Z"
-updated = "2026-11-08T08:23:46Z"
-scope = ["python/sadi/server/**", "python/sadi/store/incremental.py", "python/tests/store/test_incremental.py", "python/tests/server/test_action_latency.py", "docs/store/incremental-replay.md", "docs/server/app.md", "docs/data-safety.md"]
+updated = "2026-11-08T08:24:49Z"
+scope = ["python/sadi/server/**", "python/sadi/store/incremental.py", "python/tests/store/test_incremental.py", "python/tests/server/test_action_latency.py", "docs/store/incremental-replay.md", "docs/server/app.md", "docs/data-safety.md", "docs/index.md"]
 
 [[acceptance]]
 text = "Incremental replay equals full replay (property test incl. restart, torn tail, undo/redo); 20 actions after 200k raw records each complete under 1s"

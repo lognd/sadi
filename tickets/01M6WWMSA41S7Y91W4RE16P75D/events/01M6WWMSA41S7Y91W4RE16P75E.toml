@@ -1,0 +1,9 @@
+kind = "create"
+title = "Add TYP004 hints to problem+json errors in routes/inventory.py and routes/export.py"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+at = "2026-11-08T06:13:31Z"
+actor = "lognd"
+rev = 1

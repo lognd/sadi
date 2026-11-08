@@ -7,5 +7,6 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:26Z"
-updated = "2026-11-08T03:42:07Z"
+updated = "2026-11-08T03:42:30Z"
+scope = ["python/sadi/store/wal.py"]
 +++

@@ -22,7 +22,7 @@ bound = true
 
 [[acceptance]]
 text = "A plugin raising at import yields a failed record; other plugins and core still load"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Duplicate id and unmet requires produce distinct typed errors"

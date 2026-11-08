@@ -1,0 +1,44 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:50:50Z"
+digest = "ce47625b2f1312830f1ead039a174f6aee3271b3e63feb0c7cf6709e6366569d"
+exit_code = 0
+head = "9514ba224108eb422f2924cb513289d1d92330e2"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/guidance/GuidancePanel.test.tsx > guidance panel > advances only on the plain advance key while a proposal shows
+[components.guidance] advance accepted by key { next: 'plastic' }
+
+stdout | web/src/components/guidance/GuidancePanel.test.tsx > guidance api > returns the payload via the injected fetcher
+[api.client] request { path: '/api/results/guidance?phase=elastic' }
+
+stdout | web/src/components/guidance/GuidancePanel.test.tsx > guidance api > returns the payload via the injected fetcher
+[api.client] response ok { path: '/api/results/guidance?phase=elastic', status: 200 }
+
+stdout | web/src/components/guidance/GuidancePanel.test.tsx > guidance api > returns an http error Result on 409
+[api.client] request { path: '/api/results/guidance' }
+
+ \u{2713} web/src/components/guidance/GuidancePanel.test.tsx (9 tests) 25ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:50:51
+   Duration  617ms (transform 121ms, setup 0ms, collect 144ms, tests 25ms, environment 0ms, prepare 159ms)
+
+JSON report written to /tmp/frob-vitest-513921-0.json
+stderr | web/src/components/guidance/GuidancePanel.test.tsx > guidance api > returns an http error Result on 409
+[api.client] http error { path: '/api/results/guidance', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/guidance/GuidancePanel.test.tsx"
+size = 1302
+status = "measured"
+test_count = 9
+tests_digest = "3df06157e7aacc8fb0532167bed68831421baaf4d8b5fe57485f59c6db3dc4f8"
+at = "2026-11-08T05:50:50Z"
+actor = "lognd"
+rev = 1

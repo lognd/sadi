@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/uncertainty/numeric.py"]
+new = ["python/sadi/uncertainty/numeric.py", "python/tests/uncertainty/test_fallbacks.py"]
+at = "2026-11-08T05:06:03Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/results-stream/wsSubscribe.ts"]
+new = ["web/src/results-stream/wsSubscribe.ts", "web/src/results-stream/wsSubscribe.test.ts"]
+at = "2026-11-08T06:08:10Z"
+actor = "lognd"
+rev = 1

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:52:16Z"
+updated = "2026-11-08T03:52:17Z"
 scope = ["python/sadi/api/**", "python/tests/server/test_save_indicator.py", "docs/ux.md"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Saved HH:MM:SS when all enqueued records are durable; NOT SAVED latches on writer failure"
-bound = false
+bound = true
 +++
 
 found while working ~60ZNFTD

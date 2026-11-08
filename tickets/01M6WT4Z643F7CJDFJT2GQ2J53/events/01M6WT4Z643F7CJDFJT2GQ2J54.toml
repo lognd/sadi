@@ -1,0 +1,11 @@
+kind = "create"
+title = "bench: determine real SADI board pin mapping for AD3 injection"
+type = "task"
+category = "todo"
+priority = "medium"
+labels = ["ws:py", "ad3"]
+scope = ["python/sadi/bench/inject.py"]
+body = "Hardware session: fill PinMap with real wiring (found while working PFQFWB7)"
+at = "2026-11-08T05:29:56Z"
+actor = "lognd"
+rev = 1

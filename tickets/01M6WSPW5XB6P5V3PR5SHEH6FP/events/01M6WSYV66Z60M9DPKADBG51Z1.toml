@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:26:34Z"
+digest = "1048c5fe1aedb488a2ab0338364a9939925c7daa09bb6610f76c80a0661356bf"
+exit_code = 0
+head = "c45b9977e84700d392e6ad4289259993af94eebb"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/bench/test_ad3_binding.py ....                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-459132-0.xml ---------------
+============================== 4 passed in 0.26s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_binding.py::test_missing_library_per_os_hint"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "f2717b72c4c38e9430192d32cc19e675a5167650e0168e13b94f39ba7a955eff"
+at = "2026-11-08T05:26:34Z"
+actor = "lognd"
+rev = 1

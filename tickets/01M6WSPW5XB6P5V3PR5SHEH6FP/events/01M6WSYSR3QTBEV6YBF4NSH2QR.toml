@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/bench/**"]
+at = "2026-11-08T05:26:33Z"
+actor = "lognd"
+rev = 1

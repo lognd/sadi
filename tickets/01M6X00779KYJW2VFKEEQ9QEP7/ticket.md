@@ -2,7 +2,8 @@
 id = "01M6X00779KYJW2VFKEEQ9QEP7"
 title = "Results: derive the linear E window automatically in the server"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

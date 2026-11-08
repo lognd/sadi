@@ -229,6 +229,15 @@ class SessionService:
                 return Err(self._none_open())
             return Ok(self._info(cur))
 
+    # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+    def session_path(self) -> Result[Path, ApiProblem]:
+        """Return the open session's directory (read-only use: replaying its log)."""
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            return Ok(cur.handle.path)
+
     # ---- wizard -----------------------------------------------------------------------
 
     def wizard_state(self) -> Result[WizardState, ApiProblem]:

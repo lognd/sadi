@@ -146,6 +146,9 @@ class RunState(_Frozen):
     specimen: Specimen | None = None
     tare: Quantity | None = None
     points: tuple[CapturedPoint, ...] = ()
+    # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+    #: Lab-defined raw session events (opaque to the core) for writers that re-derive results.
+    events: tuple[BaseModel, ...] = ()
 
     def advance(self, phase: Phase) -> RunState:
         """Return a copy moved to `phase`."""

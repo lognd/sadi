@@ -29,6 +29,13 @@ of truth. `export_csv(session, events, ...)` publishes through `store.exports.wr
 kind `lctt-csv`, numbered name, sanitised basename (`sanitize_name`), tmp + fsync + no-replace
 rename, provenance sidecar. An existing export is never overwritten (next number is taken).
 
+## Web export format
+
+`LcttLab.export_formats` declares `lctt-csv` (`CSV_FORMAT`, `text/csv`). Its writer takes the raw
+events from `RunState.events`, runs `build_document` and returns `render_document` bytes in
+memory (read-only; the numbered on-disk `export_csv` is a separate path). An unready session
+(no calibration, tare, specimen or points) yields a compute error, not an empty file.
+
 ## Reader
 
 `read_document` / `read_file` parse a file back to `CsvDocument` (metadata + typed rows), and

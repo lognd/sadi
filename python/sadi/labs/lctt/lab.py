@@ -5,15 +5,17 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
 
-from sadi.core.errors import ComputeError
+from sadi.core.errors import ComputeCode, ComputeError
 from sadi.core.lab import (
     AnalysisResult,
     CaptureKind,
     ExportFormat,
+    ExportFormatId,
     LabBudget,
     LabId,
     StepId,
@@ -30,11 +32,14 @@ from sadi.core.point_inputs import (
 from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
+from sadi.labs.lctt.export_csv import build_document, render_document
 from sadi.labs.lctt.live import (
     CalPoint,
+    ExcludePoint,
     LiveConfig,
     LiveEvent,
     LoadPoint,
+    OverridePoint,
     SetWindow,
     SpecimenSetup,
     TareBlock,
@@ -266,13 +271,38 @@ def combine_runs(
     return Ok(TwoSpecimenResults(values=tuple(values), pending=tuple(pending), notes=tuple(notes)))
 
 
+# frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render the 32-column lctt CSV from the raw session events carried on `run` (in memory)."""
+    events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
+    doc = build_document(events, date=datetime.now(UTC))
+    if isinstance(doc, Err):
+        _log.warning("lctt csv export refused: %s", doc.danger_err)
+        return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(doc.danger_err)))
+    return Ok(render_document(doc.danger_ok))
+
+
+_LIVE_EVENT_TYPES = (
+    CalPoint, TareBlock, SpecimenSetup, LoadPoint, OverridePoint, ExcludePoint, SetWindow
+)  # fmt: skip
+
+
+#: The lctt-csv export format: project-defined 32-column layout, see docs/lctt/export-csv.md.
+CSV_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-csv"),
+    title="LCTT CSV (32 columns)",
+    media_type="text/csv",
+    writer=_write_csv,
+)
+
+
 class LcttLab:
     """The LCTT lab: calibration, then an elastic (long) and a plastic (short) specimen run."""
 
     id = LabId("lctt")
     title = "Load-controlled creep/thermal test"
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
-    export_formats: tuple[ExportFormat, ...] = ()
+    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT,)
 
     def steps(self) -> list[StepSpec]:
         """Return the ordered wizard steps, bound to calibration, elastic and plastic phases."""

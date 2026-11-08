@@ -22,4 +22,9 @@ exposes the open session's lab `export_formats` (see `sadi.core.lab.ExportFormat
 - Errors are problem+json with a `hint`: 409 `no_open_session`, 404 `unknown_id` for an
   unknown format (the hint lists the lab's formats), and the mapped compute error when the
   recompute or the writer fails.
-- The lctt lab declares no formats yet, so its list is empty (follow-up for lab authors).
+- Writers receive raw session events: `render_export` replays the open session's log
+  (`curve_source.session_events`, read-only) and passes them as `RunState.events`
+  (opaque `BaseModel`s; the lab narrows them to its own event types). Labs that derive
+  results from `CapturedPoint`/`AnalysisResult` alone can ignore the field.
+- The lctt lab declares `lctt-csv` (see [lctt/export-csv.md](../lctt/export-csv.md)). Figure
+  data is not offered yet.

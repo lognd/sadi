@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T06:57:21Z"
+updated = "2026-11-08T06:57:55Z"
 idempotency_key = "sadi-t2"
 labels = ["ws:qa", "model:sonnet", "creates:web/e2e/**", "creates:.github/workflows/e2e.yml", "creates:docs/e2e.md"]
-scope = ["web/e2e/**", ".github/workflows/e2e.yml", "docs/e2e.md"]
+scope = ["web/e2e/**", ".github/workflows/e2e.yml", "docs/e2e.md", "web/package.json"]
 
 [[links]]
 kind = "blocked-by"

@@ -2,7 +2,7 @@
 id = "01M6WFJRZDZWTB0NS0A2AJZS6W"
 title = "Remove weight/height inventory and GP selector (final-project specific); keep uncertainty and Monte Carlo"
 type = "chore"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"

@@ -2,12 +2,12 @@
 id = "01M6WN9ZE5EHGWZZ58M973FKGT"
 title = "Audit StrEnum error families in doctor/** and server/** -> typani ErrorSet (doctor/schema.py DoctorError etc)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:05:17Z"
-updated = "2026-11-08T04:05:17Z"
+updated = "2026-11-08T04:07:44Z"
 labels = ["python"]
 +++
 

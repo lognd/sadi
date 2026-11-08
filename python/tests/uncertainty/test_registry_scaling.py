@@ -1,6 +1,6 @@
 """Registry lifetime and register_derived scaling tests."""
 
-# frob:ticket 7VE6XWX
+# frob:ticket 01M6WKE8GD0PZNEM6E87VE6XWX
 
 from __future__ import annotations
 

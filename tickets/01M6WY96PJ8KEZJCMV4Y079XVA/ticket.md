@@ -8,5 +8,5 @@ points = 1
 reporter = "lognd"
 created = "2026-11-08T06:42:09Z"
 updated = "2026-11-08T06:42:37Z"
-scope = ["python/sadi/labs/lctt/lab.py"]
+scope = ["python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt/test_export_csv.py"]
 +++

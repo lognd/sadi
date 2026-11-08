@@ -7,9 +7,9 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:11:39Z"
-updated = "2026-11-08T04:14:39Z"
+updated = "2026-11-08T04:14:40Z"
 labels = ["python"]
-scope = ["python/sadi/core/point_inputs.py"]
+scope = ["python/sadi/core/point_inputs.py", "python/sadi/api/acquisition.py"]
 +++
 
 RJDN26D wired capture to record_point, but settled/forced-early/drift/t_since_load_s stay only on the in-memory Captured.point. After crash recovery these are lost. Persist them in the POINT event (extend point_inputs mapping and curve_source/recover_state replay) with a round-trip test. Data-safety: nothing recorded may be lost on recovery.

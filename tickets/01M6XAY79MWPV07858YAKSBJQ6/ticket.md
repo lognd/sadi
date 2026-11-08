@@ -7,8 +7,8 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:20Z"
-updated = "2026-11-08T10:34:14Z"
-scope = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/doctor/**", "python/tests/jobs/**", "python/tests/labs/lctt/**", "python/tests/plugins/**"]
+updated = "2026-11-08T10:34:15Z"
+scope = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/doctor/**", "python/tests/jobs/**", "python/tests/labs/lctt/**", "python/tests/plugins/**", "python/tests/store/**"]
 
 [[acceptance]]
 text = "COV001 count under python/sadi reduced below 10 with real tests or frob:tests markers; no test weakened"

@@ -4,9 +4,10 @@ title = "Wire LcttLab.recompute and combine_runs into wizard and export"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T05:19:05Z"
-updated = "2026-11-08T05:19:05Z"
+updated = "2026-11-08T07:05:57Z"
 scope = ["python/sadi/labs/lctt/**"]
 +++
 

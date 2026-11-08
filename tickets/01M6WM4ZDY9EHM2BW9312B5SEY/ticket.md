@@ -7,12 +7,12 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T03:45:04Z"
-updated = "2026-11-08T03:51:23Z"
+updated = "2026-11-08T03:52:45Z"
 scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 
 [[acceptance]]
 text = "Label placement is greedy and deterministic: no placed box overlaps another or the legend, and results are identical across runs"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A log axis yields decade ticks and log-mapped geometry, and non-positive data returns a PlotError instead of drawing"

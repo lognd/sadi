@@ -1,0 +1,9 @@
+kind = "create"
+title = "curve_source and notes() still walk the whole WAL per request"
+type = "bug"
+category = "todo"
+priority = "medium"
+body = "found while working ~2RWJ137; same O(WAL) cost as _act had"
+at = "2026-11-08T08:25:21Z"
+actor = "lognd"
+rev = 1

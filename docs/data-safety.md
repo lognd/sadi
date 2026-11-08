@@ -113,6 +113,10 @@ whose first record documents what was found. This is stricter than the
 usual "truncate the torn tail" rule and is chosen because the user's
 requirement forbids destructive repair.
 
+The server derives per-action state with `IncrementalReplay`, which reads
+only newly appended frames and falls back to a full verified replay on any
+anomaly; it is always equal to a full replay (see store/incremental-replay.md).
+
 ### 2.4 Checksum: CRC-32C (Castagnoli), per record, header plus payload
 
 CRC-32C over the header (with the crc field zero) and the payload detects

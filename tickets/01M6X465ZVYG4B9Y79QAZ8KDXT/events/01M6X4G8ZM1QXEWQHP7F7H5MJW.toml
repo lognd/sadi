@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/store/incremental.py"]
+at = "2026-11-08T08:30:52Z"
+actor = "lognd"
+rev = 1

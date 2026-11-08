@@ -1,4 +1,4 @@
-"""Tests for the LCTT 42-column CSV export, reader, round trip and byte policy."""
+"""Tests for the LCTT 48-column CSV export, reader, round trip and byte policy."""
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
 from __future__ import annotations
@@ -68,14 +68,14 @@ def _doc() -> CsvDocument:
 
 
 # frob:tests python/sadi/labs/lctt/export_csv.py::build_document
-def test_header_is_42_columns_and_block_layout() -> None:
+def test_header_is_48_columns_and_block_layout() -> None:
     data = render_document(_doc())
     lines = data.decode("utf-8").split("\r\n")
     blank = lines.index("")
     assert lines[blank + 1].split(",") == list(COLUMNS)
-    assert len(COLUMNS) == 42
+    assert len(COLUMNS) == 48
     assert lines[0] == "Title,SADI LCTT tensile test"
-    assert all(len(r.split(",")) == 42 for r in lines[blank + 2 : -1])
+    assert all(len(r.split(",")) == 48 for r in lines[blank + 2 : -1])
     assert len(lines[blank + 2 : -1]) == 8
     meta = dict(_doc().meta)
     for key in ("Date", "Operator", "Description", "Tare mean (V)", "Cal slope (m/V)", "E (Pa)"):
@@ -200,7 +200,7 @@ def test_private_short_run_file_round_trips_field_by_field() -> None:
 # frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
 def test_elapsed_and_sd_columns_round_trip() -> None:
     doc = _doc()
-    assert doc.get("Schema") == "3"
+    assert doc.get("Schema") == "4"
     assert math.isnan(doc.rows[0].elapsed_s)  # unknown elapsed time is NaN, not 0
     assert doc.rows[3].elapsed_s == pytest.approx(33.0)
     assert all(r.volts_sd == pytest.approx(2e-4) for r in doc.rows)
@@ -258,3 +258,18 @@ def test_file_without_cal_point_rows_yields_no_cal_events() -> None:
     stripped = CsvDocument(meta=tuple(kv for kv in doc.meta if not kv[0].startswith("Cal point")),
                            rows=doc.rows)  # fmt: skip
     assert not any(isinstance(e, CalPoint) for e in to_live_events(stripped))
+
+
+# frob:ticket 01M6WX3GMG3Z1WCC12V437XJK7
+# frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
+def test_intercept_and_force_columns_alongside_mass_columns() -> None:
+    doc = _doc()
+    back = read_document(render_document(doc)).danger_ok
+    r = back.rows[2]
+    g = 9.80665
+    assert r.intercept_m == pytest.approx(doc.get_float("Cal intercept (m)"))
+    assert r.hanger_n == pytest.approx(r.hanger_kg * g)
+    assert r.mass_n == pytest.approx(r.mass_kg * g)
+    assert r.u_mass_n == pytest.approx(r.u_mass_kg * g)
+    assert r.load_n == pytest.approx(r.total_mass_kg * g, rel=1e-6)
+    assert {"mass_kg", "hanger_kg", "slope_m_per_v", "tare_v"} <= set(COLUMNS)

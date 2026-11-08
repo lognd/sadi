@@ -1,4 +1,4 @@
-# LCTT CSV export (42-column schema)
+# LCTT CSV export (48-column schema)
 
 Status: current
 
@@ -8,12 +8,13 @@ Format source: [domain.md](../domain.md) section 4; byte policy: [store/csv-expo
 ## Layout
 
 Metadata rows (`key,value`: Title, Schema, Date, Operator, Description, tare, calibration,
-specimen inputs, modulus fit, yield), one blank line, the 42-column header, one row per logged
+specimen inputs, modulus fit, yield), one blank line, the 48-column header, one row per logged
 point (including excluded ones, flagged). Columns are the fields of `PointRow`, in order:
 `point_id, index, elapsed_s, volts, u_volts, volts_sd, mass_kg, u_mass_kg, delta_volts, u_delta_volts, height_m, displacement_m, u_displacement_m,
 load_n, u_load_n, area_m2, u_area_m2, stress_pa, u_stress_pa, strain, u_strain,
 secant_modulus_pa, u_secant_modulus_pa, hanger_kg, u_hanger_kg, total_mass_kg, offset_line_pa, excluded, in_window, saturated,
-settle_source, is_yield, is_ultimate, low_r2, warnings, slope_m_per_v, tare_v, u_tare_v, l0_m, u_l0_m, diameter_m, u_diameter_m`.
+settle_source, is_yield, is_ultimate, low_r2, warnings, slope_m_per_v, tare_v, u_tare_v, l0_m, u_l0_m, diameter_m, u_diameter_m,
+intercept_m, u_intercept_m, hanger_n, u_hanger_n, mass_n, u_mass_n`.
 
 Reference comparison: a private mapping of these columns and metadata keys against the original
 lab VI export exists in the gitignored private tree (not linked from tracked files); the names
@@ -25,7 +26,7 @@ metadata block; it expresses loads in force units where `PointRow` uses mass; co
 and `PointRow` adds selection and flag columns (id, index, window, exclusion, yield, ultimate,
 saturation, warnings). The reference metadata also stores raw calibration points and per-input
 reading statistics, which the metadata block here does not. Any change to `PointRow` is tracked
-as a separate ticket; reader, writer and tests follow its field order.
+as a separate ticket (decision below); reader, writer and tests follow its field order.
 
 `elapsed_s` is seconds since the load was applied (from the capture settle record) and `volts_sd`
 is the per-sample standard deviation of the raw volts in the averaging window (`u_volts` is the
@@ -36,16 +37,27 @@ estimates: `u_tare_v` is the pooled tare uncertainty; `u_delta_volts = hypot(u_v
 are the specimen inputs; `u_l0_m` is `0` (gauge length is an exact configured constant);
 `u_secant_modulus_pa` is quotient propagation of stress and strain (independent inputs), `NaN`
 when strain is zero. `diameter_m` is added beside its uncertainty.
-Schema version is `3` (columns added); the reader requires the exact header, so version-1 and
+Schema version is `4` (3 added uncertainty columns; 4 adds the six below); the reader requires the exact header, so version-1 and
 version-2 files are rejected with `BadHeader`.
 
 Raw calibration points are stored in the metadata block as numbered rows `Cal point N volts (V)`
 and `Cal point N height (m)` (N from 1, after `Cal n`). `to_live_events` rebuilds one `CalPoint`
 per consecutive pair (stopping at the first gap), so a file can be fully re-analysed. This adds
-metadata rows only, the 42-column header is unchanged, so the schema stays `3`; files without the
+metadata rows only, the 48-column header is unchanged, so it did not bump the schema; files without the
 rows still read and simply yield no `CalPoint`.
 
 Numbers: 10 significant digits, `.` decimal, `NaN`, `Inf`, `-Inf` literal; booleans `1`/`0`.
+
+## Decision: reference session constants and force units (~437XJK7)
+
+Lose no information, keep both representations; no column is removed or renamed. Slope, tare,
+gauge length, diameter and hanger mass were already repeated on every row; schema `4` appends
+`intercept_m`, `u_intercept_m` (calibration intercept and its standard error), `hanger_n`,
+`u_hanger_n` (hanger weight as force, `hanger_kg * g`) and `mass_n`, `u_mass_n` (inventory-mass
+weight as force, `mass_kg * g`, excluding the hanger). `load_n` is already the total force. `g` is
+the standard 9.80665 m/s^2, treated as exact (no added uncertainty). Cells are always known for an
+exportable session (calibration, tare, specimen are required). Version 3 files are rejected with
+`BadHeader`, as with earlier bumps.
 
 ## Derivation and writing
 

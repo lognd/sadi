@@ -1,8 +1,8 @@
-"""LCTT CSV export and reader in the 42-column LabVIEW layout (domain.md section 4).
+"""LCTT CSV export and reader in the 48-column LabVIEW layout (domain.md section 4).
 
 The document is DERIVED from session events (never the source of truth, invariant I7): the
 events are recomputed through the loading, modulus and yield engines, rendered as a metadata
-block, a blank line, the 42-column header and one row per logged point, and published through
+block, a blank line, the 48-column header and one row per logged point, and published through
 the store exports primitive (tmp + fsync + no-replace rename, provenance sidecar). The reader
 parses such a file back into a `CsvDocument` and into live events for post-processing.
 Bytes: UTF-8, no BOM, CRLF after every row (see store/csv_export.py); the reader also accepts
@@ -38,7 +38,7 @@ from sadi.labs.lctt.live import (
     TareBlock,
     _fold,  # noqa: PLC2701 - same-package replay of the event log
 )
-from sadi.labs.lctt.loading import LoadingInputs, compute_loading, pool_tare
+from sadi.labs.lctt.loading import STANDARD_G, LoadingInputs, compute_loading, pool_tare
 from sadi.labs.lctt.modulus import CurvePoint, fit_modulus
 from sadi.labs.lctt.yield_ import find_yield
 from sadi.logging_setup import get_logger
@@ -48,7 +48,8 @@ _log = get_logger(__name__)
 
 EXPORT_KIND = "lctt-csv"
 # frob:ticket 01M6WX3GPBQA22B9AAJK7BN9MY
-SCHEMA_VERSION = "3"  # v3: uncertainty columns (42); cal point meta rows are additive, no bump
+# frob:ticket 01M6WX3GMG3Z1WCC12V437XJK7
+SCHEMA_VERSION = "4"  # v4: intercept + force columns (48); v3: uncertainty columns (42)
 TITLE = "SADI LCTT tensile test"
 NAN = float("nan")
 
@@ -60,13 +61,13 @@ class ExportCsvError(ErrorSet):
     Compute = "A result could not be computed from the session events; see the log"
     Write = "The export could not be written; the recording itself is safe"
     BadFile = "The file is not a LabVIEW-schema LCTT CSV (missing blank line or header)"
-    BadHeader = "The column header does not match the 42-column schema"
+    BadHeader = "The column header does not match the 48-column schema"
     BadCell = "A cell could not be parsed as its column type"
     Encoding = "The file is not valid UTF-8"
 
 
 class PointRow(BaseModel):
-    """One logged point; field order IS the 42-column header order."""
+    """One logged point; field order IS the 48-column header order."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -112,11 +113,17 @@ class PointRow(BaseModel):
     u_l0_m: float  # gauge length is an exact configured constant: 0
     diameter_m: float
     u_diameter_m: float
+    intercept_m: float  # calibration intercept, repeated per row (schema 4)
+    u_intercept_m: float  # calibration intercept standard error
+    hanger_n: float  # hanger weight as force: hanger_kg * g
+    u_hanger_n: float
+    mass_n: float  # inventory-mass weight as force: mass_kg * g (excludes hanger)
+    u_mass_n: float
 
 
 COLUMNS: tuple[str, ...] = tuple(PointRow.model_fields)
 _TYPES: tuple[Any, ...] = tuple(f.annotation for f in PointRow.model_fields.values())
-assert len(COLUMNS) == 42, "the schema has exactly 42 columns"  # noqa: S101
+assert len(COLUMNS) == 48, "the schema has exactly 48 columns"  # noqa: S101
 
 
 class CsvDocument(BaseModel):
@@ -378,6 +385,9 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
                 slope_m_per_v=fit.slope.value, tare_v=tare.value, u_tare_v=tare.std_unc,
                 l0_m=cfg.loading.gauge_length, u_l0_m=0.0,
                 diameter_m=spec.diameter, u_diameter_m=spec.u_diameter,
+                intercept_m=fit.intercept.value, u_intercept_m=fit.intercept.std_unc,
+                hanger_n=spec.hanger_kg * STANDARD_G, u_hanger_n=spec.u_hanger_kg * STANDARD_G,
+                mass_n=p.mass_kg * STANDARD_G, u_mass_n=p.u_mass_kg * STANDARD_G,
             )
         )  # fmt: skip
     tare_n = sum(t.n for t in st.tare)

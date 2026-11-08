@@ -2,13 +2,13 @@
 id = "01M6W7RAK3KCB1G87VKETJKV0D"
 title = "Versioned results stream: instant analytic, progressive refinement, stale markers"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T05:55:51Z"
 idempotency_key = "sadi-j4"
 labels = ["ws:conc", "ws:srv", "model:sonnet", "creates:python/sadi/server/results_stream.py", "creates:python/tests/server/test_results_stream.py", "creates:docs/server/results-stream.md"]
 scope = ["python/sadi/server/results_stream.py", "python/tests/server/test_results_stream.py", "docs/server/results-stream.md"]

@@ -2,13 +2,13 @@
 id = "01M6WFZ1N70HDJJRZWRHWP4E7Y"
 title = "Migrate lctt to a built-in plugin and update the lab boundary test"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:31:56Z"
+updated = "2026-11-08T02:52:10Z"
 labels = ["plugins", "creates:python/sadi/labs/lctt/plugin.py", "creates:python/sadi/labs/lctt/sadi_plugin.toml", "creates:python/sadi/plugins/builtin.py", "creates:python/tests/plugins/test_boundary.py", "creates:python/tests/plugins/test_lctt_plugin.py"]
 scope = ["python/sadi/labs/lctt/__init__.py", "python/pyproject.toml", "python/sadi/labs/lctt/plugin.py", "python/sadi/labs/lctt/sadi_plugin.toml", "python/sadi/plugins/builtin.py", "python/tests/plugins/test_boundary.py", "python/tests/plugins/test_lctt_plugin.py"]
 
@@ -18,19 +18,19 @@ target = "01M6WFYN8C6YH5D79CPEKSP69P"
 
 [[acceptance]]
 text = "lctt appears in PluginRegistry as enabled with source builtin"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Existing lctt tests pass unmodified"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Boundary test fails on a fixture plugin importing sadi.store.wal"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "No branch in loader/registry mentions lctt"
-bound = false
+bound = true
 +++
 
 Give lctt a manifest (id lctt, version, api_version) and a register() contributing its LabModule; list it in BuiltinSource via sadi.plugins.builtin with no special casing in loader or registry. Boundary test (existing check lives in tests/core/test_lab_registry.py area; new python/tests/plugins/test_boundary.py): parametrized AST scan over every built-in plugin package (and any local plugin dir present) asserting imports are limited to core public API and sadi.plugins public names; additionally forbid sadi.store.* (WAL/store) and sadi.jobs internals from plugins. Keep legacy LabRegistry lookups of lctt working.

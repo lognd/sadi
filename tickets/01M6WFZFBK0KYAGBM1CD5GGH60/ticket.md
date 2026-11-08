@@ -2,13 +2,13 @@
 id = "01M6WFZFBK0KYAGBM1CD5GGH60"
 title = "Session provenance: record plugin id+version per run, warn on reopen"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:32:10Z"
+updated = "2026-11-08T02:50:15Z"
 labels = ["plugins", "creates:python/tests/store/test_session_plugin_provenance.py"]
 scope = ["python/sadi/store/manifest.py", "python/sadi/store/session.py", "python/tests/store/test_session_plugin_provenance.py"]
 

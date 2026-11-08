@@ -1,0 +1,29 @@
+kind = "evidence"
+captured_at = "2026-11-08T02:52:02Z"
+digest = "d724a3d5a5111924d49697e4ee0cc7be73b261201f571a7d9338859fe5942216"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 14 items
+
+python/tests/core/test_lab_registry.py .                                 [  7%]
+python/tests/plugins/test_boundary.py .........                          [ 71%]
+python/tests/plugins/test_lctt_plugin.py ....                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-202960-0.xml ---------------
+============================== 14 passed in 0.29s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_lab_registry.py::test_fake_lab_satisfies_protocol python/tests/plugins/test_boundary.py::test_allowed_imports_pass python/tests/plugins/test_boundary.py::test_fixture_plugin_violations_flagged python/tests/plugins/test_boundary.py::test_plugin_imports_within_boundary python/tests/plugins/test_lctt_plugin.py::test_lctt_enabled_builtin python/tests/plugins/test_lctt_plugin.py::test_legacy_lab_registry_lookup python/tests/plugins/test_lctt_plugin.py::test_loader_and_registry_do_not_mention_lctt python/tests/plugins/test_lctt_plugin.py::test_register_yields_working_lab"
+size = 682
+status = "measured"
+test_count = 14
+tests_digest = "cf92187bef958756d93446dc53756684526ab07f2210b7cb1ebf88af05ce5707"
+at = "2026-11-08T02:52:02Z"
+actor = "lognd"
+rev = 1

@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:28:05Z"
+updated = "2026-11-08T03:28:18Z"
 scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md"]
 
 [[acceptance]]
 text = "Blocks with dropped bytes are durably written as RAW_JUNK via the WAL writer"
-bound = false
+bound = true
 +++
 
 found while working ~60ZNFTD

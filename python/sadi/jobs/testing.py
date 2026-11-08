@@ -9,6 +9,7 @@ Human-facing recipe: docs/jobs/testing.md. Test-support code: never imported by 
 """
 
 # frob:ticket 01M6W7R2GTD88HAHEJ4VAX9DG6
+# frob:ticket 01M6WBZ7QYZPJDF6XR283MEEZ0
 from __future__ import annotations
 
 import asyncio
@@ -24,7 +25,6 @@ from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result
 
 from sadi.core.errors import JobCode, JobError
-from sadi.jobs import manager as manager_module
 from sadi.jobs.manager import JobManager
 from sadi.jobs.pool import WorkerSlot
 from sadi.jobs.state import (
@@ -111,6 +111,10 @@ class FakeClock:
     def monotonic(self) -> float:
         """Current fake time in seconds."""
         return self._now_ns / _NS
+
+    def time_ns(self) -> int:
+        """Fake wall-clock nanoseconds (same as monotonic; epoch is test start)."""
+        return self._now_ns
 
     def sleep(self, seconds: float) -> None:
         """Advance time instead of blocking, so sleeping code under test never waits."""
@@ -360,49 +364,6 @@ class FakeSlot:
         self._primed = False
 
 
-class _TimeShim:
-    """Replacement for the `time` module inside `sadi.jobs.manager` (reads the fake clock)."""
-
-    def __init__(self, clock: FakeClock) -> None:
-        self._clock = clock
-
-    def monotonic(self) -> float:
-        """Fake monotonic seconds."""
-        return self._clock.monotonic()
-
-    def time_ns(self) -> int:
-        """Fake wall-clock nanoseconds (same as monotonic; epoch is test start)."""
-        return self._clock.monotonic_ns()
-
-
-class _HarnessManager(JobManager):
-    """JobManager whose workers are `FakeSlot`s created through the harness."""
-
-    def __init__(
-        self,
-        harness: JobHarness,
-        workers: int,
-        *,
-        grace_s: float,
-        heartbeat_s: float,
-        sink: Callable[[ResultEnvelope], None],
-        on_outcome: Callable[[JobOutcome], None],
-    ) -> None:
-        self._harness = harness
-        super().__init__(
-            workers,
-            loop=cast("asyncio.AbstractEventLoop", harness.loop),
-            grace_s=grace_s,
-            heartbeat_s=heartbeat_s,
-            sink=sink,
-            on_outcome=on_outcome,
-        )
-
-    def _spawn(self, index: int) -> WorkerSlot:
-        slot = self._harness.spawn_slot(index, self._on_event, self._on_death)
-        return cast("WorkerSlot", slot)
-
-
 class JobHarness:
     """A real `JobManager` wired to a fake clock, fake loop and scripted workers."""
 
@@ -416,27 +377,36 @@ class JobHarness:
         self.outcomes: list[JobOutcome] = []
         self.envelopes: list[ResultEnvelope] = []
         self._incarnations: dict[int, int] = {}
-        self.manager = _HarnessManager(
-            self,
+        self.manager = JobManager(
             workers,
+            loop=cast("asyncio.AbstractEventLoop", self.loop),
             grace_s=grace_s,
             heartbeat_s=heartbeat_s,
             sink=self.envelopes.append,
             on_outcome=self.outcomes.append,
+            clock=self.clock,
+            spawn=self._spawn_factory,
         )
-        self._real_time = manager_module.time
-        vars(manager_module)["time"] = _TimeShim(self.clock)
         _log.info("harness: created with %d workers", workers)
 
     def close(self) -> None:
-        """Restore the real `time` module in `sadi.jobs.manager`; call once per harness."""
-        vars(manager_module)["time"] = self._real_time
+        """Mark the harness finished; nothing global is patched, so this only logs."""
         _log.info("harness: closed")
 
     def register(self, name: str, script: Script) -> str:
         """Register a script; returns the name to use as `JobSpec.task`."""
         self.scripts[name] = script
         return name
+
+    def _spawn_factory(
+        self,
+        index: int,
+        on_event: Callable[..., None],
+        on_death: Callable[..., None],
+        post: Callable[[Callable[[], None]], None],
+    ) -> WorkerSlot:
+        """`SlotFactory` handed to the manager: builds a `FakeSlot` (the poster is the loop)."""
+        return cast("WorkerSlot", self.spawn_slot(index, on_event, on_death))
 
     def spawn_slot(
         self,

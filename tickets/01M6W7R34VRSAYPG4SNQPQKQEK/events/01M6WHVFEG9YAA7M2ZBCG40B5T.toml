@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T03:04:54Z"
+digest = "f654d8c2439b28410a8916671fc6180b690cffb4c9c19eb76c71f3672f342edf"
+exit_code = 0
+head = "ff2997b6c2d038463f26ac9dac22efe35c6e6c9a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_capture.py .                                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-227115-0.xml ---------------
+============================== 1 passed in 1.73s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = " python/tests/labs/lctt/test_capture.py::test_accept_before_settled_is_forced_early_with_warning"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "3b48ef358b90f5d83a370e661f2dd04e6f4b64d262dc6358c0fa80d4b84cc03a"
+at = "2026-11-08T03:04:54Z"
+actor = "lognd"
+rev = 1

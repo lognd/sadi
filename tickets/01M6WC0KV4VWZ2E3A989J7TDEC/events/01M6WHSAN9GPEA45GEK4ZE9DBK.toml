@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:03:44Z"
+digest = "2296ccb8090850e86a302ba20bf32017016a344174813162c0913fbeeb2112e0"
+exit_code = 0
+head = "6da4bacd96ed6206593ddd83cb371add57ff6188"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 7 items
+
+python/tests/store/test_session.py .......                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-222799-0.xml ---------------
+============================== 7 passed in 0.72s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_session.py::test_hostile_slug_cannot_reach_filesystem"
+size = 521
+status = "measured"
+test_count = 7
+tests_digest = "309136503e33f35398d675423b94fe523e9d62c46f9c6b97acd1e437b57a56b7"
+at = "2026-11-08T03:03:44Z"
+actor = "lognd"
+rev = 1

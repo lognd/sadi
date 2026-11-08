@@ -2,7 +2,8 @@
 id = "01M6WFZF75SH31V398E8P7WC5Y"
 title = "CLI: sadi plugins list/info/enable/disable"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

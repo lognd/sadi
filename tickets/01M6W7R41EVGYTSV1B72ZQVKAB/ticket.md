@@ -2,7 +2,8 @@
 id = "01M6W7R41EVGYTSV1B72ZQVKAB"
 title = "Wizard shell: step rail, next-action panel, status bar, keyboard capture"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

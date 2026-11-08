@@ -7,7 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T08:25:21Z"
-updated = "2026-11-08T08:30:51Z"
+updated = "2026-11-08T08:30:52Z"
+scope = ["python/sadi/store/incremental.py"]
 
 [[acceptance]]
 text = "notes() and curve source tail the WAL incrementally, equal to a full scan, with equivalence and 200k-record latency tests"

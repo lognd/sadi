@@ -82,8 +82,11 @@ class Phase(StrEnum):
     # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM
     SETUP = "setup"
     CALIBRATION = "calibration"
+    TARE = "tare"
     ELASTIC = "elastic"
     PLASTIC = "plastic"
+    RESULTS = "results"
+    EXPORT = "export"
 
 
 class SettleStatus(StrEnum):

@@ -96,6 +96,9 @@ def test_steps_and_phase_binding() -> None:
     assert by_id["calibrate"] is Phase.CALIBRATION
     assert by_id["elastic"] is Phase.ELASTIC
     assert by_id["plastic"] is Phase.PLASTIC
+    assert by_id["tare"] is Phase.TARE
+    assert by_id["results"] is Phase.RESULTS
+    assert by_id["export"] is Phase.EXPORT
     assert "weights" not in by_id
 
 

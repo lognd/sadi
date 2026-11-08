@@ -1730,7 +1730,7 @@ export interface components {
          * @description Guided-run phase.
          * @enum {string}
          */
-        sadi__core__models__Phase: "setup" | "calibration" | "elastic" | "plastic";
+        sadi__core__models__Phase: "setup" | "calibration" | "tare" | "elastic" | "plastic" | "results" | "export";
         /**
          * Phase
          * @description Run phases in order: LVDT calibration, elastic (long wire), plastic (short wire).

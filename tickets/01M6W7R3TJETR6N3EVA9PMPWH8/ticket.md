@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:39:03Z"
+updated = "2026-11-08T03:39:05Z"
 idempotency_key = "sadi-f8"
 labels = ["ws:web", "model:sonnet", "creates:web/src/components/results/**", "creates:docs/web/results-panel.md"]
 scope = ["web/src/components/results/**", "docs/web/results-panel.md", "docs/index.md"]
@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Shows which settle value fed E; flags RSS vs Monte Carlo disagreement; copy-to-clipboard of values with units"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Component tests incl. sig-fig rendering (display only, formatting source of truth is the API from SF1)"

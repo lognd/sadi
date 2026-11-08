@@ -2,13 +2,13 @@
 id = "01M6WTC9ZQWCTYX5WADMDHYBZ1"
 title = "REST: inventory CRUD and group weighing endpoints"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:38:31Z"
+updated = "2026-11-08T05:38:32Z"
 scope = ["python/sadi/server/routes/inventory.py"]
 
 [[links]]

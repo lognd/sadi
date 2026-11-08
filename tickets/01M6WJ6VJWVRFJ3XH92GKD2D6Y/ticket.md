@@ -2,7 +2,8 @@
 id = "01M6WJ6VJWVRFJ3XH92GKD2D6Y"
 title = "Validate LCTT loading against docs oracle (oracle moved to private)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

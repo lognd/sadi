@@ -2,13 +2,13 @@
 id = "01M6W7RB61AEQRD899AWKK27QJ"
 title = "Backend e2e suite: simulator fault injection (noise, drift, creep, slip, dropped bytes, saturation)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 8
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T00:08:28Z"
+updated = "2026-11-08T06:23:19Z"
 idempotency_key = "sadi-t1"
 labels = ["ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/e2e/**", "creates:docs/testing.md"]
 scope = ["python/tests/e2e/**", "docs/testing.md"]

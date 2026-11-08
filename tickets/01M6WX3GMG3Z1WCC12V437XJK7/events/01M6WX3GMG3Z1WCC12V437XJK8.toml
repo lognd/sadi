@@ -1,0 +1,11 @@
+kind = "create"
+title = "CSV export: decide row-level session constants and force-unit loads vs reference"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
+acceptance = ["Decision recorded in docs/lctt/export-csv.md"]
+body = "Found while working ~SYDV1C9. The reference repeats calibration, tare, gauge length, diameter on every row and expresses load and hanger as force; PointRow keeps most in metadata and uses mass. Proposal: decision ticket; if compatibility with the reference is wanted add repeated constants and force columns, else document the intentional divergence."
+at = "2026-11-08T06:21:34Z"
+actor = "lognd"
+rev = 1

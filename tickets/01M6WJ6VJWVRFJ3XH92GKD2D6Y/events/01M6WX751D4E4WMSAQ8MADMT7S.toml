@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Private test checks compute_loading against every row of the local short-run reference at 1e-9 (force, stress, strain, uncertainties; not E)"]
+moved = []
+at = "2026-11-08T06:23:33Z"
+actor = "lognd"
+rev = 1

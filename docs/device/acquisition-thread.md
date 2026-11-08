@@ -1,4 +1,7 @@
 # Acquisition thread (`sadi_py.acq`)
+Status: draft
+
+Owner: ticket ~A8Y67RG. Part of [python-binding](python-binding.md).
 
 `AcqHandle(session, capacity=256)` lifts the streaming stage out of a
 `Session` (which reports busy meanwhile) and moves it onto a dedicated Rust

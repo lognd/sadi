@@ -51,7 +51,7 @@ version), `PROTOCOL_VERSION` (int), `serial_features()` (names such as
 `selftest()` (codec round-trips plus the builtin scenario; raises
 `CodecFailure` on mismatch).
 Rust enums are mirrored by exhaustive matches without wildcard arms.
-`acq.rs` is the acquisition thread (see `acquisition-thread.md`).
+`acq.rs` is the acquisition thread (see [acquisition-thread](acquisition-thread.md)).
 
 ## Simulator control (`sadi_py.sim`)
 

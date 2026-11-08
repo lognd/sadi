@@ -665,6 +665,83 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:47:22.684359266Z"
 
 [[symbol]]
+identity = "web/src/screens/export/api.ts"
+symref = "web/src/screens/export/api.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "ca37cb0fd39ef25de95c5bf2e7871e99c1e5aa71e9cb7c200fb75b99d2500f3e"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::exportUrl"
+symref = "web/src/screens/export/api.ts::exportUrl"
+sig = "d4f570f05d45ba094ceb36c2804cccfb7b00a1e01cedc3f45fe82c6b2ce2f8d9"
+body = "7c11c66afee8d02082a3e312b29ec83093866cb558e03276d997f0918366ad5f"
+doc = "f181da5eeb5064192e8f6608acb2fe8200996c42127645c8860f1ca9770d7cce"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "943b9b4eef4b54c0b14e4a98a30c685167ce038d7d0db74eed445ee401cb97a2"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::getExportFormats"
+symref = "web/src/screens/export/api.ts::getExportFormats"
+sig = "81794497b48949bc370c360efb97f681e8494fb2dd66a974aed2d91d6ca67a33"
+body = "d72f3405ce3cc25a4493e2e085983578b17511dc48b92a51bb0a9da4c2f220a1"
+doc = "34b211fbf28bc0f0b7d910125948fe86b922a1926153f5135a6330734bb19e88"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "33380bb06765f236e83bb9b78376a4b5530ec56729289294815513b07a1a1f3b"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::getFigureData"
+symref = "web/src/screens/export/api.ts::getFigureData"
+sig = "29823322ffd61e164049ed73a01d056224e6777d764402da838eb0d0b7d1159b"
+body = "a940570c8586cdcc30ef2abeeebc448cbb17066b588945cf3fc23f32a9966f8d"
+doc = "7344cbbe47934f1eab97b28e1cd636ce522ca51a69f3bf131da2ed5d2b9729d4"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "9e450a8d7afc754df192cd48ea589eed551756deecf948cc1a01a5ab9dc9c017"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::getResults"
+symref = "web/src/screens/export/api.ts::getResults"
+sig = "d69093c5586563e48655b328d6173ba1efb032630cf797f0a4757fcc64469240"
+body = "f3017ab94397f94390c5834321bb37232f5788b8360817ec0360a64e2f59c1de"
+doc = "6ff7e00c663abfa204288f78ee4b7fcfc90b05eed062f3eab149d63a25fab4e6"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "988e5851cf967056de2002cb881adef500b57bda1bc8e302fb149c9709de1b67"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::log"
+symref = "web/src/screens/export/api.ts::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "9d8d37e61d8a58598e4c4ff7d1833403fc6e7fdf3106dc03cec8858cfd9682da"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::toProblem"
+symref = "web/src/screens/export/api.ts::toProblem"
+sig = "88c4f534bf9c5424fbcc5766807b92beb815ebc707a7898963f2a1e3285eeff0"
+body = "114415554bff512087e63f527fd6fd50c100006b9ccf6e9b4a795f1aef38213e"
+doc = "145182c93637ea3863929b0b4c823e8e298863a651bb1eaa38eda9d8d457d770"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "d05ce4276ca94dca6732a96ccd1a696e18725a5d1be13f9636c2866745e0186d"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
 identity = "web/src/ws/ws.test.ts"
 symref = "web/src/ws/ws.test.ts"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

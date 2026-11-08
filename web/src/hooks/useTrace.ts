@@ -1,3 +1,4 @@
+// frob:ticket 01M6XBY9FQS5658X6WQ5PCC2QG
 // frob:ticket 01M6XAASH92DG6W6GDJBJVWSNR
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
 // frob:ticket 01M6WV6TFKP2396PW58G1WJD3B
@@ -45,12 +46,12 @@ export function applyMessage(w: TraceWindow, m: ServerMessage, lastPoint: { v: n
     case "state":
       if (m.pointIndex !== null && m.pointIndex !== lastPoint.v) {
         lastPoint.v = m.pointIndex;
-        w.mark({ t: loadMarkTime(w.now, m.timeSinceLoad), kind: "load", label: `load ${String(m.pointIndex)}` });
+        w.mark({ t: loadMarkTime(w.now(), m.timeSinceLoad), kind: "load", label: `load ${String(m.pointIndex)}` });
       }
       return undefined;
     case "result":
       w.mark({
-        t: resultMarkTime(w.now, m.windowEnd), kind: m.settled ? "settled" : "forced",
+        t: resultMarkTime(w.now(), m.windowEnd), kind: m.settled ? "settled" : "forced",
         label: `${m.settled ? "settled" : "captured early"} ${m.pointIndex === null ? "" : String(m.pointIndex)}`.trim(),
       });
       return undefined;

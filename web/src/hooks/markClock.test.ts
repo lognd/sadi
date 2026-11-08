@@ -29,8 +29,8 @@ describe("stream clock vs record fields", () => {
     applyMessage(w, st.value, lp);
     applyMessage(w, rs.value, lp);
     const marks = w.snapshot(10).marks;
-    expect(marks[0]?.t).toBeCloseTo(w.now - 0.05);
+    expect(marks[0]?.t).toBeCloseTo(w.now() - 0.05);
     expect(marks[1]?.t).toBe(20.05);
-    expect(marks.every((m) => m.t <= w.now && m.t >= 20)).toBe(true);
+    expect(marks.every((m) => m.t <= w.now() && m.t >= 20)).toBe(true);
   });
 });

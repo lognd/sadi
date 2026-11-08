@@ -1,3 +1,4 @@
+// frob:ticket 01M6XBY9FQS5658X6WQ5PCC2QG
 // frob:ticket 01M6W7RAH93KKNK1WH67KWS2S7
 /** Scrolling time window over decoded trace frames, with a min/max envelope and event marks. */
 import { getLogger } from "../../api/log";
@@ -107,7 +108,7 @@ export class TraceWindow {
   }
 
   /** Latest stream time covered by the window. */
-  get now(): number { return this.tEnd; }
+  now(): number { return this.tEnd; }
 
   /** Merge the held buckets into at most `columns` display columns. */
   snapshot(columns: number): Snapshot {

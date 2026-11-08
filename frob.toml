@@ -122,3 +122,11 @@ ref_mode = "trunk"
 [tests]
 # Interpreter for Python tests: the uv-managed venv inside python/.
 python = "python/.venv/bin/python"
+
+# frob:ticket 01M6XBY9FQS5658X6WQ5PCC2QG
+[[check.tool]]
+# Strict tsc verdict: files it reports nothing on are type-clean, so annotated TypeScript receivers resolve exactly (Must) for COV001.
+name = "tsc"
+command = "npx"
+args = ["tsc", "-p", "web", "--strict", "--noEmit", "--pretty", "false"]
+parser = "tsc-text"

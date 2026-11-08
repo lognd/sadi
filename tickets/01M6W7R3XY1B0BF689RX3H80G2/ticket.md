@@ -11,7 +11,7 @@ created = "2026-11-08T00:08:20Z"
 updated = "2026-11-08T05:28:12Z"
 idempotency_key = "sadi-b4"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/app.py", "creates:python/sadi/server/routes/**", "creates:python/sadi/server/schemas.py", "creates:python/tests/server/test_routes.py", "creates:docs/server/api.md"]
-scope = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py"]
+scope = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py", "python/tests/server/test_routes_problem.py"]
 
 [[links]]
 kind = "blocked-by"

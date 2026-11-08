@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["POST /api/session/load-change records a WAL marker and 409s with no live session; Run screen has a Mark load change button; guided-run e2e passes"]
+moved = []
+at = "2026-11-08T07:43:51Z"
+actor = "lognd"
+rev = 1

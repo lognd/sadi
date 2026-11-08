@@ -1,0 +1,65 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T07:51:19Z"
+digest = "cca6d9ca91c9c952bfb81f9c31c16ece22b2097f8885236ca18c0f666e4da70e"
+exit_code = 1
+failed_tests = ["python/tests/server/test_routes_acquisition.py::test_live_mark_load_change_without_run"]
+head = "6e7a19d0ab92d0043581e8f13607b92392b23903"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/server/test_routes_acquisition.py ...F                      [100%]
+
+=================================== FAILURES ===================================
+____________________ test_live_mark_load_change_without_run ____________________
+
+    def test_live_mark_load_change_without_run() -> None:
+        """With no run started LiveAcquisition refuses with NoLiveSession."""
+        from typing import cast
+    
+>       from sadi.core.device import DeviceService
+
+python/tests/server/test_routes_acquisition.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """DeviceService: open simulator or serial board, stream blocks via a reader thread, reconnect."""
+    
+    # frob:ticket 01M6W7R2NWFTQBK7FRWGX511CP
+    
+    from __future__ import annotations
+    
+    import queue
+    import threading
+    import time
+    from collections.abc import Callable
+    from enum import StrEnum
+    from typing import Final, Literal
+    
+>   import sadi_py as sp
+E   ModuleNotFoundError: No module named 'sadi_py'
+
+python/sadi/core/device.py:14: ModuleNotFoundError
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-938027-0.xml ---------------
+==================== 1 failed, 3 passed, 1 warning in 2.24s ====================
+'''
+passed = false
+provider = "pytest"
+ref = "python/tests/server/test_routes_acquisition.py"
+size = 2022
+status = "measured"
+test_count = 4
+tests_digest = "dfcf08be70451bc3062548be37c7904e52114e890672e1d856ba2fb30505993f"
+at = "2026-11-08T07:51:19Z"
+actor = "lognd"
+rev = 1

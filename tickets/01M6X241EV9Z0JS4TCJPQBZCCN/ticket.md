@@ -1,0 +1,12 @@
++++
+id = "01M6X241EV9Z0JS4TCJPQBZCCN"
+title = "Run screen has no capture input entry (volts/height, mean/n, diameter, mass)"
+type = "bug"
+category = "todo"
+priority = "high"
+reporter = "lognd"
+created = "2026-11-08T07:49:14Z"
+updated = "2026-11-08T07:49:14Z"
++++
+
+found while working ~M84ZB2J: RunScreen sends empty inputs so POST capture returns 422 'calibration needs volts and height'; guided-run and run-capture e2e fail at capture after Settled. Needs input fields per phase (see core/point_inputs.py parse_inputs).

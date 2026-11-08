@@ -6,6 +6,7 @@ sections 6, 7, 8, 9.3 (stale/refining/final envelopes) and 11 step 4 of docs/con
 """
 
 # frob:ticket 01M6W7R1Z1E430ZNZ51V9NMTHC
+# frob:ticket 01M6WBZ7QYZPJDF6XR283MEEZ0
 from __future__ import annotations
 
 import asyncio
@@ -13,8 +14,8 @@ import threading
 import time
 from collections import OrderedDict, deque
 from collections.abc import Callable
-from dataclasses import dataclass, field
-from typing import TypeVar, cast
+from dataclasses import dataclass
+from typing import Protocol, TypeVar, cast
 from uuid import UUID
 
 from typani import Err, Ok, Result
@@ -51,6 +52,25 @@ _T = TypeVar("_T")
 _HISTORY = 256
 
 
+class Clock(Protocol):
+    """Time source seam: monotonic seconds for durations, wall nanoseconds for stamps."""
+
+    def monotonic(self) -> float:
+        """Monotonic seconds."""
+        ...
+
+    def time_ns(self) -> int:
+        """Wall-clock nanoseconds."""
+        ...
+
+
+#: Builds a worker slot: `(index, on_event, on_death, post) -> WorkerSlot`.
+SlotFactory = Callable[
+    [int, Callable[..., None], Callable[..., None], Callable[[Callable[[], None]], None]],
+    WorkerSlot,
+]
+
+
 @dataclass
 class _Job:
     """Mutable manager-private record of one job."""
@@ -60,8 +80,8 @@ class _Job:
     outcome: Outcome = Outcome.NONE
     slot: WorkerSlot | None = None
     killed: bool = False
-    entered: float = field(default_factory=time.monotonic)
-    last_event: float = field(default_factory=time.monotonic)
+    entered: float = 0.0
+    last_event: float = 0.0
     last_fraction: float = 0.0
     warned_silent: bool = False
     grace: asyncio.TimerHandle | None = None
@@ -81,7 +101,11 @@ class JobManager:
         heartbeat_s: float = WORKER_HEARTBEAT_S,
         sink: Callable[[ResultEnvelope], None] | None = None,
         on_outcome: Callable[[JobOutcome], None] | None = None,
+        clock: Clock = time,
+        spawn: SlotFactory = WorkerSlot,
     ) -> None:
+        self._clock = clock
+        self._spawn_slot = spawn
         self._loop = loop or asyncio.get_running_loop()
         self._thread = threading.current_thread()
         self._n = workers if workers is not None else default_worker_count()
@@ -135,7 +159,7 @@ class JobManager:
             _log.warning("submit %s rejected: shutting down", spec.job_id)
             return Err(JobError(code=JobCode.SHUTTING_DOWN))
         assert spec.job_id not in self._jobs, "duplicate job_id is a programmer bug"
-        job = _Job(spec)
+        job = _Job(spec, entered=self._clock.monotonic(), last_event=self._clock.monotonic())
         self._jobs[spec.job_id] = job
         self._counts["submitted"] += 1
         _log.info(
@@ -261,7 +285,7 @@ class JobManager:
         self._loop.call_soon_threadsafe(fn)
 
     def _spawn(self, index: int) -> WorkerSlot:
-        return WorkerSlot(index, self._on_event, self._on_death, self._post)
+        return self._spawn_slot(index, self._on_event, self._on_death, self._post)
 
     def _future(self, job: _Job) -> asyncio.Future[JobOutcome]:
         if job.done is None:
@@ -271,7 +295,7 @@ class JobManager:
     def _transition(self, job: _Job, to: JobState, why: str = "") -> None:
         frm = job.state
         assert frm.can_go(to), f"illegal transition {frm} -> {to}"
-        now = time.monotonic()
+        now = self._clock.monotonic()
         level = _log.error if to is JobState.FAILED else _log.info
         level(
             "job %s key=%s dv=%d: %s -> %s after %.0f ms %s",
@@ -392,7 +416,7 @@ class JobManager:
                     self._queues[job.spec.priority].appendleft(job)
                 case Ok():
                     job.slot = slot
-                    job.last_event = time.monotonic()
+                    job.last_event = self._clock.monotonic()
                     self._transition(job, JobState.RUNNING, f"on slot {slot.index}")
                     job.silence = self._loop.call_later(self._heartbeat_s, self._check_silent, job)
 
@@ -406,7 +430,7 @@ class JobManager:
         job.silence = None
         if job.state.is_terminal:
             return
-        quiet = time.monotonic() - job.last_event
+        quiet = self._clock.monotonic() - job.last_event
         if quiet >= self._heartbeat_s and not job.warned_silent:
             job.warned_silent = True
             self._counts["silent"] += 1
@@ -431,7 +455,7 @@ class JobManager:
             self._counts["late"] += 1
             _log.debug("late %s event for job %s dropped", event.kind, event.job_id)
             return
-        job.last_event = time.monotonic()
+        job.last_event = self._clock.monotonic()
         match event:
             case Started():
                 _log.debug("job %s: task entered", event.job_id)
@@ -528,7 +552,7 @@ class JobManager:
         self._result_version[key] = version
         env = ResultEnvelope(
             key=key, data_version=dv, result_version=version, state=state,
-            progress=progress, job_id=job_id, value=value, emitted_ns=time.time_ns(),
+            progress=progress, job_id=job_id, value=value, emitted_ns=self._clock.time_ns(),
         )  # fmt: skip
         self._latest[key] = env
         _log.debug("key %s: envelope dv=%d rv=%d %s", key, dv, version, state)

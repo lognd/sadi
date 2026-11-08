@@ -1,6 +1,6 @@
 """Deterministic job-logic tests on the fake harness: no processes, threads or sleeps."""
 
-# frob:ticket 01M6W7R2GTD88HAHEJ4VAX9DG6
+# frob:ticket 01M6WBZ7QYZPJDF6XR283MEEZ0
 from __future__ import annotations
 
 from collections.abc import Generator, Iterator
@@ -268,3 +268,14 @@ def test_replay_reports_divergence_and_other_seeds_differ() -> None:
     assert "diverged at 0" in res.error.detail
     traces = {tuple(_scenario(s, pre=2)[1].trace) for s in range(20)}
     assert len(traces) > 1
+
+
+# frob:ticket 01M6WBZ7QYZPJDF6XR283MEEZ0
+# frob:tests python/sadi/jobs/manager.py::JobManager.__init__
+def test_harness_injects_clock_without_patching_time() -> None:
+    import sadi.jobs.manager as mgr
+
+    real = mgr.time
+    h = _harness()
+    assert mgr.time is real
+    assert h.manager._clock is h.clock  # noqa: SLF001

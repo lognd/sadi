@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:19:53Z"
+updated = "2026-11-08T03:19:56Z"
 idempotency_key = "sadi-b3"
 labels = ["ws:srv", "data-safety", "model:sonnet", "creates:python/sadi/core/pipeline.py", "creates:python/tests/core/test_pipeline.py", "creates:docs/core/pipeline.md"]
 scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md", "docs/index.md"]
@@ -47,7 +47,7 @@ bound = false
 
 [[acceptance]]
 text = "Pipeline emits settle state, decimated trace frames and result updates onto an internal bus"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Hands durable-write to the dedicated WAL writer thread (DS8); acquisition never waits on fsync"

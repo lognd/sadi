@@ -2,7 +2,8 @@
 id = "01M6WTZVX9DFPHBKVJ1NXB07G0"
 title = "launcher: --sim must make the server use the simulator (SADI_SIM is not read)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

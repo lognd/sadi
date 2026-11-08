@@ -26,7 +26,6 @@ Status: current
 - [WAL writer thread](store/writer-thread.md)
 - [Sessions](store/session.md)
 - [Event log and snapshots](store/events.md)
-- [Derived exports with provenance](store/exports.md)
 - [Lab modules](core/lab-modules.md)
 - [Plugins](plugins.md)
 - [UX design](ux.md)

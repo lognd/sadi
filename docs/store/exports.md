@@ -1,7 +1,5 @@
 # Derived exports with provenance
 
-<!-- frob:waive DOC007 docs/index.md is leased by another ticket; link filed as follow-up -->
-
 Status: current
 
 Owner: ~36JQFXT. Code: `python/sadi/store/exports.py`. Tests: `python/tests/store/test_exports.py`.

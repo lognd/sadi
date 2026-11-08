@@ -1,5 +1,7 @@
 # Web API client generation
 
+Status: current
+
 The backend OpenAPI document is committed at `web/src/api/openapi.json` and the TypeScript
 types generated from it at `web/src/api/schema.ts`.
 

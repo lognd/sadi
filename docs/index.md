@@ -56,3 +56,4 @@ Status: current
 - [LCTT live results](lctt/live-results.md)
 - [LCTT guided run](lctt/guidance.md)
 - [LCTT CSV export](lctt/export-csv.md)
+- [Web API client generation](web-api-client.md)

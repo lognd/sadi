@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["A lone first segment with a short magic-prefix header scans Ok as empty with a torn-tail record, file untouched", "A full-length corrupt or non-magic first header still returns Err"]
+moved = []
+at = "2026-11-08T03:43:35Z"
+actor = "lognd"
+rev = 1

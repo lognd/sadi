@@ -7,6 +7,14 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:26Z"
-updated = "2026-11-08T03:42:30Z"
+updated = "2026-11-08T03:43:35Z"
 scope = ["python/sadi/store/wal.py", "python/tests/store/test_wal.py", "docs/data-safety.md"]
+
+[[acceptance]]
+text = "A lone first segment with a short magic-prefix header scans Ok as empty with a torn-tail record, file untouched"
+bound = false
+
+[[acceptance]]
+text = "A full-length corrupt or non-magic first header still returns Err"
+bound = false
 +++

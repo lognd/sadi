@@ -2,7 +2,8 @@
 id = "01M6W7RBBF0Y5QQVH34W5XJBZT"
 title = "Usability pass: scripted walkthrough, issue log and fixes"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

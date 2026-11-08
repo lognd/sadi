@@ -57,3 +57,8 @@ u_diameter, hanger_kg, u_hanger_kg; any other phase is a load point: volts, mass
 optional u_volts, u_mass_kg; defined once in `sadi.core.point_inputs`, which the recording
 path also uses to write them; the POINT's settle meta - settled, forced_early, drift_rate, t_since_load_s - is read with `parse_meta`, defaults for older events, are carried onto each replayed `LoadPoint` as `settled`, `forced_early`, `drift_rate`, `t_since_load_s` via `session_events`, so the fit and results can see forced-early points; forced-early points are also logged; fit math is unchanged), derives the curve with `build_document` and returns the
 non-excluded points. No session, replay failure or an unready session gives 409 `NoData`.
+
+## Session routes
+
+`create_app` also mounts the session/wizard/point router and installs the problem+json
+handlers; see [api.md](api.md). `AppSettings.labs` injects the `LabRegistry` (default empty).

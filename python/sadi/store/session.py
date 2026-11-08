@@ -7,6 +7,7 @@ version directory with a parent link; read-only open performs no write of any ki
 # frob:ticket 01M6W7R1VQHABR51SH64668M06
 # frob:ticket 01M6WEM3SYPM2QHFE59YHPNBM1
 # frob:ticket 01M6WFZFBK0KYAGBM1CD5GGH60
+# frob:ticket 01M6W7R3XY1B0BF689RX3H80G2
 from __future__ import annotations
 
 import os
@@ -411,6 +412,16 @@ def create_session(
     return _attach_root_lock(_create_locked(root, meta, now), locked.danger_ok)
 
 
+def create_session_in_held_root(
+    root: Path, meta: SessionMeta, now: datetime | None = None
+) -> Result[SessionHandle, SessionError]:
+    """Create a session when the caller (the server) already holds the data-root lock.
+
+    The handle owns no root lock; the caller keeps it for its own lifetime.
+    """
+    return _create_locked(root, meta, now)
+
+
 def _create_locked(
     root: Path, meta: SessionMeta, now: datetime | None
 ) -> Result[SessionHandle, SessionError]:
@@ -459,6 +470,18 @@ def resume_session(
     if locked.is_err:
         return Err(locked.danger_err)
     return _attach_root_lock(_resume_locked(parent_dir, m, plugins), locked.danger_ok)
+
+
+def resume_session_in_held_root(
+    parent_dir: Path, *, plugins: Sequence[SessionPluginRef] | None = None
+) -> Result[SessionHandle, SessionError]:
+    """Resume `parent_dir` as a new version when the caller already holds the data-root lock."""
+    m = _DIR_RE.match(parent_dir.name)
+    if m is None:
+        return Err(BadSessionName(name=parent_dir.name))
+    if not parent_dir.is_dir():
+        return Err(NotASession(path=parent_dir))
+    return _resume_locked(parent_dir, m, plugins)
 
 
 def _resume_locked(

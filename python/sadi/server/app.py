@@ -6,6 +6,7 @@
 # frob:ticket 01M6WMSZKN488HTWG19V69GETD
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6WP4WV9B3SCJ0GY2M32XWZV
+# frob:ticket 01M6W7R3XY1B0BF689RX3H80G2
 
 from __future__ import annotations
 
@@ -19,11 +20,15 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
 from sadi.logging_setup import get_logger
+from sadi.core.registry import LabRegistry
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
+from sadi.server.routes.problem import install_problem_handlers
+from sadi.server.routes.sessions import make_sessions_router
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
+from sadi.server.service import SessionService
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
 from sadi.store.spill import import_all_spills
@@ -42,6 +47,7 @@ class AppSettings(BaseModel):
     require_root_lock: bool = True
     writer: FailableSeqSource | None = None
     curve_source: CurveSource | None = None
+    labs: LabRegistry | None = None
 
 
 class _NoWriter:
@@ -106,6 +112,7 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
     try:
         yield
     finally:
+        cast(SessionService, app.state.sessions).shutdown()
         if lock is not None:
             lock.release()
             _log.info("data-root lock released on shutdown")
@@ -134,6 +141,9 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.state.save_indicator = indicator
 
     app.include_router(make_save_indicator_router(indicator))
+    app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry())
+    install_problem_handlers(app)
+    app.include_router(make_sessions_router(app.state.sessions))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))
     source = cfg.curve_source or make_curve_source(cfg.data_root)

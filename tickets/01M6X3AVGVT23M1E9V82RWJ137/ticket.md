@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:10:26Z"
-updated = "2026-11-08T08:23:37Z"
+updated = "2026-11-08T08:23:46Z"
 scope = ["python/sadi/server/**", "python/sadi/store/incremental.py", "python/tests/store/test_incremental.py", "python/tests/server/test_action_latency.py", "docs/store/incremental-replay.md", "docs/server/app.md", "docs/data-safety.md"]
 
 [[acceptance]]

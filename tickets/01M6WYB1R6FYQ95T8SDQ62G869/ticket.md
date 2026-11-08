@@ -2,12 +2,12 @@
 id = "01M6WYB1R6FYQ95T8SDQ62G869"
 title = "LCTT CSV export format title says 32 columns (schema is 42)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:43:09Z"
-updated = "2026-11-08T06:43:51Z"
+updated = "2026-11-08T06:43:52Z"
 scope = ["python/sadi/labs/lctt/lab.py"]
 +++
 

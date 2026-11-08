@@ -19,7 +19,7 @@ test.skip(
   "set SADI_SCREENSHOTS=1 to regenerate docs/img/ui",
 );
 
-// frob:ticket ~1Z8MJ6M
+// frob:ticket 01M6X955RB67ZV7PBVB1Z8MJ6M
 // The Doctor's WEB-010 looks for the packaged bundle (gitignored python/sadi/web/dist); stage the vite build there.
 test.beforeAll(() => {
   // DATA-010 inspects the default data root; point it at an existing scratch dir so it passes.
@@ -49,7 +49,7 @@ test("capture user-guide screenshots against the simulator", async ({
   if (!alreadyOpen) await page.getByRole("button", { name: "Doctor", exact: true }).click();
   await expect(page.getByRole("main", { name: "Doctor" })).toBeVisible();
   await page.getByRole("button", { name: /^Re-run / }).first().waitFor({ state: "visible", timeout: 30_000 }); // checks loaded
-  // frob:ticket ~1Z8MJ6M
+  // frob:ticket 01M6X955RB67ZV7PBVB1Z8MJ6M
   // Redact host-specific absolute paths so the capture is reproducible and leaks nothing.
   await page.evaluate(() => {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);

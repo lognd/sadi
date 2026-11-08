@@ -2,7 +2,8 @@
 id = "01M6W7R3ZPY606D3MHG4QRM2GS"
 title = "Binary WebSocket stream: trace frames, state and result push"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

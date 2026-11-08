@@ -7,5 +7,6 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:07:57Z"
-updated = "2026-11-08T10:11:57Z"
+updated = "2026-11-08T10:13:17Z"
+scope = ["web/e2e/live-fps.spec.ts"]
 +++

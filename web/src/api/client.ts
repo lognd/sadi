@@ -1,6 +1,7 @@
 import { getLogger } from "./log";
 import { err, ok, type Result } from "./result";
 import type { components } from "./schema";
+import type { CheckResult, DoctorReport } from "../doctor/types";
 
 const log = getLogger("api.client");
 
@@ -38,4 +39,31 @@ export async function getJson<T>(
 /** Query the backend health endpoint. */
 export function getHealth(fetchImpl: typeof fetch = fetch): Promise<Result<Health, ApiError>> {
   return getJson<Health>("/api/health", fetchImpl);
+}
+
+/** Fetch the full doctor report (GET /api/doctor). */
+export function getDoctor(fetchImpl: typeof fetch = fetch): Promise<Result<DoctorReport, ApiError>> {
+  return getJson<DoctorReport>("/api/doctor", fetchImpl);
+}
+
+/** Re-run one doctor check (POST /api/doctor/{id}/run) and return its fresh result. */
+export async function runDoctorCheck(
+  checkId: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<Result<CheckResult, ApiError>> {
+  const path = `/api/doctor/${encodeURIComponent(checkId)}/run`;
+  log.debug("request", { path, method: "POST" });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    log.warn("http error", { path, status: res.status });
+    return err({ kind: "http", status: res.status, body: await res.text() });
+  }
+  return ok((await res.json()) as CheckResult);
 }

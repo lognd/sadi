@@ -111,6 +111,16 @@ export function isTextTarget(t: { tagName?: string; isContentEditable?: boolean 
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t.isContentEditable === true;
 }
 
+/** Shared hint: why hotkeys seem dead in a field and how to get them back (U-04). */
+// frob:ticket 01M6XAASFHD7MKMQ79XRD34EXF
+export const TEXT_FIELD_HOTKEY_HINT = "Hotkeys pause while a text field has focus. Press Esc or Tab to leave the field and use them again.";
+
+/** True when Escape pressed in a text field should blur it so hotkeys resume (never triggers a capture). */
+// frob:ticket 01M6XAASFHD7MKMQ79XRD34EXF
+export function shouldBlurOnEscape(key: string, textFocus: boolean): boolean {
+  return textFocus && key === "Escape";
+}
+
 /** True when the target is (inside) a button, link, summary or role=button/link, which Enter/Space must activate. */
 // frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
 export function isControlTarget(t: { closest?: (sel: string) => unknown } | null): boolean {

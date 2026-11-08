@@ -7,6 +7,7 @@ import type { StressStrainData } from "../../plots/stressstrain";
 import type { LiveView } from "./live";
 import { PHASE_FIELDS } from "./inputFields";
 import { PHASES, type RunPhase } from "./phases";
+import { TEXT_FIELD_HOTKEY_HINT } from "../../keys/keymap";
 
 /** Per-phase live plot payload supplied by the host (see docs/web/run-screens.md gap G2). */
 export type PhasePlot =
@@ -64,7 +65,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
         Live V: {v.volts === null ? "--" : v.volts.toFixed(4)} V {settleText(v)}{v.stale ? " (stale)" : ""}
       </p>
       {p.trace}
-      <fieldset aria-label="Capture inputs">
+      <fieldset aria-label="Capture inputs" aria-describedby="hotkey-hint">
         <legend>Capture inputs (SI units)</legend>
         {PHASE_FIELDS[p.phase].map((f) => (
           <label key={f.key} style={{ display: "inline-block", marginRight: "1rem" }}>
@@ -77,6 +78,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
           </label>
         ))}
       </fieldset>
+      <small data-testid="hotkey-hint" id="hotkey-hint" role="note"> {TEXT_FIELD_HOTKEY_HINT}</small>
       {p.plot?.kind === "calibration" && <CalibrationPlot data={p.plot.data} />}
       {p.plot?.kind === "stress-strain" && <StressStrainScreen key={p.plot.data.points.length} initial={p.plot.data} />}
       {p.confirming ? (

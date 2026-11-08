@@ -860,14 +860,22 @@ Implementation status and deviations from this spec (~V3H5CGF):
   `@remedy(id, mode)`) rather than a separate `remediations/` package.
 - The runner is sequential (no thread pool) and has no per-check or whole-run
   timeout budget; probe timeouts live in the subprocess probes only.
-- Implemented (25): PLAT-010/030/050, PY-010/020/030/040, EXT-010, WEB-010,
+- Implemented (34): SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040, EXT-010, WEB-010,
   NET-010/020, DATA-010/020/030/090, USB-020/030/040/050, CLK-010,
   RES-010/020/030, BRW-010, PLG-010. USB-020 skips as unverified on Windows
   and macOS. The Channel A/B probe is reported as unverified (decision D3).
-- Deferred: SESS, WAL, DEV, SIM and WRK layers; EXT-020..050; NET-030/040;
+- Deferred: DEV, SIM and WRK layers; EXT-020..050; NET-030/040;
   PY-050/060; DATA-040..080; USB-010, USB-060..080; CLK-020..040; RES-040;
   BRW-020/030; PLAT-020/040; WEB-020; the `fix` subcommand; `--bundle`.
   Each is tracked as a ticket.
+- SESS and WAL use `sadi.doctor.sessions.survey_sessions`, one read-only pass
+  per run (cached on the probes) over the store's `read_lock_holder`,
+  `read_manifest`, `WalReader.scan`/`records` and snapshot listing; nothing is
+  locked, repaired, moved or deleted. Deviations: "crashed" is approximated by
+  manifest state open/crashed plus a dead lock holder; sessions over 256 MiB are
+  skipped by WAL-010 and covered only by `--deep` (WAL-020); the deep budget is a
+  fixed 120 s (`deep-timeout`), not a `--deep-timeout` option; a missing
+  manifest is reported as SESS-010 `manifest-stale` (it is a derived cache).
 - With `--check`, unselected `depends_on` checks are ignored rather than run.
 
 ### 9.2 Order, dependencies, skipping

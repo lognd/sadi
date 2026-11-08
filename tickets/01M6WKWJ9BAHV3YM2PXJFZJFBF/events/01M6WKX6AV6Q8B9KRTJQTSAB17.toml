@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/index.md links server/app.md and web/results-panel.md, guarded by index tests", "pytest tests/test_docs_index.py passes"]
+moved = []
+at = "2026-11-08T03:40:49Z"
+actor = "lognd"
+rev = 1

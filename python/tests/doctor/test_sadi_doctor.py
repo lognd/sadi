@@ -29,6 +29,7 @@ from sadi.doctor.schema import (
     Status,
     StepKind,
 )
+from sadi.doctor.sessions import SessionFacts
 from sadi.plugins.doctor import DoctorFinding
 from sadi.plugins.doctor import Severity as FSev
 
@@ -109,6 +110,31 @@ def _no_group(p: FakeProbes) -> None:
 
 def _in_group_no_access(p: FakeProbes) -> None:
     p.node_ok = (False, "dialout")
+
+
+def _sess(*rows: SessionFacts) -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.sessions = list(rows)
+
+    return f
+
+
+def _sf(**kw: object) -> SessionFacts:
+    base: dict[str, object] = {
+        "name": "20261108T153000Z-demo.v001",
+        "path": f"{ROOT}/sessions/20261108T153000Z-demo.v001",
+        "name_ok": True,
+        "family": "20261108T153000Z-demo",
+        "version": 1,
+        "has_wal": True,
+        "segments": 1,
+        "manifest": "ok",
+        "state": "closed",
+        "wal": "ok",
+        "last_seq": 3,
+    }
+    base.update(kw)
+    return SessionFacts(**base)  # type: ignore[arg-type]
 
 
 # (check id, mode, os, mutator)
@@ -203,6 +229,73 @@ CASES: list[tuple[str, str, Os, Mut]] = [
             ]
         ),
     ),
+    ("SESS-010", "foreign-dir", Os.LINUX, _sess(_sf(name="notes", name_ok=False))),
+    ("SESS-010", "incomplete", Os.LINUX, _sess(_sf(has_wal=False, segments=0, wal="none"))),
+    ("SESS-010", "manifest-unparseable", Os.LINUX, _sess(_sf(manifest="unparseable"))),
+    ("SESS-010", "manifest-stale", Os.WINDOWS, _sess(_sf(manifest="missing", manifest_stale=True))),
+    (
+        "SESS-020",
+        "locked-live",
+        Os.LINUX,
+        _sess(_sf(state="open", lock_holder="pid=1", holder_alive=True)),
+    ),
+    (
+        "SESS-020",
+        "locked-dead-pid-reused",
+        Os.MACOS,
+        _sess(_sf(lock_holder="pid=1", holder_alive=False, pid_reused=True)),
+    ),
+    (
+        "SESS-020",
+        "crashed",
+        Os.WSL,
+        _sess(_sf(state="open", lock_holder="pid=1", holder_alive=False)),
+    ),
+    (
+        "SESS-020",
+        "lock-on-network-fs",
+        Os.LINUX,
+        lambda p: (_sess(_sf(lock_holder="pid=1"))(p), setattr(p, "fs", "nfs"))[0],
+    ),
+    ("SESS-030", "tmp-leftovers", Os.LINUX, _sess(_sf(tmp_files=("x.tmp",)))),
+    ("SESS-030", "export-without-sidecar", Os.LINUX, _sess(_sf(orphan_exports=("a.csv",)))),
+    (
+        "SESS-040",
+        "version-gap",
+        Os.LINUX,
+        _sess(_sf(name="20261108T153000Z-demo.v003", version=3)),
+    ),
+    ("SESS-040", "parent-missing", Os.LINUX, _sess(_sf(parent="gone.v001"))),
+    (
+        "SESS-040",
+        "parent-mismatch",
+        Os.LINUX,
+        _sess(
+            _sf(),
+            _sf(
+                name="20261108T153000Z-demo.v002",
+                version=2,
+                parent="20261108T153000Z-demo.v001",
+                parent_last_seq=9,
+            ),
+        ),
+    ),
+    ("SESS-050", "not-owned-by-user", Os.LINUX, _sess(_sf(not_owned=True))),
+    ("SESS-050", "read-only-session", Os.LINUX, _sess(_sf(read_only=True))),
+    ("WAL-010", "torn-tail", Os.LINUX, _sess(_sf(wal="torn-tail", tail_bytes=7))),
+    ("WAL-010", "corrupt", Os.LINUX, _sess(_sf(wal="corrupt", wal_detail="bad crc"))),
+    ("WAL-010", "unsupported-format", Os.LINUX, _sess(_sf(wal="unsupported-format"))),
+    ("WAL-010", "header-invalid", Os.LINUX, _sess(_sf(wal="header-invalid"))),
+    ("WAL-020", "torn-tail", Os.LINUX, _sess(_sf(wal="torn-tail"))),
+    ("WAL-020", "corrupt", Os.LINUX, _sess(_sf(wal="corrupt"))),
+    ("WAL-020", "unsupported-format", Os.LINUX, _sess(_sf(wal="unsupported-format"))),
+    ("WAL-020", "header-invalid", Os.LINUX, _sess(_sf(wal="header-invalid"))),
+    ("WAL-020", "seal-mismatch", Os.LINUX, _sess(_sf(wal="seal-mismatch"))),
+    ("WAL-020", "seq-gap", Os.LINUX, _sess(_sf(wal="seq-gap"))),
+    ("WAL-020", "deep-timeout", Os.LINUX, _sess(_sf(wal="timeout"))),
+    ("WAL-030", "stale-snapshots", Os.LINUX, _sess(_sf(snapshots_stale=1))),
+    ("WAL-030", "invalid-snapshot", Os.LINUX, _sess(_sf(snapshots_invalid=1))),
+    ("WAL-040", "undecodable-version", Os.LINUX, _sess(_sf(raw_before_settings=True))),
 ]
 
 
@@ -225,6 +318,17 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/__init__.py::summarize
 # frob:tests python/sadi/doctor/checks/brw.py::brw_010
 # frob:tests python/sadi/doctor/checks/clk.py::clk_010
+# frob:tests python/sadi/doctor/checks/sess.py::sess_010
+# frob:tests python/sadi/doctor/checks/sess.py::sess_020
+# frob:tests python/sadi/doctor/checks/sess.py::sess_030
+# frob:tests python/sadi/doctor/checks/sess.py::sess_040
+# frob:tests python/sadi/doctor/checks/sess.py::sess_050
+# frob:tests python/sadi/doctor/checks/wal.py::wal_010
+# frob:tests python/sadi/doctor/checks/wal.py::wal_020
+# frob:tests python/sadi/doctor/checks/wal.py::wal_030
+# frob:tests python/sadi/doctor/checks/wal.py::wal_040
+# frob:tests python/sadi/doctor/probes.py::Probes.session_facts
+# frob:tests python/sadi/doctor/probes.py::RealProbes.session_facts
 # frob:tests python/sadi/doctor/checks/data.py::data_010
 # frob:tests python/sadi/doctor/checks/data.py::data_020
 # frob:tests python/sadi/doctor/checks/data.py::data_030
@@ -274,7 +378,9 @@ def test_fault_injection_yields_mode_and_remedy(
     p.os = os
     mutate(p)
     port = 80 if mode == "port-privileged" else 8000
-    report = _run(p, os, data_root=ROOT, allow_network_fs=False, api_port=port)
+    report = _run(
+        p, os, data_root=ROOT, allow_network_fs=False, api_port=port, deep=check_id == "WAL-020"
+    )
     result = next(r for r in report.results if r.id == check_id)
     assert result.mode == mode, result.headline
     assert result.status in (Status.WARN, Status.FAIL)

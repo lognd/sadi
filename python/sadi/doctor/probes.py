@@ -21,6 +21,7 @@ from typing import Literal, Protocol
 from typani import Err, Ok, Result
 
 from sadi.doctor.schema import CommandRun, Os, ProbeError
+from sadi.doctor.sessions import SessionFacts, survey_sessions
 from sadi.logging_setup import get_logger
 from sadi.plugins.doctor import DoctorFinding
 
@@ -165,6 +166,10 @@ class Probes(Protocol):
         """Return emergency spill files found for the data root."""
         ...
 
+    def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
+        """Return a read-only survey of every session under the data root."""
+        ...
+
     def browser_available(self) -> bool:
         """Return True when a browser controller can be resolved."""
         ...
@@ -176,6 +181,17 @@ class Probes(Protocol):
 
 class RealProbes:
     """Probes over the real machine; read-only by construction."""
+
+    def __init__(self) -> None:
+        """Start with an empty per-run session survey cache."""
+        self._sessions: dict[tuple[str, bool], list[SessionFacts]] = {}
+
+    def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
+        """Survey sessions read-only via the store APIs, once per (root, deep) per run."""
+        key = (data_root, deep)
+        if key not in self._sessions:
+            self._sessions[key] = survey_sessions(data_root, deep)
+        return self._sessions[key]
 
     def os_kind(self) -> Os:
         """Detect the OS; on Linux WSL_DISTRO_NAME or 'microsoft' in /proc/version means WSL."""

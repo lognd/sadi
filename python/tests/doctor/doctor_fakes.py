@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from typani import Err, Ok, Result
 
 from sadi.doctor.schema import CommandRun, Os, ProbeError
+from sadi.doctor.sessions import SessionFacts
 from sadi.plugins.doctor import DoctorFinding
 
 GIB = 1024**3
@@ -55,6 +56,7 @@ class FakeProbes:
     free: int | None = 100 * GIB
     fs: str | None = "ext4"
     spills: list[str] = field(default_factory=list)
+    sessions: list[SessionFacts] = field(default_factory=list)
     browser: bool = True
     findings: list[DoctorFinding] = field(default_factory=list)
 
@@ -185,6 +187,10 @@ class FakeProbes:
     def user_data_dir(self) -> str:
         """Return the fake default data dir."""
         return self.data_dir
+
+    def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
+        """Return the fake session survey."""
+        return self.sessions
 
     def spill_files(self, data_root: str) -> list[str]:
         """Return the fake spill files."""

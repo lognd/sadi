@@ -1,0 +1,41 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T03:39:07Z"
+digest = "7757c7ec6f325e8b6af3572619aed8eb0dbc6b3806060d4b7e16002706aa91b0"
+exit_code = 0
+head = "23596c0725c5464ca99f9629f909180618e7e584"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/results/ResultsPanel.test.tsx (4 tests) 29ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  22:39:07
+   Duration  883ms (transform 127ms, setup 0ms, collect 160ms, tests 29ms, environment 0ms, prepare 222ms)
+
+JSON report written to /tmp/frob-vitest-286730-0.json
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > renders pre-formatted sig-fig strings verbatim with interval and confidence
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > shows pending rows, notes and the settle source
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > flags RSS vs Monte Carlo disagreement
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > builds copy text with units and calls the injected copy fn
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/results/ResultsPanel.test.tsx"
+size = 1122
+status = "measured"
+test_count = 4
+tests_digest = "efaf052e2be6644af62e1fae1f0573b52877b0cc405ed877752c880bf329d08c"
+at = "2026-11-08T03:39:07Z"
+actor = "lognd"
+rev = 1

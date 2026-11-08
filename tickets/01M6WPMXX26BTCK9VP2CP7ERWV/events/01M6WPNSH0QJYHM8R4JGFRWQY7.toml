@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/cli/plugins.py"]
+new = ["python/sadi/cli/plugins.py", "python/sadi/core/phases.py"]
+at = "2026-11-08T04:29:13Z"
+actor = "lognd"
+rev = 1

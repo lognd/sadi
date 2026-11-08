@@ -1,0 +1,108 @@
+name: Wheels
+
+# Builds the web UI, the sadi (pure Python, UI bundled) wheel and the sadi-py
+# (PyO3/maturin) wheels on 3 OS, then smoke-tests an install in a clean venv.
+# Publishing to PyPI is a manual step (docs/release.md); this workflow never
+# uploads anywhere.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sadi-wheel:
+    name: sadi wheel (pure Python + UI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build web UI into python/sadi/_ui
+        run: python packaging/build_ui.py
+      - name: Build sadi wheel
+        run: |
+          python -m pip install build
+          python -m build --wheel --outdir dist python
+      - name: Check the wheel bundles the UI
+        run: python -c "import glob,zipfile; z=zipfile.ZipFile(glob.glob('dist/sadi-*.whl')[0]); assert any(n.startswith('sadi/_ui/') and n.endswith('index.html') for n in z.namelist()), 'UI missing from wheel'"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-sadi
+          path: dist/*.whl
+          if-no-files-found: error
+
+  sadi-py-wheels:
+    name: sadi-py wheel (${{ matrix.os }}, ${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64
+          - os: windows-latest
+            target: x64
+          - os: macos-13
+            target: x86_64
+          - os: macos-latest
+            target: aarch64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sadi-py wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          working-directory: crates/sadi-py
+          target: ${{ matrix.target }}
+          args: --release --out dist
+          manylinux: auto
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-sadi-py-${{ matrix.os }}-${{ matrix.target }}
+          path: crates/sadi-py/dist/*.whl
+          if-no-files-found: error
+
+  smoke:
+    name: smoke (${{ matrix.os }})
+    needs: [sadi-wheel, sadi-py-wheels]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: wheels
+          merge-multiple: true
+      - name: Install wheels into a clean venv
+        shell: bash
+        run: |
+          python -m venv smoke-venv
+          if [ -d smoke-venv/Scripts ]; then BIN=smoke-venv/Scripts; else BIN=smoke-venv/bin; fi
+          "$BIN/python" -m pip install --upgrade pip
+          "$BIN/python" -m pip install --find-links wheels sadi sadi-py
+      - name: sadi --version
+        shell: bash
+        run: |
+          if [ -d smoke-venv/Scripts ]; then BIN=smoke-venv/Scripts; else BIN=smoke-venv/bin; fi
+          "$BIN/sadi" --version
+      - name: sadi --selftest
+        shell: bash
+        run: |
+          if [ -d smoke-venv/Scripts ]; then BIN=smoke-venv/Scripts; else BIN=smoke-venv/bin; fi
+          "$BIN/sadi" --sim --no-browser --selftest

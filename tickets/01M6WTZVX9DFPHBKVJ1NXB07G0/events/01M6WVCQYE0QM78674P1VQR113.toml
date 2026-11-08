@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["The sim flag or SADI_SIM makes the launcher pass a simulator device in AppSettings so /api/device/status reports simulated"]
+new = ["The sim flag or SADI_SIM makes the launcher pass a simulator device in AppSettings so /api/device/status reports simulated", "python -m sadi runs the launcher"]
+moved = [1]
+at = "2026-11-08T05:51:39Z"
+actor = "lognd"
+rev = 1

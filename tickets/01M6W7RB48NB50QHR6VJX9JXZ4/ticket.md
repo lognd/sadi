@@ -2,13 +2,14 @@
 id = "01M6W7RB48NB50QHR6VJX9JXZ4"
 title = "Wheels and release workflow with install smoke test (maturin, 3 OS)"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T05:50:13Z"
+updated = "2026-11-08T05:50:35Z"
 idempotency_key = "sadi-c2"
 labels = ["ws:ci", "model:sonnet", "creates:.github/workflows/wheels.yml", "creates:docs/release.md"]
 scope = [".github/workflows/wheels.yml", "docs/release.md", "python/tests/packaging/test_wheels_workflow.py", "python/pyproject.toml", "python/uv.lock", "docs/packaging.md"]

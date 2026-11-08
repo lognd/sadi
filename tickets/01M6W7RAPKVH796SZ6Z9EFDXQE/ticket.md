@@ -2,13 +2,14 @@
 id = "01M6W7RAPKVH796SZ6Z9EFDXQE"
 title = "Guidance UI: next-step panel, confidence meter, stop-early recommendation"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:49:21Z"
+updated = "2026-11-08T05:50:54Z"
 idempotency_key = "sadi-f12"
 labels = ["ws:web", "model:sonnet", "creates:web/src/components/guidance/**", "creates:docs/web/guidance.md"]
 scope = ["web/src/components/guidance/**", "docs/web/guidance.md", "docs/web/budget-panel.md"]
@@ -27,15 +28,15 @@ target = "01M6W7R41EVGYTSV1B72ZQVKAB"
 
 [[acceptance]]
 text = "Next step shown as 'Use weights 3, 5, 6' with expected height/load; running 'confidence is enough' meter (CI half-width vs user-set target, editable inline)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Stop-early recommendation banner with one-key 'move to next phase' that the user may ignore; never auto-advances"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Component tests with mocked guidance payloads"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

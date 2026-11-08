@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/index.md and docs/server/api.md link results.md"]
+moved = []
+at = "2026-11-08T05:51:26Z"
+actor = "lognd"
+rev = 1

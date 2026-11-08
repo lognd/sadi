@@ -57,7 +57,7 @@ leave Setup with "Skip this step" (`skipSetup`).
 Under `--sim` the launcher opens the simulator with a manual load program (`DeviceSource.manual_load`):
 the load is flat until `POST /api/session/load-change` steps it by `SIM_LOAD_STEP_KG` through
 `DeviceService.sim_add_weight`, so successive calibration points get distinct volts and E is computed.
-Real hardware is unaffected (`is_simulator` is false). The guided run enters the specimen diameter and hanger mass on the Tare step (a separate `specimen` point), then downloads the LCTT CSV from the Export step; it also asserts that the figure export buttons render (the PNG download itself never fires; filed as ~935NES4). The launcher now wires a live acquisition pipeline (simulator under `--sim`), so `/api/stream`
+Real hardware is unaffected (`is_simulator` is false). The guided run enters the specimen diameter and hanger mass on the Tare step (a separate `specimen` point), then downloads the LCTT CSV from the Export step; it then asserts that the figure PNG buttons download a calibration and a stress-strain PNG (~935NES4). The launcher now wires a live acquisition pipeline (simulator under `--sim`), so `/api/stream`
 is mounted and the readout updates once a session is open (see server/launcher.md).
 `acceptWhenSettled` first presses "Mark load change" (POST /api/session/load-change, recorded as a WAL
 marker) so the detector can settle and the readout reaches `[Settled]`.

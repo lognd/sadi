@@ -27,6 +27,9 @@ test("keyboard-only guided run Setup -> Export against the simulator", async ({ 
   const download = page.waitForEvent("download");
   await page.getByRole("link", { name: /download/i }).first().click();
   expect((await download).suggestedFilename()).toMatch(/\.csv$/i);
-  // The figure download never fires in the guided run (no export request is sent); filed as a bug.
-  await expect(page.getByRole("button", { name: /as png/i }).first()).toBeVisible();
+  // frob:ticket 935NES4
+  // Figure export fetches the figure data, renders it and saves a PNG download.
+  const figure = page.waitForEvent("download");
+  await page.getByRole("button", { name: /as png/i }).first().click();
+  expect((await figure).suggestedFilename()).toMatch(/\.png$/i);
 });

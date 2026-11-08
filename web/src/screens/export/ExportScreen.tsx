@@ -1,10 +1,12 @@
 // frob:ticket 01M6WVTVH19EXW341V5K8SM7Z4
 // frob:ticket 01M6W7RATGKGPEYSMC5H8WGMBV
+// frob:ticket 935NES4
 // frob:accept COV001 because="covered by ExportScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
-import { exportFigure, lightTheme, validateDrawable, type Drawable, type ExportOptions } from "../../plots/core";
+import { exportFigure, validateDrawable, type ExportOptions } from "../../plots/core";
 import { exportUrl, getExportFormats, getFigureData, getResults, toProblem } from "./api";
+import { figureDataScenes, isFigureData } from "./figureScenes";
 import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
 
 const log = getLogger("screens.export");
@@ -23,11 +25,14 @@ export function saveBlob(blob: Blob, name: string): void {
   const a = document.createElement("a");
   a.href = url;
   a.download = name;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  // Revoking at once can cancel the download in Chromium; give the browser a moment.
+  setTimeout(() => { URL.revokeObjectURL(url); }, 10_000);
 }
 
-/** Fetch a figure format and render it with the shared plot exporter; returns a Problem on failure. */
+/** Fetch a figure format and render each of its figures with the shared plot exporter; returns a Problem on failure. */
 export async function exportFigureFormat(
   formatId: string,
   opts: ExportOptions,
@@ -36,20 +41,31 @@ export async function exportFigureFormat(
 ): Promise<Problem | null> {
   const r = await getFigureData(formatId, fetchImpl);
   if (!r.ok) return toProblem(r.error);
-  // Wire JSON carries no theme; default to the light publication theme.
-  const drawable = { theme: lightTheme, ...(r.value as object) } as Drawable;
-  const v = validateDrawable(drawable);
-  if (!v.ok) {
-    log.warn("figure data invalid", { formatId });
+  if (!isFigureData(r.value)) {
+    log.warn("figure data has unexpected shape", { formatId });
     return { title: "Figure data cannot be drawn", detail: `format ${formatId}`, hint: "Report this export format to the lab author.", status: null };
   }
-  const x = await exportFigure(drawable, opts);
-  if (!x.ok) {
-    log.error("figure export failed", { formatId, error: x.error });
-    return { title: "Figure export failed", detail: x.error, hint: "Try SVG, or a lower DPI.", status: null };
+  const figures = figureDataScenes(r.value);
+  if (figures.length === 0) {
+    log.info("no figure data to draw yet", { formatId });
+    return { title: "Nothing to plot yet", detail: `format ${formatId}`, hint: "Capture some points, then export again.", status: null };
   }
-  save(x.value.blob, figureFileName(formatId, opts.format));
-  log.info("figure exported", { formatId, format: opts.format, dpi: opts.dpi });
+  const files: { blob: Blob; name: string }[] = [];
+  for (const { suffix, scene } of figures) {
+    const v = validateDrawable(scene);
+    if (!v.ok) {
+      log.warn("figure data invalid", { formatId, suffix });
+      return { title: "Figure data cannot be drawn", detail: `format ${formatId} (${suffix})`, hint: "Report this export format to the lab author.", status: null };
+    }
+    const x = await exportFigure(scene, opts);
+    if (!x.ok) {
+      log.error("figure export failed", { formatId, suffix, error: x.error });
+      return { title: "Figure export failed", detail: x.error, hint: "Try SVG, or a lower DPI.", status: null };
+    }
+    files.push({ blob: x.value.blob, name: figureFileName(`${formatId}-${suffix}`, opts.format) });
+  }
+  for (const f of files) save(f.blob, f.name);
+  log.info("figure exported", { formatId, format: opts.format, dpi: opts.dpi, files: files.length });
   return null;
 }
 

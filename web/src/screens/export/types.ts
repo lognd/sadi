@@ -54,3 +54,20 @@ export interface Problem {
   hint: string;
   status: number | null;
 }
+
+/** Calibration fit line and 95 % band as served in lctt-figure-json (heights in m). */
+export interface FigureCalibrationFit {
+  slope_m_per_v: number;
+  intercept_m: number;
+  r2: number;
+  n: number;
+  band_volts: number[];
+  band_height_m: number[];
+  band_half_width_m: number[];
+}
+
+/** Wire shape of GET /api/export/lctt-figure-json (python/sadi/labs/lctt/figure_data.py). */
+export interface FigureData {
+  calibration: { volts: number[]; height_m: number[]; fit: FigureCalibrationFit | null };
+  stress_strain: { point_ids: string[]; strain: number[]; stress_mpa: number[]; excluded: boolean[] };
+}

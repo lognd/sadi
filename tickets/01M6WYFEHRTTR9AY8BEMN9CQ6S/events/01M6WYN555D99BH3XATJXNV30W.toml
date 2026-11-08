@@ -1,0 +1,48 @@
+kind = "evidence"
+captured_at = "2026-11-08T06:48:22Z"
+digest = "fdb61ce47f20282bb31e2ee735c61267ef2c39e02ac66897f4a97ccec220068d"
+exit_code = 0
+head = "9524bc699035bac3aafdfc8e74c0dbaf50ecfa03"
+inline = '''
+   Compiling bitflags v2.13.2
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.3
+   Compiling rustix v1.1.6
+   Compiling linux-raw-sys v0.12.1
+   Compiling fastrand v2.5.0
+   Compiling wait-timeout v0.2.1
+   Compiling quick-error v1.2.3
+   Compiling bit-vec v0.10.1
+   Compiling fnv v1.0.7
+   Compiling cpufeatures v0.3.1
+   Compiling unarray v0.1.4
+   Compiling regex-syntax v0.8.11
+   Compiling core_detect v1.0.0
+   Compiling serialport v4.10.1
+   Compiling chacha20 v0.10.2
+   Compiling rand_xorshift v0.5.0
+   Compiling bit-set v0.11.1
+   Compiling rand v0.10.3
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+   Compiling tempfile v3.27.0
+   Compiling rusty-fork v0.3.1
+   Compiling proptest v1.12.0
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.28s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 3c854ca0-68c1-401b-86e1-45aff7124b4e with nextest profile: default
+    Starting 1 test across 10 binaries (133 tests skipped)
+        PASS [   0.007s] sadi-py sim::tests::byte_plan_parses_rates_and_rejects_bad_ones
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.014s] 1 test run: 1 passed, 133 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "byte_plan_parses"
+size = 1344
+status = "measured"
+test_count = 1
+tests_digest = "4726b9884f0816a543f7468e916bb2283fa0622ec28be063929655cbf027e357"
+at = "2026-11-08T06:48:22Z"
+actor = "lognd"
+rev = 1

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:22:12Z"
-updated = "2026-11-08T10:34:53Z"
+updated = "2026-11-08T10:35:00Z"
 scope = ["web/e2e/helpers.ts", "docs/e2e.md", "docs/e2e-results-8FA58BP.md"]
 
 [[acceptance]]

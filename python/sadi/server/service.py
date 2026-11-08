@@ -42,7 +42,7 @@ from sadi.server.schemas import (
     SessionInfo,
     SessionSummary,
 )
-from sadi.store.events import ReplayState, recover_state
+from sadi.store.events import EventsWal, ReplayState, recover_state
 from sadi.store.manifest import read_manifest
 from sadi.store.session import (
     SESSIONS_DIRNAME,
@@ -51,6 +51,8 @@ from sadi.store.session import (
     create_session_in_held_root,
     resume_session_in_held_root,
 )
+from sadi.store.records import NewRecord, RecordType
+from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
 
 _log = get_logger(__name__)
@@ -69,6 +71,40 @@ class _Open:
     writer: WriterHandle
     lab: LabModule
     wizard: Wizard
+
+
+# frob:ticket 01M6WTCAA5WR1VD7H7ES7757MP
+_FOLD_TYPES = frozenset(
+    {int(RecordType.POINT), int(RecordType.EDIT), int(RecordType.SETTINGS), int(RecordType.MARKER)}
+)
+
+
+def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
+    """Append the parent's state records to `writer` in order and wait until durable.
+
+    Only POINT/EDIT/SETTINGS/MARKER records are copied (raw capture data stays in the parent);
+    relative order is kept so replay of the child equals replay of the parent. Returns the count.
+    """
+    last = 0
+    count = 0
+    for item in WalReader(parent / "wal").records():
+        if item.is_err:
+            _log.error("fold of %s stopped by corruption: %s", parent.name, item.danger_err)
+            return Err(from_model(EventsWal(error=item.danger_err), "store"))
+        rec = item.danger_ok
+        if rec.type not in _FOLD_TYPES:
+            continue
+        sub = writer.submit(NewRecord(type=rec.type, payload=rec.payload, flags=rec.flags))
+        if sub.is_err:
+            return Err(from_model(sub.danger_err, "store"))
+        last = sub.danger_ok
+        count += 1
+    if last:
+        durable = writer.wait_durable(last, DURABLE_TIMEOUT_S)
+        if durable.is_err:
+            return Err(from_model(durable.danger_err, "store"))
+    _log.info("folded %d state records from %s", count, parent.name)
+    return Ok(count)
 
 
 class SessionService:
@@ -134,7 +170,8 @@ class SessionService:
     def resume(self, name: str) -> Result[SessionInfo, ApiProblem]:
         """Open the next version of session `name`; the parent is never modified.
 
-        The new version starts a fresh WAL; the parent stays the record of earlier work.
+        The parent's points, edits, settings and wizard markers are copied (in order, as new
+        WAL records) into the child's WAL before it is returned; the parent stays untouched.
         """
         with self._lock:
             busy = self._refuse_if_open()
@@ -151,7 +188,7 @@ class SessionService:
             made = resume_session_in_held_root(parent)
             if made.is_err:
                 return Err(from_model(made.danger_err, "store"))
-            return self._attach(made.danger_ok, lab.danger_ok)
+            return self._attach(made.danger_ok, lab.danger_ok, fold_from=parent)
 
     def close(self) -> Result[None, ApiProblem]:
         """Drain the writer and close the open session (manifest written atomically)."""
@@ -277,8 +314,14 @@ class SessionService:
             durable_seq=cur.writer.durable_seq,
         )
 
-    def _attach(self, handle: SessionHandle, lab: LabModule) -> Result[SessionInfo, ApiProblem]:
-        """Open the writer and wizard for a freshly created version; roll the handle back on error."""
+    def _attach(
+        self, handle: SessionHandle, lab: LabModule, fold_from: Path | None = None
+    ) -> Result[SessionInfo, ApiProblem]:
+        """Open the writer and wizard for a new version; roll the handle back on error.
+
+        With `fold_from` (a resume parent) its state records are copied in and made durable
+        first; any failure leaves the child marked incomplete and never opens it.
+        """
         wiz = Wizard.create(lab.steps())
         if wiz.is_err:
             handle.close(state="incomplete")
@@ -289,6 +332,12 @@ class SessionService:
         if opened.is_err:
             handle.close(state="incomplete")
             return Err(from_model(opened.danger_err, "store"))
+        if fold_from is not None:
+            folded = _fold_parent(fold_from, opened.danger_ok)
+            if folded.is_err:
+                opened.danger_ok.close()
+                handle.close(state="incomplete")
+                return Err(folded.danger_err)
         self._open = _Open(handle, opened.danger_ok, lab, wiz.danger_ok)
         _log.info("session %s open (lab %s)", handle.path.name, lab.id)
         return Ok(self._info(self._open))

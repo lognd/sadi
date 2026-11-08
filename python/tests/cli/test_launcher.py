@@ -306,3 +306,23 @@ def test_python_dash_m_sadi() -> None:
     )
     assert res.returncode == 0
     assert res.stdout.startswith("sadi ")
+
+
+def test_open_sim_device_real_simulator_streams_samples() -> None:
+    """frob:tests sadi.launcher.open_sim_device
+
+    Uses the real built `sadi_py` simulator (skipped when it is not importable).
+    """
+    pytest.importorskip("sadi_py")
+    opened = launcher.open_sim_device()
+    assert opened.is_ok
+    svc = opened.danger_ok
+    try:
+        assert svc.start_streaming().is_ok
+        block = svc.next_block(timeout=5.0)
+        assert block.is_ok
+        assert block.danger_ok is not None
+        assert block.danger_ok.n_samples > 0
+        assert svc.stop_streaming().is_ok
+    finally:
+        svc.close()

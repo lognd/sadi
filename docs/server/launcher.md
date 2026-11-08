@@ -44,4 +44,8 @@ Simulator: `--sim` (or `SADI_SIM=1|true|yes` in the environment, read once by th
 `sim_requested`) opens a simulator `DeviceService` (`open_sim_device`) and passes it as
 `AppSettings.device`, so `/api/device/status` reports `simulated`. If `sadi_py` is missing or the
 open fails the launcher prints the reason and exits 6; the device is closed on shutdown.
+Verification status: `open_sim_device` was exercised against a real `sadi_py` built with
+`maturin develop` (it opened, streamed a 50-sample block, stopped and closed cleanly); the pytest
+`test_open_sim_device_real_simulator_streams_samples` re-runs this and is skipped when `sadi_py`
+is not importable. The other launcher tests inject a fake device.
 The app never reads the environment itself. `python -m sadi` runs the same launcher.

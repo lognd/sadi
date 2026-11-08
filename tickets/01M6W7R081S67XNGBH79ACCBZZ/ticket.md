@@ -2,12 +2,13 @@
 id = "01M6W7R081S67XNGBH79ACCBZZ"
 title = "Planning: weight sequences, GP height selector, guidance"
 type = "epic"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "high"
 parent = "01M6W78507Q819RQ7VXNFZEVFY"
 reporter = "lognd"
 created = "2026-11-08T00:08:16Z"
-updated = "2026-11-08T00:08:16Z"
+updated = "2026-11-08T02:27:18Z"
 idempotency_key = "sadi-e_plan"
 +++
 

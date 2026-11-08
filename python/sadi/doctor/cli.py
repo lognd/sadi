@@ -53,6 +53,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--data-root", help="data directory to inspect")
     p.add_argument("--api-port", type=int, default=8000)
+    p.add_argument(
+        "--running",
+        action="store_true",
+        help="also probe a running SADI (NET-040 health request)",
+    )
     p.add_argument("--port", help="serial port of the device to probe (default: first found)")
     p.add_argument(
         "--stream-seconds",
@@ -156,6 +161,7 @@ def _options(args: argparse.Namespace) -> RunOptions:
         render_os=Os(args.render_os) if args.render_os else None,
         data_root=args.data_root,
         api_port=args.api_port,
+        running=args.running,
         port=args.port,
         stream_seconds=args.stream_seconds,
         with_reset=args.with_reset,

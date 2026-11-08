@@ -3,7 +3,9 @@
 # frob:ticket 01M6WA9WYE9D71BBA7AV3H5CGF
 from __future__ import annotations
 
+import base64
 import errno
+import hashlib
 import importlib
 import importlib.metadata
 import locale
@@ -134,6 +136,10 @@ class Probes(Protocol):
         """Return what `localhost` resolves to."""
         ...
 
+    def package_integrity(self) -> tuple[list[str], list[str]]:
+        """Return (modified, missing) sampled sadi files by RECORD hash; read-only."""
+        ...
+
     def web_bundle(self) -> tuple[bool, int]:
         """Return (index.html exists, its size in bytes) for the packaged UI."""
         ...
@@ -193,6 +199,38 @@ class Probes(Protocol):
     def plugin_findings(self) -> list[DoctorFinding]:
         """Return the plugin doctor findings for the installed plugins."""
         ...
+
+
+_INTEGRITY_PREFIXES = ("sadi/doctor/", "sadi/store/")
+_INTEGRITY_FILES = ("sadi/web/dist/index.html",)
+
+
+def _record_integrity() -> tuple[list[str], list[str]]:
+    """Compare sampled RECORD sha256 entries with the files on disk; editable installs yield none."""
+    try:
+        dist = importlib.metadata.distribution("sadi")
+    except importlib.metadata.PackageNotFoundError:
+        return [], []
+    modified: list[str] = []
+    missing: list[str] = []
+    for entry in dist.files or []:
+        rel = entry.as_posix()
+        sampled = rel.startswith(_INTEGRITY_PREFIXES) or rel in _INTEGRITY_FILES
+        if not sampled or "__pycache__" in rel or entry.hash is None or entry.hash.mode != "sha256":
+            continue
+        path = Path(str(dist.locate_file(entry)))
+        try:
+            digest = hashlib.sha256(path.read_bytes()).digest()
+        except FileNotFoundError:
+            missing.append(rel)
+            continue
+        except OSError:
+            _log.warning("integrity: cannot read %s", path)
+            continue
+        if base64.urlsafe_b64encode(digest).rstrip(b"=").decode() != entry.hash.value:
+            modified.append(rel)
+    _log.debug("integrity: %d modified, %d missing", len(modified), len(missing))
+    return modified, missing
 
 
 class RealProbes:
@@ -427,6 +465,10 @@ class RealProbes:
             return sorted({str(i[4][0]) for i in socket.getaddrinfo("localhost", None)})
         except OSError:
             return []
+
+    def package_integrity(self) -> tuple[list[str], list[str]]:
+        """Hash the sampled sadi files against the installed RECORD (never writes)."""
+        return _record_integrity()
 
     def web_bundle(self) -> tuple[bool, int]:
         """Look for sadi/web/dist/index.html next to the package."""

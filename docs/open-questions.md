@@ -26,12 +26,8 @@ these. Each lists the default I would assume if unanswered.
    defensible for the mean. Default: 2 s, with the alternative as an
    option.
 6. "Heights" in the calibration: the cal lengths in the data are absolute
-   heights of the brass weights (15.6 to 34.7 mm; INTRO says brass weights
-   have heights that can be measured). Confirm that only the slope matters
+   gauge positions (15.6 to 34.7 mm). Confirm that only the slope matters
    and the intercept is just a height offset.
-7. Weight set: masses, counts, and whether weights are balance-weighed as
-   groups or individually (the instructor says either must be defended
-   quantitatively, T22 08:52:45).
 8. Intended L0 and maximum load: the file uses L0 = 0.08313 m, the guide
    says typically 0.5 m. Which should defaults use? Maximum wire length is
    bounded by the 20 mm LVDT travel and break strain.

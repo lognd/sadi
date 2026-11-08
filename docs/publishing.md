@@ -15,3 +15,8 @@ Before making the repository public:
 2. Run `frob check` and the test suite from a clean clone.
 3. Review `git ls-files` for anything course-specific.
 4. Push to a new remote only after review.
+
+Final-project material (weight and height inventory, weight sequencing and the
+GP selector, with their tests and design docs) lives in the gitignored
+`private/` directory (`private/final-project/`) and is never committed. Tracked
+code and docs must not import from or link into `private/`.

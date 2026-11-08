@@ -17,7 +17,7 @@ The user's mandate, which every decision below serves:
 
 - Nothing blocks the user. The asyncio loop and the browser never wait on
   a disk, a device or a computation.
-- GP, Monte Carlo and refits run in a cancellable background worker pool;
+- Monte Carlo and refits run in a cancellable background worker pool;
   a newer request always supersedes an older one ("latest wins").
 - Data is NEVER lost on the WAL path. No queue between the device and the
   WAL drops, coalesces or reorders.
@@ -69,7 +69,7 @@ process: sadi (launcher, FastAPI, store)
                          segment fd. Group commit, durable_seq, metrics.
   sadi-analytic          ThreadPoolExecutor(max_workers=1). Runs the lab's
                          analytic recompute() (fast closed-form) per data
-                         version, latest wins. Never the MC/GP work.
+                         version, latest wins. Never the MC work.
   sadi-job-pump-<n>      One Python thread per worker slot. Blocks on the
                          worker's event pipe and posts events to the loop.
 process: sadi-worker-<n>  (multiprocessing "spawn" context; N = WORKER_COUNT)
@@ -90,7 +90,7 @@ Decisions:
   `kill-during-jobs`).
 - `WORKER_COUNT = max(1, min(4, os.cpu_count() - 1))`, overridable by
   `--workers`. One slot is always reserved for the key class `interactive`
-  (section 7.4) so a long GP fit cannot starve a point's interval
+  (section 7.4) so a long refit cannot starve a point's interval
   refinement.
 - The analytic recompute runs on a thread, not a worker: it is a few ms of
   numpy, its input is the full point list and its latency defines how fast
@@ -325,7 +325,7 @@ Cooperative first, then forced:
   `True` once a `Cancel` for the running `job_id` has arrived on the
   command pipe (the watchdog thread sets a `threading.Event`). Tasks must
   call `token.check()` at every cancellation point: at least once per
-  `progress_interval_ms`, between MC batches, between GP optimizer
+  `progress_interval_ms`, between MC batches, between refit
   iterations, before and after every numpy call that is expected to take
   more than 50 ms. A task that sees `True` stops, emits `Cancelled`, and
   returns. `token.check()` also throttles and emits the progress event
@@ -350,7 +350,7 @@ submitting a replacement (used when the session stops).
 ### 7.4 Priority
 
 Two classes. `interactive` (per-point MC interval, refit after an edit)
-is dispatched before `background` (GP planning, full-run bootstrap) and one
+is dispatched before `background` (full-run bootstrap) and one
 slot is reserved for it. Within a class, FIFO by submit time. A background
 job is never pre-empted by an interactive one (pre-emption would waste
 work and complicate J2's determinism); the reserved slot is the guarantee.
@@ -404,7 +404,7 @@ docs/server/results-stream.md and must keep these fields):
 
 ```
 protocol_version: 1
-key: str                        e.g. "lctt.E", "lctt.yield", "plan.next_weight"
+key: str                        e.g. "lctt.E", "lctt.yield"
 data_version: int
 result_version: int
 state: "analytic" | "refining" | "final" | "stale"
@@ -494,7 +494,7 @@ Graceful shutdown (user Stop, `SIGINT`/`SIGTERM` once, window close):
 5. Loop (via executor): final snapshot `write_snapshot(state,
    covers_seq = data_version)` (DS 9.1) and `SNAPSHOT_REF` submitted. The
    analytic recompute result for the final `data_version` is awaited
-   first so the snapshot carries current state; MC/GP results are not
+   first so the snapshot carries current state; MC results are not
    waited for (they are regenerable).
 6. Loop (via executor): `WriterHandle.close()` (DS 7.3): `DRAINING`,
    `SESSION_CLOSE`, flush, lock release, join. `Err` keeps the process

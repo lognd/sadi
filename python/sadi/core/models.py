@@ -1,4 +1,4 @@
-"""Pydantic domain models: quantities, weights, specimen, captured points and run state.
+"""Pydantic domain models: quantities, specimen, captured points and run state.
 
 All numeric fields are SI internally (m, kg, N, Pa, V, s); unit conversion happens
 only at display time (see the formatter), never in these models.
@@ -11,9 +11,7 @@ from enum import StrEnum
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-from typani import Err, Ok, Result
 
-from sadi.core.errors import InputCode, InputError
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
@@ -46,63 +44,6 @@ class Quantity(_Frozen):
         if self.unit not in SI_UNITS:
             _log.warning("rejected non-SI unit %r", self.unit)
             msg = f"unit {self.unit!r} is not an SI unit symbol"
-            raise ValueError(msg)
-        return self
-
-
-class Weight(_Frozen):
-    """One inventory weight: mass in kg and stack height in m, each with uncertainty."""
-
-    id: str = Field(min_length=1)
-    mass: Annotated[float, Field(gt=0.0, allow_inf_nan=False)]
-    u_mass: NonNeg
-    height: NonNeg
-    u_height: NonNeg
-
-
-class WeightInventory(_Frozen):
-    """The set of available weights; ids are unique."""
-
-    weights: tuple[Weight, ...] = ()
-
-    @model_validator(mode="after")
-    def _unique_ids(self) -> WeightInventory:
-        """Reject duplicate weight ids."""
-        ids = [w.id for w in self.weights]
-        if len(set(ids)) != len(ids):
-            _log.warning("inventory has duplicate weight ids")
-            msg = "duplicate weight id"
-            raise ValueError(msg)
-        return self
-
-    def get(self, weight_id: str) -> Result[Weight, InputError]:
-        """Look a weight up by id; Err(UNKNOWN_ID) when absent."""
-        for w in self.weights:
-            if w.id == weight_id:
-                return Ok(w)
-        _log.warning("unknown weight id %r", weight_id)
-        return Err(InputError(code=InputCode.UNKNOWN_ID, detail=weight_id))
-
-    def with_weight(self, weight: Weight) -> Result[WeightInventory, InputError]:
-        """Return a new inventory with `weight` added; Err(DUPLICATE) on an id clash."""
-        if any(w.id == weight.id for w in self.weights):
-            _log.warning("duplicate weight id %r", weight.id)
-            return Err(InputError(code=InputCode.DUPLICATE, detail=weight.id))
-        _log.info("added weight %s", weight.id)
-        return Ok(WeightInventory(weights=(*self.weights, weight)))
-
-
-class GroupWeighing(_Frozen):
-    """A balance reading of several weights weighed together (mass in kg)."""
-
-    weight_ids: tuple[str, ...] = Field(min_length=1)
-    mass: Quantity
-
-    @model_validator(mode="after")
-    def _mass_unit(self) -> GroupWeighing:
-        """Require the reading to be a mass in kg."""
-        if self.mass.unit != "kg":
-            msg = "group mass must be in kg"
             raise ValueError(msg)
         return self
 

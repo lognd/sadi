@@ -4,7 +4,7 @@ Status: current
 
 Owner ticket: F0 ~GKVPN2E (design document, no screen code). Consumers:
 F0B ~KR3SSE1 (live view), F8 ~9PMPWH8 (results panel), F9 ~2ZQVKAB (wizard
-shell), F10 ~AEZAQ6K (setup/weights), F11 ~74FQXWT (run screens), F12
+shell), F10 (setup), F11 ~74FQXWT (run screens), F12
 ~9EFDXQE (guidance UI), F14 (usability pass, section 10). Implementers follow
 this file exactly; a deviation is a change to this file in the same ticket.
 
@@ -35,7 +35,7 @@ contract in [core/lab-modules.md](core/lab-modules.md).
 +--------------------------------------------------------------------------+
 | SADI  LCTT   Run: 2026-11-08 A        [Guided|Expert]   [Help ?] [Save *]|
 +--------------------------------------------------------------------------+
-| (1)Setup > (2)Weights > (3)Calibrate > (4)Tare > (5)Elastic > (6)Plastic |
+| (1)Setup > (3)Calibrate > (4)Tare > (5)Elastic > (6)Plastic |
 |            > (7)Results > (8)Export                                       |
 +-----------------------------------------------+--------------------------+
 |                                               |  NEXT ACTION             |
@@ -66,7 +66,7 @@ Each step shows one of five states, by glyph and word, never by colour alone:
 ```
 
 ```
- [x]Setup  [x]Weights  [x]Calibrate  [>]Tare  [ ]Elastic  [ ]Plastic ...
+ [x]Setup  [x]Calibrate  [>]Tare  [ ]Elastic  [ ]Plastic ...
 ```
 
 Rules: done steps are clickable (review, redo with confirmation, section 3.2);
@@ -103,28 +103,6 @@ Purpose: name the run, pick device (or simulator), enter the specimen.
 Defaults skip questions: device auto-selected when exactly one is found, L0
 and hanger weight from the last run, data folder from config. Continue stays
 disabled until required fields validate; the panel names what is missing.
-
-### 3.2 Step 2 Weights
-
-Purpose: record the weight inventory and the group weighing used for loading.
-
-```
-+-----------------------------------------------+--------------------------+
-| WEIGHTS                                       | NEXT ACTION              |
-| Inventory (one row per weight)                | Enter each weight's mass |
-|  #  Label     Mass (g)    +/- (g)             | or accept the saved      |
-|  1  W1        [ 100.02 ]  [ 0.01 ]            | inventory.               |
-|  2  W2        [ 200.05 ]  [ 0.01 ]            |                          |
-|  [ + Add weight ]                             | [ Use saved inventory ]  |
-|                                               | [ Continue  (Enter) ]    |
-| Planned load steps (auto): 0, 1, 1+2, ...     |                          |
-| Group weighing: [ ] weighed together          |                          |
-+-----------------------------------------------+--------------------------+
-```
-
-Default: the previous inventory is preloaded and the whole step is one
-keypress. Editing a done step later shows "Changing this marks Elastic and
-Plastic as needing attention. [Change anyway] [Cancel]".
 
 ### 3.3 Step 3 Calibrate (LVDT)
 
@@ -177,7 +155,7 @@ Purpose: step through loads on the long specimen; fit E from the linear part.
 ```
 +-----------------------------------------------+--------------------------+
 | ELASTIC  load step 3 of 6                     | NEXT ACTION              |
-| Live dV: 0.0412 V  [Creeping 0.2 mV/s]        | Add weight W3 gently.    |
+| Live dV: 0.0412 V  [Creeping 0.2 mV/s]        | Add the next load gently.    |
 |  strain ^                                     | Press Space when Settled.|
 |         |      o                              |                          |
 |         |   o  o   <- captured                | [ Accept (Space) ]       |
@@ -304,7 +282,7 @@ then optional [details]. No error codes up front, no jargon, no blame.
 ```
 +----------------------------------------------------------+
 | ! The reading is at its limit (saturated).               |
-|   Remove a weight or lower the load, then try again.     |
+|   Lower the load, then try again.     |
 |                                          [Details] [OK]  |
 +----------------------------------------------------------+
 ```
@@ -330,7 +308,6 @@ student in about 45. Budgets are targets for the usability pass, not timeouts.
 | Phase | Budget (practised) | Defaults that skip questions |
 |---|---|---|
 | Setup | 2 min | device auto-pick, last L0/hanger/folder, run name from date |
-| Weights | 1 min | saved inventory preloaded, load steps auto-planned |
 | Calibrate | 5 min | five evenly spaced points suggested |
 | Tare | 1 min | 2 s averaging, reuse previous tare offered |
 | Elastic | 8 min | window auto-chosen, settle suggested |
@@ -451,5 +428,3 @@ by severity, top three changes.
   only free navigation; this file assumes both.
 - Exact confidence thresholds for `enough` and `high` come from PH1
   ~G2YNMJB; the wording and placement here do not depend on them.
-- Whether the Weights step is skipped on the plastic specimen when the
-  inventory is unchanged; assumed yes (one keypress).

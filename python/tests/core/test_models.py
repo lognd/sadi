@@ -6,12 +6,11 @@ import math
 
 import pytest
 from pydantic import ValidationError
-from typani import Err, Ok
+from typani import Err
 
 from sadi.core import errors as E
 from sadi.core.models import (
     CapturedPoint,
-    GroupWeighing,
     Phase,
     PointEdit,
     Quantity,
@@ -19,8 +18,6 @@ from sadi.core.models import (
     SettleStatus,
     Specimen,
     TimeWindow,
-    Weight,
-    WeightInventory,
 )
 
 TICKET = "01M6W7R13KW0FFYHZJ7FY28A3R"
@@ -48,9 +45,6 @@ def _point(i: int = 0, status: SettleStatus = SettleStatus.SETTLED) -> CapturedP
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
 def test_json_round_trip_all_models() -> None:
     """Every model survives model_dump_json / model_validate_json unchanged."""
-    inv = WeightInventory(
-        weights=(Weight(id="w1", mass=0.1, u_mass=1e-5, height=0.02, u_height=1e-4),)
-    )
     state = RunState(
         session_id="abc",
         phase=Phase.ELASTIC,
@@ -58,8 +52,7 @@ def test_json_round_trip_all_models() -> None:
         tare=Quantity(value=0.01, standard_uncertainty=0.001, unit="V"),
         points=(_point(0), _point(1, SettleStatus.FORCED_EARLY)),
     )
-    grp = GroupWeighing(weight_ids=("w1",), mass=Quantity(value=0.1, unit="kg"))
-    for obj in (inv, state, grp, _specimen(), _point()):
+    for obj in (state, _specimen(), _point()):
         assert type(obj).model_validate_json(obj.model_dump_json()) == obj
 
 
@@ -75,21 +68,6 @@ def test_quantity_rejects_bad_input() -> None:
 
 
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
-def test_inventory_unique_ids_and_lookup() -> None:
-    """Duplicate ids are rejected; get/with_weight return typed Results."""
-    w = Weight(id="a", mass=1.0, u_mass=0.0, height=0.0, u_height=0.0)
-    with pytest.raises(ValidationError):
-        WeightInventory(weights=(w, w))
-    inv = WeightInventory()
-    inv2 = inv.with_weight(w).unwrap()
-    assert inv2.get("a") == Ok(w)
-    r = inv2.get("zz")
-    assert isinstance(r, Err) and r.danger_err.code is E.InputCode.UNKNOWN_ID
-    dup = inv2.with_weight(w)
-    assert isinstance(dup, Err) and dup.danger_err.code is E.InputCode.DUPLICATE
-
-
-# frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
 # frob:tests python/sadi/core/models.py::Specimen.area
 def test_specimen_area_and_validation() -> None:
     """Area matches domain.md (3.2016e-8 m^2) and non-metre lengths are refused."""
@@ -98,13 +76,6 @@ def test_specimen_area_and_validation() -> None:
     assert a.value == pytest.approx(3.2016e-8, rel=1e-4)
     with pytest.raises(ValidationError):
         Specimen(id="x", l0=Quantity(value=1.0, unit="kg"), diameter=Quantity(value=1.0, unit="m"))
-
-
-# frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
-def test_group_weighing_requires_kg() -> None:
-    """A group mass reading must be in kg."""
-    with pytest.raises(ValidationError):
-        GroupWeighing(weight_ids=("a",), mass=Quantity(value=1.0, unit="N"))
 
 
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R

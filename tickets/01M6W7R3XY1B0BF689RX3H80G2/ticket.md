@@ -1,6 +1,6 @@
 +++
 id = "01M6W7R3XY1B0BF689RX3H80G2"
-title = "FastAPI app: REST endpoints (sessions, inventory, points, results, export)"
+title = "FastAPI app: REST endpoints (sessions, points, results, export)"
 type = "task"
 category = "todo"
 priority = "high"
@@ -42,7 +42,7 @@ kind = "blocked-by"
 target = "01M6W7R3W8RJPVS0VVDG2YNMJB"
 
 [[acceptance]]
-text = "Endpoints: session create/open/resume, wizard state, inventory CRUD + group weighing, capture/accept/undo/redo/edit point, results, guidance, export (CSV + figure data), device status; OpenAPI published, TypeScript client generated into web/src/api"
+text = "Endpoints: session create/open/resume, wizard state, capture/accept/undo/redo/edit point, results, export (CSV + figure data), device status; OpenAPI published, TypeScript client generated into web/src/api"
 bound = false
 
 [[acceptance]]

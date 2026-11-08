@@ -25,7 +25,7 @@ from sadi.core.lab import (
     StepSpec,
     needs_device,
 )
-from sadi.core.models import CapturedPoint, Phase, RunState, WeightInventory
+from sadi.core.models import CapturedPoint, Phase, RunState
 from sadi.core.registry import LabRegistry, validate_lab
 
 LABS_DIR = Path(__file__).resolve().parents[2] / "sadi" / "labs"
@@ -64,9 +64,7 @@ class FakeLab:
     def steps(self) -> list[StepSpec]:
         return self._steps
 
-    def recompute(
-        self, points: tuple[CapturedPoint, ...], inventory: WeightInventory
-    ) -> Result[AnalysisResult, ComputeError]:
+    def recompute(self, points: tuple[CapturedPoint, ...]) -> Result[AnalysisResult, ComputeError]:
         return Ok(AnalysisResult(values={}))
 
 
@@ -109,7 +107,7 @@ def test_fake_lab_satisfies_protocol() -> None:
     lab = FakeLab()
     assert isinstance(lab, LabModule)
     assert len(lab.steps()) == 1
-    assert isinstance(lab.recompute((), WeightInventory()), Ok)
+    assert isinstance(lab.recompute(()), Ok)
 
 
 # frob:tests python/sadi/core/registry.py::LabRegistry.__init__

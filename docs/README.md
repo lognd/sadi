@@ -21,7 +21,6 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | [architecture.md](architecture.md) | Process model, repo layout, session layout, error convention (~1DQHSR7) |
 | [concurrency.md](concurrency.md) | Concurrency model: threads, GIL, queues, job lifecycle, versioned results (~DK06Q2F) |
 | [jobs/jobs.md](jobs/jobs.md) | Job system core: lifecycle, process pool, cancel and supersede (~V9NMTHC) |
-| [gp-selector.md](gp-selector.md) | GP / sequential-design selector: information gain, stop rule, benchmark (~K80WDK8) |
 | [plan.md](plan.md) | Delivery plan and ticket map |
 | [domain.md](domain.md) | Domain facts and the LabVIEW VI schema |
 | [open-questions.md](open-questions.md) | Open questions and confirmed defaults |
@@ -40,12 +39,9 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | [`docs/concurrency.md`](concurrency.md) | ~DK06Q2F | Concurrency model design: threads, GIL, queues, job lifecycle, versioned results |
 | `docs/core/device.md` | ~GX511CP | Device service: sadi_py wrapper returning typani Results, reconnect, sim/real select |
 | `docs/core/formatting.md` | ~M27Y4NY | Significant-figure and confidence-readout formatter (class rule) |
-| `docs/core/inventory.md` | ~N0YH4FG | Weight inventory with uncertainty and group balance weighing |
 | `docs/core/lab-modules.md` | ~CYC6ZT7 | Lab-module boundary: core shell vs lab plugin contract (LabModule protocol) |
 | [`docs/core/models.md`](core/models.md) | ~FY28A3R | core models: pydantic domain models and error taxonomy |
 | `docs/core/pipeline.md` | ~60ZNFTD | Acquisition pipeline: raw -> WAL (durable) -> analysis -> display |
-| `docs/core/planning-gp.md` | ~93ZD322 | GP selector implementation and benchmark vs baselines |
-| `docs/core/sequence.md` | ~S5YPBEJ | Weight-sequence generator: combinations, binary-search-like, filtering |
 | `docs/core/wizard.md` | ~XP2D6HY | Wizard framework: step state machine, undo/redo command log, step rail data |
 | `docs/data-safety.md` | ~CKTER59 | Data-safety design: WAL format, sessions, snapshots, per-OS durability, recovery |
 | `docs/device/acquisition-thread.md` | ~A8Y67RG | sadi-py acquisition thread: GIL-released reader with bounded channel |
@@ -60,12 +56,11 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/device/simulator.md` | ~CSWAMV8 | Simulator device: protocol-faithful SADI v1.003 Transport |
 | `docs/device/v3.md` | ~2GGPZ5K | Optional: v3.41 codec (CRC-16/CCITT-FALSE framing) |
 | `docs/e2e.md` | ~GW7ER11 | Browser e2e (Playwright) on 3 OS: full guided run against the simulator |
-| `docs/gp-selector.md` | ~K80WDK8 | GP / sequential-design selector: design doc (information gain, stop rule) |
 | `docs/hardware-verification.md` | ~CTSXSRE | Run hardware session and fold findings back (needs the physical board) |
 | `docs/hardware/**` | ~CTSXSRE | Run hardware session and fold findings back (needs the physical board) |
 | `docs/img/ui/**` | ~JS6PJJY | User guide: running a test with the app (procedure, two specimens, creep) |
 | [`docs/jobs/jobs.md`](jobs/jobs.md) | ~V9NMTHC | Job system core: lifecycle state machine, process pool, cancel and supersede (latest wins) |
-| `docs/jobs/tasks.md` | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement and GP fit |
+| `docs/jobs/tasks.md` | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement |
 | `docs/jobs/testing.md` | ~VAX9DG6 | Deterministic job test harness: fake clock, controllable scheduler, inline executor |
 | `docs/launcher.md` | ~0VYJVFZ | `sadi` launcher: serve UI + API, pick port, open browser, flags |
 | `docs/lctt/calibration.md` | ~NQKWT3Y | LCTT calibration: LINEST-equivalent fit with standard errors and t95 |
@@ -86,7 +81,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/portability.md` | ~PVJNZ7V | Portability audit: serial ports, drivers, udev, paths, line endings |
 | `docs/python-layout.md` | ~XDK2EVN | Python scaffold: uv project, ruff, typani lint, pytest, core/ and labs/ layout |
 | `docs/release.md` | ~JX9JXZ4 | Wheels and release workflow with install smoke test (maturin, 3 OS) |
-| `docs/server/api.md` | ~X3H80G2 | FastAPI app: REST endpoints (sessions, inventory, points, results, export) |
+| `docs/server/api.md` | ~X3H80G2 | FastAPI app: REST endpoints (sessions, points, results, export) |
 | `docs/server/results-stream.md` | ~ETJKV0D | Versioned results stream: instant analytic, progressive refinement, stale markers |
 | `docs/server/websocket.md` | ~4QRM2GS | Binary WebSocket stream: trace frames, state and result push |
 | `docs/store/crash-testing.md` | ~HAH4MTB | Crash-recovery tests: kill the process mid-write on every OS |
@@ -122,5 +117,4 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/web/review-screen.md` | ~FHNEDX8 | Review screen: re-edit points, window edits, undo/redo, results recompute |
 | `docs/web/run-screens.md` | ~74FQXWT | Run screens: calibrate, tare, elastic, plastic capture screens with live view |
 | `docs/web/stress-strain-plot.md` | ~3MJNBZY | Stress-strain plot: live E fit, selectable window, 0.2% offset yield |
-| `docs/web/weights-screen.md` | ~AEZAQ6K | Weights and setup screens: inventory entry, group weighing, specimen, calibration inputs |
 | `docs/web/wizard.md` | ~2ZQVKAB | Wizard shell: step rail, next-action panel, status bar, keyboard capture |

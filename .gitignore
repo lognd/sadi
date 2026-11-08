@@ -23,3 +23,4 @@ FROBLEMS.md
 .env
 node_modules/
 python/tests/fixtures/real_fp/
+private/

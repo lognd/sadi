@@ -20,7 +20,7 @@ Transport    (serialport over FTDI VCP | simulator | replay)
 ```
 
 - One `sadi` launcher process serves the built UI and the API and opens the
-  browser. CPU work (Monte Carlo, GP, refits) runs in a cancellable process
+  browser. CPU work (Monte Carlo, refits) runs in a cancellable process
   pool ("latest wins"). A dedicated WAL writer thread owns durable writes.
 - Raw samples reach the WAL (fsynced) before they are displayed.
 - Each layer depends only on the layer directly below it. Lab modules

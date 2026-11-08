@@ -18,7 +18,7 @@ wizard state machine. A lab owns only its steps, its models, its analysis and it
 - `id: LabId`, `title`, `models` (pydantic types the lab stores).
 - `steps() -> list[StepSpec]`: frozen `StepSpec(id: StepId, title, phase: Phase,
   capture: CaptureKind, guidance: Callable[[RunState], str])`.
-- `recompute(points, inventory) -> Result[AnalysisResult, ComputeError]`.
+- `recompute(points) -> Result[AnalysisResult, ComputeError]`.
 - `export_formats: tuple[ExportFormat, ...]`, each `(id, title, media_type, writer)` where the
   writer returns `Result[bytes, ComputeError]`.
 
@@ -47,4 +47,3 @@ points, and whose exports are CSV and a report. Nothing in core names LCTT.
 
 LCTT pieces so far: [settle detector](../lctt/settle.md), [creep fit](../lctt/creep.md), [calibration fit](../lctt/calibration.md), [slip detector](../lctt/slip.md).
 
-The [weight inventory](inventory.md) feeds `recompute(points, inventory)`.

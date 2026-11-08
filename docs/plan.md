@@ -24,7 +24,7 @@ contract (PL1). It is a clean boundary, not a general plugin system.
   tests on every OS (DS1-DS8, DS6, J5).
 - Concurrency: Rust acquisition thread with the GIL released; dedicated WAL
   writer thread (bounded queue, backpressure metrics, never drops); asyncio
-  loop does I/O only; CPU work (Monte Carlo, GP, refits) in a cancellable,
+  loop does I/O only; CPU work (Monte Carlo, refits) in a cancellable,
   supersedable process pool ("latest wins"); versioned results stream with
   stale markers (CC1, R8, DS8, J1-J5, F16).
 - Uncertainty is first class: users and lab authors write plain-math functions;
@@ -44,16 +44,14 @@ contract (PL1). It is a clean boundary, not a general plugin system.
 
 ## Product requirements to ticket map
 
-- Weight inventory with uncertainty and group balance weighing: WI1 (+ U1/U2, F10).
-- Guided run, three phases (LVDT calibration, elastic, plastic), information
-  gain next step, "confidence is enough" meter, stop-early advice (user decides):
-  WS1, GP1 (Fable), GP2, PH1, F12.
+- Guided run, three phases (LVDT calibration, elastic, plastic), "confidence
+  is enough" meter, stop-early advice (user decides): PH1, F12.
 - All analysis live, value +/- U with 3 s.f./2 s.f.: A1-A4, SF1, F8, J4, F16.
 - Publication-quality plots and one-click PNG/SVG export from the same renderer:
   F3 (renderer), F4 (trace), F5 (calibration + residuals), F6 (stress-strain,
   E fit, 0.2% offset yield), F7 (creep), F15 (export screen).
 - UI/UX: F0 (docs/ux.md, Fable, wireframes, usability protocol), F0B (live
-  view, Fable), F9 (wizard shell), F10-F13, F14 (usability pass).
+  view, Fable), F9 (wizard shell), F11-F13, F14 (usability pass).
 - Many labs: PL1, WIZ1, TS1 (LCTT module).
 - Uncertainty budget panel and formula rendering: U4, F17.
 
@@ -108,9 +106,8 @@ contract (PL1). It is a clean boundary, not a general plugin system.
 | PL1 | ~CYC6ZT7 | Lab-module boundary: core shell vs lab plugin contract (LabModule protocol) | 5 | Sonnet | P2 |
 | WIZ1 | ~XP2D6HY | Wizard framework: step state machine, undo/redo command log, step rail data | 5 | Sonnet | PL1, DS5 |
 | SF1 | ~M27Y4NY | Significant-figure and confidence-readout formatter (class rule) | 3 | Sonnet | P2 |
-| WI1 | ~N0YH4FG | Weight inventory with uncertainty and group balance weighing | 5 | Sonnet | P2, U1, U2 |
 | A1 | ~NQKWT3Y | LCTT calibration: LINEST-equivalent fit with standard errors and t95 | 5 | Sonnet | P2, U1, U2 |
-| A2 | ~9TZ8D2S | LCTT tare and strain/stress/load with RSS uncertainty | 5 | Sonnet | A1, WI1, U2 |
+| A2 | ~9TZ8D2S | LCTT tare and strain/stress/load with RSS uncertainty | 5 | Sonnet | A1, U2 |
 | A3 | ~TQ7ZKZW | LCTT E fit (selectable window), r^2, secant E, yield, saturation warning | 8 | Sonnet | A2, U2, U4 |
 | A4 | ~19WDD6Q | Live recompute engine: update all results after every captured point | 5 | Sonnet | A1, A2, A3, SF1, DS5 |
 | X1 | ~7P8582F | CSV export in the 32-column LabVIEW schema | 5 | Sonnet | A4, DS7 |
@@ -121,16 +118,12 @@ contract (PL1). It is a clean boundary, not a general plugin system.
 | CR3 | ~DQ1C3W6 | Pre-test clamp-slip check procedure | 3 | Sonnet | CR2 |
 | TS1 | ~XMK16Q2 | Two-specimen workflow: long (elastic) and short (plastic) sample runs | 5 | Sonnet | PL1, WIZ1, A4, S2 |
 
-### ~9ACCBZZ Planning: weight sequences, GP height selector, guidance
-GP selector design: [gp-selector.md](gp-selector.md).
+### Planning: guided-run guidance
 
 
 | Key | Id | Title | Points | Model | Blocked by |
 |---|---|---|---|---|---|
-| WS1 | ~S5YPBEJ | Weight-sequence generator: combinations, binary-search-like, filtering | 8 | Sonnet | WI1 |
-| GP1 | ~K80WDK8 | GP / sequential-design selector: design doc (information gain, stop rule) | 5 | Fable | D0, U1 |
-| GP2 | ~93ZD322 | GP selector implementation and benchmark vs baselines | 8 | Sonnet | GP1, WS1 |
-| PH1 | ~G2YNMJB | Guided run engine: phase-wise next-step guidance and confidence status | 5 | Sonnet | GP2, A4, TS1 |
+| PH1 | ~G2YNMJB | Guided run engine: phase-wise next-step guidance and confidence status | 5 | Sonnet | A4, TS1 |
 
 ### ~WEDCSRM Backend: FastAPI server, acquisition pipeline, WebSocket, launcher
 
@@ -138,7 +131,7 @@ GP selector design: [gp-selector.md](gp-selector.md).
 |---|---|---|---|---|---|
 | B2 | ~GX511CP | Device service: sadi_py wrapper returning typani Results, reconnect, sim/real select | 5 | Sonnet | R7, P2 |
 | B3 | ~60ZNFTD | Acquisition pipeline: raw -> WAL (durable) -> analysis -> display | 8 | Sonnet | B2, DS3, DS4, S1, DS8, J1 |
-| B4 | ~X3H80G2 | FastAPI app: REST endpoints (sessions, inventory, points, results, export) | 8 | Sonnet | P2, PL1, WIZ1, WI1, B3, A4, PH1 |
+| B4 | ~X3H80G2 | FastAPI app: REST endpoints (sessions, points, results, export) | 8 | Sonnet | P2, PL1, WIZ1, B3, A4, PH1 |
 | B5 | ~4QRM2GS | Binary WebSocket stream: trace frames, state and result push | 5 | Sonnet | B3, B4 |
 | L1 | ~0VYJVFZ | `sadi` launcher: serve UI + API, pick port, open browser, flags | 3 | Sonnet | B4, B5 |
 | PK1 | ~ZKJSYXC | Packaging: bundle built UI into the sadi wheel, entry points | 3 | Sonnet | F1, L1 |
@@ -148,7 +141,7 @@ GP selector design: [gp-selector.md](gp-selector.md).
 | Key | Id | Title | Points | Model | Blocked by |
 |---|---|---|---|---|---|
 | F0 | ~GKVPN2E | UX design doc: wizard flow, step rail, wireframes (ASCII), keyboard map | 8 | Fable | D0, PL1 |
-| F0B | ~KR3SSE1 | Live-view UX design: readouts, trace, indicators, stress-strain, guidance placement | 5 | Fable | F0, GP1 |
+| F0B | ~KR3SSE1 | Live-view UX design: readouts, trace, indicators, stress-strain, guidance placement | 5 | Fable | F0 |
 | F1 | ~21F3H53 | Web scaffold: Vite + React + TypeScript, lint, vitest, API client | 3 | Sonnet |  |
 | F3 | ~MQYWW87 | Plot renderer core: publication-quality canvas, annotations, one-click PNG/SVG export | 8 | Sonnet | F1, F0B |
 | F4 | ~7KWS2S7 | Live trace plot: scrolling binary-WebSocket trace with settle markers | 5 | Sonnet | F3, B5 |
@@ -157,11 +150,10 @@ GP selector design: [gp-selector.md](gp-selector.md).
 | F7 | ~7WJVKMW | Creep plot: strain vs log-time per hold with fit and slip markers | 3 | Sonnet | F3, CR2 |
 | F8 | ~9PMPWH8 | Results panel: best value +/- U, 95% interval, plain-language confidence | 5 | Sonnet | F1, A4, F0 |
 | F9 | ~2ZQVKAB | Wizard shell: step rail, next-action panel, status bar, keyboard capture | 8 | Sonnet | F1, F0, WIZ1, B4 |
-| F10 | ~AEZAQ6K | Weights and setup screens: inventory entry, group weighing, specimen, calibration inputs | 5 | Sonnet | F9, WI1 |
 | F11 | ~74FQXWT | Run screens: calibrate, tare, elastic, plastic capture screens with live view | 8 | Sonnet | F9, F4, F5, F6, F7, F8, F12, F16 |
 | F12 | ~9EFDXQE | Guidance UI: next-step panel, confidence meter, stop-early recommendation | 5 | Sonnet | F9, PH1, F0B |
 | F13 | ~FHNEDX8 | Review screen: re-edit points, window edits, undo/redo, results recompute | 5 | Sonnet | F9, F6, F8 |
-| F14 | ~W5XJBZT | Usability pass: scripted walkthrough, issue log and fixes | 5 | Sonnet | F11, F13, F10, T2, F17 |
+| F14 | ~W5XJBZT | Usability pass: scripted walkthrough, issue log and fixes | 5 | Sonnet | F11, F13, T2, F17 |
 | F15 | ~H8WGMBV | Results/Export screen: report view, figure export, CSV download | 3 | Sonnet | F9, F3, X1, F8 |
 | F16 | ~4XEGRNJ | Results-stream client: version/stale marker and refinement progress in the UI | 3 | Sonnet | F1, J4, F8 |
 | F17 | ~61M215J | Uncertainty budget and formula panel: dominant input, rendered LaTeX derivation | 5 | Sonnet | F8, U4, B4 |
@@ -193,7 +185,7 @@ GP selector design: [gp-selector.md](gp-selector.md).
 | DS8 | ~3F2W55E | WAL writer thread: bounded queue, backpressure metrics, fsync off the acquisition path | 5 | Sonnet | DS3, CC1 |
 | J1 | ~V9NMTHC | Job system core: lifecycle state machine, process pool, cancel and supersede (latest wins) | 8 | Sonnet | P2, CC1 |
 | J2 | ~VAX9DG6 | Deterministic job test harness: fake clock, controllable scheduler, inline executor | 5 | Sonnet | J1 |
-| J3 | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement and GP fit | 5 | Sonnet | J2, U3, GP2 |
+| J3 | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement | 5 | Sonnet | J2, U3 |
 | J4 | ~ETJKV0D | Versioned results stream: instant analytic, progressive refinement, stale markers | 5 | Sonnet | J3, A4, B5 |
 | J5 | ~7B4SZGG | Race/deadlock suite incl. kill-mid-write while jobs are running | 8 | Sonnet | J2, J4, DS8, DS6, R8 |
 
@@ -201,14 +193,14 @@ GP selector design: [gp-selector.md](gp-selector.md).
 
 - L1: D0, R1, HW1, P1, F1
 - L2: C1, R2, R4B, R4C, R5, R6, DS1, P2, U1
-- L3: PORT1, R3, R4A, DS2, PL1, SF1, S1, CR1, GP1 (Fable), U2, U6, CC1 (Fable)
-- L4: R7, HW2, DS3, DS4, WI1, A1, CR2, F0 (Fable), U3, U4, J1
-- L5: R7B, HW3, DS5, A2, CR3, WS1, B2, F0B (Fable), R8, DS8, J2
-- L6: DS6, DS7, WIZ1, A3, S2, GP2, B3, F3
+- L3: PORT1, R3, R4A, DS2, PL1, SF1, S1, CR1, U2, U6, CC1 (Fable)
+- L4: R7, HW2, DS3, DS4, A1, CR2, F0 (Fable), U3, U4, J1
+- L5: R7B, HW3, DS5, A2, CR3, B2, F0B (Fable), R8, DS8, J2
+- L6: DS6, DS7, WIZ1, A3, S2, B3, F3
 - L7: A4, F5, F6, F7, U5, J3
 - L8: X1, TS1, F8
 - L9: PH1;  L10: B4;  L11: B5, F9, F17
-- L12: L1, F4, F10, F12, F13, F15, J4
+- L12: L1, F4, F12, F13, F15, J4
 - L13: DOC1, PK1, J5, F16;  L14: C2, F11, T1;  L15: T2;  L16: F14
 
 Critical path: R1 -> R2 -> R3 -> R7 -> B2 -> B3 -> B4 -> B5 -> F4/F9 -> F11 -> T2 -> F14,
@@ -220,7 +212,7 @@ Unblocked now: D0 (architecture), R1 (Rust scaffold), P1 (Python scaffold),
 F1 (web scaffold), HW1 (hardware checklist). Dispatch these five in parallel
 (each owns disjoint paths), then immediately the Fable design tickets that
 unblock the most work as their blockers clear: DS1 (data-safety design, after
-D0), CC1 (concurrency design, after D0 and DS1), GP1, F0 (UX). Second wave once
+D0), CC1 (concurrency design, after D0 and DS1), F0 (UX). Second wave once
 R1/P1 land: R2, R4B, R4C, R5, P2, U1, C1 (up to ~3 local builders; use goway
 for cargo builds).
 
@@ -241,7 +233,6 @@ answer only changes a config value.
 | Q4 rate/block | configurable, 50 kS/s, 2500 samples | R4A, B2, S1 |
 | Q5 U_V | 2 s of block, SEM optional | A2 |
 | Q6 cal heights | only slope matters, intercept = offset | A1 |
-| Q7 weight set, group vs individual balance | support both, show chosen estimate | WI1, WS1, F10 |
 | Q8 L0 | 0.08313 m short, 0.5 m long, editable | A2, TS1 |
 | Q9 hold/creep/offset yield | hold times, 0.2% offset yield supported | S1, CR1, A3 |
 | Q10 LVDT sign | warn plus one-click flip | A2 |

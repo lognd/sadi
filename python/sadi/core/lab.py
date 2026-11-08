@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from typani import Result
 
 from sadi.core.errors import ComputeError
-from sadi.core.models import CapturedPoint, Phase, Quantity, RunState, WeightInventory
+from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
@@ -96,8 +96,6 @@ class LabModule(Protocol):
         """Return the ordered wizard steps of this lab."""
         ...
 
-    def recompute(
-        self, points: tuple[CapturedPoint, ...], inventory: WeightInventory
-    ) -> Result[AnalysisResult, ComputeError]:
-        """Recompute the lab's results from captured points and the weight inventory."""
+    def recompute(self, points: tuple[CapturedPoint, ...]) -> Result[AnalysisResult, ComputeError]:
+        """Recompute the lab's results from the captured points."""
         ...

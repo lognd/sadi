@@ -4,7 +4,7 @@ Status: draft
 
 Owner ticket: F0B ~KR3SSE1 (design document, no screen code). Builds on, and
 never contradicts, [ux.md](ux.md) (layout, keys, status model, sections 4, 5,
-8, 9), [gp-selector.md](gp-selector.md) (suggestion and confidence payloads),
+8, 9),
 [concurrency.md](concurrency.md) (durable gate, display coalescing, stale
 markers, section 9), [lctt/settle.md](lctt/settle.md),
 [lctt/slip.md](lctt/slip.md), [lctt/creep.md](lctt/creep.md),
@@ -45,7 +45,7 @@ with the differences in section 2.2.
 ```
 +-----------------------------------------------+--------------------------+
 | ELASTIC  load step 3 of 6   Load: W1+W2 (2.94 N)| NEXT ACTION            |
-+-----------------------------------------------+ Add weight W3 gently.    |
++-----------------------------------------------+ Add load gently.    |
 | V      0.4123 V  +/- 0.0003   [2]  |           | Press Space when Settled.|
 | Height 12.034 mm +/- 0.011         |  READOUTS |                          |
 | Load   2.94 N    +/- 0.02          |  (5 tiles)| [ Accept (Space) ]       |
@@ -53,10 +53,10 @@ with the differences in section 2.2.
 | Stress 2.31 MPa  +/- 0.06          |           |                          |
 +------------------------------------+-----------+ ------------------------ |
 | TRACE   V (V) vs t (s)   last 60 s   [Pause view] | GUIDANCE (section 9)   |
-|  V ^                  .-'''''---------           | Next: add W3 (+0.98 N)   |
+|  V ^                  .-'''''---------           | Next: add next load      |
 |    |        ___..--'''  [S] settled from 41.2 s  | Why this? [Why?]         |
 |    |   __.-'                                     |                          |
-|    | .'      |<- load change (marker)            | Alt: W4, W2+W3           |
+|    | .'      |<- load change (marker)            | Alt: smaller step       |
 |    +----+----+----+----+---> t (s)               +--------------------------+
 |        -60  -45  -30  -15  0                     | CONFIDENCE               |
 +---------------------------------+---------------+ Building [####------] 40%|
@@ -126,9 +126,9 @@ Rules:
   while Creeping, labelled `(mean 1 s)` or `(settled mean)` so the reader knows
   which. Height, load, strain and stress are derived from V by the lab's
   `recompute` and carry the combined uncertainty; during creep they are shown
-  with the creep inflation (gp-selector.md 4.1) so the interval visibly widens.
-- Load comes from the planned weights (inventory mass uncertainty, not a
-  device reading) and changes only on a load-change marker.
+  with a creep inflation so the interval visibly widens.
+- Load comes from the entered load (typed uncertainty, not a device reading)
+  and changes only on a load-change marker.
 - Before the first full window after a load change, derived tiles show
   `-- pending` with the same size and position (no layout shift), never zero.
 - Each tile is selectable (Tab) and expands to the formula view (section 8.4).
@@ -146,7 +146,7 @@ V (V) ^
       |                    ..--''
  0.40 |   ____...---'''''''    |
       |  /                     +- [S] settled marker (vertical tick + label)
- 0.35 | /   <- load change marker [L] (dashed vertical line, label "+W3")
+ 0.35 | /   <- load change marker [L] (dashed vertical line, label "+load")
       +------+------+------+------+----> t (s)
            -60    -40    -20     0
 ```
@@ -242,7 +242,7 @@ un-settle it (lctt/settle.md) but a new load-change marker resets to loading.
   forgotten after the level drops.
 - The glyph and word change with state; the bar adds a third cue (length).
 - On SATURATED: Space accept is refused with the ux.md section 6 message ("The
-  reading is at its limit (saturated). Remove a weight or lower the load, then
+  reading is at its limit (saturated). Lower the load, then
   try again."), shown inline at the light, not as a modal. `Shift+Space` records
   it flagged `saturated`. Nothing else is blocked.
 - Saturated samples are marked on the trace (section 4.3) and excluded from the
@@ -315,7 +315,7 @@ strings below are the canonical content.
 | X axis | `Time since window start (s)` (ticks negative to 0, newest at 0) |
 | Y axis | `LVDT voltage (V)` |
 | Legend | `V (measured)`, `Drift fit (last window)`, `Settled window`, `Load change`, `Possible slip`, `Saturated` |
-| Annotations | `[L] +W3 (0.98 N)` at load changes, `[S] settled 41.2 s`, drift text `drift 0.20 +/- 0.05 mV/s` |
+| Annotations | `[L] +load (0.98 N)` at load changes, `[S] settled 41.2 s`, drift text `drift 0.20 +/- 0.05 mV/s` |
 | Bands | none on the live trace (a band would imply a model) |
 
 ### 7.2 Live stress-strain with E fit
@@ -372,7 +372,7 @@ follows the current V; it joins the fit only after accept.
 ### 7.5 Residuals and budget plots
 
 Residual plot: `Residual (units)` versus the fitted variable, zero line,
-2-sigma band, lack-of-fit flag text when the guard in gp-selector.md 4.2 trips.
+2-sigma band, lack-of-fit flag text when the lack-of-fit guard trips.
 Budget chart: horizontal bars, label `Contribution to variance (%)`, rows named
 as in uncertainty/budget.md, dominant row outlined.
 
@@ -388,14 +388,14 @@ shows one freshness word and glyph, in a fixed slot at the tile's top right:
 |---|---|---|---|
 | (instrument value) | `live` | `[*]` | straight from the stream, not a model result |
 | `stale` | `stale` | `[?]`, value in grey italic | a point was accepted; recompute pending |
-| `analytic` | `quick` | `[~]` | fast estimate, MC/GP refinement pending |
+| `analytic` | `quick` | `[~]` | fast estimate, MC refinement pending |
 | `refining` | `refining 62%` | `[~]` plus mini bar | refinement in progress |
 | `final` | `final` | `[=]` | all work for this `data_version` is done |
 
 ```
  E   112.4 GPa +/- 4.1  [?] stale          <- instant after Accept, grey italic
  E   112.6 GPa +/- 4.3  [~] quick          <- tens of ms later
- E   112.5 GPa +/- 4.0  [~] refining 62%   <- MC/GP running
+ E   112.5 GPa +/- 4.0  [~] refining 62%   <- MC running
  E   112.5 GPa +/- 4.0  [=] final
 ```
 
@@ -406,19 +406,18 @@ client drops out-of-order envelopes with the rule in concurrency.md 9.2, so a
 marker never moves backwards. A number older than 5 s with no new envelope and
 a connected pipeline shows `[?] stale (no update 5 s)`.
 
-### 8.2 MC / GP refinement progress
+### 8.2 MC refinement progress
 
 A thin indicator under the confidence meter and in the status bar tail:
 
 ```
  REFINING   E (Monte Carlo)   [######----] 62%    [ Details ]
-            Next weight (GP)  [##########] done
 ```
 
 - Fed by `Progress.fraction` of the job (concurrency.md section 8). Determinate
   bar; if no fraction is available a labelled indeterminate bar with elapsed
   time, never a spinner alone.
-- One row per running job (E, yield, next weight). Rows disappear on `final`.
+- One row per running job (E, yield). Rows disappear on `final`.
 - A superseded job's row is replaced, not stacked (latest wins, 7.1). A new
   accepted point resets the bar to 0 with the stale marker on its numbers.
 - Never blocks: accept, undo and nav work during refinement. `Esc` does not
@@ -439,7 +438,7 @@ slope in Calibrate, yield in Plastic).
   2 Length L0        83.13 mm +/- 0.05  21 %  ####
   3 Diameter d       0.50 mm +/- 0.01   12 %  ##
   total u(E) = 4.1 GPa (95 %)
- Tip: a better weight mass would help most.
+ Tip: a better load measurement would help most.
 ```
 
 Rules: rows ranked by `rank`; percent from `percent` (may be negative with
@@ -493,33 +492,9 @@ cases (stale-marked if the process restarted until recomputed).
 ## 9. Guidance placement (suggest only)
 
 Guidance occupies two fixed slots in the panel column of every live step,
-below the primary button, as ux.md section 8 binds. Content comes from the
-`NextSuggestion` and `ConfidenceIndicator` payloads of
-[gp-selector.md](gp-selector.md) sections 2.1 and 2.2.
+below the primary button, as ux.md section 8 binds. Content comes from the confidence indicator payload.
 
-### 9.1 Which weight next
-
-```
- NEXT STEP
- Add W3 (+0.98 N) -> load 3.92 N          <- candidate_id, x, unit
- Expected: E +/- 9 -> +/- 7 GPa           <- expected_half_width
- [ Why? ]   Alternatives: W4, W2+W3       <- top 3, from `alternatives`
- Settle first: you are still [~] Creeping <- reason when unsettled_last
-```
-
-- Always one recommended action, in one sentence, plus up to two alternatives
-  as plain text links the user can choose to view; choosing one only changes the
-  panel text (the user still adds the weight physically and presses Space).
-- The suggestion is advisory (`advisory: true`). It never selects or loads
-  anything and does not change the Accept button.
-- When `state` is `unreliable` (cold start, drift unresolved, departure from
-  linear) the panel shows the fixed fallback order ("Next: the lightest unused
-  weight") with the reason in plain words and the badge `[i] limited guidance`.
-- Numbers shown are unrounded only in [Why?]; the main line is plain language.
-- Freshness applies: a suggestion for an older `data_version` is dimmed with
-  `[?] updating`.
-
-### 9.2 Confidence meter and stop indicator
+### 9.1 Confidence meter and stop indicator
 
 ```
  CONFIDENCE
@@ -546,7 +521,7 @@ below the primary button, as ux.md section 8 binds. Content comes from the
 - The target half-width H* is shown and editable inline (`target +/- 5`, click
   or Tab+Enter); changing it re-runs the suggestion as a new job.
 
-### 9.3 Where it never appears
+### 9.2 Where it never appears
 
 Not in the status bar (reserved for the three ux.md indicators), not over the
 trace or plots, never as a toast. The only interruptions allowed are the
@@ -636,7 +611,7 @@ failures. Each record carries `data_version`, the point number and the cause.
 | 1 Layout: readouts, trace, settle/creep, saturation, stress-strain with E fit, next-step panel, confidence meter | sections 2, 3, 4, 5, 7.2, 9 |
 | 2 Rates, decimation, creeping versus settled, colour/shape coding, disconnect | sections 4.1, 4.2, 4.3, 6, 8.6 |
 | 3 Plot annotation content for F3 to F7 | section 7 |
-| 4 Stale marker, MC/GP progress, budget panel, formula view placement | sections 8.1, 8.2, 8.3, 8.4 |
+| 4 Stale marker, MC progress, budget panel, formula view placement | sections 8.1, 8.2, 8.3, 8.4 |
 
 ## 15. Open questions
 

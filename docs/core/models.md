@@ -17,9 +17,6 @@ only at display time, in the formatter (~M27Y4NY) and the UI.
 | Model | Fields |
 |---|---|
 | `Quantity` | `value`, `standard_uncertainty` (>= 0, 95 %), `unit` |
-| `Weight` | `id`, `mass` (kg), `u_mass`, `height` (m), `u_height` |
-| `WeightInventory` | `weights` (unique ids); `get(id)`, `with_weight(w)` return `Result[_, InputError]` |
-| `GroupWeighing` | `weight_ids`, `mass` (`Quantity` in kg) |
 | `Specimen` | `id`, `l0`, `diameter` (m), `description`; `area` property (pi d^2 / 4) |
 | `TimeWindow` | `start`, `end` (s since run start) |
 | `PointEdit` | `field`, `old`, `new`, `at` |

@@ -4,9 +4,10 @@ title = "Export screen figure PNG/SVG button sends no export request in the guid
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:24:36Z"
-updated = "2026-11-08T09:24:36Z"
+updated = "2026-11-08T09:35:57Z"
 scope = ["web/src/screens/export/**"]
 +++
 

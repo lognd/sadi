@@ -2,7 +2,7 @@
 id = "01M6WKE8GD0PZNEM6E87VE6XWX"
 title = "Covariance registry grows without bound; register_derived is O(registry)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

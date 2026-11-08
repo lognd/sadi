@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:10:49Z"
+updated = "2026-11-08T03:10:51Z"
 idempotency_key = "sadi-a2"
 labels = ["ws:py", "lctt", "oq:Q5", "oq:Q10", "oq:Q8", "model:sonnet", "creates:python/sadi/labs/lctt/loading.py", "creates:python/tests/labs/lctt/test_loading.py", "creates:docs/lctt/loading.md"]
 scope = ["python/sadi/labs/lctt/loading.py", "python/tests/labs/lctt/test_loading.py", "docs/lctt/loading.md", "docs/index.md"]
@@ -39,7 +39,7 @@ bound = true
 
 [[acceptance]]
 text = "Load, stress, strain are written once as plain @uncertain functions; .latex of each is available to the results panel and report"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

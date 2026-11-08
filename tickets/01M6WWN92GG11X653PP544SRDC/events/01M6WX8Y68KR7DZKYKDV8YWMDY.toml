@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["src/sadi/server/**"]
+new = ["src/sadi/server/**", "python/sadi/server/routes/plots.py"]
+at = "2026-11-08T06:24:31Z"
+actor = "lognd"
+rev = 1

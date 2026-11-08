@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:24:10Z"
-scope = ["src/sadi/server/**"]
+updated = "2026-11-08T06:24:31Z"
+scope = ["src/sadi/server/**", "python/sadi/server/routes/plots.py"]
 +++
 
 found while working ~74FQXWT

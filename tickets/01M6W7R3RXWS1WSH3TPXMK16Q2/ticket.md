@@ -2,7 +2,8 @@
 id = "01M6W7R3RXWS1WSH3TPXMK16Q2"
 title = "Two-specimen workflow: long (elastic) and short (plastic) sample runs"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

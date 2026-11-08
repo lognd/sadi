@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:49:14Z"
-updated = "2026-11-08T08:11:36Z"
+updated = "2026-11-08T08:12:29Z"
 scope = ["web/e2e/**", "web/src/screens/run/**", "docs/e2e.md", "docs/web/run-screens.md"]
 
 [[acceptance]]

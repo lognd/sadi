@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/A8Y67RG; scope: crates/sadi-py/src/acq.rs, crates/sadi-py/tests/acq.rs, docs/device/acquisition-thread.md; ttl 7200s"
+at = "2026-11-08T04:11:39Z"
+actor = "lognd"
+rev = 1

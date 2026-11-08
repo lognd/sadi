@@ -1,0 +1,10 @@
+kind = "create"
+title = "doctor: parallel execution and per-check/run timeouts"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
+body = "found while working ~V3H5CGF: runner is sequential, no budget"
+at = "2026-11-08T03:17:10Z"
+actor = "lognd"
+rev = 1

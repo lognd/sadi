@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "wont-fix"
+reason = "Duplicate of ~QT3RGZY (same flaky calibration test)"
+at = "2026-11-08T03:16:20Z"
+actor = "lognd"
+rev = 1

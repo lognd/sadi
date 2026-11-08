@@ -1,0 +1,10 @@
+kind = "create"
+title = "Overflow in propagation leaks exceptions: pydantic ValidationError (analytic) and OverflowError (numeric) from _derive/effective_dof"
+type = "bug"
+category = "todo"
+priority = "high"
+scope = ["python/sadi/uncertainty/measured.py", "python/sadi/uncertainty/coverage.py"]
+body = "found while working ~QTA833F. For stress/strain with strain ~1e-80..1e-200, analytic path raises ValidationError (std_unc=inf in Measured) and numeric path raises OverflowError in coverage.effective_dof (u_i**2). Both should return a typed UncertaintyError (DomainError/InvalidUncertainty). Repro: Uncertain(lambda a,b:a/b)(Measured.create(1,.01), Measured.create(8.7e-80,8.7e-82))."
+at = "2026-11-08T03:20:02Z"
+actor = "lognd"
+rev = 1

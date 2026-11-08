@@ -2,16 +2,16 @@
 id = "01M6W7R36G6BYYB4RBC60ZNFTD"
 title = "Acquisition pipeline: raw -> WAL (durable) -> analysis -> display"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "critical"
 points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:21:08Z"
 idempotency_key = "sadi-b3"
 labels = ["ws:srv", "data-safety", "model:sonnet", "creates:python/sadi/core/pipeline.py", "creates:python/tests/core/test_pipeline.py", "creates:docs/core/pipeline.md"]
-scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md"]
+scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -39,19 +39,19 @@ target = "01M6W7R2NWFTQBK7FRWGX511CP"
 
 [[acceptance]]
 text = "Every raw block is appended to the WAL and only forwarded to display/analysis after durable_seq covers it (or flagged 'unsaved' per DS1); WAL failure stops acquisition loudly"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Test with fault-injecting store (slow fsync, ENOSPC) proves display never shows data absent from the WAL"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Pipeline emits settle state, decimated trace frames and result updates onto an internal bus"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Hands durable-write to the dedicated WAL writer thread (DS8); acquisition never waits on fsync"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

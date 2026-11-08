@@ -57,13 +57,15 @@ class _Frozen(BaseModel):
 
 
 class StepSpec(_Frozen):
-    """One wizard step a lab declares: id, title, phase, capture kind and a guidance hook."""
+    """One wizard step a lab declares: id, title, phase, capture kind, guidance and criterion."""
 
     id: StepId
     title: str = Field(min_length=1)
     phase: Phase
     capture: CaptureKind
     guidance: Callable[[RunState], str]
+    #: Completion criterion: active (non-excluded) points needed before `complete`; skip ignores it.
+    min_points: int = Field(default=0, ge=0)
 
 
 class AnalysisResult(_Frozen):

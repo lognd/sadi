@@ -53,3 +53,5 @@ Unit inference can fail when probing numpy functions with pint; pass `unit=` exp
 `Disagreement` for value or std_unc when `|x-y| > rel_tol*max(|x|,|y|) + k_sigma*hypot(se_x, se_y)`.
 `Uncertain.cross_check(*args)` runs analytic, numeric and MC and returns a `CrossCheck`
 (`agree`, `findings`). Genuine nonlinearity (first-order vs MC sd) is flagged by design.
+
+Cross-check of every lab formula: see [crosscheck](crosscheck.md).

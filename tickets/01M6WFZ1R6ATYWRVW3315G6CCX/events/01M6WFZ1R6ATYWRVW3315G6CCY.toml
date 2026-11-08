@@ -1,0 +1,18 @@
+kind = "create"
+title = "Local-dir plugin source (plugins/, private/*/plugin) with settings and gitignore"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+parent = "01M6WFY7CGXVKS192DN0WXNCH9"
+labels = ["plugins", "creates:python/sadi/plugins/local.py", "creates:python/sadi/plugins/settings.py", "creates:python/tests/plugins/test_local_source.py"]
+scope = [".gitignore", "python/sadi/plugins/local.py", "python/sadi/plugins/settings.py", "python/tests/plugins/test_local_source.py"]
+acceptance = ["Plugin in a tmp dir loads with no pip install", "Absent default dirs yield Ok with zero plugins", "Broken plugin dir yields a failed record, others still load", "git check-ignore plugins/x passes"]
+body = "LocalDirSource loads plugins by path without install: scans SADI_PLUGIN_PATH (os.pathsep list) or settings plugin_paths; defaults plugins/ and private/*/plugin relative to repo root when present. Each plugin dir needs sadi_plugin.toml; importlib spec_from_file_location under a namespaced module name (sadi_local_plugins.<id>) so it never shadows core. Missing dirs are not errors; unreadable/invalid ones yield per-plugin PluginSourceError records. Add plugins/ to .gitignore (private/ already ignored). PluginSettings pydantic model (plugin_paths, config dir for enable/disable state)."
+at = "2026-11-08T02:31:56Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6WFYN8C6YH5D79CPEKSP69P"

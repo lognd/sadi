@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/uncertainty/covariance.py", "python/sadi/uncertainty/measured.py", "docs/uncertainty/measured.md"]
+new = ["python/sadi/uncertainty/covariance.py", "python/sadi/uncertainty/measured.py", "docs/uncertainty/measured.md", "python/tests/uncertainty/test_registry_scaling.py"]
+at = "2026-11-08T03:36:05Z"
+actor = "lognd"
+rev = 1

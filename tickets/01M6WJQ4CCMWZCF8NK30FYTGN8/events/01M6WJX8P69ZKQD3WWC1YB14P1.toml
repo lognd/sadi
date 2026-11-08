@@ -1,0 +1,42 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:23:20Z"
+digest = "7409c7698972f4df7ed90f6cad96900217f7230b1c166715e716a552c644b923"
+exit_code = 0
+head = "0c3b7b2f1e2c371be314fa7f17a64dc9decd93f4"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/uncertainty/crosscheck/test_labs_crosscheck.py ...          [100%]
+
+=============================== warnings summary ===============================
+tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_near_zero_denominator_is_typed_not_raised[mc]
+  <worktree>/python/.venv/lib/python3.12/site-packages/numpy/_core/_methods.py:190: RuntimeWarning: overflow encountered in square
+    x = um.square(x, out=x)
+
+tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_near_zero_denominator_is_typed_not_raised[mc]
+  <worktree>/python/.venv/lib/python3.12/site-packages/numpy/_core/_methods.py:168: RuntimeWarning: overflow encountered in reduce
+    arrmean = umr_sum(arr, axis, dtype, keepdims=True, where=where)
+
+tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_near_zero_denominator_is_typed_not_raised[mc]
+  <worktree>/python/.venv/lib/python3.12/site-packages/numpy/_core/_methods.py:132: RuntimeWarning: overflow encountered in reduce
+    ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-257093-0.xml ---------------
+======================== 3 passed, 3 warnings in 2.39s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_near_zero_denominator_is_typed_not_raised"
+size = 1545
+status = "measured"
+test_count = 3
+tests_digest = "92fa9b3912b6f5d696fca90e47609af747e1f30224404da01dcdad74ebcf3e48"
+at = "2026-11-08T03:23:20Z"
+actor = "lognd"
+rev = 1

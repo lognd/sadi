@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/bench/test_ad3_binding.py", "python/tests/bench/test_ad3_fake.py", "python/tests/cli/test_launcher.py", "python/tests/core/test_models.py", "python/tests/core/test_wizard.py", "python/tests/doctor/test_runner.py", "python/tests/jobs/test_harness.py"]
+new = ["python/tests/bench/test_ad3_binding.py", "python/tests/bench/test_ad3_fake.py", "python/tests/cli/test_launcher.py", "python/tests/core/test_models.py", "python/tests/core/test_wizard.py", "python/tests/doctor/test_runner.py", "python/tests/jobs/test_harness.py", "python/tests/labs/lctt/test_guidance.py"]
+at = "2026-11-08T10:23:04Z"
+actor = "lognd"
+rev = 1

@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:52:47Z"
+updated = "2026-11-08T02:56:57Z"
 labels = ["plugins", "creates:python/sadi/cli/plugins.py", "creates:python/sadi/plugins/state.py", "creates:python/tests/cli/test_plugins_cli.py", "creates:python/tests/plugins/test_state.py"]
 scope = ["python/sadi/cli/__init__.py", "python/sadi/cli/plugins.py", "python/sadi/plugins/state.py", "python/tests/cli/test_plugins_cli.py", "python/tests/plugins/test_state.py"]
 
@@ -22,7 +22,7 @@ target = "01M6WFZ1R6ATYWRVW3315G6CCX"
 
 [[acceptance]]
 text = "list shows lctt as builtin/enabled"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "disable then list shows disabled; enable restores"

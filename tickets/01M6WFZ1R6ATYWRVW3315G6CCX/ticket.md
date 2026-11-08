@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:52:14Z"
+updated = "2026-11-08T02:52:15Z"
 labels = ["plugins", "creates:python/sadi/plugins/local.py", "creates:python/sadi/plugins/settings.py", "creates:python/tests/plugins/test_local_source.py"]
 scope = [".gitignore", "python/sadi/plugins/local.py", "python/sadi/plugins/settings.py", "python/tests/plugins/test_local_source.py"]
 
@@ -26,7 +26,7 @@ bound = true
 
 [[acceptance]]
 text = "Broken plugin dir yields a failed record, others still load"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "git check-ignore plugins/x passes"

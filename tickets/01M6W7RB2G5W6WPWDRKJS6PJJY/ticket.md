@@ -43,7 +43,7 @@ bound = false
 
 [[acceptance]]
 text = "docs/index.md links user-guide.md and the guide carries Status and Parent headers"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

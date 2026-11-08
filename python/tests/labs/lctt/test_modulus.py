@@ -49,6 +49,8 @@ def _curve(n: int = 20, yield_at: int = 8) -> list[CurvePoint]:
     return pts
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::fit_modulus
+# frob:tests python/sadi/labs/lctt/modulus.py::chord_modulus
 def test_fit_recovers_e_with_stats() -> None:
     fit = fit_modulus(_curve(), 0, 7).danger_ok
     assert fit.modulus.value == pytest.approx(E_TRUE, rel=1e-9)
@@ -60,16 +62,20 @@ def test_fit_recovers_e_with_stats() -> None:
     assert fit.budget is not None and fit.budget.rows
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::fit_modulus
 def test_low_r2_flagged_on_plastic_window() -> None:
     fit = fit_modulus(_curve(), 0, 15, ModulusConfig(r2_threshold=0.9999)).danger_ok
     assert fit.low_r2
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::fit_modulus
 @pytest.mark.parametrize("first,last", [(-1, 4), (4, 4), (0, 1), (0, 99)])
 def test_bad_window(first: int, last: int) -> None:
     assert fit_modulus(_curve(), first, last) == Err(ModulusError.BadWindow)
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::secant_moduli
+# frob:tests python/sadi/labs/lctt/modulus.py::secant_modulus
 def test_secant_and_zero_strain() -> None:
     pts = _curve()
     pts.append(
@@ -81,11 +87,13 @@ def test_secant_and_zero_strain() -> None:
     assert sec[-1].modulus is None
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::suggest_window
 def test_suggest_window_is_a_hint() -> None:
     first, last = suggest_window(_curve(), ModulusConfig(r2_threshold=0.99999)).danger_ok
     assert (first, last) == (0, 8)
 
 
+# frob:tests python/sadi/labs/lctt/modulus.py::suggest_window
 def test_suggest_window_none() -> None:
     zig = [
         CurvePoint(
@@ -98,6 +106,9 @@ def test_suggest_window_none() -> None:
     assert suggest_window(zig, ModulusConfig(r2_threshold=0.99)) == Err(ModulusError.NoWindow)
 
 
+# frob:tests python/sadi/labs/lctt/yield_.py::find_yield
+# frob:tests python/sadi/labs/lctt/yield_.py::yield_stress
+# frob:tests python/sadi/labs/lctt/yield_.py::yield_strain
 def test_offset_yield_matches_closed_form() -> None:
     pts = _curve()
     e = fit_modulus(pts, 0, 7).danger_ok.modulus
@@ -111,6 +122,7 @@ def test_offset_yield_matches_closed_form() -> None:
     assert res.ultimate_index == 19
 
 
+# frob:tests python/sadi/labs/lctt/yield_.py::find_yield
 def test_no_crossing() -> None:
     pts = _curve(n=6, yield_at=99)
     e = fit_modulus(pts, 0, 5).danger_ok.modulus
@@ -118,6 +130,8 @@ def test_no_crossing() -> None:
     assert find_yield(pts[:1], e) == Err(YieldError.TooFewPoints)
 
 
+# frob:tests python/sadi/labs/lctt/saturation.py::check_saturation
+# frob:tests python/sadi/labs/lctt/saturation.py::SaturationFlag.message
 def test_saturation_thresholds() -> None:
     assert check_saturation(0, [1.0, -4.95]).danger_ok.saturated
     ok = check_saturation(1, [4.9, -4.9]).danger_ok

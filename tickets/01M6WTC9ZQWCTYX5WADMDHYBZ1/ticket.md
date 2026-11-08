@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:41:11Z"
+updated = "2026-11-08T05:41:17Z"
 labels = ["creates:python/sadi/server/routes/inventory.py", "creates:python/tests/server/test_inventory_routes.py", "creates:docs/server/inventory.md"]
 scope = ["python/sadi/server/routes/inventory.py", "python/sadi/server/service.py", "python/tests/server/test_inventory_routes.py", "docs/server/inventory.md"]
 
@@ -26,7 +26,7 @@ bound = true
 
 [[acceptance]]
 text = "Tested with TestClient against the real WAL using a stub provider; docs/server/inventory.md written"
-bound = false
+bound = true
 +++
 
 found while working ~X3H80G2 (split out of its original acceptance). Thin handlers over the weight inventory API.

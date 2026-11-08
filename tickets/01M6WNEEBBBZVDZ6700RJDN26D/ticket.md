@@ -13,7 +13,7 @@ scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_captur
 
 [[acceptance]]
 text = "Captured points carry LoadInputs with window-averaged volts and the start_point mass"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A capture run recorded via record_point replays through recover_state and the curve source"

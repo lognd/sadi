@@ -1,4 +1,4 @@
-# LCTT CSV export (34-column schema)
+# LCTT CSV export (42-column schema)
 
 Status: current
 
@@ -8,19 +8,18 @@ Format source: [domain.md](../domain.md) section 4; byte policy: [store/csv-expo
 ## Layout
 
 Metadata rows (`key,value`: Title, Schema, Date, Operator, Description, tare, calibration,
-specimen inputs, modulus fit, yield), one blank line, the 34-column header, one row per logged
+specimen inputs, modulus fit, yield), one blank line, the 42-column header, one row per logged
 point (including excluded ones, flagged). Columns are the fields of `PointRow`, in order:
-`point_id, index, elapsed_s, volts, u_volts, volts_sd, mass_kg, u_mass_kg, delta_volts, height_m, displacement_m,
+`point_id, index, elapsed_s, volts, u_volts, volts_sd, mass_kg, u_mass_kg, delta_volts, u_delta_volts, height_m, displacement_m, u_displacement_m,
 load_n, u_load_n, area_m2, u_area_m2, stress_pa, u_stress_pa, strain, u_strain,
-secant_modulus_pa, hanger_kg, total_mass_kg, offset_line_pa, excluded, in_window, saturated,
-settle_source, is_yield, is_ultimate, low_r2, warnings, slope_m_per_v, tare_v, l0_m`.
+secant_modulus_pa, u_secant_modulus_pa, hanger_kg, u_hanger_kg, total_mass_kg, offset_line_pa, excluded, in_window, saturated,
+settle_source, is_yield, is_ultimate, low_r2, warnings, slope_m_per_v, tare_v, u_tare_v, l0_m, u_l0_m, diameter_m, u_diameter_m`.
 
 Reference comparison: a private mapping of these columns and metadata keys against the original
 lab VI export exists in the gitignored private tree (not linked from tracked files); the names
 above remain this project's own definition. Structural differences found: `PointRow` now
-carries the reference's elapsed-time and per-sample standard deviation columns; the reference carries
-uncertainty columns for several quantities `PointRow` omits (tare, voltage difference,
-displacement, gauge length, hanger load, diameter, secant modulus); it repeats session constants
+carries the reference's elapsed-time, per-sample standard deviation and per-quantity uncertainty
+columns; the reference repeats session constants
 (calibration, tare, gauge length, diameter) on every row where this project keeps them in the
 metadata block; it expresses loads in force units where `PointRow` uses mass; column order differs;
 and `PointRow` adds selection and flag columns (id, index, window, exclusion, yield, ultimate,
@@ -31,8 +30,14 @@ as a separate ticket; reader, writer and tests follow its field order.
 `elapsed_s` is seconds since the load was applied (from the capture settle record) and `volts_sd`
 is the per-sample standard deviation of the raw volts in the averaging window (`u_volts` is the
 standard error of the mean); both are `NaN` when unknown (older sessions, single-sample windows).
-Schema version is `2` (columns added); the reader requires the exact header, so version-1 files
-are rejected with `BadHeader`.
+Uncertainty columns (schema `3`) are the engines' propagated standard uncertainties, not new
+estimates: `u_tare_v` is the pooled tare uncertainty; `u_delta_volts = hypot(u_volts, u_tare_v)`;
+`u_displacement_m` propagates delta volts and the calibration slope; `u_hanger_kg` and `u_diameter_m`
+are the specimen inputs; `u_l0_m` is `0` (gauge length is an exact configured constant);
+`u_secant_modulus_pa` is quotient propagation of stress and strain (independent inputs), `NaN`
+when strain is zero. `diameter_m` is added beside its uncertainty.
+Schema version is `3` (columns added); the reader requires the exact header, so version-1 and
+version-2 files are rejected with `BadHeader`.
 
 Numbers: 10 significant digits, `.` decimal, `NaN`, `Inf`, `-Inf` literal; booleans `1`/`0`.
 

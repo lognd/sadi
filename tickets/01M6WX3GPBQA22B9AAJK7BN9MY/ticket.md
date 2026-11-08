@@ -2,12 +2,13 @@
 id = "01M6WX3GPBQA22B9AAJK7BN9MY"
 title = "CSV export: store raw calibration points in metadata for full re-analysis"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:21:34Z"
-scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
+updated = "2026-11-08T06:39:24Z"
+scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/test_export_csv.py", "docs/lctt/export-csv.md"]
 
 [[acceptance]]
 text = "Reader rebuilds CalPoint events from the file; round-trip test passes"

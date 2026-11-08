@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/core/**", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt/test_lab.py", "python/tests/core/test_models.py", "docs/lctt/lab-module.md", "docs/core/models.md"]
+new = ["python/sadi/core/**", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt/test_lab.py", "python/tests/core/test_models.py", "docs/lctt/lab-module.md", "docs/core/models.md", "web/src/api/openapi.json"]
+at = "2026-11-08T06:39:21Z"
+actor = "lognd"
+rev = 1

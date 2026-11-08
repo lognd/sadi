@@ -1,8 +1,8 @@
-"""LCTT CSV export and reader in the 34-column LabVIEW layout (domain.md section 4).
+"""LCTT CSV export and reader in the 42-column LabVIEW layout (domain.md section 4).
 
 The document is DERIVED from session events (never the source of truth, invariant I7): the
 events are recomputed through the loading, modulus and yield engines, rendered as a metadata
-block, a blank line, the 34-column header and one row per logged point, and published through
+block, a blank line, the 42-column header and one row per logged point, and published through
 the store exports primitive (tmp + fsync + no-replace rename, provenance sidecar). The reader
 parses such a file back into a `CsvDocument` and into live events for post-processing.
 Bytes: UTF-8, no BOM, CRLF after every row (see store/csv_export.py); the reader also accepts
@@ -11,6 +11,7 @@ LF and a BOM so files re-saved by other tools still load.
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
 # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+# frob:ticket 01M6WX3GJK2D59J39ZZS1J03DV
 from __future__ import annotations
 
 import csv
@@ -45,7 +46,7 @@ from sadi.uncertainty import Measured, Provenance
 _log = get_logger(__name__)
 
 EXPORT_KIND = "lctt-csv"
-SCHEMA_VERSION = "2"  # v2: elapsed_s and volts_sd columns (34 columns)
+SCHEMA_VERSION = "3"  # v3: per-quantity uncertainty columns (42 columns); v2: elapsed_s, volts_sd
 TITLE = "SADI LCTT tensile test"
 NAN = float("nan")
 
@@ -57,13 +58,13 @@ class ExportCsvError(ErrorSet):
     Compute = "A result could not be computed from the session events; see the log"
     Write = "The export could not be written; the recording itself is safe"
     BadFile = "The file is not a LabVIEW-schema LCTT CSV (missing blank line or header)"
-    BadHeader = "The column header does not match the 34-column schema"
+    BadHeader = "The column header does not match the 42-column schema"
     BadCell = "A cell could not be parsed as its column type"
     Encoding = "The file is not valid UTF-8"
 
 
 class PointRow(BaseModel):
-    """One logged point; field order IS the 34-column header order."""
+    """One logged point; field order IS the 42-column header order."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -76,8 +77,10 @@ class PointRow(BaseModel):
     mass_kg: float
     u_mass_kg: float
     delta_volts: float
+    u_delta_volts: float  # sqrt(u_volts^2 + u_tare_v^2)
     height_m: float
     displacement_m: float
+    u_displacement_m: float  # propagated from delta volts and calibration slope
     load_n: float
     u_load_n: float
     area_m2: float
@@ -87,7 +90,9 @@ class PointRow(BaseModel):
     strain: float
     u_strain: float
     secant_modulus_pa: float
+    u_secant_modulus_pa: float  # quotient propagation of stress and strain; NaN when undefined
     hanger_kg: float
+    u_hanger_kg: float
     total_mass_kg: float
     offset_line_pa: float
     excluded: bool
@@ -100,12 +105,16 @@ class PointRow(BaseModel):
     warnings: str
     slope_m_per_v: float
     tare_v: float
+    u_tare_v: float
     l0_m: float
+    u_l0_m: float  # gauge length is an exact configured constant: 0
+    diameter_m: float
+    u_diameter_m: float
 
 
 COLUMNS: tuple[str, ...] = tuple(PointRow.model_fields)
 _TYPES: tuple[Any, ...] = tuple(f.annotation for f in PointRow.model_fields.values())
-assert len(COLUMNS) == 34, "the LabVIEW schema has exactly 34 columns"  # noqa: S101
+assert len(COLUMNS) == 42, "the schema has exactly 42 columns"  # noqa: S101
 
 
 class CsvDocument(BaseModel):
@@ -250,6 +259,15 @@ def _m(value: float, unc: float, unit: str, src: str) -> Result[Measured, Export
     return Ok(made.danger_ok)
 
 
+def _u_quotient(num: Measured, den: Measured) -> float:
+    """Standard uncertainty of num/den for independent inputs; NaN when den is zero."""
+    if not den.value:
+        return NAN
+    q = num.value / den.value
+    return abs(q) * math.hypot(num.std_unc / num.value if num.value else 0.0,
+                               den.std_unc / den.value)  # fmt: skip
+
+
 def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split would obscure it
     events: Sequence[LiveEvent],
     *,
@@ -312,6 +330,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
     rows: list[PointRow] = []
     for pid, p in st.points.items():
         lr = loaded[pid]
+        u_dv = math.hypot(p.u_volts, tare.std_unc)
         ai = active.index(pid) if pid in active else -1
         sat = isinstance(mod, Ok) and ai in mod.danger_ok.saturated_points
         rows.append(
@@ -320,22 +339,29 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
                 elapsed_s=NAN if p.t_since_load_s is None else p.t_since_load_s,
                 volts_sd=NAN if p.volts_sd is None else p.volts_sd,
                 mass_kg=p.mass_kg, u_mass_kg=p.u_mass_kg,
-                delta_volts=p.volts - tare.value,
+                delta_volts=p.volts - tare.value, u_delta_volts=u_dv,
                 height_m=fit.slope.value * p.volts + fit.intercept.value,
                 displacement_m=fit.slope.value * (p.volts - tare.value),
+                u_displacement_m=math.hypot(
+                    fit.slope.value * u_dv, (p.volts - tare.value) * fit.slope.std_unc
+                ),
                 load_n=lr.load.value, u_load_n=lr.load.std_unc,
                 area_m2=lr.area.value, u_area_m2=lr.area.std_unc,
                 stress_pa=lr.stress.value, u_stress_pa=lr.stress.std_unc,
                 strain=lr.strain.value, u_strain=lr.strain.std_unc,
                 secant_modulus_pa=lr.stress.value / lr.strain.value if lr.strain.value else NAN,
-                hanger_kg=spec.hanger_kg, total_mass_kg=p.mass_kg + spec.hanger_kg,
+                u_secant_modulus_pa=_u_quotient(lr.stress, lr.strain),
+                hanger_kg=spec.hanger_kg, u_hanger_kg=spec.u_hanger_kg,
+                total_mass_kg=p.mass_kg + spec.hanger_kg,
                 offset_line_pa=e_val * (lr.strain.value - cfg.offset),
                 excluded=pid in st.excluded,
                 in_window=ai >= 0 and first <= ai <= last and isinstance(mod, Ok),
                 saturated=sat, settle_source="", is_yield=ai == y_idx and ai >= 0,
                 is_ultimate=ai == u_idx and ai >= 0, low_r2=low_r2,
                 warnings=";".join(lr.warnings),
-                slope_m_per_v=fit.slope.value, tare_v=tare.value, l0_m=cfg.loading.gauge_length,
+                slope_m_per_v=fit.slope.value, tare_v=tare.value, u_tare_v=tare.std_unc,
+                l0_m=cfg.loading.gauge_length, u_l0_m=0.0,
+                diameter_m=spec.diameter, u_diameter_m=spec.u_diameter,
             )
         )  # fmt: skip
     tare_n = sum(t.n for t in st.tare)

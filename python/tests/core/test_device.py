@@ -84,17 +84,20 @@ def test_slow_consumer_overflows_loudly_without_dropping() -> None:
 # frob:tests python/sadi/core/device.py::DeviceService._open_once
 def test_reconnect_backs_off_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = {"n": 0}
-    real = dev.open_sim
+    real = dev.open_sim_controlled
 
     def flaky(
-        scenario: str, seed: int | None = None, cfg: sp.SessionConfig | None = None
-    ) -> Result[Disconnected, DeviceError]:
+        scenario: str,
+        seed: int | None = None,
+        cfg: sp.SessionConfig | None = None,
+        manual_load: bool = False,
+    ) -> Result[tuple[Disconnected, sp.sim.SimControl], DeviceError]:
         calls["n"] += 1
         if calls["n"] < 3:
             return Err(DeviceError(code=DeviceCode.DISCONNECTED, detail="unplugged"))
-        return real(scenario, seed, cfg)
+        return real(scenario, seed, cfg, manual_load)
 
-    monkeypatch.setattr(dev, "open_sim", flaky)
+    monkeypatch.setattr(dev, "open_sim_controlled", flaky)
     sleeps: list[float] = []
     svc = _svc(backoff=dev.Backoff(attempts=4, base_s=0.1, max_s=0.15), sleep=sleeps.append)
     assert svc.reconnect() == Ok(None)
@@ -105,7 +108,9 @@ def test_reconnect_backs_off_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_reconnect_gives_up(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        dev, "open_sim", lambda *a, **k: Err(DeviceError(code=DeviceCode.TIMEOUT, detail="t"))
+        dev,
+        "open_sim_controlled",
+        lambda *a, **k: Err(DeviceError(code=DeviceCode.TIMEOUT, detail="t")),
     )
     sleeps: list[float] = []
     svc = _svc(backoff=dev.Backoff(attempts=3, base_s=1.0), sleep=sleeps.append)
@@ -141,3 +146,29 @@ def test_serial_autodetect_picks_ftdi(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     dev.DeviceService(dev.DeviceSource(kind="serial")).open()
     assert seen == ["/dev/b"]
+
+
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
+# frob:tests python/sadi/core/device.py::DeviceService.sim_add_weight
+# frob:tests python/sadi/core/device.py::DeviceService.is_simulator
+# frob:tests python/sadi/core/device.py::DeviceService._adopt_control
+# frob:tests python/sadi/core/phases.py::open_sim_controlled
+def test_sim_add_weight_changes_volts_and_serial_refuses() -> None:
+    src = dev.DeviceSource(kind="sim", scenario="clean", seed=1, manual_load=True)
+    svc = dev.DeviceService(src)
+    assert svc.is_simulator
+    assert svc.sim_add_weight(0.1).is_err  # not open yet: no control handle
+    assert svc.open().is_ok
+    assert svc.start_streaming().is_ok
+    for _ in range(3):
+        svc.next_block(timeout=5.0).unwrap()
+    first = svc.sim_add_weight(0.1).unwrap()
+    assert first == pytest.approx(0.1)
+    for _ in range(3):  # sim time must advance before the next step is allowed
+        svc.next_block(timeout=5.0).unwrap()
+    assert svc.sim_add_weight(0.1).unwrap() == pytest.approx(0.2)
+    svc.stop_streaming().unwrap()
+    svc.close()
+    hw = dev.DeviceService(dev.DeviceSource(kind="serial", port="/dev/none"))
+    assert not hw.is_simulator
+    assert hw.sim_add_weight(0.1).is_err

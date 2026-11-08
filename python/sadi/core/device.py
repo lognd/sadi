@@ -1,5 +1,6 @@
 """DeviceService: open simulator or serial board, stream blocks via a reader thread, reconnect."""
 
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6W7R2NWFTQBK7FRWGX511CP
 
 from __future__ import annotations
@@ -21,9 +22,10 @@ from sadi.core.phases import (
     Disconnected,
     Stopped,
     Streaming,
+    guard,
     list_ports,
     open_serial,
-    open_sim,
+    open_sim_controlled,
 )
 from sadi.logging_setup import get_logger
 
@@ -53,6 +55,8 @@ class DeviceSource(BaseModel):
     scenario: str = "clean"
     seed: int | None = None
     port: str | None = None
+    #: Sim only: drop the scenario's timed load program so mass changes only via add_weight.
+    manual_load: bool = False
 
 
 class ReaderOverflow(BaseModel):
@@ -113,6 +117,7 @@ class DeviceService:
         self._thread: threading.Thread | None = None
         self._errored = False
         self._held: sp.Block | None = None
+        self._sim_ctl: sp.sim.SimControl | None = None
 
     @property
     def status(self) -> DeviceStatus:
@@ -144,6 +149,23 @@ class DeviceService:
             self._fault = None
             _log.info("device open (%s)", self._source.kind)
             return Ok(None)
+
+    @property
+    def is_simulator(self) -> bool:
+        """True when this service is backed by the simulator (never on real hardware)."""
+        return self._source.kind == "sim"
+
+    def sim_add_weight(self, kg: float) -> Result[float, DeviceError]:
+        """Hang `kg` more mass on the simulator now (Ok is the new total); Err on real hardware."""
+        with self._lock:
+            ctl = self._sim_ctl
+        if ctl is None:
+            _log.warning("sim_add_weight refused: no simulator control (%s)", self._source.kind)
+            return Err(DeviceError(code=DeviceCode.NOT_FOUND, detail="no simulator control"))
+        res = guard("sim_add_weight", lambda: ctl.add_weight(kg))
+        if res.is_ok:
+            _log.info("sim weight +%.4f kg -> %.4f kg", kg, res.danger_ok)
+        return res
 
     def reconnect(self) -> Result[None, DeviceError]:
         """Tear down any session and reopen with exponential backoff; Err after the last try."""
@@ -256,12 +278,19 @@ class DeviceService:
     def _open_once(self) -> Result[Connected, DeviceError]:
         """Open the configured source and connect; closes a half-opened session on failure."""
         if self._source.kind == "sim":
-            opened = open_sim(self._source.scenario, self._source.seed, self._cfg)
+            opened = open_sim_controlled(
+                self._source.scenario, self._source.seed, self._cfg, self._source.manual_load
+            ).map(self._adopt_control)
         else:
             opened = self._resolve_port().and_then(lambda p: open_serial(p, self._cfg))
         if isinstance(opened, Err):
             return Err(opened.danger_err)
         return self._connect(opened.danger_ok)
+
+    def _adopt_control(self, pair: tuple[Disconnected, sp.sim.SimControl]) -> Disconnected:
+        """Keep the new simulator's control handle; return its Disconnected session."""
+        self._sim_ctl = pair[1]
+        return pair[0]
 
     @staticmethod
     def _connect(disc: Disconnected) -> Result[Connected, DeviceError]:

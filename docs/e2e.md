@@ -51,7 +51,12 @@ skip. `fixtures.ts` passes `--web-dist web/dist` (run `npm run build` first); re
 python venv. Playwright output dirs `test-results/` and `playwright-report/` are gitignored.
 
 Setup needs captured clamp-check points and the UI has no capture screen for it yet, so the specs
-leave Setup with "Skip this step" (`skipSetup`). The launcher now wires a live acquisition pipeline (simulator under `--sim`), so `/api/stream`
+leave Setup with "Skip this step" (`skipSetup`).
+Under `--sim` the launcher opens the simulator with a manual load program (`DeviceSource.manual_load`):
+the load is flat until `POST /api/session/load-change` steps it by `SIM_LOAD_STEP_KG` through
+`DeviceService.sim_add_weight`, so successive calibration points get distinct volts and E is computed.
+Real hardware is unaffected (`is_simulator` is false). The guided run does not download the LCTT CSV
+because no wizard step captures the specimen it needs (filed as a bug); it asserts that the figure export buttons render (the PNG download itself never fires; filed as ~935NES4). The launcher now wires a live acquisition pipeline (simulator under `--sim`), so `/api/stream`
 is mounted and the readout updates once a session is open (see server/launcher.md).
 `acceptWhenSettled` first presses "Mark load change" (POST /api/session/load-change, recorded as a WAL
 marker) so the detector can settle and the readout reaches `[Settled]`.

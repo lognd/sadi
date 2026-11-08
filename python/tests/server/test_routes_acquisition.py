@@ -62,3 +62,28 @@ def test_live_mark_load_change_without_run() -> None:
 
     live = LiveAcquisition(cast("DeviceService", object()), Bus())
     assert live.mark_load_change() == Err(LiveError.NoLiveSession)
+
+
+class _SimDev:
+    """Minimal simulator-like device recording weight steps."""
+
+    def __init__(self, sim: bool) -> None:
+        self.is_simulator = sim
+        self.added: list[float] = []
+
+    def sim_add_weight(self, kg: float):  # noqa: ANN201
+        self.added.append(kg)
+        return Ok(kg)
+
+
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
+# frob:tests python/sadi/server/live.py::LiveAcquisition._apply_sim_load
+def test_apply_sim_load_steps_only_the_simulator() -> None:
+    from sadi.core.pipeline import Bus
+    from sadi.server.live import SIM_LOAD_STEP_KG, LiveAcquisition
+
+    sim, hw = _SimDev(True), _SimDev(False)
+    LiveAcquisition(sim, Bus())._apply_sim_load()  # type: ignore[arg-type]
+    LiveAcquisition(hw, Bus())._apply_sim_load()  # type: ignore[arg-type]
+    assert sim.added == [SIM_LOAD_STEP_KG]
+    assert hw.added == []

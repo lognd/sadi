@@ -6,6 +6,7 @@ durable. With no session open nothing is read from the device and nothing is rec
 WAL faults are logged and kept on `LiveAcquisition.fault`; they never raise into the request path.
 """
 
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6X12VGS7NHWM3EZWF4YK7XN
 from __future__ import annotations
 
@@ -36,6 +37,8 @@ DEVICE_RATE_HZ: Final[float] = 50_000.0
 DECIMATE: Final[int] = 25
 #: Bytes in one device packet (the pipeline's alignment check).
 PACKET_LEN: Final[int] = 612
+#: Simulator only: mass hung on each load-change so successive points differ, kg.
+SIM_LOAD_STEP_KG: Final[float] = 0.1
 #: Default settle detector parameters (UNVERIFIED on real hardware; tune per lab).
 LIVE_SETTLE: Final[SettleConfig] = SettleConfig(
     window_s=0.02, threshold=1.0, min_dwell_s=0.03, min_points=5
@@ -117,7 +120,16 @@ class LiveAcquisition:
         if pipe is None:
             _log.warning("load change refused: no live run")
             return Err(LiveError.NoLiveSession)
+        self._apply_sim_load()
         return pipe.mark_load_change()
+
+    def _apply_sim_load(self) -> None:
+        """On the simulator, hang one more step of mass so the next point has a new voltage."""
+        if not self._device.is_simulator:
+            return
+        res = self._device.sim_add_weight(SIM_LOAD_STEP_KG)
+        if res.is_err:
+            _log.warning("simulated load step failed: %s", res.danger_err)
 
     def on_session_open(self, writer: WriterHandle, path: Path) -> None:
         """Start streaming into the new session WAL; failures are logged, not raised."""

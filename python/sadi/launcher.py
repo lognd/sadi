@@ -1,5 +1,6 @@
 """`sadi` launcher: doctor preflight, then uvicorn serving the API and built web assets."""
 
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6WMGMM1BP37GS27VRRX9AYP
 # frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 # frob:ticket 01M6WTZVX9DFPHBKVJ1NXB07G0
@@ -185,7 +186,7 @@ def open_sim_device() -> Result[DeviceService, str]:
     except ImportError as exc:
         _log.error("simulator unavailable: %s", exc)
         return Err(f"simulator unavailable (sadi_py not importable): {exc}")
-    svc = DeviceService(DeviceSource(kind="sim"))
+    svc = DeviceService(DeviceSource(kind="sim", manual_load=True))
     opened = svc.open()
     if opened.is_err:
         _log.error("simulator open failed: %s", opened.danger_err.detail)

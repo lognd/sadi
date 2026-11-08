@@ -1,5 +1,6 @@
 """Typed session phases over sadi_py.Session; each transition consumes the old object."""
 
+# frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6W7R2NWFTQBK7FRWGX511CP
 
 from __future__ import annotations
@@ -197,6 +198,23 @@ def open_sim(
 ) -> Result[Disconnected, DeviceError]:
     """Open a simulator session in the Disconnected phase."""
     return guard("open_sim", lambda: sp.open_sim(scenario, seed, cfg)).map(Disconnected)
+
+
+def open_sim_controlled(
+    scenario: str,
+    seed: int | None = None,
+    cfg: sp.SessionConfig | None = None,
+    manual_load: bool = False,
+) -> Result[tuple[Disconnected, sp.sim.SimControl], DeviceError]:
+    """Open a simulator plus its live control; `manual_load` clears the timed load program."""
+
+    def _open() -> tuple[sp.Session, sp.sim.SimControl]:
+        session, ctl = sp.sim.open(scenario, seed, cfg)
+        if manual_load:
+            ctl.set_load_program([(0.0, 0.0)])
+        return session, ctl
+
+    return guard("open_sim_controlled", _open).map(lambda sc: (Disconnected(sc[0]), sc[1]))
 
 
 def open_serial(

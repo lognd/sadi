@@ -7,8 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:50:23Z"
-updated = "2026-11-08T06:18:07Z"
+updated = "2026-11-08T06:18:51Z"
 labels = ["lab"]
+scope = ["python/sadi/labs/lctt/**"]
 +++
 
 Real lctt lab declares no export formats; add CSV (32-column) and figure-data formats. Blocked on private reference header check ~SYDV1C9 for column names.

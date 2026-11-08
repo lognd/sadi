@@ -2,7 +2,8 @@
 id = "01M6WJT055W0QPZYNF862E6T8C"
 title = "Wire AcquisitionPipeline to device and API layers (load chain, tick timer)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

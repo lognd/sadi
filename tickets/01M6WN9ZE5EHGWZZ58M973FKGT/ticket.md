@@ -7,9 +7,13 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:05:17Z"
-updated = "2026-11-08T04:08:06Z"
+updated = "2026-11-08T04:08:40Z"
 labels = ["python"]
 scope = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py"]
+
+[[acceptance]]
+text = "Doctor and server error families are typani ErrorSets; label/status enums stay StrEnum with unchanged wire values"
+bound = false
 +++
 
 From ~PYEFC79: core/store done; doctor and server were out of its lease. Convert error enums only; keep state/label enums; preserve wire values; record per-enum decision.

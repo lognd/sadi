@@ -2,7 +2,8 @@
 id = "01M6XC7G9JESF2JSNVDA8N9SB0"
 title = "Fix tsc stage command so web COV001 resolves on main"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

@@ -2,7 +2,8 @@
 id = "01M6WMSZKN488HTWG19V69GETD"
 title = "Add POST /api/stress-strain/fit refit endpoint"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

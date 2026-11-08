@@ -87,3 +87,40 @@ def test_cache_is_bounded(tmp_path: Path) -> None:
         (d / "wal").mkdir(parents=True)
         cache.events(d)
     assert len(cache._cache) <= 4  # noqa: SLF001
+
+
+def _flip_applied_byte(sdir: Path) -> None:
+    """Corrupt a byte inside WAL data the cache has already applied."""
+    seg = next((sdir / "wal").glob("seg-*.wal"))
+    data = bytearray(seg.read_bytes())
+    data[len(data) // 2] ^= 0xFF
+    seg.write_bytes(bytes(data))
+
+
+# frob:tests python/sadi/server/curve_source.py::SessionReplayCache.events
+def test_verify_detects_corruption_in_applied_bytes(tmp_path: Path) -> None:
+    """Export-style verify=True notices corruption the incremental path never re-reads."""
+    sdir, w = _session(tmp_path, 6)
+    assert w.close().is_ok
+    cache = SessionReplayCache(reverify_interval_s=1e9)
+    assert cache.events(sdir).is_ok
+    _flip_applied_byte(sdir)
+    assert cache.events(sdir).is_ok  # fast path is blind to already-applied bytes
+    assert cache.events(sdir, verify=True).is_err
+    assert sdir not in cache._cache  # noqa: SLF001
+
+
+# frob:tests python/sadi/server/curve_source.py::SessionReplayCache.events
+def test_periodic_reverify_detects_corruption(tmp_path: Path) -> None:
+    """After the re-verify interval a live view drops the entry and reports corruption."""
+    sdir, w = _session(tmp_path, 6)
+    assert w.close().is_ok
+    now = [0.0]
+    cache = SessionReplayCache(reverify_interval_s=10.0, clock=lambda: now[0])
+    assert cache.events(sdir).is_ok
+    _flip_applied_byte(sdir)
+    now[0] = 5.0
+    assert cache.events(sdir).is_ok
+    now[0] = 11.0
+    assert cache.events(sdir).is_err
+    assert sdir not in cache._cache  # noqa: SLF001

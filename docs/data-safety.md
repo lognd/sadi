@@ -453,6 +453,11 @@ rejected: a value on screen that might vanish contradicts the requirement.
 
 ### 6.5 Disk full and I/O errors
 
+In the API error taxonomy (`sadi.core.errors.StoreCode`) the writer failures
+`Backpressure`, `DiskFull`, `Closed` and `Stalled` are the codes
+`backpressure`, `disk_full`, `closed` and `stalled`, each with a user hint
+and an HTTP 500 problem body.
+
 Pre-flight at session create and resume: free space on the data root must
 be at least `MIN_FREE_BYTES = 2 GiB` or the create fails with
 `SessionError.DiskSpace` (hint names the path and the shortfall). The

@@ -33,6 +33,7 @@ from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
 from sadi.labs.lctt.export_csv import build_document, render_document
+from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
     CalPoint,
     ExcludePoint,
@@ -296,13 +297,32 @@ CSV_FORMAT = ExportFormat(
 )
 
 
+# frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+def _write_figure_json(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render the calibration and stress-strain series as JSON from the raw session events."""
+    events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
+    data = figure_data(events)
+    if isinstance(data, Err):
+        return Err(data.danger_err)
+    return Ok(data.danger_ok.model_dump_json(indent=2).encode("utf-8"))
+
+
+#: The lctt-figure-json export format: series behind the calibration and stress-strain plots.
+FIGURE_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-figure-json"),
+    title="LCTT figure data (JSON)",
+    media_type="application/json",
+    writer=_write_figure_json,
+)
+
+
 class LcttLab:
     """The LCTT lab: calibration, then an elastic (long) and a plastic (short) specimen run."""
 
     id = LabId("lctt")
     title = "Load-controlled creep/thermal test"
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
-    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT,)
+    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT, FIGURE_FORMAT)
 
     def steps(self) -> list[StepSpec]:
         """Return the ordered wizard steps, bound to calibration, elastic and plastic phases."""

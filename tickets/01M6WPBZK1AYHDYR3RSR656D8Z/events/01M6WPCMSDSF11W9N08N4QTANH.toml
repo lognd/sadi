@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/conftest.py", "python/tests/server/conftest.py"]
+new = ["python/tests/conftest.py", "python/tests/server/conftest.py", "python/tests/cli/conftest.py"]
+at = "2026-11-08T04:24:13Z"
+actor = "lognd"
+rev = 1

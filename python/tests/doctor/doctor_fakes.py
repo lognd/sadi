@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 
 from typani import Err, Ok, Result
 
-from sadi.doctor.checks import ext, net
+from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
@@ -285,7 +285,15 @@ def healthy() -> FakeProbes:
     p.files["/sys/bus/usb/devices/1-1/idVendor"] = "0403\n"
     p.files["/sys/bus/usb/devices/1-1/idProduct"] = "6010\n"
     p.links["/sys/bus/usb/devices/1-1/1-1:1.0/driver"] = "../../../bus/usb/drivers/ftdi_sio"
-    p.dirs["/dev"] = ["ttyUSB0", "null"]
+    p.dirs["/dev"] = ["ttyUSB0", "cu.usbserial-FT1", "null"]
+    p.tools.update(
+        {
+            "usbipd.exe": "/usbipd.exe",
+            "system_profiler": "/usr/sbin/system_profiler",
+            "powershell": "powershell.exe",
+        }
+    )
+    p.files["/sys/bus/usb-serial/devices/ttyUSB0/latency_timer"] = "2\n"
     p.device = HEALTHY_DEVICE
     p.files["/venv/pyvenv.cfg"] = "home = /usr/bin\n"
     p.commands.update(
@@ -295,11 +303,21 @@ def healthy() -> FakeProbes:
             ),
             "-c " + ext.VCRUNTIME_SCRIPT: _json([]),
             "-c " + ext.FEATURES_SCRIPT: _json(["udev"]),
+            "SPUSBDataType": _out("Product ID: 0x6010\n Vendor ID: 0x0403\n"),
+            ps(usb.PS_FTDI): _out("USB\\VID_0403&PID_6010\\FT1\n"),
+            ps(usb.PS_VCP_PORTS): _out("USB Serial Port (COM3)\n"),
+            ps(usb.PS_VCP_STATUS): _out("OK\n"),
+            ps(usb.PS_PORT_NAMES): _out("COM3\n"),
             "show -p NTPSynchronized": _out("NTPSynchronized=yes\n"),
             "-c " + net.health_script(8000): _json({"status": 200, "version": "0.1.0"}),
         }
     )
     return p
+
+
+def ps(script: str) -> str:
+    """Return the canned-command key of a PowerShell one-liner."""
+    return "-NoProfile -NonInteractive -Command " + script
 
 
 def _out(text: str) -> Result[CommandRun, ProbeError]:

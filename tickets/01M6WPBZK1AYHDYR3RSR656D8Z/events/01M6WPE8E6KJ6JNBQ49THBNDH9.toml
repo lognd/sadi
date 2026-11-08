@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Autouse fixture in tests/server and tests/cli conftest redirects user data dir and OS temp dir", "A test shows create_app startup in tests/server does not see a spill outside the isolated dirs"]
+moved = []
+at = "2026-11-08T04:25:06Z"
+actor = "lognd"
+rev = 1

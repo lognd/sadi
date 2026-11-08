@@ -2,12 +2,13 @@
 id = "01M6WJHVXTWDD0RA55508QAN2W"
 title = "doctor: USB-010, USB-060..080 and Windows/macOS USB support"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:23:22Z"
+updated = "2026-11-08T04:23:59Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]

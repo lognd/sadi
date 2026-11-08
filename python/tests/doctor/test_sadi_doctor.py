@@ -9,12 +9,12 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from doctor_fakes import HEALTHY_DEVICE, FakeProbes, healthy
+from doctor_fakes import HEALTHY_DEVICE, FakeProbes, healthy, ps
 from typani import Err, Ok
 
 import sadi.doctor as doctor
 from sadi.doctor import cli
-from sadi.doctor.checks import ext, net
+from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.registry import all_checks, get_remedy
 from sadi.doctor.render_text import render
@@ -169,6 +169,60 @@ def _usbipd(state: str) -> Mut:
         )
 
     return f
+
+
+# frob:ticket 01M6WJHVXTWDD0RA55508QAN2W
+def _cmd(key: str, text: str) -> Mut:
+    """Return a mutator that cans stdout `text` for the command keyed `key`."""
+
+    def f(p: FakeProbes) -> None:
+        p.commands[key] = Ok(CommandRun(argv=("cmd",), exit_code=0, stdout_tail=text))
+
+    return f
+
+
+def _set_file(path: str, text: str) -> Mut:
+    """Return a mutator that sets one fake file."""
+
+    def f(p: FakeProbes) -> None:
+        p.files[path] = text
+
+    return f
+
+
+def _all(*muts: Mut) -> Mut:
+    """Return a mutator applying several mutators in order."""
+
+    def f(p: FakeProbes) -> None:
+        for m in muts:
+            m(p)
+
+    return f
+
+
+def _drop_tool(name: str) -> Mut:
+    """Return a mutator removing a tool from PATH."""
+
+    def f(p: FakeProbes) -> None:
+        p.tools.pop(name, None)
+
+    return f
+
+
+def _no_cu(p: FakeProbes) -> None:
+    p.dirs["/dev"] = ["null", "ttyUSB0"]
+
+
+def _wsl_attached(config: str, dmesg: str = "") -> Mut:
+    """Return a WSL mutator: attached FTDI row, kernel config text, dmesg text."""
+    return _all(
+        _cmd("list", "2-3    0403:6010  USB Serial Converter   Attached - Ubuntu\n"),
+        _cmd("-E " + usb._KCONFIG + " /proc/config.gz", config),
+        _cmd("dmesg", dmesg),
+    )
+
+
+_KCONF_OK = "CONFIG_USB_SERIAL_FTDI_SIO=y\nCONFIG_USB_VHCI_HCD=y\n"
 
 
 def _no_group(p: FakeProbes) -> None:
@@ -360,6 +414,39 @@ CASES: list[tuple[str, str, Os, Mut]] = [
     ("USB-040", "node-missing", Os.LINUX, _no_node),
     ("USB-050", "not-in-group", Os.LINUX, _no_group),
     ("USB-050", "node-not-accessible", Os.LINUX, _in_group_no_access),
+    ("USB-010", "no-enumeration-tool", Os.MACOS, _drop_tool("system_profiler")),
+    ("USB-010", "usbipd-missing", Os.WSL, _drop_tool("usbipd.exe")),
+    ("USB-010", "usbipd-old", Os.WSL, _cmd("--version", "usbipd 3.2.0\n")),
+    ("USB-020", "no-device", Os.WINDOWS, _cmd(ps(usb.PS_FTDI), "")),
+    ("USB-020", "no-device", Os.MACOS, _cmd("SPUSBDataType", "")),
+    ("USB-030", "no-driver", Os.WINDOWS, _cmd(ps(usb.PS_VCP_PORTS), "")),
+    ("USB-030", "no-driver", Os.MACOS, _no_cu),
+    ("USB-040", "node-missing", Os.WINDOWS, _cmd(ps(usb.PS_PORT_NAMES), "")),
+    ("USB-050", "node-not-accessible", Os.WINDOWS, _cmd(ps(usb.PS_VCP_STATUS), "Error\n")),
+    ("USB-050", "not-in-group", Os.MACOS, _no_group),
+    ("USB-060", "held-by-sadi", Os.LINUX, _cmd("-F pc /dev/ttyUSB0", "p10\ncsadi\n")),
+    ("USB-060", "held-by-labview", Os.WINDOWS, _cmd(ps(usb.PS_HOLDERS), "LabVIEW\n")),
+    (
+        "USB-060",
+        "held-by-other",
+        Os.MACOS,
+        _cmd("-F pc /dev/cu.usbserial-FT1", "p77\ncscreen\n"),
+    ),
+    ("USB-060", "modemmanager-probing", Os.LINUX, _cmd("is-active ModemManager", "active\n")),
+    (
+        "USB-070",
+        "latency-not-2ms",
+        Os.LINUX,
+        _set_file("/sys/bus/usb-serial/devices/ttyUSB0/latency_timer", "16\n"),
+    ),
+    ("USB-080", "vhci-missing", Os.WSL, _wsl_attached("CONFIG_USB_SERIAL_FTDI_SIO=y\n")),
+    (
+        "USB-080",
+        "attach-dropped",
+        Os.WSL,
+        _wsl_attached(_KCONF_OK, "vhci_hcd vhci_hcd.0: connection error\n"),
+    ),
+    ("USB-080", "attached-no-node", Os.WSL, _all(_wsl_attached(_KCONF_OK), _no_node)),
     ("CLK-010", "clock-before-build", Os.LINUX, _set(clock=1_000_000.0)),
     ("RES-010", "single-core", Os.LINUX, _set(cpus=1)),
     ("RES-020", "low-memory", Os.LINUX, _set(mem=700 * 1024**2)),
@@ -511,6 +598,12 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/ext.py::ext_040
 # frob:tests python/sadi/doctor/checks/ext.py::ext_050
 # frob:tests python/sadi/doctor/checks/ext.py::child_json
+# frob:tests python/sadi/doctor/checks/usb.py::serial_nodes
+# frob:tests python/sadi/doctor/checks/usb.py::ftdi_devices
+# frob:tests python/sadi/doctor/checks/usb.py::usb_010
+# frob:tests python/sadi/doctor/checks/usb.py::usb_060
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+# frob:tests python/sadi/doctor/checks/usb.py::usb_080
 # frob:tests python/sadi/doctor/checks/net.py::net_030
 # frob:tests python/sadi/doctor/checks/net.py::net_040
 # frob:tests python/sadi/doctor/checks/net.py::health_script

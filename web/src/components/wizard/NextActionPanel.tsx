@@ -1,5 +1,6 @@
 // frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M6XAASPRSYNWC5K5MH77E8KJ
 import type { RailItem } from "./types";
 
 /** Props of the panel. */
@@ -21,12 +22,12 @@ export function NextActionPanel({ step, busy, canSkip, onPrimary, onSkip }: Next
       ) : (
         <>
           <p>{step.hint !== "" ? step.hint : `Work on: ${step.title}.`}</p>
-          <button type="button" disabled={busy} onClick={onPrimary} style={{ fontSize: "1.5em" }}>
+          <button type="button" disabled={busy} onClick={onPrimary} className="btn btn-primary" data-variant="primary">
             Finish {step.title} (Enter)
           </button>
           {canSkip ? (
             <p>
-              <button type="button" disabled={busy} onClick={onSkip}>Skip this step</button>
+              <button type="button" disabled={busy} onClick={onSkip} className="btn btn-secondary" data-variant="secondary">Skip this step</button>
             </p>
           ) : null}
         </>

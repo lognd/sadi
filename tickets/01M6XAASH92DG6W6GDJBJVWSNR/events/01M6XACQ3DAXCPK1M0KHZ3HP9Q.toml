@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/hooks/stopText.ts"]
+new = ["web/src/hooks/stopText.ts", "web/src/hooks/stopText.test.ts"]
+at = "2026-11-08T10:13:47Z"
+actor = "lognd"
+rev = 1

@@ -10,6 +10,7 @@ the live stream (no replay of missed frames). Session info comes from `SessionSe
 # frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
 # frob:ticket 01M6WWN90MKGKGY4H7Y8PWYEQZ
 # frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
+# frob:ticket 01M6XA16Y0GEC333HA645FY2YX
 
 from __future__ import annotations
 
@@ -158,12 +159,17 @@ class StreamHub:
         sessions: SessionService | None = None,
         results: ResultsStream | None = None,
         simulated: Callable[[], bool] | None = None,
+        guidance: Callable[[], GuidancePayload | None] | None = None,
     ) -> None:
         """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes.
 
         `simulated` reports whether the data source is the simulator (stamped on `hello` and
-        `state` messages; absent means false).
+        `state` messages; absent means false). `guidance` computes the current payload; it is
+        consulted after each result or settle-state change and published when it changed.
         """
+        self._guidance = guidance
+        self._last_guidance: GuidancePayload | None = None
+        self._last_settle: str | None = None
         self.results = results
         self._simulated = simulated
         self._window_point: int | None = None
@@ -203,6 +209,7 @@ class StreamHub:
     def publish_guidance(self, payload: GuidancePayload) -> None:
         """Push a typed guidance message (JSON side channel) to every client."""
         _log.info("publishing guidance phase=%s stop_early=%s", payload.phase, payload.stop_early)
+        self._last_guidance = payload
         self._fanout_msg({"kind": "guidance", **payload.model_dump(mode="json")})
 
     def is_simulated(self) -> bool:
@@ -224,8 +231,14 @@ class StreamHub:
         events = self._sub.drain()
         if not events:
             return
+        changed = False
         with self._lock:
             for ev in events:
+                if isinstance(ev, ResultUpdate):
+                    changed = True
+                elif isinstance(ev, SettleUpdate) and ev.status.state.value != self._last_settle:
+                    self._last_settle = ev.status.state.value
+                    changed = True
                 if isinstance(ev, TraceFrame):
                     self._seq += 1
                     for c in self._clients:
@@ -240,6 +253,18 @@ class StreamHub:
                 self._latest[msg["kind"]] = msg
                 for c in self._clients:
                     c.offer_msg(msg)
+        if changed:
+            self.refresh_guidance()
+
+    def refresh_guidance(self) -> bool:
+        """Recompute guidance and publish it unless identical to the last one; True if sent."""
+        if self._guidance is None:
+            return False
+        payload = self._guidance()
+        if payload is None or payload == self._last_guidance:
+            return False
+        self.publish_guidance(payload)
+        return True
 
     def _fanout_msg(self, msg: dict[str, Any]) -> None:
         """Queue `msg` for every client."""

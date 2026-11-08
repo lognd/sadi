@@ -12,6 +12,8 @@
 # frob:ticket 01M6WTSF7KQ3YMJP9C0Z75HVRK
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
 
+# frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator
@@ -36,7 +38,12 @@ from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.plots import make_plots_router
 from sadi.server.routes.problem import install_problem_handlers
-from sadi.server.routes.results import BudgetSource, DeviceProbe, make_results_router
+from sadi.server.routes.results import (
+    BudgetSource,
+    DeviceProbe,
+    make_guidance_provider,
+    make_results_router,
+)
 from sadi.server.routes.sessions import make_sessions_router
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_health import make_health_router
@@ -193,6 +200,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             app.state.sessions,
             app.state.results_stream,
             simulated=(lambda: device.status == "simulated") if device is not None else None,
+            guidance=make_guidance_provider(app.state.sessions, cfg.labs or LabRegistry()),
         )
         app.include_router(make_ws_router(app.state.stream_hub))
     source = cfg.curve_source or make_curve_source(cfg.data_root, replays)

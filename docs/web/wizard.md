@@ -10,7 +10,10 @@ Implements the layout of `docs/ux.md` sections 2, 4, 5 and 6.
   state with the `Committed.wizard` it returns.
 - `StepRail`: glyph plus word per step (`[x] [>] [ ] [-]`), `aria-current="step"`. The rail
   comes entirely from the API, so lab-specific steps need no web change.
-- `NextActionPanel`: the current step's hint and one big primary button.
+- `NextActionPanel`: the current step's hint and one big primary button
+  (`btn btn-primary`, `data-variant="primary"`) with Skip as `btn btn-secondary`. `src/styles.css`
+  (imported once from `main.tsx`) is the shared stylesheet: system fonts, spacing, a
+  `:focus-visible` ring (outlines are never removed), and the primary vs secondary button styles.
 - `ErrorNotice`: renders a problem+json as "what happened / What to do: hint".
 - `components/status/StatusBar.tsx`: Source, Motion, Signal and last-saved time; its inputs are
   props supplied by the run screens (live data arrives with the stream tickets).

@@ -27,6 +27,13 @@ describe("StepRail", () => {
     expect(html).toContain("(skipped)");
     expect(html).toContain('aria-current="step"');
   });
+
+  it("is a labelled nav with exactly one tab stop, on the current step", () => {
+    const html = renderToString(<StepRail rail={rail} />);
+    expect(html).toContain('<nav aria-label="Steps"');
+    expect(html.match(/tabindex="0"/g)?.length).toBe(1);
+    expect(html).toMatch(/<li[^>]*aria-current="step"[^>]*tabindex="0"|<li[^>]*tabindex="0"[^>]*aria-current="step"/);
+  });
 });
 
 describe("NextActionPanel", () => {
@@ -37,6 +44,14 @@ describe("NextActionPanel", () => {
     expect(html).toContain("Finish Tare");
     expect(renderToString(<NextActionPanel step={null} busy={false} canSkip={false} onPrimary={f} onSkip={f} />))
       .toContain("All steps are finished");
+  });
+
+  // frob:ticket 01M6XAASPRSYNWC5K5MH77E8KJ
+  it("marks the primary button and Skip with distinct variant classes", () => {
+    const f = (): void => undefined;
+    const html = renderToString(<NextActionPanel step={rail[1] ?? null} busy={false} canSkip onPrimary={f} onSkip={f} />);
+    expect(html).toMatch(/class="btn btn-primary"[^>]*data-variant="primary"/);
+    expect(html).toMatch(/class="btn btn-secondary"[^>]*data-variant="secondary"/);
   });
 });
 

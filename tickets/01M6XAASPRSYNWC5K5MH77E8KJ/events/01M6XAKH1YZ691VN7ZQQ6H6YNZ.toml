@@ -1,0 +1,50 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:17:29Z"
+digest = "826bb9a92807bb1bdc1c92c167fd249e8521eaf4623b14f9d694e6ec7d8fa8f4"
+exit_code = 0
+head = "1e36aff11efef09e5990fbf678978e4d96f80766"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+ \u{2713} web/src/components/wizard/wizard.test.tsx (12 tests) 27ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  05:17:29
+   Duration  881ms (transform 154ms, setup 0ms, collect 244ms, tests 27ms, environment 0ms, prepare 158ms)
+
+JSON report written to /tmp/frob-vitest-1166592-0.json
+stderr | web/src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/wizard/wizard.test.tsx"
+size = 1551
+status = "measured"
+test_count = 12
+tests_digest = "b75a78ca75c47a41a1944319f09548d256be5f5d2c31842ce9371a3a9ad9cefd"
+at = "2026-11-08T10:17:29Z"
+actor = "lognd"
+rev = 1

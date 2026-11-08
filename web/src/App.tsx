@@ -9,6 +9,7 @@ import { useStore } from "./state/store";
 const log = getLogger("App");
 
 // frob:ticket 01M6WA9WZW89EA826DSJCJ0197
+// frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:accept COV001 because="vitest tests exist (src/App.test.tsx, src/api/log.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Root component: probes the backend, shows connection state, the guided-run wizard and a persistent Doctor link. */
 export function App(): React.JSX.Element {
@@ -28,7 +29,7 @@ export function App(): React.JSX.Element {
 
   return (
     <>
-      <nav>
+      <nav aria-label="Tools">
         <button type="button" onClick={() => { if (visible) closeDoctor(); else openDoctor("nav"); }}>
           {visible ? "Close Doctor" : "Doctor"}
         </button>

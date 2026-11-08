@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:02:01Z"
-updated = "2026-11-08T04:06:41Z"
+updated = "2026-11-08T04:06:56Z"
 labels = ["server", "creates:python/sadi/core/point_inputs.py", "creates:python/tests/api/test_point_roundtrip.py"]
 scope = ["creates:python/sadi/core/point_inputs.py", "python/sadi/core/pipeline.py", "python/sadi/api/acquisition.py", "python/sadi/server/curve_source.py", "creates:python/tests/api/test_point_roundtrip.py", "docs/server/app.md", "docs/api/acquisition.md", "python/sadi/core/point_inputs.py", "python/tests/api/test_point_roundtrip.py"]
 

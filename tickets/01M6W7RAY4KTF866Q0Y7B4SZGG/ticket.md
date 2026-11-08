@@ -8,10 +8,10 @@ points = 8
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T06:19:50Z"
+updated = "2026-11-08T06:20:15Z"
 idempotency_key = "sadi-j5"
 labels = ["ws:conc", "ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/concurrency/**", "creates:docs/concurrency-testing.md"]
-scope = ["python/tests/concurrency/**", "docs/concurrency-testing.md"]
+scope = ["python/tests/concurrency/**", "docs/concurrency-testing.md", "docs/README.md"]
 
 [[links]]
 kind = "blocked-by"

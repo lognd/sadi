@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:58:47Z"
+updated = "2026-11-08T05:59:00Z"
 scope = ["web/src/plots/live/**", "docs/web/live-trace.md"]
 
 [[acceptance]]

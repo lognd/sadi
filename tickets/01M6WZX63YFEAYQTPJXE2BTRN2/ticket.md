@@ -2,7 +2,8 @@
 id = "01M6WZX63YFEAYQTPJXE2BTRN2"
 title = "Web: Setup screen that creates or resumes a session (WizardHost shows nothing when no session is open)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

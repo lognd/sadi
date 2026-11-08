@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:16:46Z"
+updated = "2026-11-08T10:17:10Z"
 scope = ["web/src/App.tsx", "web/src/App.test.tsx", "web/src/components/wizard/StepRail.tsx", "web/src/components/wizard/wizard.test.tsx", "docs/usability-report.md"]
 
 [[acceptance]]

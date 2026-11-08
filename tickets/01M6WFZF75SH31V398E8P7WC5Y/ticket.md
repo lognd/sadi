@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:56:58Z"
+updated = "2026-11-08T02:57:01Z"
 labels = ["plugins", "creates:python/sadi/cli/plugins.py", "creates:python/sadi/plugins/state.py", "creates:python/tests/cli/test_plugins_cli.py", "creates:python/tests/plugins/test_state.py"]
 scope = ["python/sadi/cli/__init__.py", "python/sadi/cli/plugins.py", "python/sadi/plugins/state.py", "python/tests/cli/test_plugins_cli.py", "python/tests/plugins/test_state.py"]
 
@@ -30,7 +30,7 @@ bound = true
 
 [[acceptance]]
 text = "Unknown id returns clear error, no traceback"
-bound = false
+bound = true
 +++
 
 Subcommands: list (table + --json), info <id> (manifest, source, state, errors, doctor findings when ticket for doctor is done), enable <id>, disable <id>. Enabled/disabled set persisted by plugins/state.py as a small atomic JSON file in the user config dir from PluginSettings (never in session dirs; use store/durable atomic replace via core-safe helper only if exposed, else stdlib tmp+replace). Errors are Result values rendered with exit codes: unknown id exit 2. Disabling takes effect on next start; say so in output.

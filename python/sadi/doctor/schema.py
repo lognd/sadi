@@ -282,6 +282,7 @@ class RunOptions(BaseModel):
     port: str | None = None
     api_port: int = 8000
     running: bool = False
+    open_browser: bool = False  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     data_root: str | None = None
 
 

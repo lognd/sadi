@@ -13,7 +13,7 @@ from doctor_fakes import HEALTHY_DEVICE, FakeProbes, healthy, ps
 from typani import Err, Ok
 
 import sadi.doctor as doctor
-from sadi.doctor import cli
+from sadi.doctor import cli, hostprobe
 from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.registry import all_checks, get_remedy
@@ -280,10 +280,26 @@ def _wrk(**kw: object) -> Mut:
     return f
 
 
+_LONG_ROOT = "C:\\Users\\someone\\" + "d" * 120
+_ROOT_FOR = {
+    ("PLAT-040", "long-paths-off"): _LONG_ROOT,
+    ("PLAT-040", "reserved-name-in-path"): "C:\\Users\\someone\\CON\\sadi",
+    ("PLAT-040", "trailing-dot-or-space"): "C:\\Users\\someone\\sadi.",
+}
+
 # (check id, mode, os, mutator)
 CASES: list[tuple[str, str, Os, Mut]] = [
     ("PLAT-010", "wsl1", Os.WSL, _set(files={"/proc/version": "Linux 4.4.0-Microsoft"})),
     ("PLAT-010", "unsupported-os", Os.WINDOWS, _set(os=Os.WINDOWS)),
+    ("PLAT-020", "arch-mismatch", Os.MACOS, _set(mach="arm64", target="x86_64-apple-darwin")),
+    ("PLAT-020", "unknown-arch", Os.LINUX, _set(mach="riscv64")),
+    ("PLAT-040", "long-paths-off", Os.WINDOWS, _set(long_paths=False)),
+    ("PLAT-040", "reserved-name-in-path", Os.WINDOWS, _set()),
+    ("PLAT-040", "trailing-dot-or-space", Os.WINDOWS, _set()),
+    ("WEB-020", "stale-bundle", Os.LINUX, _set(web_ver="0.0.9")),
+    ("BRW-020", "old-browser", Os.LINUX, _set(browser_ver=("firefox", 100))),
+    ("BRW-020", "unknown-browser", Os.LINUX, _set(browser_ver=None)),
+    ("BRW-030", "launch-no-hit", Os.LINUX, _set(launch_hit=False)),
     ("PLAT-030", "c-locale", Os.LINUX, _set(enc=("ascii", False))),
     ("PLAT-030", "non-utf8-console", Os.WINDOWS, _set(enc=("cp1252", False))),
     ("PLAT-050", "failpoints-armed", Os.LINUX, _set(environ={"SADI_FAILPOINTS": "x"})),
@@ -592,6 +608,8 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/__init__.py::run
 # frob:tests python/sadi/doctor/__init__.py::summarize
 # frob:tests python/sadi/doctor/checks/brw.py::brw_010
+# frob:tests python/sadi/doctor/checks/brw.py::brw_020
+# frob:tests python/sadi/doctor/checks/brw.py::brw_030
 # frob:tests python/sadi/doctor/checks/clk.py::clk_010
 # frob:tests python/sadi/doctor/checks/ext.py::ext_020
 # frob:tests python/sadi/doctor/checks/ext.py::ext_030
@@ -646,6 +664,8 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/net.py::net_010
 # frob:tests python/sadi/doctor/checks/net.py::net_020
 # frob:tests python/sadi/doctor/checks/plat.py::plat_010
+# frob:tests python/sadi/doctor/checks/plat.py::plat_020
+# frob:tests python/sadi/doctor/checks/plat.py::plat_040
 # frob:tests python/sadi/doctor/checks/plat.py::plat_030
 # frob:tests python/sadi/doctor/checks/plat.py::plat_050
 # frob:tests python/sadi/doctor/checks/plg.py::plg_010
@@ -664,6 +684,7 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/usb.py::usb_050
 # frob:tests python/sadi/doctor/checks/usb.py::usbipd_ftdi
 # frob:tests python/sadi/doctor/checks/web.py::web_010
+# frob:tests python/sadi/doctor/checks/web.py::web_020
 # frob:tests python/sadi/doctor/cli.py::main
 # frob:tests python/sadi/doctor/registry.py::all_checks
 # frob:tests python/sadi/doctor/registry.py::check
@@ -678,7 +699,9 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/steps.py::manual
 # frob:tests python/sadi/doctor/steps.py::shell_for
 # frob:tests python/sadi/doctor/steps.py::verify
-@pytest.mark.parametrize(("check_id", "mode", "os", "mutate"), CASES, ids=lambda x: str(x)[:30])
+@pytest.mark.parametrize(
+    ("check_id", "mode", "os", "mutate"), CASES, ids=[f"{c}-{m}" for c, m, _, _ in CASES]
+)
 def test_fault_injection_yields_mode_and_remedy(
     check_id: str, mode: str, os: Os, mutate: Mut
 ) -> None:
@@ -690,9 +713,10 @@ def test_fault_injection_yields_mode_and_remedy(
     report = _run(
         p,
         os,
-        data_root=ROOT,
+        data_root=_ROOT_FOR.get((check_id, mode), ROOT),
         allow_network_fs=False,
         api_port=port,
+        open_browser=check_id == "BRW-030",
         deep=check_id == "WAL-020",
         stream_seconds=5 if check_id == "DEV-040" else 0,
         with_reset=check_id == "DEV-050",
@@ -1083,3 +1107,61 @@ def test_real_probes_answer_the_new_facts(tmp_path: Path) -> None:
     assert rp.monotonic_resolution() > 0
     assert rp.on_battery() in (True, False, None)
     assert rp.tz_name() is None or isinstance(rp.tz_name(), str)
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::mount_fstype
+def test_mount_fstype_picks_longest_prefix() -> None:
+    """macOS `mount` output resolves to the deepest containing mount's fstype."""
+    out = (
+        "/dev/disk3s1 on / (apfs, local, journaled)\n"
+        "//u@nas/share on /Volumes/share (smbfs, nodev, nosuid)\n"
+    )
+    assert hostprobe.mount_fstype(out, "/Volumes/share/x") == "smbfs"
+    assert hostprobe.mount_fstype(out, "/Users/u") == "apfs"
+    assert hostprobe.mount_fstype("garbage", "/x") is None
+
+
+# frob:tests python/sadi/doctor/hostprobe.py::family_of
+# frob:tests python/sadi/doctor/hostprobe.py::major_version
+def test_browser_parsers() -> None:
+    """Browser names and version strings parse to a family and a major number."""
+    assert hostprobe.family_of("ChromeHTML") == "chromium"
+    assert hostprobe.family_of("FirefoxURL-308046B0AF4A39CB") == "firefox"
+    assert hostprobe.family_of("Opera") is None
+    assert hostprobe.major_version("Mozilla Firefox 115.2.1") == 115
+    assert hostprobe.major_version("none") is None
+
+
+# frob:tests python/sadi/doctor/checks/data.py::data_020
+@pytest.mark.parametrize("os", [Os.WINDOWS, Os.MACOS])
+def test_data_020_probes_windows_and_macos(os: Os) -> None:
+    """DATA-020 no longer skips Windows or macOS; a network fstype is flagged there."""
+    p = healthy()
+    p.os = os
+    p.fs = "smbfs"
+    report = _run(p, os, data_root=ROOT, allow_network_fs=False)
+    result = next(r for r in report.results if r.id == "DATA-020")
+    assert result.status is Status.FAIL or result.status is Status.WARN
+    p.fs = "ntfs" if os is Os.WINDOWS else "apfs"
+    report = _run(p, os, data_root=ROOT, allow_network_fs=False)
+    assert next(r for r in report.results if r.id == "DATA-020").status is Status.PASS
+
+
+# frob:tests python/sadi/doctor/checks/plat.py::plat_020
+def test_plat_020_skips_without_build_target() -> None:
+    """Without BUILD_TARGET the architecture check is UNVERIFIED, never a false pass."""
+    p = healthy()
+    p.target = None
+    report = _run(p, Os.LINUX, data_root=ROOT)
+    result = next(r for r in report.results if r.id == "PLAT-020")
+    assert result.status is Status.SKIP and result.skip_reason is SkipReason.UNVERIFIED
+
+
+# frob:tests python/sadi/doctor/checks/web.py::web_020
+def test_web_020_skips_without_version_json() -> None:
+    """A bundle without version.json is UNVERIFIED."""
+    p = healthy()
+    p.web_ver = None
+    report = _run(p, Os.LINUX, data_root=ROOT)
+    result = next(r for r in report.results if r.id == "WEB-020")
+    assert result.status is Status.SKIP and result.skip_reason is SkipReason.UNVERIFIED

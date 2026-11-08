@@ -911,7 +911,13 @@ Implementation status and deviations from this spec (~V3H5CGF):
   USB-010 is a warning check with no dependents (USB-020 reports its own
   skip); USB-030 on macOS/Windows only tests for the serial node/COM port
   (no kext or driver-error-code modes). The Channel A/B probe is reported as unverified (decision D3).
-- Deferred: BRW-020/030; PLAT-020/040; WEB-020; the `fix` subcommand; `--bundle`.
+- Deferred: the `fix` subcommand; `--bundle`.
+- BRW-020, BRW-030, PLAT-020, PLAT-040 and WEB-020 are implemented. Deviations:
+  - `sadi_py.BUILD_TARGET` and `sadi/web/dist/version.json` do not exist yet, so PLAT-020 and WEB-020 skip as UNVERIFIED until the build emits them.
+  - PLAT-040 estimates the longest session path as the data root length plus a fixed 100 characters, against a 200 character limit.
+  - BRW-030 is opt-in through `--open-browser` (RunOptions.open_browser); it opens a browser at a throwaway loopback listener and waits 10 s.
+  - BRW-020 minimums: Chromium 110, Firefox 115, Safari 16; an unidentifiable browser is reported as warn mode `unknown-browser`.
+  - DATA-020 now probes Windows (GetVolumeInformationW) and macOS (`mount`) instead of skipping.
   Each is tracked as a ticket.
 - DATA-040 writes one probe file under `<root>/doctor/` and needs
   `--allow-probe-write`; the writing probes live only in `volprobe.py`, which

@@ -85,6 +85,12 @@ class FakeProbes:
     spills: list[str] = field(default_factory=list)
     sessions: list[SessionFacts] = field(default_factory=list)
     browser: bool = True
+    mach: str = "x86_64"
+    target: str | None = "x86_64-unknown-linux-gnu"
+    long_paths: bool | None = True
+    web_ver: str | None = "0.1.0"
+    browser_ver: tuple[str, int] | None = ("firefox", 120)
+    launch_hit: bool = True
     findings: list[DoctorFinding] = field(default_factory=list)
     device: DeviceFacts = field(default_factory=DeviceFacts)
     sim: SimFacts = field(default_factory=SimFacts)
@@ -99,8 +105,8 @@ class FakeProbes:
         return "fake-1.0"
 
     def machine(self) -> str:
-        """Return a fixed arch."""
-        return "x86_64"
+        """Return the fake arch."""
+        return self.mach
 
     def py_version(self) -> tuple[int, int, int]:
         """Return the fake Python version."""
@@ -153,6 +159,26 @@ class FakeProbes:
     def fstype(self, path: str) -> str | None:
         """Return the fake filesystem type."""
         return self.fs
+
+    def build_target(self) -> str | None:
+        """Return the fake sadi_py build target."""
+        return self.target
+
+    def long_paths_enabled(self) -> bool | None:
+        """Return the fake LongPathsEnabled value."""
+        return self.long_paths
+
+    def web_bundle_version(self) -> str | None:
+        """Return the fake bundle version."""
+        return self.web_ver
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Return the fake default browser (family, major)."""
+        return self.browser_ver
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Return whether the fake browser fetched the throwaway page."""
+        return self.launch_hit
 
     def dist_version(self, name: str) -> str | None:
         """Return the fake distribution version."""

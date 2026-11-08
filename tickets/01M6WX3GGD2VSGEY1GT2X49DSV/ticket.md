@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:35:48Z"
+updated = "2026-11-08T06:35:55Z"
 scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md", "python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/**", "docs/lctt/export-csv.md", "python/sadi/labs/lctt/live.py", "python/sadi/labs/lctt/capture.py", "python/sadi/core/point_inputs.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py"]
 
 [[acceptance]]
 text = "PointRow carries elapsed time and sample std dev; round-trip test passes"
-bound = false
+bound = true
 +++
 
 Found while working ~SYDV1C9. The lab reference export has an elapsed-time column and a per-sample voltage standard deviation column that PointRow lacks. Proposal: add both fields (and capture them from live samples), update reader, writer, docs.

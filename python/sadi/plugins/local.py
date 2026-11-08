@@ -7,8 +7,8 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
-from importlib.machinery import ModuleSpec
 from collections.abc import Sequence
+from importlib.machinery import ModuleSpec
 from pathlib import Path
 
 from typani import Err, Ok, Result
@@ -103,10 +103,11 @@ def _rebase(manifest: PluginManifest) -> PluginManifest:
 
 
 class LocalDirSource:
-    """Plugins found in local directories (env, settings, or default plugins/ and private/*/plugin)."""
+    """Plugins found in local dirs (env, settings, or default plugins/ and private/*/plugin)."""
 
     name = "local-dir"
 
+    # frob:ticket 01M6WHAW41PYAKM3VTPTTS9C1J
     def __init__(
         self,
         paths: Sequence[Path] | None = None,
@@ -114,7 +115,7 @@ class LocalDirSource:
         root: Path | None = None,
         env: dict[str, str] | None = None,
     ) -> None:
-        """Pick search paths: explicit `paths`, else env/settings, else the defaults under `root`."""
+        """Pick search paths: explicit `paths`, else env/settings, else defaults under `root`."""
         explicit = (
             tuple(paths)
             if paths is not None

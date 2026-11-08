@@ -43,7 +43,7 @@ target = "01M6W7R3W8RJPVS0VVDG2YNMJB"
 
 [[acceptance]]
 text = "Session create/open/resume, wizard state and transitions, capture/undo/redo/edit point and history endpoints, writes via the WAL"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Handlers map typani errors to problem+json with a what-to-do hint; no business logic in handlers"

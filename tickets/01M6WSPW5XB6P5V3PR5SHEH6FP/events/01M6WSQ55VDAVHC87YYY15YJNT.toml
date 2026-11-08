@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Loading with no libdwf present returns a typed Err with a step-by-step fix hint; import of sadi.bench.ad3 never fails", "Backend calls marshal arguments and out-params correctly and map nonzero DWF status to Err carrying the last error message (verified with an injected fake library)", "Device handle is move-only (typestate): using a closed handle is a type error and a runtime Err"]
+moved = []
+at = "2026-11-08T05:22:23Z"
+actor = "lognd"
+rev = 1

@@ -7,7 +7,7 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:40:29Z"
-updated = "2026-11-08T03:40:57Z"
+updated = "2026-11-08T03:40:58Z"
 scope = ["docs/index.md", "python/tests/test_docs_index.py"]
 
 [[acceptance]]

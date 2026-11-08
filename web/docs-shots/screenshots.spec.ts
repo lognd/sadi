@@ -1,4 +1,4 @@
-// frob:ticket 921XDAW
+// frob:ticket 01M6WVQC0SQR7CMCB3V921XDAW
 // Captures the UI screenshots embedded in docs/user-guide.md. Opt-in: set SADI_SCREENSHOTS=1 (see docs/user-guide-screens.md).
 import { resolve } from "node:path";
 import { expect, test } from "../e2e/fixtures";

@@ -16,6 +16,8 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
 - `web/e2e/guided-run.spec.ts`: Setup to Export; asserts the results panel, a non-empty CSV
   download (F3) and a non-empty PNG figure download.
 - `web/e2e/run-capture.spec.ts`: calibrate/tare/elastic/plastic capture phases (~A7JNFGT).
+- `web/e2e/screenshots.spec.ts`: opt-in (`SADI_SCREENSHOTS=1`, skipped otherwise); regenerates `docs/img/ui/*.png`
+  used by the [user guide](user-guide.md) (~921XDAW).
 - `.github/workflows/e2e.yml`: ubuntu, windows and macos matrix.
 
 ## Running locally

@@ -1,6 +1,6 @@
 """Shared SessionReplayCache: plots/export/curve events equal a full replay, with fallback."""
 
-# frob:ticket ~NQZXN6Q
+# frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
 from __future__ import annotations
 
 import uuid

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:07:30Z"
-updated = "2026-11-08T10:12:20Z"
+updated = "2026-11-08T10:12:25Z"
 scope = ["docs/server/websocket.md", "python/sadi/server/app.py", "python/sadi/server/routes/results.py", "python/sadi/server/ws.py", "python/tests/server/test_ws.py", "changelog.d/01M6XA16Y0GEC333HA645FY2YX.changed.md"]
 
 [[acceptance]]

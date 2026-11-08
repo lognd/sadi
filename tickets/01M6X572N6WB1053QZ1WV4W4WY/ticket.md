@@ -12,7 +12,7 @@ scope = ["crates/sadi-py/src/**", "python/sadi/launcher.py", "python/sadi/core/d
 
 [[acceptance]]
 text = "Given sadi --sim, when two load-changes separate calibration captures, then the points have distinct volts and E is computed"
-bound = false
+bound = true
 +++
 
 found while working ~PX2DPMQ. Under sadi --sim the load program is time-based (clean.json steps at 10 s/310 s) and SimControl (add_weight/remove_weight) is not reachable from Python after open_sim, so all calibration points get identical volts: 'calibration voltages are all equal' (DegenerateX), strain/E omitted, GET /api/export/lctt-csv returns 422 TOO_FEW_POINTS. guided-run.spec.ts fails at the E assertion (results region shows only stress) and would fail at the CSV download. Fix: expose SimControl via the device service and have load-change (or typed mass/height) step the sim so successive points have distinct volts.

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T09:25:33Z"
+digest = "39eb8b54ecef154db35456faa7f1eb79b0241d0992cbc5739a4febd323a8213c"
+exit_code = 0
+head = "1e7c0bb9cda993236768119fa5e0cfff72337cde"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_device.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1010718-0.xml --------------
+============================== 1 passed in 0.33s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_device.py::test_sim_add_weight_changes_volts_and_serial_refuses"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "62bc3ddbdcbb50d4d937f721a688a098bd0df74fffb533dc03089d33c62a1a0f"
+at = "2026-11-08T09:25:33Z"
+actor = "lognd"
+rev = 1

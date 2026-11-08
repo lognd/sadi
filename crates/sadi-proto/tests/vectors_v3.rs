@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 use proptest::prelude::*;
+use proptest::test_runner::TestRunner;
 use sadi_proto::v3::{
     crc16, AckPacket, Command, HostOpcode, InitMode, Packet, V3Error, VendorRange, CRC_CHECK_VALUE,
 };
@@ -139,27 +140,45 @@ fn range() -> impl Strategy<Value = VendorRange> {
     prop_oneof![0u8..=5, 9u8..=12].prop_map(|c| VendorRange::try_from(c).unwrap())
 }
 
-proptest! {
-    // frob:ticket 01M6W7R121020FDM1SK2GGPZ5K
-    // frob:tests crates/sadi-proto/src/v3/command.rs::Command.encode
-    #[test]
-    fn predef_init_round_trips(
-        f in any::<u16>(),
-        mom in any::<bool>(),
-        r in proptest::array::uniform4(range()),
-    ) {
-        let mode = if mom { InitMode::Mom } else { InitMode::Pendulum };
-        let cmd = Command::PredefInit { loop_freq_hz: f, mode, ranges: r };
-        let bytes = cmd.encode();
-        prop_assert_eq!(bytes.len(), HostOpcode::PredefInit.frame_len());
-        prop_assert_eq!(Command::decode(&bytes), Ok(cmd));
-    }
+// frob:ticket 01M6W7R121020FDM1SK2GGPZ5K
+// frob:tests crates/sadi-proto/src/v3/command.rs::Command.encode
+#[test]
+fn predef_init_round_trips() {
+    let strat = (
+        any::<u16>(),
+        any::<bool>(),
+        proptest::array::uniform4(range()),
+    );
+    TestRunner::default()
+        .run(&strat, |(f, mom, r)| {
+            let mode = if mom {
+                InitMode::Mom
+            } else {
+                InitMode::Pendulum
+            };
+            let cmd = Command::PredefInit {
+                loop_freq_hz: f,
+                mode,
+                ranges: r,
+            };
+            let bytes = cmd.encode();
+            prop_assert_eq!(bytes.len(), HostOpcode::PredefInit.frame_len());
+            prop_assert_eq!(Command::decode(&bytes), Ok(cmd));
+            Ok(())
+        })
+        .unwrap();
+}
 
-    // frob:ticket 01M6W7R121020FDM1SK2GGPZ5K
-    // frob:tests crates/sadi-proto/src/v3/packet.rs::Packet.decode
-    #[test]
-    fn decode_never_panics(bytes in proptest::collection::vec(any::<u8>(), 0..64)) {
-        let _ = Packet::decode(&bytes);
-        let _ = Command::decode(&bytes);
-    }
+// frob:ticket 01M6W7R121020FDM1SK2GGPZ5K
+// frob:tests crates/sadi-proto/src/v3/packet.rs::Packet.decode
+#[test]
+fn decode_never_panics() {
+    let strat = proptest::collection::vec(any::<u8>(), 0..64);
+    TestRunner::default()
+        .run(&strat, |bytes| {
+            let _ = Packet::decode(&bytes);
+            let _ = Command::decode(&bytes);
+            Ok(())
+        })
+        .unwrap();
 }

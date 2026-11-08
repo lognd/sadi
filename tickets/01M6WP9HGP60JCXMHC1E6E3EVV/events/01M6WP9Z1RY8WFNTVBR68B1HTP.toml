@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/pyproject.toml", "docs/packaging.md", "docs/index.md"]
+new = ["python/pyproject.toml", "docs/packaging.md", "docs/index.md", "python/tests/test_packaging_extras.py"]
+at = "2026-11-08T04:22:45Z"
+actor = "lognd"
+rev = 1

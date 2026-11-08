@@ -2,12 +2,12 @@
 id = "01M6WX3GGD2VSGEY1GT2X49DSV"
 title = "CSV export: add elapsed-time and per-sample std dev columns"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:33:25Z"
+updated = "2026-11-08T06:33:26Z"
 scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
 
 [[acceptance]]

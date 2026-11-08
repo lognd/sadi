@@ -8,5 +8,5 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:26:57Z"
 updated = "2026-11-08T04:04:30Z"
-scope = ["python/sadi/core/errors.py", "python/sadi/store/writer_thread.py", "python/tests/core/test_models.py"]
+scope = ["python/sadi/core/errors.py", "python/sadi/store/writer_thread.py", "python/tests/core/test_models.py", "docs/core/models.md"]
 +++

@@ -1,0 +1,8 @@
+kind = "create"
+title = "LCTT: end-to-end test of auto E window through LcttLab.analyze and yield_stress pending state"
+type = "task"
+category = "todo"
+priority = "low"
+at = "2026-11-08T07:19:12Z"
+actor = "lognd"
+rev = 1

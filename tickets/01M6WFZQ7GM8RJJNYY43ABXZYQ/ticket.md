@@ -8,9 +8,9 @@ points = 2
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:18Z"
-updated = "2026-11-08T02:57:29Z"
+updated = "2026-11-08T02:58:30Z"
 labels = ["plugins"]
-scope = ["docs/plugins.md", "docs/core/lab-modules.md", "docs/doctor.md", "docs/index.md"]
+scope = ["docs/plugins.md", "docs/core/lab-modules.md", "docs/doctor.md", "docs/index.md", "docs/data-safety.md"]
 
 [[links]]
 kind = "blocked-by"

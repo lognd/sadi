@@ -18,6 +18,7 @@ Status: current
 - [Core models and error taxonomy](core/models.md)
 - [Result formatting](core/formatting.md)
 - [Device service and session phases](core/device.md)
+- [Wizard framework](core/wizard.md)
 - [Job system core](jobs/jobs.md)
 - [Web layout](web-layout.md)
 - [Data-safety design](data-safety.md)

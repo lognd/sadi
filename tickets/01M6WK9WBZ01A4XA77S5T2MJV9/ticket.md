@@ -12,5 +12,5 @@ scope = ["python/sadi/uncertainty/numeric.py", "python/sadi/uncertainty/measured
 
 [[acceptance]]
 text = "Near-zero denominators (1e-300) give a typed Err on numeric and mc paths with no raise and no RuntimeWarning"
-bound = false
+bound = true
 +++

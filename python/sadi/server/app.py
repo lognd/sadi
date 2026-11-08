@@ -10,6 +10,7 @@
 # frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
 # frob:ticket 01M6WTCA1SET2XBYG05J73KJ11
 # frob:ticket 01M6WTSF7KQ3YMJP9C0Z75HVRK
+# frob:ticket 01M6WTCA3WJA26T204SWR6VW70
 
 from __future__ import annotations
 
@@ -27,6 +28,7 @@ from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
+from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.problem import install_problem_handlers
 from sadi.server.routes.results import BudgetSource, DeviceProbe, make_results_router
@@ -158,6 +160,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(
         make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)
     )
+    app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry()))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))

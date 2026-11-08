@@ -1,0 +1,11 @@
+kind = "create"
+title = "LcttLab.export_formats is empty so /api/export lists nothing"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 3
+labels = ["lab"]
+body = "Real lctt lab declares no export formats; add CSV (32-column) and figure-data formats. Blocked on private reference header check ~SYDV1C9 for column names."
+at = "2026-11-08T05:50:23Z"
+actor = "lognd"
+rev = 1

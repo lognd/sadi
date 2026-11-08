@@ -4,9 +4,10 @@ title = "Link docs/server/results.md from docs/index.md and docs/server/api.md"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T05:45:26Z"
+updated = "2026-11-08T05:50:53Z"
 scope = ["docs/index.md,docs/server/api.md"]
 +++
 

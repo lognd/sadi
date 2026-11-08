@@ -1,0 +1,11 @@
+kind = "create"
+title = "Drive StreamHandle.close and SocketLike.close through typed params"
+type = "chore"
+category = "todo"
+priority = "medium"
+points = 1
+scope = ["web/src/typedcalls.test.ts"]
+body = "found while working ~A8N9SB0: two web COV001 remain on main"
+at = "2026-11-08T10:48:45Z"
+actor = "lognd"
+rev = 1

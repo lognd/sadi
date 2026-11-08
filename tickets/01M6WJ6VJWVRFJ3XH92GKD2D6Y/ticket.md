@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:11:09Z"
-updated = "2026-11-08T06:24:12Z"
+updated = "2026-11-08T06:24:25Z"
 scope = ["python/tests/labs/lctt/test_loading.py", "docs/lctt/loading.md"]
 
 [[acceptance]]

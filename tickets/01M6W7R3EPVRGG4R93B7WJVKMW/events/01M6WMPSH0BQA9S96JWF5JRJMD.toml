@@ -1,0 +1,142 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:54:47Z"
+digest = "d908cbfeafc32859589636296ab2c246db378f9874fa29a22012272e655ec3da"
+exit_code = 0
+head = "e034011e3949e6cb24413674a89bfbe433ca9e5a"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/creep/creep.test.tsx > creep figure > one panel per hold on a log x axis with fit, slips and settle band (acceptance 1)
+[plots.creep] building creep figure { holds: 2 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 168, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: 'Creep, strain versus time since load',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'marker:h2-slip0', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 124, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: '',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 1,
+  annotations: 1
+}
+[plots.figure] figure split { panels: 2, plotLeft: 79.28 }
+
+stdout | web/src/plots/creep/creep.test.tsx > creep figure > a hold without a fit says so and draws no fit line
+[plots.creep] building creep figure { holds: 1 }
+
+stdout | web/src/plots/creep/creep.test.tsx > creep golden and component > matches the golden SVG for creeping and slipping holds (acceptance 2)
+[plots.creep] building creep figure { holds: 2 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 168, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: 'Creep, strain versus time since load',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'marker:h2-slip0', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 124, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: '',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 1,
+  annotations: 1
+}
+[plots.figure] figure split { panels: 2, plotLeft: 79.28 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 168, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: 'Creep, strain versus time since load',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 46, series: 1 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.place] box placed { id: 'marker:h2-slip0', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 287.76000000000005, y: 124, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 220,
+  xTicks: 4,
+  yTicks: 4,
+  title: '',
+  xTitle: 'Time since load (s)',
+  xScale: 'log',
+  yScale: 'linear',
+  labels: 1,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 52, series: 1 }
+
+stdout | web/src/plots/creep/creep.test.tsx > creep golden and component > component renders a canvas, or a status when empty
+[plots.creep] building creep figure { holds: 2 }
+
+ \u{2713} web/src/plots/creep/creep.test.tsx (5 tests) 26ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  22:54:47
+   Duration  837ms (transform 227ms, setup 0ms, collect 297ms, tests 26ms, environment 0ms, prepare 200ms)
+
+JSON report written to /tmp/frob-vitest-326074-0.json
+stderr | web/src/plots/creep/creep.test.tsx > creep figure > rejects bad payloads without throwing
+[plots.creep] rejecting creep payload { kind: 'empty' }
+[plots.creep] rejecting creep payload { kind: 'length_mismatch' }
+[plots.creep] rejecting creep payload { kind: 'non_finite' }
+[plots.creep] rejecting creep payload { kind: 'non_positive_time' }
+
+stderr | web/src/plots/creep/creep.test.tsx > creep golden and component > component renders a canvas, or a status when empty
+[plots.creep] rejecting creep payload { kind: 'empty' }
+[plots.creep.view] creep plot unavailable { kind: 'empty' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/creep/creep.test.tsx"
+size = 4300
+status = "measured"
+test_count = 5
+tests_digest = "95bffcf9d95b28864b03a47ac43253f7ccd042075f3182314a8cb4d7bfde2f7d"
+at = "2026-11-08T03:54:47Z"
+actor = "lognd"
+rev = 1

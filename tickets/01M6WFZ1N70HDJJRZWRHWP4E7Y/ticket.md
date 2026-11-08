@@ -8,7 +8,7 @@ points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:52:09Z"
+updated = "2026-11-08T02:52:10Z"
 labels = ["plugins", "creates:python/sadi/labs/lctt/plugin.py", "creates:python/sadi/labs/lctt/sadi_plugin.toml", "creates:python/sadi/plugins/builtin.py", "creates:python/tests/plugins/test_boundary.py", "creates:python/tests/plugins/test_lctt_plugin.py"]
 scope = ["python/sadi/labs/lctt/__init__.py", "python/pyproject.toml", "python/sadi/labs/lctt/plugin.py", "python/sadi/labs/lctt/sadi_plugin.toml", "python/sadi/plugins/builtin.py", "python/tests/plugins/test_boundary.py", "python/tests/plugins/test_lctt_plugin.py"]
 
@@ -30,7 +30,7 @@ bound = true
 
 [[acceptance]]
 text = "No branch in loader/registry mentions lctt"
-bound = false
+bound = true
 +++
 
 Give lctt a manifest (id lctt, version, api_version) and a register() contributing its LabModule; list it in BuiltinSource via sadi.plugins.builtin with no special casing in loader or registry. Boundary test (existing check lives in tests/core/test_lab_registry.py area; new python/tests/plugins/test_boundary.py): parametrized AST scan over every built-in plugin package (and any local plugin dir present) asserting imports are limited to core public API and sadi.plugins public names; additionally forbid sadi.store.* (WAL/store) and sadi.jobs internals from plugins. Keep legacy LabRegistry lookups of lctt working.

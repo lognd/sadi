@@ -2,7 +2,8 @@
 id = "01M6W7R2QFWW5VYSHCVA8Y67RG"
 title = "sadi-py acquisition thread: GIL-released reader with bounded channel"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"

@@ -99,7 +99,9 @@ def ftdi_devices(ctx: Ctx) -> list[tuple[str, str]] | None:
 
 def _usbipd_exe(ctx: Ctx) -> str | None:
     """Return the usbipd executable that resolves (PATH or the Windows System32 path), if any."""
-    return next((p for p in USBIPD_PATHS if ctx.probes.which(p) or ctx.probes.exists(p)), None)
+    return next(
+        (p for p in USBIPD_PATHS if bool(ctx.probes.which(p)) or ctx.probes.exists(p)), None
+    )
 
 
 def _usbipd_major(ctx: Ctx, exe: str) -> int | None:
@@ -146,7 +148,7 @@ def ftdi_sysfs(ctx: Ctx) -> list[tuple[str, str]]:
 def usbipd_ftdi(ctx: Ctx) -> list[tuple[str, str]]:
     """Return (busid, state) for FTDI devices that usbipd.exe lists (WSL only)."""
     exe = _usbipd_exe(ctx)
-    out = _stdout(ctx, [exe, "list"]) if exe else None
+    out = _stdout(ctx, [exe, "list"]) if exe is not None else None
     rows: list[tuple[str, str]] = []
     for line in (out or "").splitlines():
         m = _USBIPD_LINE.match(line.strip())
@@ -319,7 +321,7 @@ def _usb_020_pid(ctx: Ctx, out: Outcome) -> Fix:
 def _driver_link(ctx: Ctx, dev: str) -> str | None:
     """Return the bound driver name of interface 1.0 of a device, if any."""
     target = ctx.probes.readlink(f"{SYSFS_USB}/{dev}/{dev}:1.0/driver")
-    return target.rsplit("/", 1)[-1] if target else None
+    return target.rsplit("/", 1)[-1] if target is not None and target else None
 
 
 @check(

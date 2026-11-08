@@ -166,7 +166,7 @@ def probe_device(port: str | None, stream_seconds: int, with_reset: bool) -> Dev
             garbage = type(exc).__name__ == "CodecFailure"
             facts["query_status"] = "garbage" if garbage else "no-reply"
             facts["stream_detail"] = getattr(exc, "detail", str(exc))
-            return DeviceFacts(**facts)  # type: ignore[arg-type]
+            return DeviceFacts.model_validate(facts)
         facts.update(
             query_status="ok",
             fw_version=f"{info.fw_version:.3f}",
@@ -185,7 +185,7 @@ def probe_device(port: str | None, stream_seconds: int, with_reset: bool) -> Dev
             sess.close()
         except Exception as exc:  # noqa: BLE001 - closing is best effort
             _log.warning("close failed: %s", exc)
-    return DeviceFacts(**facts)  # type: ignore[arg-type]
+    return DeviceFacts.model_validate(facts)
 
 
 def probe_sim() -> SimFacts:

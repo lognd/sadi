@@ -5,12 +5,26 @@ from __future__ import annotations
 
 import re
 
-from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, warn
-from sadi.doctor.schema import Layer, Mutates, Os, Severity
+from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
+from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason
 from sadi.doctor.steps import action, cmd, manual
 
 _MIN_MACOS = 12
 _MIN_WINDOWS = 10
+_PATH_LIMIT = 200
+_SESSION_PATH_RESERVE = 100
+_RESERVED = frozenset(
+    {"CON", "PRN", "AUX", "NUL"}
+    | {f"COM{i}" for i in range(1, 10)}
+    | {f"LPT{i}" for i in range(1, 10)}
+)
+_ARCH_ALIASES = {
+    "x86_64": "x64",
+    "amd64": "x64",
+    "x64": "x64",
+    "arm64": "arm64",
+    "aarch64": "arm64",
+}
 
 
 @check(
@@ -74,6 +88,77 @@ def _plat_010_wsl1(ctx: Ctx, out: Outcome) -> Fix:
                 mutates=Mutates.SYSTEM,
                 changes="Converts the distro's filesystem to WSL 2 format; files are kept.",
                 if_not="Run `wsl --update` and enable the Virtual Machine Platform feature.",
+            ),
+        ),
+    )
+
+
+def _arch(text: str) -> str | None:
+    """Normalise an architecture or target-triple string to x64, arm64 or None."""
+    low = text.lower()
+    for alias, norm in _ARCH_ALIASES.items():
+        if alias in low:
+            return norm
+    return None
+
+
+@check(
+    "PLAT-020",
+    Layer.PLAT,
+    "CPU architecture matches the installed wheel",
+    Severity.BLOCKER,
+    {
+        "arch-mismatch": "The interpreter's architecture differs from the sadi_py build target",
+        "unknown-arch": "The CPU architecture is not x86_64 or arm64",
+    },
+    "platform.machine() vs sadi_py.BUILD_TARGET; macOS Rosetta via sysctl.proc_translated",
+)  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+def plat_020(ctx: Ctx) -> Outcome:
+    """Fail when the native extension was built for another architecture."""
+    machine = ctx.probes.machine()
+    arch = _arch(machine)
+    if arch is None:
+        return fail("unknown-arch", f"Unsupported CPU architecture {machine}", machine=machine)
+    target = ctx.probes.build_target()
+    if target is None:
+        return skip(SkipReason.UNVERIFIED, "sadi_py records no build target", machine=machine)
+    built = _arch(target)
+    if built is not None and built != arch:
+        return fail(
+            "arch-mismatch",
+            f"Python runs as {machine} but sadi_py was built for {target}",
+            machine=machine,
+            target=target,
+        )
+    return ok(f"{machine} matches the sadi_py build", machine=machine, target=target)
+
+
+@remedy("PLAT-020", "arch-mismatch")
+def _plat_020_mismatch(ctx: Ctx, out: Outcome) -> Fix:  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    """Reinstall with a matching interpreter."""
+    return Fix(
+        "Use a Python that matches the installed wheel",
+        (
+            manual(
+                "Install a Python built for this CPU (on Apple silicon use the arm64 build, not "
+                "the Rosetta x86_64 one), then recreate the virtual environment.",
+                '`python -c "import platform; print(platform.machine())"` prints the native arch.',
+                if_not="Install SADI from a wheel built for the architecture Python reports.",
+            ),
+        ),
+    )
+
+
+@remedy("PLAT-020", "unknown-arch")
+def _plat_020_unknown(ctx: Ctx, out: Outcome) -> Fix:  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    """Tell the user SADI ships no wheel for this CPU."""
+    return Fix(
+        "Run SADI on a supported CPU",
+        (
+            manual(
+                "SADI ships wheels for x86_64 and arm64 only; use such a machine.",
+                '`python -c "import platform; print(platform.machine())"` prints x86_64 or arm64.',
+                if_not="Build sadi_py from source for this CPU.",
             ),
         ),
     )
@@ -160,7 +245,7 @@ def plat_050(ctx: Ctx) -> Outcome:
     """Warn when fault injection is armed outside tests."""
     env = ctx.probes.env()
     sadi_vars = sorted(k for k in env if k.startswith("SADI_"))
-    if env.get("SADI_FAILPOINTS"):
+    if bool(env.get("SADI_FAILPOINTS")):
         return warn(
             "failpoints-armed", "SADI_FAILPOINTS is set; faults will be injected", vars=sadi_vars
         )
@@ -183,6 +268,106 @@ def _plat_050_fp(ctx: Ctx, out: Outcome) -> Fix:
                 cmd(ctx.os, line),
                 mutates=Mutates.PROCESS,
                 changes="Unsets SADI_FAILPOINTS for this shell only.",
+            ),
+        ),
+    )
+
+
+def _bad_components(root: str) -> tuple[list[str], list[str]]:
+    """Return (reserved-name components, trailing dot or space components) of a path."""
+    reserved: list[str] = []
+    trailing: list[str] = []
+    for part in re.split(r"[\\/]", root):
+        if part in ("", ".", "..") or re.fullmatch(r"[A-Za-z]:", part):
+            continue
+        if part.split(".", 1)[0].upper() in _RESERVED:
+            reserved.append(part)
+        if part.endswith((".", " ")):
+            trailing.append(part)
+    return reserved, trailing
+
+
+@check(
+    "PLAT-040",
+    Layer.PLAT,
+    "Windows long paths and reserved names",
+    Severity.WARNING,
+    {
+        "long-paths-off": "Long paths are disabled and the data root leaves little room",
+        "reserved-name-in-path": "A data root component is a reserved device name",
+        "trailing-dot-or-space": "A data root component ends with a dot or a space",
+    },
+    "HKLM LongPathsEnabled; data root length; components vs CON PRN AUX NUL COM1-9 LPT1-9",
+    applies_to=frozenset({Os.WINDOWS}),
+)  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+def plat_040(ctx: Ctx) -> Outcome:
+    """Warn about Windows path rules that break session files under the data root."""
+    root = ctx.data_root or ctx.probes.user_data_dir()
+    reserved, trailing = _bad_components(root)
+    if reserved:
+        return warn("reserved-name-in-path", f"{root} contains {reserved[0]}", root=root)
+    if trailing:
+        return warn(
+            "trailing-dot-or-space", f"{root} has a component ending in '.' or ' '", root=root
+        )
+    longest = len(root) + _SESSION_PATH_RESERVE
+    if longest > _PATH_LIMIT and ctx.probes.long_paths_enabled() is False:
+        return warn(
+            "long-paths-off",
+            f"Session paths under {root} may pass {_PATH_LIMIT} characters",
+            root=root,
+            estimated_longest=longest,
+        )
+    return ok("Data root path is portable on Windows", root=root)
+
+
+@remedy("PLAT-040", "long-paths-off")
+def _plat_040_long(ctx: Ctx, out: Outcome) -> Fix:  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    """Enable long paths or move the root."""
+    return Fix(
+        "Enable Windows long paths",
+        (
+            action(
+                "In an elevated PowerShell, enable long paths, then sign out and in.",
+                "No output.",
+                cmd(
+                    Os.WINDOWS,
+                    "Set-ItemProperty 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem' "
+                    "LongPathsEnabled 1",
+                ),
+                mutates=Mutates.SYSTEM,
+                changes="Sets the LongPathsEnabled registry value to 1.",
+                if_not="Or choose a shorter data root with --data-root.",
+            ),
+        ),
+    )
+
+
+@remedy("PLAT-040", "reserved-name-in-path")
+def _plat_040_reserved(ctx: Ctx, out: Outcome) -> Fix:  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    """Move the root off reserved names."""
+    return Fix(
+        "Choose a data root without reserved names",
+        (
+            manual(
+                "Pick a data root whose folders are not CON, PRN, AUX, NUL, COM1-9 or LPT1-9.",
+                "The new path contains none of those names.",
+                if_not="Use a plain path such as C:\\SADI-data.",
+            ),
+        ),
+    )
+
+
+@remedy("PLAT-040", "trailing-dot-or-space")
+def _plat_040_trailing(ctx: Ctx, out: Outcome) -> Fix:  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    """Rename the folder without trailing dot or space."""
+    return Fix(
+        "Rename folders that end with a dot or space",
+        (
+            manual(
+                "Rename or choose a data root whose folders do not end with '.' or a space.",
+                "No component of the path ends with '.' or a space.",
+                if_not="Use a plain path such as C:\\SADI-data.",
             ),
         ),
     )

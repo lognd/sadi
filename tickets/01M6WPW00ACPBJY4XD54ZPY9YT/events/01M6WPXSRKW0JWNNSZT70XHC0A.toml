@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "wont-fix"
+reason = "Already done by ~973FKGT: DoctorError and RefitError are typani ErrorSets (python/tests/doctor/test_error_families.py); the remaining doctor StrEnums (Layer, Severity, Status, Os, Shell, Mutates, StepKind, SkipReason) are label/value enums and server has none."
+at = "2026-11-08T04:33:35Z"
+actor = "lognd"
+rev = 1

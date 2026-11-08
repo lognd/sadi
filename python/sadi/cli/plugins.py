@@ -77,7 +77,7 @@ def _discover(settings: PluginSettings, sources: SourceFactory | None) -> Plugin
     disabled: frozenset[str] = frozenset()
     if isinstance(loaded, Ok):
         disabled = loaded.value
-    else:
+    elif isinstance(loaded, Err):
         _err(f"warning: {_state_failure(loaded).message}; treating all plugins as enabled")
     return PluginRegistry.discover((sources or default_sources)(settings), disabled)
 
@@ -141,8 +141,8 @@ def cmd_info(
 ) -> Result[int, CliFailure]:
     """Print manifest, source, state, errors and doctor findings (with fix steps) of one plugin."""
     found = _lookup(registry, plugin_id)
-    if isinstance(found, Err):
-        return Err(found.error)
+    if not isinstance(found, Ok):
+        return Err(found.unwrap_err())
     rec = found.value
     findings = _findings_for(registry, plugin_id)
     if as_json:
@@ -230,11 +230,12 @@ def _dispatch(
         result = cmd_info(registry, args.id, args.json)
     else:
         result = cmd_set(registry, settings, args.id, args.command == "enable")
-    if isinstance(result, Err):
-        _log.error("plugins %s failed: %s", args.command, result.error.message)
-        _err(result.error.message)
-        return result.error.code
-    return result.value
+    if isinstance(result, Ok):
+        return result.value
+    failure = result.unwrap_err()
+    _log.error("plugins %s failed: %s", args.command, failure.message)
+    _err(failure.message)
+    return failure.code
 
 
 if __name__ == "__main__":

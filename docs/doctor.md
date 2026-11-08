@@ -898,8 +898,17 @@ Implementation status and deviations from this spec (~V3H5CGF):
   no unified `sadi` launcher yet, so `sadi doctor` is not registered.
 - Remedies are colocated with their checks in `checks/<layer>.py` (via
   `@remedy(id, mode)`) rather than a separate `remediations/` package.
-- The runner is sequential (no thread pool) and has no per-check or whole-run
-  timeout budget; probe timeouts live in the subprocess probes only.
+- The runner (`runner.py`, ~ZVJ1X4E) schedules checks on up to 4 daemon worker
+  threads, each only after its in-selection `depends_on` checks finished, and
+  returns results in catalog order. `--check-timeout` (default 30 s) and
+  `--timeout` (default 120 s, 900 s with `--deep`) are CLI/`Budget` values, not
+  `RunOptions` fields (so the report schema is unchanged). A check over its
+  budget, or unfinished when the run budget ends, is `skip/timeout` (mode
+  `timeout`, UNVERIFIED) with a "re-run this check" remedy, not `fail`; a
+  dependent of a timed-out check is `skip/prerequisite-failed`. A hung thread
+  cannot be killed: it is abandoned (daemon) and its late result dropped.
+  `RealProbes` caches are guarded by one lock each so parallel checks share a
+  single survey per run.
 - Implemented (68): DEV-010..050, SIM-010/020, WRK-010/020, SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040/050/060, EXT-010..050, WEB-010,
   NET-010/020/030/040, DATA-010/020/030/040/050/060/070/080/090, USB-010/020/030/040/050/060/070/080, CLK-010/020/030/040,
   RES-010/020/030/040, BRW-010, PLG-010. USB-020..050 run on all four OSes
@@ -911,7 +920,13 @@ Implementation status and deviations from this spec (~V3H5CGF):
   USB-010 is a warning check with no dependents (USB-020 reports its own
   skip); USB-030 on macOS/Windows only tests for the serial node/COM port
   (no kext or driver-error-code modes). The Channel A/B probe is reported as unverified (decision D3).
-- Deferred: BRW-020/030; PLAT-020/040; WEB-020; the `fix` subcommand; `--bundle`.
+- Deferred: the `fix` subcommand; `--bundle`.
+- BRW-020, BRW-030, PLAT-020, PLAT-040 and WEB-020 are implemented. Deviations:
+  - `sadi_py.BUILD_TARGET` and `sadi/web/dist/version.json` do not exist yet, so PLAT-020 and WEB-020 skip as UNVERIFIED until the build emits them.
+  - PLAT-040 estimates the longest session path as the data root length plus a fixed 100 characters, against a 200 character limit.
+  - BRW-030 is opt-in through `--open-browser` (RunOptions.open_browser); it opens a browser at a throwaway loopback listener and waits 10 s.
+  - BRW-020 minimums: Chromium 110, Firefox 115, Safari 16; an unidentifiable browser is reported as warn mode `unknown-browser`.
+  - DATA-020 now probes Windows (GetVolumeInformationW) and macOS (`mount`) instead of skipping.
   Each is tracked as a ticket.
 - DATA-040 writes one probe file under `<root>/doctor/` and needs
   `--allow-probe-write`; the writing probes live only in `volprobe.py`, which
@@ -952,6 +967,7 @@ Implementation status and deviations from this spec (~V3H5CGF):
   The spawned worker must not import `sadi.store`, so `sessions.py`, `plg.py`
   and `probes.py` import store and plugin modules lazily.
 - With `--check`, unselected `depends_on` checks are ignored rather than run.
+- Section 9.2's "small thread pool (4)" now applies to all checks, not only NET, CLK, RES, BRW.
 
 ### 9.2 Order, dependencies, skipping
 

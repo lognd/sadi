@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:35:55Z"
+digest = "f7f365029cbec5585524ba0e6c9f739f4b36face7f1f9de273932a7f4ef308dd"
+exit_code = 0
+head = "c03a5d576677c66c2b4b0e552e1c8e054e149a29"
+inline = """
+All checks passed!
+"""
+passed = true
+provider = "command"
+ref = "uv run --frozen --project python ty check --project python python/sadi/doctor python/tests/doctor"
+size = 19
+status = "measured"
+at = "2026-11-08T04:35:55Z"
+actor = "lognd"
+rev = 1

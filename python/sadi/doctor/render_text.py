@@ -24,21 +24,21 @@ def _step_lines(n: int, step: Step) -> list[str]:
     pad = "      "
     lines = _wrap(step.text, pad, f"  {n}. ")
     for c in step.commands:
-        ctx = f"  ({c.context})" if c.context else ""
+        ctx = f"  ({c.context})" if c.context is not None and c.context else ""
         lines.append(f"{pad}{_PROMPT[c.shell]} {c.line}{ctx}")
     lines += _wrap(f"Expect: {step.expect}", pad)
-    if step.changes:
+    if step.changes is not None and step.changes:
         lines += _wrap(f"Changes: {step.changes}", pad)
-    if step.if_not:
+    if step.if_not is not None and step.if_not:
         lines += _wrap(f"If not: {step.if_not}", pad)
-    if step.alt:
+    if step.alt is not None and step.alt:
         lines += _wrap(f"Or: {step.alt}", pad)
     return lines
 
 
 def render_result(r: CheckResult) -> list[str]:
     """Render one check result; problems include the full remediation."""
-    lines = [f"[{_TAG[r.status]}] {r.id}  {r.headline}"]
+    lines: list[str] = [f"[{_TAG[r.status]}] {r.id}  {r.headline}"]
     if r.remediation:
         lines.append(f"  Fix: {r.remediation.summary} ({r.remediation.os.value})")
         for i, step in enumerate(r.remediation.steps, 1):
@@ -66,7 +66,7 @@ def render(report: DoctorReport, *, verbose: bool = False) -> str:
         f"{c.get(Status.FAIL, 0)} failed, {c.get(Status.SKIP, 0)} skipped. "
         f"Verdict: {report.summary.verdict}.",
     ]
-    if report.summary.first_action:
+    if report.summary.first_action is not None and report.summary.first_action:
         out += _wrap(f"Start with: {report.summary.first_action}", "  ")
     text = "\n".join(out) + "\n"
     return text.encode("ascii", "replace").decode("ascii")

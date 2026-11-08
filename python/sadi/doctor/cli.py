@@ -9,7 +9,9 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from sadi.doctor import exit_code, run
+from typani import Ok
+
+from sadi.doctor import Budget, exit_code, run
 from sadi.doctor.bundle import capture_log, write_bundle
 from sadi.doctor.fix import fix
 from sadi.doctor.probes import RealProbes
@@ -71,6 +73,23 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="reset the device and time the boot (enables DEV-050)",
     )
+    p.add_argument(
+        "--open-browser",
+        action="store_true",
+        help="open a browser at a throwaway local page (enables BRW-030)",
+    )  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    p.add_argument(
+        "--timeout",
+        type=float,
+        metavar="SECONDS",
+        help="whole-run budget (default 120, 900 with --deep); unfinished checks are unverified",
+    )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
+    p.add_argument(
+        "--check-timeout",
+        type=float,
+        metavar="SECONDS",
+        help="per-check budget (default 30); a slower check is unverified",
+    )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
     p.add_argument("--bundle", metavar="PATH", help="also write a redacted diagnostics zip to PATH")
     p.add_argument(
         "--apply", action="store_true", help="`fix`: run fixable commands (default: dry run)"
@@ -137,7 +156,7 @@ def _main(argv: Sequence[str] | None) -> int:
     try:
         args = _parser().parse_args(argv)
     except SystemExit as e:
-        return EXIT_USAGE if e.code else 0
+        return EXIT_USAGE if bool(e.code) else 0
     logging.getLogger("sadi").setLevel(logging.WARNING)
     if args.command == "list":
         return _list()
@@ -165,6 +184,17 @@ def _options(args: argparse.Namespace) -> RunOptions:
         port=args.port,
         stream_seconds=args.stream_seconds,
         with_reset=args.with_reset,
+        open_browser=args.open_browser,  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    )
+
+
+def _budget(args: argparse.Namespace, options: RunOptions) -> Budget:
+    """Build the run Budget from --timeout/--check-timeout over the defaults."""
+    base = Budget.for_deep(options.deep)
+    return Budget(
+        check_timeout_s=args.check_timeout or base.check_timeout_s,
+        run_timeout_s=args.timeout or base.run_timeout_s,
+        workers=base.workers,
     )
 
 
@@ -187,8 +217,8 @@ def _fix(args: argparse.Namespace, options: RunOptions) -> int:
         _log.exception("doctor fix crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
         return EXIT_CRASH
-    if got.is_err:
-        _err(f"{got.err.value}\n")
+    if not isinstance(got, Ok):
+        _err(f"{got.unwrap_err().value}\n")
         return EXIT_USAGE
     return got.unwrap()
 
@@ -197,20 +227,25 @@ def _run(args: argparse.Namespace, options: RunOptions) -> int:
     """Run the checks, print the report and optionally write the bundle."""
     try:
         with capture_log() as captured:
-            result = run(options)
+            result = run(
+                options, budget=_budget(args, options)
+            )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
     except Exception:  # noqa: BLE001 - last resort: tell the user, exit 70
         _log.exception("doctor crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
         return EXIT_CRASH
-    if result.is_err:
-        _err(f"{result.err.value}\n")
+    if not isinstance(result, Ok):
+        _err(f"{result.unwrap_err().value}\n")
         return EXIT_USAGE
     report = result.unwrap()
     if args.bundle:
-        wrote = write_bundle(report, captured.lines, Path(args.bundle), Path(report.host.data_root))
-        if wrote.is_err:
-            _err(f"{wrote.err.value}\n")
-            return EXIT_CRASH if wrote.err is DoctorError.BundleWriteFailed else EXIT_USAGE
+        data_root = report.host.data_root
+        assert data_root is not None, "run() always resolves the data root"
+        wrote = write_bundle(report, captured.lines, Path(args.bundle), Path(data_root))
+        if not isinstance(wrote, Ok):
+            wrote_err = wrote.unwrap_err()
+            _err(f"{wrote_err.value}\n")
+            return EXIT_CRASH if wrote_err is DoctorError.BundleWriteFailed else EXIT_USAGE
         _err(f"bundle written: {wrote.unwrap()}\n")
     _out(
         report.model_dump_json(indent=2) + "\n"

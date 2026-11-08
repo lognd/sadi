@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T04:32:42Z"
+digest = "059be119b35674aa25faf260aa9c7042d31ebcae37da3e65fe4af32fbce1add3"
+exit_code = 0
+head = "5b71f68fe90a473ebf743886fd2b97bf6cf95431"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_runner.py .                                     [100%]PLAT-010 pass (None) in 56 ms
+
+
+-------------- generated xml file: /tmp/frob-pytest-428398-0.xml ---------------
+============================== 1 passed in 0.39s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_runner.py::test_timed_out_check_is_unverified_with_remedy"
+size = 550
+status = "measured"
+test_count = 1
+tests_digest = "bf4b1c93a56bf2da1898664c886622bdaa3c8d712359d01e5de7e58d752692e7"
+at = "2026-11-08T04:32:42Z"
+actor = "lognd"
+rev = 1

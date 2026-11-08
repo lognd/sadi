@@ -10,7 +10,7 @@ import os
 import re
 import uuid
 import zipfile
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -46,7 +46,7 @@ class LogCapture(logging.Handler):
 
 
 @contextmanager
-def capture_log() -> Iterator[LogCapture]:
+def capture_log() -> Generator[LogCapture]:
     """Attach a LogCapture to the `sadi` logger for the duration of the block."""
     handler = LogCapture()
     logger = logging.getLogger("sadi")
@@ -127,13 +127,16 @@ def write_bundle(
         return Err(DoctorError.BundleInsideDataRoot)
     tmp = dest.with_name(f"{dest.name}.tmp-{uuid.uuid4().hex[:8]}")
     written = _write_tmp(tmp, _payload(report, log_lines))
-    if written.is_ok:
+    if isinstance(written, Ok):
         renamed = rename_noreplace(tmp, dest)
         if renamed.is_ok:
             fsync_dir(dest.parent)
             _log.info("bundle written: %s", dest)
             return Ok(dest)
         _log.error("bundle rename failed: %s", renamed.unwrap_err())
-        written = Err(DoctorError.BundleExists if dest.exists() else DoctorError.BundleWriteFailed)
+        tmp.unlink(missing_ok=True)
+        return Err[Path, DoctorError](
+            DoctorError.BundleExists if dest.exists() else DoctorError.BundleWriteFailed
+        )
     tmp.unlink(missing_ok=True)
-    return written  # type: ignore[return-value]
+    return Err[Path, DoctorError](written.unwrap_err())

@@ -84,13 +84,13 @@ def refit(
 ) -> Result[ModulusFitView, ModulusError | RefitError]:
     """Refit E over points[first..last] with the existing analysis code (pure, no writes)."""
     res = fit_modulus(points, first, last)
-    if isinstance(res, Err):
-        return Err(res.error)
+    if not isinstance(res, Ok):
+        return Err(res.unwrap_err())
     fit = res.value
     win = points[first : last + 1]
     cal = fit_calibration([p.strain.value for p in win], [p.stress.value for p in win])
-    if isinstance(cal, Err):
-        _log.error("refit: intercept fit failed: %s", cal.error.name)
+    if not isinstance(cal, Ok):
+        _log.error("refit: intercept fit failed: %s", cal.unwrap_err().name)
         return Err(RefitError.Intercept)
     return Ok(to_view(fit, cal.value.intercept.value))
 
@@ -122,11 +122,11 @@ def make_stress_strain_router(source: CurveSource | None = None) -> APIRouter:
         if source is None:
             return _fail(RefitError.NoData)
         loaded = await run_in_threadpool(source)
-        if isinstance(loaded, Err):
-            return _fail(loaded.error)
+        if not isinstance(loaded, Ok):
+            return _fail(loaded.unwrap_err())
         res = await run_in_threadpool(refit, loaded.value, req.first, req.last)
-        if isinstance(res, Err):
-            return _fail(res.error)
+        if not isinstance(res, Ok):
+            return _fail(res.unwrap_err())
         return res.value
 
     return router

@@ -151,7 +151,7 @@ class Step(BaseModel):
     @model_validator(mode="after")
     def _changes_required(self) -> Self:
         """A mutating step must say what it changes; a data step never has a command."""
-        if self.mutates is not Mutates.NONE and not self.changes:
+        if self.mutates is not Mutates.NONE and not bool(self.changes):
             raise ValueError("mutating step needs `changes`")
         if self.mutates is Mutates.DATA and self.commands:
             raise ValueError("data steps are app actions, never commands")
@@ -282,6 +282,7 @@ class RunOptions(BaseModel):
     port: str | None = None
     api_port: int = 8000
     running: bool = False
+    open_browser: bool = False  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     data_root: str | None = None
 
 

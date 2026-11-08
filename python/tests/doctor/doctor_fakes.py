@@ -11,6 +11,7 @@ from typani import Err, Ok, Result
 
 from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
+from sadi.doctor.probes import BindState
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
 from sadi.doctor.volprobe import FlushFacts, LockState
@@ -61,7 +62,7 @@ class FakeProbes:
     )
     requires: dict[str, str] = field(default_factory=lambda: {"sadi": ">=3.11"})
     import_errors: dict[str, str] = field(default_factory=dict)
-    bind: str = "free"
+    bind: BindState = "free"
     loopback: bool = True
     localhost: list[str] = field(default_factory=lambda: ["127.0.0.1", "::1"])
     bundle: tuple[bool, int] = (True, 2048)
@@ -85,6 +86,12 @@ class FakeProbes:
     spills: list[str] = field(default_factory=list)
     sessions: list[SessionFacts] = field(default_factory=list)
     browser: bool = True
+    mach: str = "x86_64"
+    target: str | None = "x86_64-unknown-linux-gnu"
+    long_paths: bool | None = True
+    web_ver: str | None = "0.1.0"
+    browser_ver: tuple[str, int] | None = ("firefox", 120)
+    launch_hit: bool = True
     findings: list[DoctorFinding] = field(default_factory=list)
     device: DeviceFacts = field(default_factory=DeviceFacts)
     sim: SimFacts = field(default_factory=SimFacts)
@@ -99,8 +106,8 @@ class FakeProbes:
         return "fake-1.0"
 
     def machine(self) -> str:
-        """Return a fixed arch."""
-        return "x86_64"
+        """Return the fake arch."""
+        return self.mach
 
     def py_version(self) -> tuple[int, int, int]:
         """Return the fake Python version."""
@@ -154,6 +161,26 @@ class FakeProbes:
         """Return the fake filesystem type."""
         return self.fs
 
+    def build_target(self) -> str | None:
+        """Return the fake sadi_py build target."""
+        return self.target
+
+    def long_paths_enabled(self) -> bool | None:
+        """Return the fake LongPathsEnabled value."""
+        return self.long_paths
+
+    def web_bundle_version(self) -> str | None:
+        """Return the fake bundle version."""
+        return self.web_ver
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Return the fake default browser (family, major)."""
+        return self.browser_ver
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Return whether the fake browser fetched the throwaway page."""
+        return self.launch_hit
+
     def dist_version(self, name: str) -> str | None:
         """Return the fake distribution version."""
         return self.dists.get(name)
@@ -174,7 +201,7 @@ class FakeProbes:
         """Return the fake import error text, or None when it imports."""
         return self.import_errors.get(module)
 
-    def bind_state(self, port: int) -> str:
+    def bind_state(self, port: int) -> BindState:
         """Return the fake bind state."""
         return self.bind
 

@@ -61,7 +61,7 @@ def _resolve_fn(path: str) -> Result[Callable[..., object], TaskError]:
 
 def partial_of(est: McEstimate, target: int) -> dict[str, object]:
     """Serialise an estimate plus its progress and 95% half-width of the mean for the stream."""
-    out: dict[str, object] = est.model_dump()
+    out: dict[str, object] = dict(est.model_dump())
     out["target"] = target
     out["halfwidth_mean"] = _Z95 * est.se_mean
     return out

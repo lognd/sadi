@@ -14,10 +14,11 @@ ROOT = "/home/u/.local/share/sadi"
 
 def _fixables(os: Os) -> list[tuple[str, str, Mutates, str]]:
     """Return (check, mode, mutates, line) for every fixable command in the catalog on this OS."""
-    found = []
+    found: list[tuple[str, str, Mutates, str]] = []
     for spec, _ in all_checks():
         for mode in spec.modes:
             fn = get_remedy(spec.id, mode)
+            assert fn is not None
             ctx = Ctx(probes=healthy(), options=RunOptions(), os=os, data_root=ROOT)
             for s in fn(ctx, Outcome(Status.FAIL, "x", mode=mode, facts={"busid": "2-3"})).steps:
                 found += [(spec.id, mode, s.mutates, c.line) for c in s.commands if c.fixable]
@@ -34,6 +35,7 @@ def test_fixable_commands_are_only_safe_classes_and_avoid_data_root() -> None:
     for spec, _ in all_checks():
         for mode in spec.modes:
             fn = get_remedy(spec.id, mode)
+            assert fn is not None
             ctx = Ctx(probes=healthy(), options=RunOptions(), os=Os.WSL, data_root=ROOT)
             for s in fn(ctx, Outcome(Status.FAIL, "x", mode=mode)).steps:
                 assert s.kind is not StepKind.VERIFY or not any(c.fixable for c in s.commands)

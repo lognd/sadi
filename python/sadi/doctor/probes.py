@@ -15,6 +15,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import threading
 import time
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -23,6 +24,7 @@ from typing import TYPE_CHECKING, Literal, Protocol
 
 from typani import Err, Ok, Result
 
+from sadi.doctor import hostprobe
 from sadi.doctor.devprobe import DeviceFacts, SimFacts, probe_device, probe_sim
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts, survey_sessions
@@ -218,6 +220,26 @@ class Probes(Protocol):
         """Return what spawning a worker and orphaning a watchdog child observed."""
         ...
 
+    def build_target(self) -> str | None:
+        """Return the target tag baked into sadi_py at build, or None when it has none."""
+        ...
+
+    def long_paths_enabled(self) -> bool | None:
+        """Return the Windows LongPathsEnabled registry flag, None when not Windows."""
+        ...
+
+    def web_bundle_version(self) -> str | None:
+        """Return the SADI version recorded in dist/version.json, None when absent."""
+        ...
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Return (family, major version) of the default browser, None when unknown."""
+        ...
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Open the browser at a throwaway local listener; True when it fetched the page."""
+        ...
+
     def browser_available(self) -> bool:
         """Return True when a browser controller can be resolved."""
         ...
@@ -268,32 +290,41 @@ class RealProbes:
         self._devices: dict[tuple[str | None, int, bool], DeviceFacts] = {}
         self._sim: SimFacts | None = None
         self._workers: WorkerFacts | None = None
+        # one lock per cache: checks run in parallel, each survey must run once per run
+        self._lock_sessions = threading.Lock()
+        self._lock_devices = threading.Lock()
+        self._lock_sim = threading.Lock()
+        self._lock_workers = threading.Lock()
 
     def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
         """Survey sessions read-only via the store APIs, once per (root, deep) per run."""
         key = (data_root, deep)
-        if key not in self._sessions:
-            self._sessions[key] = survey_sessions(data_root, deep)
-        return self._sessions[key]
+        with self._lock_sessions:
+            if key not in self._sessions:
+                self._sessions[key] = survey_sessions(data_root, deep)
+            return self._sessions[key]
 
     def device_facts(self, port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
         """Probe the board once per (port, stream, reset) per run."""
         key = (port, stream_seconds, with_reset)
-        if key not in self._devices:
-            self._devices[key] = probe_device(port, stream_seconds, with_reset)
-        return self._devices[key]
+        with self._lock_devices:
+            if key not in self._devices:
+                self._devices[key] = probe_device(port, stream_seconds, with_reset)
+            return self._devices[key]
 
     def sim_facts(self) -> SimFacts:
         """Probe the simulator once per run."""
-        if self._sim is None:
-            self._sim = probe_sim()
-        return self._sim
+        with self._lock_sim:
+            if self._sim is None:
+                self._sim = probe_sim()
+            return self._sim
 
     def worker_facts(self) -> WorkerFacts:
         """Spawn the worker probes once per run."""
-        if self._workers is None:
-            self._workers = probe_workers()
-        return self._workers
+        with self._lock_workers:
+            if self._workers is None:
+                self._workers = probe_workers()
+            return self._workers
 
     def os_kind(self) -> Os:
         """Detect the OS; on Linux WSL_DISTRO_NAME or 'microsoft' in /proc/version means WSL."""
@@ -305,7 +336,7 @@ class RealProbes:
         if "WSL_DISTRO_NAME" in os.environ:
             return Os.WSL
         text = self.read_text("/proc/version")
-        return Os.WSL if text and "microsoft" in text.lower() else Os.LINUX
+        return Os.WSL if text is not None and "microsoft" in text.lower() else Os.LINUX
 
     def os_version(self) -> str:
         """Return platform.platform()."""
@@ -409,7 +440,15 @@ class RealProbes:
             return None
 
     def fstype(self, path: str) -> str | None:
-        """Return the longest-prefix mount's fstype from /proc/mounts (Linux/WSL), else None."""
+        """Return the longest-prefix mount's fstype from /proc/mounts (Linux/WSL), `mount` (macOS) or Win32."""
+        kind = self.os_kind()
+        if kind is Os.WINDOWS:
+            return hostprobe.windows_fstype(path)
+        if kind is Os.MACOS:
+            res = self.run(["mount"])
+            if not isinstance(res, Ok) or res.value.exit_code != 0:
+                return None
+            return hostprobe.mount_fstype(res.value.stdout_tail, str(Path(path).resolve()))
         text = self.read_text("/proc/mounts")
         if text is None:
             return None
@@ -436,7 +475,7 @@ class RealProbes:
     def requires_python(self, name: str) -> str | None:
         """Return the Requires-Python metadata of a distribution, or None."""
         try:
-            return importlib.metadata.metadata(name).get("Requires-Python")
+            return importlib.metadata.metadata(name)["Requires-Python"]
         except importlib.metadata.PackageNotFoundError:
             return None
 
@@ -550,7 +589,8 @@ class RealProbes:
         try:
             import psutil
 
-            battery = psutil.sensors_battery()
+            sensors = getattr(psutil, "sensors_battery", None)
+            battery = sensors() if sensors is not None else None
         except Exception:  # noqa: BLE001 - psutil is optional evidence
             return None
         if battery is None or battery.power_plugged is None:
@@ -594,6 +634,53 @@ class RealProbes:
         from sadi.store.spill import discover_spills
 
         return [str(p) for p in discover_spills(Path(data_root))]
+
+    def build_target(self) -> str | None:
+        """Return sadi_py.BUILD_TARGET when exposed."""
+        return hostprobe.build_target()
+
+    def long_paths_enabled(self) -> bool | None:
+        """Read LongPathsEnabled from the Windows registry."""
+        return hostprobe.windows_long_paths()
+
+    def web_bundle_version(self) -> str | None:
+        """Read dist/version.json next to the package."""
+        return hostprobe.web_bundle_version()
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Resolve the default browser and read its major version per OS."""
+        kind = self.os_kind()
+        if kind is Os.WINDOWS:
+            return hostprobe.windows_default_browser()
+        name = self._browser_name()
+        family = hostprobe.family_of(name) if name is not None and name else None
+        if name is None or not name or family is None:
+            return None
+        if kind is Os.MACOS and family == "safari":
+            plist = "/Applications/Safari.app/Contents/Info"
+            res = self.run(["defaults", "read", plist, "CFBundleShortVersionString"])
+        else:
+            exe = self.which(name)
+            if exe is None:
+                return None
+            res = self.run([exe, "--version"])
+        if not isinstance(res, Ok) or res.value.exit_code != 0:
+            return None
+        major = hostprobe.major_version(res.value.stdout_tail)
+        return (family, major) if major is not None else None
+
+    def _browser_name(self) -> str | None:
+        """Return the executable name of the controller webbrowser would use."""
+        import webbrowser
+
+        try:
+            return Path(getattr(webbrowser.get(), "name", "") or "").name or None
+        except webbrowser.Error:
+            return None
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Run the launch dry run against a throwaway loopback listener."""
+        return hostprobe.launch_hit(timeout)
 
     def browser_available(self) -> bool:
         """Return True when webbrowser resolves a controller."""

@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:32:58Z"
+digest = "f7f365029cbec5585524ba0e6c9f739f4b36face7f1f9de273932a7f4ef308dd"
+exit_code = 0
+head = "bc91ddbf13d71021b3b899e3055440254b6490db"
+inline = """
+All checks passed!
+"""
+passed = true
+provider = "command"
+ref = "uv run --frozen --directory python ty check tests/api tests/cli tests/core tests/jobs tests/labs tests/plugins tests/server tests/store tests/uncertainty"
+size = 19
+status = "measured"
+at = "2026-11-08T04:32:58Z"
+actor = "lognd"
+rev = 1

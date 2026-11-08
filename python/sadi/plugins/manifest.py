@@ -113,7 +113,7 @@ def parse_manifest(data: dict[str, object]) -> Result[PluginManifest, PluginMani
     except ValidationError as exc:
         kind, text = _describe(exc)
         _log.warning("manifest invalid (%s): %s", kind.name, text)
-        return Err(kind).note(text)
+        return Err[PluginManifest, PluginManifestError](kind).note(text)
     _log.debug("manifest ok: %s %s", manifest.id, manifest.version)
     return Ok(manifest)
 
@@ -124,12 +124,16 @@ def load_manifest_toml(path: Path) -> Result[PluginManifest, PluginManifestError
         raw = path.read_bytes()
     except OSError as exc:
         _log.warning("manifest unreadable %s: %s", path, exc)
-        return Err(PluginManifestError.Unreadable).note(f"{path}: {exc}")
+        return Err[PluginManifest, PluginManifestError](PluginManifestError.Unreadable).note(
+            f"{path}: {exc}"
+        )
     try:
         data = tomllib.loads(raw.decode("utf-8"))
     except (tomllib.TOMLDecodeError, UnicodeDecodeError) as exc:
         _log.warning("manifest not toml %s: %s", path, exc)
-        return Err(PluginManifestError.BadToml).note(f"{path}: {exc}")
+        return Err[PluginManifest, PluginManifestError](PluginManifestError.BadToml).note(
+            f"{path}: {exc}"
+        )
     _log.info("loading manifest %s", path)
     return parse_manifest(data).note(f"while loading {path}")
 
@@ -144,4 +148,4 @@ def check_api_compat(manifest: PluginManifest) -> Result[None, PluginApiVersionE
         f"'{manifest.api_version}' but this SADI provides {PLUGIN_API_VERSION}"
     )
     _log.warning(msg)
-    return Err(PluginApiVersionError.Incompatible).note(msg)
+    return Err[None, PluginApiVersionError](PluginApiVersionError.Incompatible).note(msg)

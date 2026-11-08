@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["ty check reports zero diagnostics for python/tests excluding tests/doctor", "python/tests suite still passes"]
+moved = []
+at = "2026-11-08T04:32:06Z"
+actor = "lognd"
+rev = 1

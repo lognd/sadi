@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from typani import Err, ErrorSet, Ok, Result
 
 from sadi.logging_setup import get_logger
-from sadi.uncertainty import Measured, Provenance, UncertainError, UncertaintyError, uncertain
+from sadi.uncertainty import Measured, Provenance, UncertainError, uncertain
 
 _log = get_logger(__name__)
 
@@ -210,13 +210,13 @@ def compute_loading(
     if l0_m is None:
         made = _make(opts.gauge_length, 0.0, _METRE, "l0")
         if isinstance(made, Err):
-            return made
+            return Err(made.danger_err)
         l0_m = made.danger_ok
     g_m = inputs.g
     if g_m is None:
         made = _make(STANDARD_G, 0.0, _ACCEL, "g")
         if isinstance(made, Err):
-            return made
+            return Err(made.danger_err)
         g_m = made.danger_ok
     mass = _sum_masses(inputs.masses)
     if isinstance(mass, Err):
@@ -282,7 +282,7 @@ def _sum_masses(masses: Sequence[Measured]) -> Result[Measured, LoadingError]:
     return Ok(acc)
 
 
-def _propagation(err: UncertainError | UncertaintyError | object) -> Err[LoadingError]:  # type: ignore[type-arg]
+def _propagation(err: object) -> Err[LoadingResult, LoadingError]:
     """Log an engine error and return the Propagation Err."""
     _log.warning("propagation failed: %s", err)
     return Err(LoadingError.Propagation)

@@ -16,7 +16,7 @@ import sys
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
@@ -29,6 +29,7 @@ from sadi.store.names import sanitize_name
 from sadi.store.records import NewRecord, RecordType, json_record
 
 _log = get_logger(__name__)
+_T = TypeVar("_T")
 
 EXPORT_DIR = "exports"
 EXPORT_VERSION = 1
@@ -139,7 +140,7 @@ def list_exports(session_dir: Path, kind: str) -> list[ExportListing]:
     return out
 
 
-def _io_err(exc: OSError, path: Path) -> Result[Any, ExportError]:
+def _io_err(exc: OSError, path: Path) -> Result[_T, ExportError]:
     """Log an OS failure and map it to ExportError.Io."""
     _log.error("export io failure at %s: %s", path, exc)
     return Err(ExportError.Io)

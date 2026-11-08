@@ -51,8 +51,9 @@ before and after the resume.
 ## Design notes
 
 - Analysis is decimated by 25 (50 kHz to 2 kHz) and sent in 10-block batches:
-  the streaming settle detector re-fits the open point on every push, which is
-  too slow at the device rate. The raw bytes are never decimated.
+  the streaming settle detector used to re-fit the open point on every push;
+  it now scans incrementally (O(1) amortized per sample, see `SettleScanner`),
+  so the decimation is no longer required for speed. The raw bytes are never decimated.
 - `ByteFaultPlan` is not exposed by the Python bindings, so dropped bytes are
   emulated test-side: bytes are cut from the batch raw and `dropped_bytes` and
   `gap_events` are set, which is exactly what the framer reports to ingest.

@@ -11,7 +11,7 @@ from enum import StrEnum
 from pydantic import BaseModel, Field, model_validator
 from typani import Err, ErrorSet, Ok, Result
 
-from sadi.labs.lctt.settle import SettleConfig, SettleError, detect_settle
+from sadi.labs.lctt.settle import SettleConfig, SettleError, SettleScanner
 from sadi.logging_setup import get_logger
 from sadi.uncertainty import Measured
 
@@ -98,6 +98,9 @@ class _Point:
         self.latched: StreamStatus | None = None
         self.latched_n = 0
         self.checked_n = 0
+        self.fed_n = 0
+        self.capped = False
+        self.scanner: SettleScanner | None = None
         self.status = StreamStatus(state=SettleState.LOADING, point_index=index)
 
 
@@ -189,18 +192,27 @@ class StreamingSettleDetector:
     def _evaluate(self, pt: _Point) -> Result[StreamStatus, SettleError]:
         """Run the detector on the point's samples and map to a status; latch on settle."""
         cfg = self._cfg
-        t, y = pt.t, pt.y
         fixed = cfg.mode is SettleMode.FIXED_DWELL
-        if fixed:
+        if pt.scanner is None:
+            pt.scanner = SettleScanner(cfg.settle)
+        end = len(pt.t)
+        if fixed and not pt.capped:
             assert cfg.fixed_dwell_s is not None
-            cut = next((i for i, a in enumerate(t) if a - pt.t_load >= cfg.fixed_dwell_s), None)
-            if cut is not None:
-                t, y = t[: cut + 1], y[: cut + 1]
-        res = detect_settle(t, y, cfg.settle)
+            for i in range(pt.fed_n, end):
+                if pt.t[i] - pt.t_load >= cfg.fixed_dwell_s:
+                    end, pt.capped = i + 1, True
+                    break
+        elif pt.capped:
+            end = pt.fed_n
+        pt.scanner.feed(pt.t[pt.fed_n : end], pt.y[pt.fed_n : end])
+        pt.fed_n = end
+        res = pt.scanner.result()
         if isinstance(res, Err):
             return Err(res.danger_err)
         r = res.danger_ok
-        since = t[-1] - pt.t_load
+        last = pt.scanner.last_time
+        assert last is not None
+        since = last - pt.t_load
         if fixed:
             done = since >= (cfg.fixed_dwell_s or 0.0)
             drift = r.slope
@@ -216,7 +228,7 @@ class StreamingSettleDetector:
                 time_since_load=since,
                 drift_rate=drift,
             )
-            pt.latched, pt.latched_n = st, len(t)
+            pt.latched, pt.latched_n = st, end
             _log.info("point %d settled (%s) at %.3g s since load", pt.index, cfg.mode, since)
             return Ok(st)
         state = SettleState.CREEPING if r.slope is not None else SettleState.LOADING

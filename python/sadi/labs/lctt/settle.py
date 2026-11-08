@@ -85,6 +85,139 @@ def _validate(times: Sequence[float], lvdt: Sequence[float]) -> SettleError | No
     return None
 
 
+class SettleScanner:
+    """Sample-by-sample settle scan; incremental mode keeps O(1) amortized sliding-window sums."""
+
+    def __init__(self, config: SettleConfig, *, incremental: bool = True) -> None:
+        """Start an empty scan; incremental=False refits each window exactly (reference)."""
+        self._cfg = config
+        self._inc = incremental
+        self._t: list[float] = []
+        self._y: list[float] = []
+        self._start = 0
+        self._run_start: int | None = None
+        self._run_slope: tuple[float, float, int] | None = None
+        self._last_slope: tuple[float, float, int] | None = None
+        self._reason = NotSettledReason.InsufficientData
+        self._confirmed: int | None = None
+        self._origin = (0.0, 0.0)
+        self._sums = [0.0] * 6  # n, St, Sy, Stt, Sty, Syy about the origin
+        self._since_rebuild = 0
+
+    @property
+    def n_fed(self) -> int:
+        """Number of samples consumed so far."""
+        return len(self._t)
+
+    @property
+    def last_time(self) -> float | None:
+        """Timestamp of the latest sample, or None when empty."""
+        return self._t[-1] if self._t else None
+
+    @property
+    def settled(self) -> bool:
+        """True once the criterion has held for the minimum dwell."""
+        return self._confirmed is not None
+
+    def feed(self, times: Sequence[float], lvdt: Sequence[float]) -> None:
+        """Consume validated samples; after settling they are only recorded."""
+        for a, b in zip(times, lvdt, strict=True):
+            self._t.append(a)
+            self._y.append(b)
+            if self._confirmed is None:
+                self._step(len(self._t) - 1)
+
+    def _rebuild(self) -> None:
+        """Recompute the window sums exactly about the window's first sample."""
+        s0 = self._start
+        to, yo = self._t[s0], self._y[s0]
+        self._origin = (to, yo)
+        dt = [a - to for a in self._t[s0:]]
+        dy = [b - yo for b in self._y[s0:]]
+        self._sums = [
+            float(len(dt)),
+            sum(dt),
+            sum(dy),
+            sum(a * a for a in dt),
+            sum(a * b for a, b in zip(dt, dy, strict=True)),
+            sum(b * b for b in dy),
+        ]
+        self._since_rebuild = 0
+
+    def _accumulate(self, i: int, sign: float) -> None:
+        """Add (sign=1) or remove (sign=-1) sample i from the running sums."""
+        dt, dy = self._t[i] - self._origin[0], self._y[i] - self._origin[1]
+        for k, v in enumerate((1.0, dt, dy, dt * dt, dt * dy, dy * dy)):
+            self._sums[k] += sign * v
+
+    def _slope(self, i: int) -> tuple[float, float]:
+        """OLS slope and standard error over the window ending at sample i."""
+        lo = self._start
+        if not self._inc:
+            return _window_slope(self._t[lo : i + 1], self._y[lo : i + 1])
+        n, st, sy, stt, sty, syy = self._sums
+        sxx = stt - st * st / n
+        if sxx <= 0.0:
+            return _window_slope(self._t[lo : i + 1], self._y[lo : i + 1])
+        sxy = sty - st * sy / n
+        slope = sxy / sxx
+        sse = max(0.0, syy - sy * sy / n - slope * sxy)
+        return slope, math.sqrt(sse / (n - 2) / sxx)
+
+    def _step(self, i: int) -> None:
+        """Advance the scan by sample i, updating run state and the verdict."""
+        cfg, times = self._cfg, self._t
+        if self._inc:
+            if i == 0:
+                self._origin = (times[0], self._y[0])
+            self._accumulate(i, 1.0)
+        while times[i] - times[self._start] > cfg.window_s:
+            if self._inc:
+                self._accumulate(self._start, -1.0)
+                self._since_rebuild += 1
+            self._start += 1
+        if self._inc and self._since_rebuild >= max(i - self._start + 1, 64):
+            self._rebuild()
+        npts = i - self._start + 1
+        if npts < cfg.min_points or times[i] - times[0] < cfg.window_s:
+            self._run_start = None
+            self._reason = NotSettledReason.InsufficientData
+            return
+        slope, se = self._slope(i)
+        self._last_slope = (slope, se, npts)
+        if abs(slope) > cfg.threshold:
+            self._run_start, self._reason = None, NotSettledReason.SlopeAboveThreshold
+            return
+        if abs(slope) + cfg.unc_factor * se > cfg.threshold:
+            self._run_start, self._reason = None, NotSettledReason.SlopeUncertain
+            return
+        if self._run_start is None:
+            self._run_start, self._run_slope = i, (slope, se, npts)
+            _log.debug("settle criterion met at index %d (t=%g)", i, times[i])
+        if self._run_slope is not None and times[i] - times[self._run_start] >= cfg.min_dwell_s:
+            self._confirmed = i
+            return
+        self._reason = NotSettledReason.DwellNotReached
+
+    def result(self) -> Result[SettleResult, SettleError]:
+        """Verdict for the samples fed so far."""
+        if self._confirmed is not None and self._run_start is not None and self._run_slope:
+            return _build(self._run_start, self._confirmed, self._t, self._run_slope)
+        if self._last_slope is None:
+            return Ok(SettleResult(settled=False, reason=self._reason))
+        slope_m = _measured(*self._last_slope)
+        if isinstance(slope_m, Err):
+            return Err(slope_m.danger_err)
+        return Ok(
+            SettleResult(
+                settled=False,
+                slope=slope_m.danger_ok,
+                window_points=self._last_slope[2],
+                reason=self._reason,
+            )
+        )
+
+
 def detect_settle(
     times: Sequence[float], lvdt: Sequence[float], config: SettleConfig
 ) -> Result[SettleResult, SettleError]:
@@ -93,47 +226,12 @@ def detect_settle(
     if bad is not None:
         _log.error("settle input rejected: %s", bad.name)
         return Err(bad)
-
-    n = len(times)
-    start = 0
-    run_start: int | None = None
-    run_slope: tuple[float, float, int] | None = None
-    last_slope: tuple[float, float, int] | None = None
-    reason = NotSettledReason.InsufficientData
-    for i in range(n):
-        while times[i] - times[start] > config.window_s:
-            start += 1
-        npts = i - start + 1
-        if npts < config.min_points or times[i] - times[0] < config.window_s:
-            run_start = None
-            reason = NotSettledReason.InsufficientData
-            continue
-        slope, se = _window_slope(times[start : i + 1], lvdt[start : i + 1])
-        last_slope = (slope, se, npts)
-        if abs(slope) > config.threshold:
-            run_start, reason = None, NotSettledReason.SlopeAboveThreshold
-            continue
-        if abs(slope) + config.unc_factor * se > config.threshold:
-            run_start, reason = None, NotSettledReason.SlopeUncertain
-            continue
-        if run_start is None:
-            run_start, run_slope = i, (slope, se, npts)
-            _log.debug("settle criterion met at index %d (t=%g)", i, times[i])
-        if run_slope is not None and times[i] - times[run_start] >= config.min_dwell_s:
-            return _build(run_start, i, times, run_slope)
-        reason = NotSettledReason.DwellNotReached
-
-    _log.info("not settled after %d samples: %s", n, reason.value)
-    if last_slope is None:
-        return Ok(SettleResult(settled=False, reason=reason))
-    slope_m = _measured(*last_slope)
-    if isinstance(slope_m, Err):
-        return Err(slope_m.danger_err)
-    return Ok(
-        SettleResult(
-            settled=False, slope=slope_m.danger_ok, window_points=last_slope[2], reason=reason
-        )
-    )
+    scan = SettleScanner(config, incremental=False)
+    scan.feed(times, lvdt)
+    res = scan.result()
+    if isinstance(res, Ok) and not res.danger_ok.settled:
+        _log.info("not settled after %d samples: %s", len(times), res.danger_ok.reason)
+    return res
 
 
 def _measured(slope: float, se: float, npts: int) -> Result[Measured, SettleError]:

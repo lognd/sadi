@@ -1,7 +1,6 @@
 """Tests for LocalDirSource and PluginSettings."""
 
 # frob:ticket 01M6WFZ1R6ATYWRVW3315G6CCX
-# frob:tests sadi.plugins.local.LocalDirSource
 
 from __future__ import annotations
 
@@ -39,6 +38,7 @@ def _plugin(root: Path, pid: str, lid: str | None = None) -> None:
         (d / "labmod.py").write_text(LAB_SRC.format(lid=lid))
 
 
+# frob:tests python/sadi/plugins/local.py::LocalDirSource.discover
 def test_loads_without_install(tmp_path: Path) -> None:
     _plugin(tmp_path, "alpha", "alpha_lab")
     res = LocalDirSource(paths=[tmp_path]).discover()
@@ -74,10 +74,13 @@ def test_broken_plugin_isolated(tmp_path: Path) -> None:
     assert reg.get("good").state == PluginState.ENABLED  # type: ignore[union-attr]
 
 
+# frob:tests python/sadi/plugins/settings.py::PluginSettings.effective_paths
+# frob:tests python/sadi/plugins/settings.py::default_config_dir
 def test_env_path_wins(tmp_path: Path) -> None:
     a, b = tmp_path / "a", tmp_path / "b"
     _plugin(a, "pa")
     _plugin(b, "pb")
+    assert PluginSettings().config_dir.name == "sadi"
     settings = PluginSettings(plugin_paths=(a,), config_dir=tmp_path)
     assert settings.effective_paths({}) == (a,)
     env = {"SADI_PLUGIN_PATH": f"{b}{os.pathsep}{tmp_path / 'zz'}"}
@@ -85,6 +88,7 @@ def test_env_path_wins(tmp_path: Path) -> None:
     assert isinstance(res, Ok) and [c.name for c in res.value] == ["pb"]
 
 
+# frob:tests python/sadi/plugins/local.py::default_dirs
 def test_default_dirs(tmp_path: Path) -> None:
     _plugin(tmp_path / "plugins", "p1")
     _plugin(tmp_path / "private" / "x" / "plugin", "p2")

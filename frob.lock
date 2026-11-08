@@ -3580,6 +3580,61 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T10:22:14.394348419Z"
 
 [[symbol]]
+identity = "web/src/screens/setup/ClampCheckPanel.tsx"
+symref = "web/src/screens/setup/ClampCheckPanel.tsx"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "f4f741749ea90c616f13b38319cd2819e3e1f6b279fd848c9d23c192bf6c1b04"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:22:15.068878888Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/ClampCheckPanel.tsx::ClampCheckPanel"
+symref = "web/src/screens/setup/ClampCheckPanel.tsx::ClampCheckPanel"
+sig = "5cc4d63a751214e96b3974cf68ab49365c6fdc5afeee1cca158e0f6aa4dd6c6b"
+body = "31c994abad76ffbd0ad24b9d0583070171ff73318e508bde0bc4cef02bb59f86"
+doc = "3b5f6d127745a04874cf54b9d4cf9dbcd602d1180f9e468eb024540fcbb9a7dd"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "a71625022b9fb42dc0e96dd9c8ecc8b23d5989b70c130f92960d64341466e7c9"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:22:15.068878888Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/ClampCheckPanel.tsx::ClampCheckView"
+symref = "web/src/screens/setup/ClampCheckPanel.tsx::ClampCheckView"
+sig = "fbe28a373324f1eead1f4851cc5d42fa80011ace79e431a5f0efadf8b080528c"
+body = "7c042bdc592b5bf403a0df5d6443b7ce5e9311ca9d4cca728fdb5ebdf1eb757e"
+doc = "342588b356aaf7d667ca68cf334e112fb155d1e3bf6f0d04f6cd2f707981f28a"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "19ae5dc17a7b1847939324436efa07604231b45f56ae10709f57f795990487af"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:22:15.068878888Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/ClampCheckPanel.tsx::apiErrorText"
+symref = "web/src/screens/setup/ClampCheckPanel.tsx::apiErrorText"
+sig = "2c55b85426f2b691b08d2d53e2db98e7690099d9e7e7cb3bf562383f534c1bba"
+body = "4b4c7f1585d0e2f3c91a05261d5c65dcf279d3369fd7702d5a0d870d7e6486d6"
+doc = "b654e596c6a32b5f2e97ac03cba51427447a3711e1a6796daabd23ec06fa706b"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "8012a29d936daebb99befe4d964b219f43254b42a0247531d907473ff73b7b98"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:22:15.068878888Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/ClampCheckPanel.tsx::log"
+symref = "web/src/screens/setup/ClampCheckPanel.tsx::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "33b1e9490af5ff87f60e26cfb15671af3ac6830f3af23d5fce43300bf3b69093"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T10:22:15.068878888Z"
+
+[[symbol]]
 identity = "web/src/screens/setup/SessionSetup.test.tsx"
 symref = "web/src/screens/setup/SessionSetup.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

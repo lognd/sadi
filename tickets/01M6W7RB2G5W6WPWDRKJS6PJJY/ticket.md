@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:56:50Z"
+updated = "2026-11-08T05:56:53Z"
 idempotency_key = "sadi-doc1"
 labels = ["ws:docs", "model:sonnet", "creates:docs/user-guide.md", "creates:docs/img/ui/**"]
 scope = ["docs/user-guide.md", "docs/img/ui/**", "docs/index.md"]
@@ -31,7 +31,7 @@ target = "01M6W7RAPKVH796SZ6Z9EFDXQE"
 
 [[acceptance]]
 text = "Step-by-step bench procedure mapping to docs/domain.md section 6, including clamp-slip pre-check, calibration, tare, hold/confirm, review, export"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "States which settle value feeds the E fit and how to override it"

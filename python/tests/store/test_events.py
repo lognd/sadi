@@ -114,6 +114,15 @@ BASIC = [
 ]
 
 
+# frob:tests python/sadi/store/events.py::settings_record
+def test_settings_record_builds_settings_wal_record() -> None:
+    """settings_record emits a JSON SETTINGS record carrying the setting payload."""
+    rec = settings_record(SettingsV1(scope="acquisition", key="rate", value=100))
+    assert rec.type == int(RecordType.SETTINGS)
+    assert rec.flags == FLAG_JSON
+    assert b'"rate"' in rec.payload
+
+
 # frob:tests python/sadi/store/events.py::replay
 def test_current_state_is_replay_with_full_history() -> None:
     """Points, edits, settings and markers are records; state is their fold; history is kept."""

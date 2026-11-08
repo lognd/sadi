@@ -2,7 +2,8 @@
 id = "01M6XAY79MWPV07858YAKSBJQ6"
 title = "Reduce remaining COV001 findings in python/sadi (about 40 left)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 3
 reporter = "lognd"

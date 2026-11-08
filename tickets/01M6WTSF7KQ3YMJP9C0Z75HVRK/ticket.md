@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:41:07Z"
-updated = "2026-11-08T05:46:19Z"
-scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/inventory.md", "python/tests/server/test_inventory_routes.py"]
+updated = "2026-11-08T05:46:55Z"
+scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/inventory.md", "python/tests/server/test_inventory_routes.py", "python/sadi/server/routes/inventory.py"]
 
 [[acceptance]]
 text = "AppSettings.inventory provider mounts make_inventory_router; docs/server/inventory.md Wiring updated (found while working ~MDHYBZ1; app.py was leased by ~4QRM2GS)"

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:51:42Z"
+updated = "2026-11-08T05:51:59Z"
 labels = ["ws:srv", "creates:python/sadi/__main__.py"]
 scope = ["python/sadi/launcher.py", "python/sadi/__main__.py", "python/tests/cli/test_launcher.py", "python/tests/server/test_app.py", "docs/server/launcher.md"]
 

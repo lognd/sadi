@@ -2,13 +2,16 @@
 
 The recording path builds POINT events with `build_point`; the server's curve source reads them
 back with `parse_inputs`. Phases: calibration (volts, height), tare (mean, sd, n), specimen
-(diameter, u_diameter, hanger_kg, u_hanger_kg) and any other phase name is a load point (volts,
-mass_kg, optional u_volts, u_mass_kg). Description: docs/server/app.md.
+(diameter, u_diameter, hanger_kg, u_hanger_kg), setup (zero_before, zero_after, slip_events)
+and any other phase name is a load point (volts, mass_kg, optional u_volts, u_mass_kg).
+Description: docs/server/app.md.
 """
 
 # frob:ticket 01M6WN40B3NY98XEFCEHNRCGB7
+# frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict
@@ -22,6 +25,8 @@ _log = get_logger(__name__)
 PHASE_CALIBRATION = "calibration"
 PHASE_TARE = "tare"
 PHASE_SPECIMEN = "specimen"
+#: Wizard Setup step phase: one clamp-check cycle record (zeros and observed slips).
+PHASE_SETUP = "setup"
 #: Default phase name for a load point; any phase outside the three above reads as a load point.
 PHASE_LOAD = "load"
 
@@ -71,6 +76,15 @@ class LoadInputs(_Inputs):
     volts_sd: float | None = None  # per-sample std dev of the raw volts in the window
 
 
+class ClampInputs(_Inputs):
+    """One clamp-check cycle: strain zero before loading and after unloading, slips observed."""
+
+    phase: str = PHASE_SETUP
+    zero_before: float
+    zero_after: float
+    slip_events: int = 0
+
+
 class PointMeta(BaseModel):
     """Settle provenance of a point: time since load, drift rate and the settled/forced flags."""
 
@@ -81,7 +95,7 @@ class PointMeta(BaseModel):
     forced_early: bool = False
 
 
-PointInputs = CalibrationInputs | TareInputs | SpecimenInputs | LoadInputs
+PointInputs = CalibrationInputs | TareInputs | SpecimenInputs | LoadInputs | ClampInputs
 
 
 def _num(inputs: dict[str, Any], key: str) -> float | None:
@@ -119,6 +133,12 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
                 u_hanger_kg=_opt(inputs, "u_hanger_kg"),
             )
         )
+    if phase == PHASE_SETUP:
+        zb, za = _num(inputs, "zero_before"), _num(inputs, "zero_after")
+        if zb is None or za is None or not (math.isfinite(zb) and math.isfinite(za)):
+            return Err("clamp check needs finite zero_before and zero_after")
+        slips = _num(inputs, "slip_events")
+        return Ok(ClampInputs(zero_before=zb, zero_after=za, slip_events=max(0, int(slips or 0))))
     v, mass = _num(inputs, "volts"), _num(inputs, "mass_kg")
     if v is None or mass is None:
         return Err("load point needs volts and mass_kg")

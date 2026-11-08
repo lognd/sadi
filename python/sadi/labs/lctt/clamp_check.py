@@ -1,6 +1,7 @@
 """LCTT pre-test clamp-slip check: small load, hold, unload, repeat; slip + zero-return verdict."""
 
 # frob:ticket 01M6W7R2TPG1HC0F9QHDQ1C3W6
+# frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 
 from __future__ import annotations
 
@@ -97,6 +98,68 @@ def setup_subcheck(config: ClampCheckConfig | None = None) -> SetupSubCheck:
     return SetupSubCheck(guidance=text)
 
 
+class RecordedCycle(BaseModel):
+    """One operator-recorded cycle (zeros plus slips seen during the hold) and its verdict."""
+
+    model_config = {"frozen": True}
+
+    index: int
+    zero_shift: float
+    slip_events: int
+    returned: bool
+    passed: bool
+
+
+class ClampStatus(BaseModel):
+    """Wizard Setup panel state: procedure, progress and verdict (`passed` None until complete)."""
+
+    model_config = {"frozen": True}
+
+    guidance: str
+    required: int
+    return_tol: float
+    cycles: tuple[RecordedCycle, ...]
+    passed: bool | None
+    advice: str
+
+
+def _zero_returned(shift: float, cfg: ClampCheckConfig) -> bool:
+    """True when the zero shift over a cycle is within the return tolerance."""
+    return abs(shift) <= cfg.return_tol
+
+
+def clamp_status(
+    recorded: Sequence[tuple[float, float, int]], config: ClampCheckConfig | None = None
+) -> ClampStatus:
+    """Summarise recorded (zero_before, zero_after, slip_events) cycles against the procedure."""
+    cfg = config or ClampCheckConfig()
+    rows: list[RecordedCycle] = []
+    for i, (zb, za, slips) in enumerate(recorded):
+        shift = za - zb
+        returned = _zero_returned(shift, cfg)
+        rows.append(
+            RecordedCycle(
+                index=i,
+                zero_shift=shift,
+                slip_events=slips,
+                returned=returned,
+                passed=returned and slips == 0,
+            )
+        )
+    done = len(rows) >= cfg.cycles
+    passed = all(r.passed for r in rows) if done else None
+    advice = "" if passed is None else (ADVICE_OK if passed else ADVICE_RETIGHTEN)
+    _log.info("clamp status: %d/%d cycles passed=%s", len(rows), cfg.cycles, passed)
+    return ClampStatus(
+        guidance=setup_subcheck(cfg).guidance,
+        required=cfg.cycles,
+        return_tol=cfg.return_tol,
+        cycles=tuple(rows),
+        passed=passed,
+        advice=advice,
+    )
+
+
 def _judge(i: int, cyc: ClampCycle, cfg: ClampCheckConfig) -> Result[CycleVerdict, ClampCheckError]:
     """Run the slip detector on one cycle and test the zero return."""
     if not (math.isfinite(cyc.zero_before) and math.isfinite(cyc.zero_after)):
@@ -109,7 +172,7 @@ def _judge(i: int, cyc: ClampCycle, cfg: ClampCheckConfig) -> Result[CycleVerdic
         return Err(ClampCheckError.BadHold)
     events = res.value.events
     shift = cyc.zero_after - cyc.zero_before
-    returned = abs(shift) <= cfg.return_tol
+    returned = _zero_returned(shift, cfg)
     passed = returned and not events
     _log.info(
         "cycle %d: events=%d shift=%g returned=%s passed=%s",

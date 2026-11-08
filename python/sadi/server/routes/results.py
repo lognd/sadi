@@ -16,7 +16,12 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.core.errors import ComputeCode
 from sadi.core.lab import BudgetedLab, LabId, LabModule
 from sadi.core.models import Quantity
-from sadi.core.point_inputs import PHASE_CALIBRATION, PHASE_SPECIMEN, PHASE_TARE
+from sadi.core.point_inputs import (
+    PHASE_CALIBRATION,
+    PHASE_SETUP,
+    PHASE_SPECIMEN,
+    PHASE_TARE,
+)
 from sadi.core.registry import LabRegistry
 from sadi.core.results import ResultSet, make_result
 from sadi.labs.lctt.guidance import (
@@ -38,7 +43,7 @@ from sadi.uncertainty.budget import Budget, BudgetRow
 _log = get_logger(__name__)
 
 #: Phases whose points are setup inputs, not load points.
-_NON_LOAD = frozenset({PHASE_CALIBRATION, PHASE_TARE, PHASE_SPECIMEN})
+_NON_LOAD = frozenset({PHASE_CALIBRATION, PHASE_TARE, PHASE_SPECIMEN, PHASE_SETUP})
 
 
 class ResultBudget(BaseModel):

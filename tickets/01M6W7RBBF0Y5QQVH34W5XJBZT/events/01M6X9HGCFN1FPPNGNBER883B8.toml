@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T09:58:55Z"
+digest = "c15cf662090810bfbc526f4aeb9972be2fa98a322532416a815c3eff26e6a173"
+head = "751d970129d63c57fc5e66f5fbcdff6feaa9b0b0"
+provider = "file"
+ref = "docs/usability-report.md"
+size = 3690
+status = "measured"
+at = "2026-11-08T09:58:55Z"
+actor = "lognd"
+rev = 1

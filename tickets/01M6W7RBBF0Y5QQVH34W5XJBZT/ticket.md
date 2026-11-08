@@ -39,7 +39,7 @@ bound = true
 
 [[acceptance]]
 text = "All severity-1 issues fixed or ticketed; report committed to docs/usability-report.md"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

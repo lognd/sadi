@@ -2,7 +2,8 @@
 id = "01M6WMVRTG5YQDSZYQQG368G2E"
 title = "Add public halt() to AcquisitionPipeline"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

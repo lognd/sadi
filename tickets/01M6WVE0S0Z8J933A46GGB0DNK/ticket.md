@@ -7,8 +7,9 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:52:21Z"
-updated = "2026-11-08T06:02:14Z"
+updated = "2026-11-08T06:02:30Z"
 labels = ["python"]
+scope = ["python/tests/cli/test_launcher.py"]
 +++
 
 NXB07G0 tests inject a fake device; run open_sim_device against a built sadi_py once maturin develop is available.

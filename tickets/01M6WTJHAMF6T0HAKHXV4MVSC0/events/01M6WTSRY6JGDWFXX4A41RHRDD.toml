@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Resume folds the parent's POINT, EDIT, SETTINGS and MARKER records into the child WAL and the parent stays byte-identical (docs/server/api.md Data safety)"]
+moved = []
+at = "2026-11-08T05:41:17Z"
+actor = "lognd"
+rev = 1

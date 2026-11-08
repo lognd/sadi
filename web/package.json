@@ -12,12 +12,14 @@
     "gen:api": "openapi-typescript ${SADI_OPENAPI_URL:-http://127.0.0.1:8000/openapi.json} -o src/api/schema.ts"
   },
   "dependencies": {
+    "katex": "^0.19.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@types/katex": "^0.16.8",
     "@types/node": "^22.20.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T05:41:17Z"
+digest = "5b7260de1e3c655aebaefa3dd22ef6bc9df4e1d3bfbfb857b9c94de7d0b6f360"
+exit_code = 0
+head = "9a8fb8173dcbf48c72ad39907c14ab20f55df011"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/server/test_inventory_routes.py ..                          [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-488454-0.xml ---------------
+========================= 2 passed, 1 warning in 2.39s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_inventory_routes.py::test_events_survive_resume python/tests/server/test_inventory_routes.py::test_group_and_combo"
+size = 1003
+status = "measured"
+test_count = 2
+tests_digest = "29e202a1b1c820d9bfb0a0516532984e426ac2163c5c03f41d1e268032e87088"
+at = "2026-11-08T05:41:17Z"
+actor = "lognd"
+rev = 1

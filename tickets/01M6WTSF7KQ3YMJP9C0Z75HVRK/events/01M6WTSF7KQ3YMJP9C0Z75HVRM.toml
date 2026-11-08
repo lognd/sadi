@@ -1,0 +1,10 @@
+kind = "create"
+title = "Wire inventory router and provider into create_app"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py"]
+acceptance = ["AppSettings.inventory provider mounts make_inventory_router; docs/server/inventory.md Wiring updated (found while working ~MDHYBZ1; app.py was leased by ~4QRM2GS)"]
+at = "2026-11-08T05:41:07Z"
+actor = "lognd"
+rev = 1

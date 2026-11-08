@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["REST: inventory CRUD and group weighing endpoints"]
+new = ["REST: inventory CRUD and group weighing endpoints", "Inventory events are durable NOTE records via SessionService; no deletes (edits are later events); provider-neutral port, 501 problem+json when no provider is installed", "Tested with TestClient against the real WAL using a stub provider; docs/server/inventory.md written"]
+moved = [1]
+at = "2026-11-08T05:39:30Z"
+actor = "lognd"
+rev = 1

@@ -7,6 +7,7 @@
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6WP4WV9B3SCJ0GY2M32XWZV
 # frob:ticket 01M6W7R3XY1B0BF689RX3H80G2
+# frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
 
 from __future__ import annotations
 
@@ -20,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
 from sadi.logging_setup import get_logger
+from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
@@ -29,6 +31,7 @@ from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
 from sadi.server.service import SessionService
+from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
 from sadi.store.spill import import_all_spills
@@ -48,6 +51,7 @@ class AppSettings(BaseModel):
     writer: FailableSeqSource | None = None
     curve_source: CurveSource | None = None
     labs: LabRegistry | None = None
+    bus: Bus | None = None
 
 
 class _NoWriter:
@@ -146,6 +150,9 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_sessions_router(app.state.sessions))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))
+    if cfg.bus is not None:
+        app.state.stream_hub = StreamHub(cfg.bus, app.state.sessions)
+        app.include_router(make_ws_router(app.state.stream_hub))
     source = cfg.curve_source or make_curve_source(cfg.data_root)
     app.include_router(make_stress_strain_router(source))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))

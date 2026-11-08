@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:48:45Z"
-updated = "2026-11-08T10:48:51Z"
+updated = "2026-11-08T10:49:29Z"
 scope = ["web/src/typedcalls.test.ts"]
 +++
 

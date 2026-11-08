@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T10:49:29Z"
+digest = "961c90ed2cd511c80fd4ded26a67d7ccc01926944cc2e564f4f9f432651c5d02"
+exit_code = 0
+head = "5b8d0b709590da2c3996a2cc446ec85bbee2ea7d"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/typedcalls.test.ts (4 tests) 8ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  05:49:29
+   Duration  809ms (transform 204ms, setup 0ms, collect 247ms, tests 8ms, environment 0ms, prepare 150ms)
+
+JSON report written to /tmp/frob-vitest-1263323-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "src/typedcalls.test.ts"
+size = 314
+status = "measured"
+test_count = 4
+tests_digest = "864fa297c13ae49382d56862c2a482f8db805b19567ce52ca481e8950a387e16"
+at = "2026-11-08T10:49:29Z"
+actor = "lognd"
+rev = 1

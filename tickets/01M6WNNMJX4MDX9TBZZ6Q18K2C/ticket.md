@@ -2,7 +2,8 @@
 id = "01M6WNNMJX4MDX9TBZZ6Q18K2C"
 title = "WAL POINT must persist settled, forced-early and drift flags (not only phase/window/inputs)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

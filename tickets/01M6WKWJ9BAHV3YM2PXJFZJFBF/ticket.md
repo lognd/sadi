@@ -12,7 +12,7 @@ scope = ["docs/index.md", "python/tests/test_docs_index.py"]
 
 [[acceptance]]
 text = "docs/index.md links server/app.md and web/results-panel.md, guarded by index tests"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "pytest tests/test_docs_index.py passes"

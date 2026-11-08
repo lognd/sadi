@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "docs/doctor-checks.md matches the generated catalog"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: deferred checks

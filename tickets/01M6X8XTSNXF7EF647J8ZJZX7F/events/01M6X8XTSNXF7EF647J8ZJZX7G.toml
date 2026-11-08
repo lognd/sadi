@@ -1,0 +1,8 @@
+kind = "create"
+title = "Capture Doctor screen in user-guide screenshots"
+type = "task"
+category = "todo"
+priority = "low"
+at = "2026-11-08T09:48:10Z"
+actor = "lognd"
+rev = 1

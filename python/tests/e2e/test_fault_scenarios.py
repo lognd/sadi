@@ -64,7 +64,7 @@ def _run(spec: Spec, tmp_path: Path) -> Run:
 
 
 def _analysis(run: Run) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """Return (times, LVDT volts) of the decimated stream the pipeline analysed."""
+    """Return (times, LVDT volts) of the stream the pipeline analysed."""
     volts = run.analysis_volts[:, 0]
     return np.arange(len(volts)) / ANALYSIS_RATE_HZ, volts
 

@@ -1,0 +1,8 @@
+kind = "create"
+title = "Plots and export routes reuse IncrementalReplay instead of walking the whole WAL"
+type = "task"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T09:48:10Z"
+actor = "lognd"
+rev = 1

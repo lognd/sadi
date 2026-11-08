@@ -30,9 +30,8 @@ _log = get_logger("tests.e2e.harness")
 SIM_RATE_HZ = 50_000.0
 PACKET_LEN = 612
 BLOCK_SAMPLES = 50
-DECIMATE = 25
 BATCH_BLOCKS = 10
-ANALYSIS_RATE_HZ = SIM_RATE_HZ / DECIMATE
+ANALYSIS_RATE_HZ = SIM_RATE_HZ
 BATCH_S = BATCH_BLOCKS * BLOCK_SAMPLES / SIM_RATE_HZ
 # Strain per volt of LVDT signal: gauge strain step / LVDT displacement scale of the sim.
 STRAIN_PER_V = 2.114583e-3 / 0.08313
@@ -48,12 +47,7 @@ class ByteDrop:
 
 
 class _Batch:
-    """Several source blocks as one pipeline block: full raw, LVDT decimated for analysis.
-
-    The streaming settle detector re-fits the whole open point on every push, which is far too
-    slow at the 50 kHz device rate; decimating the analysed volts (never the raw bytes) keeps
-    scenarios in the seconds range while the WAL still receives every byte.
-    """
+    """Several source blocks joined as one pipeline block at the full 50 kHz device rate."""
 
     def __init__(self, blocks: list[Any], drop: int = 0) -> None:
         """Join `blocks`; with `drop` > 0 cut that many bytes from the middle of the raw."""
@@ -64,8 +58,8 @@ class _Batch:
             cut = len(raw) // 2
             raw = raw[:cut] + raw[cut + drop :]
         self.raw = raw
-        self.volts = volts[::DECIMATE]
-        self.msg_count = counts[::DECIMATE]
+        self.volts = volts
+        self.msg_count = counts
         self.n_samples = len(self.volts)
         self.dropped_bytes = drop
         self.gap_events = 1 if drop else 0
@@ -97,7 +91,7 @@ class Run:
 
     @property
     def analysis_volts(self) -> NDArray[np.float64]:
-        """The decimated volts the pipeline analysed, all channels."""
+        """The volts the pipeline analysed, all channels."""
         return np.concatenate(self.analysed)
 
     @property

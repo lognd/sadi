@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/screens/export/**"]
+new = ["web/src/screens/export/**", "web/e2e/guided-run.spec.ts"]
+at = "2026-11-08T09:49:37Z"
+actor = "lognd"
+rev = 1

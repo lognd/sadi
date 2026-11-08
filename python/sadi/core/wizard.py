@@ -14,7 +14,7 @@ from __future__ import annotations
 from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, ErrorSet, Ok, Result
+from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.core.lab import CaptureKind, StepId, StepSpec, needs_device
 from sadi.core.models import Phase
@@ -252,11 +252,10 @@ class Wizard:
             WizardError.Gated if item.status is StepStatus.LOCKED else WizardError.NotCurrent
         )
 
+    @propagate
     def complete(self, replay: ReplayState, sid: StepId) -> Result[Command, WizardError]:
         """Mark the current step done once its `min_points` criterion holds."""
-        gate = self._gate(replay, sid)
-        if gate.is_err:
-            return Err(gate.danger_err)
+        self._gate(replay, sid).unwrap()
         spec = self._spec(sid)
         assert spec is not None  # _gate accepted it
         have = self._step_points(replay, spec)
@@ -279,11 +278,10 @@ class Wizard:
             if not p.excluded and p.point.phase == spec.phase.value and p.seq > since
         )
 
+    @propagate
     def skip(self, replay: ReplayState, sid: StepId) -> Result[Command, WizardError]:
         """Explicitly skip the current step (the only way past a step without completing it)."""
-        gate = self._gate(replay, sid)
-        if gate.is_err:
-            return Err(gate.danger_err)
+        self._gate(replay, sid).unwrap()
         _log.info("wizard: skip %s", sid)
         return Ok(Command(records=(_mark(MARK_SKIPPED, sid),), summary=f"skipped {sid}"))
 

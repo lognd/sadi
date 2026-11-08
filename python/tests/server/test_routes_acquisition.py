@@ -79,11 +79,14 @@ class _SimDev:
 # frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:tests python/sadi/server/live.py::LiveAcquisition._apply_sim_load
 def test_apply_sim_load_steps_only_the_simulator() -> None:
+    from typing import cast
+
+    from sadi.core.device import DeviceService
     from sadi.core.pipeline import Bus
     from sadi.server.live import SIM_LOAD_STEP_KG, LiveAcquisition
 
     sim, hw = _SimDev(True), _SimDev(False)
-    LiveAcquisition(sim, Bus())._apply_sim_load()  # type: ignore[arg-type]
-    LiveAcquisition(hw, Bus())._apply_sim_load()  # type: ignore[arg-type]
+    LiveAcquisition(cast("DeviceService", sim), Bus())._apply_sim_load()
+    LiveAcquisition(cast("DeviceService", hw), Bus())._apply_sim_load()
     assert sim.added == [SIM_LOAD_STEP_KG]
     assert hw.added == []

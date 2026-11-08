@@ -11,7 +11,7 @@ from tests.e2e.harness import ByteDrop
 DURATION_S = 0.6
 LOAD_AT_S = 0.1
 MASS_KG = 1.0
-# Noise grid of the simulator's fault model; analysis decimation matches it (see harness).
+# Noise grid of the simulator's fault model.
 NOISE_GRID_HZ = 2000.0
 
 

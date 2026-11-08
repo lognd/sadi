@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["GET /api/save-indicator is served by create_app and a writer failure latches NOT SAVED via on_failure"]
+moved = []
+at = "2026-11-08T03:54:16Z"
+actor = "lognd"
+rev = 1

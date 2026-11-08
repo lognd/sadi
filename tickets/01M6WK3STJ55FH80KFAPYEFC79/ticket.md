@@ -4,7 +4,8 @@ title = "Audit StrEnum error families (StoreCode etc, JobState, DeviceStatus) ->
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:26:57Z"
-updated = "2026-11-08T03:26:57Z"
+updated = "2026-11-08T03:55:16Z"
 +++

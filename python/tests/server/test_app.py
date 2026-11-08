@@ -94,3 +94,34 @@ def test_degraded_start_reports_lock_failure(tmp_path: Path) -> None:
         assert body["kind"] == "LockHeld"
     finally:
         held.danger_ok.release()
+
+
+class _FakeWriter:
+    """Minimal failable seq source standing in for WriterHandle."""
+
+    def __init__(self) -> None:
+        self.durable_seq = 0
+        self.enqueued_seq = 0
+        self.listeners: list = []
+
+    def on_failure(self, listener) -> None:  # type: ignore[no-untyped-def]
+        self.listeners.append(listener)
+
+
+# frob:ticket 01M6WMJZPYNHZR0KHY2C6W07WH
+# frob:tests python/sadi/server/app.py::create_app
+# frob:tests python/sadi/api/save_indicator.py::FailableSeqSource.on_failure
+def test_save_indicator_reachable_and_latches_on_failure() -> None:
+    """GET /api/save-indicator is served, and a writer failure latches NOT SAVED."""
+    from sadi.store.writer_thread import Stalled
+
+    writer = _FakeWriter()
+    client = TestClient(create_app(AppSettings(writer=writer, require_root_lock=False)))
+    assert client.get("/api/save-indicator").json()["state"] == "saved"
+    writer.enqueued_seq = 2
+    assert client.get("/api/save-indicator").json()["state"] == "saving"
+    assert len(writer.listeners) == 1
+    writer.listeners[0](Stalled(waited_s=1.0, durable_seq=0, enqueued_seq=2))
+    body = client.get("/api/save-indicator").json()
+    assert body["state"] == "not_saved"
+    assert body["label"] == "NOT SAVED"

@@ -1,0 +1,7 @@
+kind = "field"
+field = "labels"
+old = ["feature", "creates:web/src/api/refit.ts", "creates:web/src/api/refit.test.ts"]
+new = ["feature", "creates:web/src/api/refit.ts", "creates:web/src/api/refit.test.ts", "creates:web/src/screens/StressStrainScreen.tsx"]
+at = "2026-11-08T03:55:07Z"
+actor = "lognd"
+rev = 1

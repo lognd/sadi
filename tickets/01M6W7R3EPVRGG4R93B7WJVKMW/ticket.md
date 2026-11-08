@@ -2,16 +2,17 @@
 id = "01M6W7R3EPVRGG4R93B7WJVKMW"
 title = "Creep plot: strain vs log-time per hold with fit and slip markers"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:53:24Z"
+updated = "2026-11-08T03:55:03Z"
 idempotency_key = "sadi-f7"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/creep/**", "creates:docs/web/creep-plot.md"]
-scope = ["web/src/plots/creep/**", "docs/web/creep-plot.md"]
+scope = ["web/src/plots/creep/**", "docs/web/creep-plot.md", "docs/web/plots.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,11 +24,11 @@ target = "01M6W7R383ZG0WZNNVJMQYWW87"
 
 [[acceptance]]
 text = "Strain vs log10(time since load) per hold, fit line with equation annotation, detected slip steps marked, settle threshold shown"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Golden-image test with creeping and slipping simulator fixtures"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/creep/**", "docs/web/creep-plot.md"]
+new = ["web/src/plots/creep/**", "docs/web/creep-plot.md", "docs/web/plots.md"]
+at = "2026-11-08T03:54:45Z"
+actor = "lognd"
+rev = 1

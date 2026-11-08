@@ -15,7 +15,9 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.core.events import PointWindow
 from sadi.core.pipeline import AcquisitionPipeline, BlockLike, PipelineError
+from sadi.core.point_inputs import PointInputs, build_point
 from sadi.logging_setup import get_logger
 from sadi.store.writer_thread import WriterError
 
@@ -182,6 +184,16 @@ class AcquisitionDriver:
             "load step %r (%.6g kg) applied, marker seq=%d", step.label, step.mass_kg, res.danger_ok
         )
         return Ok(step)
+
+    def record_point(
+        self, inputs: PointInputs, window: PointWindow
+    ) -> Result[str, WriterError | PipelineError]:
+        """Write a POINT event in the shared phase mapping; Ok is the new point id."""
+        point = build_point(inputs, window)
+        res = self._pipe.record_point(point)
+        if res.is_err:
+            return Err(res.danger_err)
+        return Ok(point.point_id)
 
     def _record_fault(self, fault: DriverFault) -> None:
         """Keep the first fault and log every one loudly."""

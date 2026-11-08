@@ -10,8 +10,21 @@ from pathlib import Path
 
 from typani import Err, Ok, Result
 
+from sadi.core.point_inputs import (
+    CalibrationInputs,
+    SpecimenInputs,
+    TareInputs,
+    parse_inputs,
+)
 from sadi.labs.lctt.export_csv import build_document
-from sadi.labs.lctt.live import CalPoint, ExcludePoint, LiveEvent, LoadPoint, SpecimenSetup, TareBlock
+from sadi.labs.lctt.live import (
+    CalPoint,
+    ExcludePoint,
+    LiveEvent,
+    LoadPoint,
+    SpecimenSetup,
+    TareBlock,
+)
 from sadi.labs.lctt.modulus import CurvePoint
 from sadi.logging_setup import get_logger
 from sadi.server.routes_stress_strain import CurveSource, RefitError
@@ -35,42 +48,29 @@ def active_session(data_root: Path) -> Path | None:
     return dirs[-1] if dirs else None
 
 
-def _num(inputs: dict[str, object], key: str, default: float | None = None) -> float | None:
-    """Return inputs[key] as a float, `default` when absent or not numeric."""
-    val = inputs.get(key, default)
-    return float(val) if isinstance(val, (int, float)) and not isinstance(val, bool) else default
-
-
 def _event(cp: CurrentPoint) -> LiveEvent | None:
-    """Map one replayed point to a LiveEvent by its phase; None when inputs are unusable."""
-    i, phase = cp.inputs, cp.point.phase
-    if phase == "calibration":
-        v, h = _num(i, "volts"), _num(i, "height")
-        return CalPoint(volts=v, height=h) if v is not None and h is not None else None
-    if phase == "tare":
-        m, sd, n = _num(i, "mean"), _num(i, "sd", 0.0), _num(i, "n")
-        if m is None or sd is None or n is None:
-            return None
-        return TareBlock(mean=m, sd=sd, n=int(n))
-    if phase == "specimen":
-        d = _num(i, "diameter")
-        if d is None:
-            return None
-        return SpecimenSetup(
-            diameter=d,
-            u_diameter=_num(i, "u_diameter", 0.0) or 0.0,
-            hanger_kg=_num(i, "hanger_kg", 0.0) or 0.0,
-            u_hanger_kg=_num(i, "u_hanger_kg", 0.0) or 0.0,
-        )
-    v, mass = _num(i, "volts"), _num(i, "mass_kg")
-    if v is None or mass is None:
+    """Map one replayed point to a LiveEvent via the shared phase mapping; None if unusable."""
+    parsed = parse_inputs(cp.point.phase, cp.inputs)
+    if parsed.is_err:
         return None
+    p = parsed.danger_ok
+    if isinstance(p, CalibrationInputs):
+        return CalPoint(volts=p.volts, height=p.height)
+    if isinstance(p, TareInputs):
+        return TareBlock(mean=p.mean, sd=p.sd, n=p.n)
+    if isinstance(p, SpecimenInputs):
+        return SpecimenSetup(
+            diameter=p.diameter,
+            u_diameter=p.u_diameter,
+            hanger_kg=p.hanger_kg,
+            u_hanger_kg=p.u_hanger_kg,
+        )
     return LoadPoint(
         point_id=cp.point.point_id,
-        volts=v,
-        u_volts=_num(i, "u_volts", 0.0) or 0.0,
-        mass_kg=mass,
-        u_mass_kg=_num(i, "u_mass_kg", 0.0) or 0.0,
+        volts=p.volts,
+        u_volts=p.u_volts,
+        mass_kg=p.mass_kg,
+        u_mass_kg=p.u_mass_kg,
     )
 
 

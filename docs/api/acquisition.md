@@ -17,3 +17,4 @@ object with `next_block` / `stop_streaming`) to `AcquisitionPipeline`.
 - Load chain: `LoadChain` is an ordered tuple of `LoadStep(label, mass_kg)`. `next_load()`
   writes a `load_applied` marker through the pipeline and only then advances the cursor, so a
   refused marker never skips a step. Errors are typani `Err` values (`AcquisitionError`).
+- Recording points: `record_point(inputs, window)` writes a WAL POINT event (via `AcquisitionPipeline.record_point`) using the typed inputs of `sadi.core.point_inputs` (calibration, tare, specimen, load); the same module is what the server curve source reads, so recorded points feed `/api/stress-strain/fit`. Append-only; a WAL refusal halts the pipeline like any other write.

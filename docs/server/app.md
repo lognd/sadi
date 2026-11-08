@@ -54,5 +54,6 @@ The active session is the newest directory (names sort by UTC stamp) under
 (`sadi.store.events.recover_state`: snapshot plus WAL tail, no repair, no writes), maps POINT
 events by `phase` (`calibration`: volts, height; `tare`: mean, sd, n; `specimen`: diameter,
 u_diameter, hanger_kg, u_hanger_kg; any other phase is a load point: volts, mass_kg and
-optional u_volts, u_mass_kg), derives the curve with `build_document` and returns the
+optional u_volts, u_mass_kg; defined once in `sadi.core.point_inputs`, which the recording
+path also uses to write them), derives the curve with `build_document` and returns the
 non-excluded points. No session, replay failure or an unready session gives 409 `NoData`.

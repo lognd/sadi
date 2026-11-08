@@ -61,6 +61,8 @@ def test_lifespan_holds_lock_and_releases(tmp_path: Path) -> None:
     again.danger_ok.release()
 
 
+# frob:ticket 01M6XBHBTGXTE4TT5A9BE5FMFS
+# frob:tests python/sadi/server/app.py::RootLockStartupError.__init__
 def test_startup_fails_when_lock_held(tmp_path: Path) -> None:
     """A live lock makes startup raise RootLockStartupError and is never stolen."""
     import pytest

@@ -52,6 +52,8 @@ def test_mark_load_change_maps_refusals() -> None:
 
 
 # frob:tests python/sadi/server/live.py::LiveAcquisition.mark_load_change
+# frob:ticket 01M6XBHBTGXTE4TT5A9BE5FMFS
+# frob:tests python/sadi/server/live.py::LiveAcquisition.__init__
 def test_live_mark_load_change_without_run() -> None:
     """With no run started LiveAcquisition refuses with NoLiveSession."""
     from typing import cast

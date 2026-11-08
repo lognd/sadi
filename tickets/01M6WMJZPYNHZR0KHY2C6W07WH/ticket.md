@@ -13,7 +13,7 @@ scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/s
 
 [[acceptance]]
 text = "GET /api/save-indicator is served by create_app and a writer failure latches NOT SAVED via on_failure"
-bound = false
+bound = true
 +++
 
 make_save_indicator_router (python/sadi/api/save_indicator.py) is not mounted in sadi/server/app.py and SaveIndicator.mark_failed is not registered as WriterHandle.on_failure, so GET /api/save-indicator is unreachable. Wire both and test through the app.

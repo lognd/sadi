@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/session_points.py", "python/sadi/server/routes/results.py", "python/sadi/server/routes/export.py", "python/tests/server/test_session_points.py"]
+new = ["python/sadi/server/session_points.py", "python/sadi/server/routes/results.py", "python/sadi/server/routes/export.py", "python/tests/server/test_session_points.py", "changelog.d/01M6WVADCSP63DBMYH3RNCXWTM.changed.md"]
+at = "2026-11-08T06:01:39Z"
+actor = "lognd"
+rev = 1

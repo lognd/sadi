@@ -1,0 +1,10 @@
++++
+id = "01M6X0GP5NS30CC28WH5A16KW4"
+title = "e2e: Enter on Setup (Clamp slip check) does not advance the wizard against the launcher-built app"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-08T07:21:11Z"
+updated = "2026-11-08T07:21:11Z"
++++

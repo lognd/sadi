@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:47:27Z"
+updated = "2026-11-08T05:47:58Z"
 idempotency_key = "sadi-f4"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/live/**", "creates:web/src/ws/**", "creates:web/src/hooks/useTrace.ts", "creates:docs/web/live-trace.md"]
-scope = ["web/src/plots/live/**", "web/src/ws/**", "web/src/hooks/useTrace.ts", "docs/web/live-trace.md"]
+scope = ["web/src/plots/live/**", "web/src/ws/**", "web/src/hooks/useTrace.ts", "docs/web/live-trace.md", "docs/web/plots.md"]
 
 [[links]]
 kind = "blocked-by"

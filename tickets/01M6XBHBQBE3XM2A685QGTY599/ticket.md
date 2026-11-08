@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:33:47Z"
-updated = "2026-11-08T10:36:05Z"
-scope = ["python/sadi/jobs/pool.py"]
+updated = "2026-11-08T10:36:34Z"
+scope = ["python/sadi/jobs/pool.py", "python/tests/jobs/test_pool_slot.py"]
 
 [[acceptance]]
 text = "WorkerSlot.join returns True for a worker that exited politely; regression test covers the race"

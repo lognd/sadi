@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:20:39Z"
-updated = "2026-11-08T06:32:45Z"
+updated = "2026-11-08T06:32:48Z"
 labels = ["creates:python/sadi/labs/lctt/figure_data.py", "creates:docs/lctt/figure-data.md"]
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/**", "docs/lctt/**", "docs/server/export.md", "python/sadi/labs/lctt/figure_data.py", "docs/lctt/figure-data.md"]
 

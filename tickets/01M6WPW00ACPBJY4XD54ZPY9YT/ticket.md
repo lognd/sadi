@@ -2,7 +2,8 @@
 id = "01M6WPW00ACPBJY4XD54ZPY9YT"
 title = "Replace remaining StrEnum error families in doctor/ and server/ with typani ErrorSet"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "low"
 points = 2
 reporter = "lognd"

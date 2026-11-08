@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Error code families are typani ErrorSet with stable wire values; writer errors carry StoreCode; remaining StrEnums recorded as states"]
+moved = []
+at = "2026-11-08T04:04:41Z"
+actor = "lognd"
+rev = 1

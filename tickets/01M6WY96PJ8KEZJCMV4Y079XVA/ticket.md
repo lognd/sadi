@@ -12,5 +12,5 @@ scope = ["python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt/test_export_csv
 
 [[acceptance]]
 text = "Stale 34-column mentions in lctt lab.py and the header test name read 42 columns"
-bound = false
+bound = true
 +++

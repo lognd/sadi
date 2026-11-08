@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
 updated = "2026-11-08T10:14:54Z"
-scope = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md"]
+scope = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md", "docs/usability-report.md"]
 
 [[acceptance]]
 text = "Run screen shows an accessible hint that hotkeys pause in text fields and Esc/Tab returns to them; Esc blurs the field; typing never captures"

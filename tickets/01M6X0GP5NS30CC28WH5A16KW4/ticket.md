@@ -2,7 +2,8 @@
 id = "01M6X0GP5NS30CC28WH5A16KW4"
 title = "e2e: Enter on Setup (Clamp slip check) does not advance the wizard against the launcher-built app"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

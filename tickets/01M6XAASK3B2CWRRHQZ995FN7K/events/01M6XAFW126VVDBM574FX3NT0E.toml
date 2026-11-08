@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/screens/export/ExportScreen.test.tsx"]
+new = ["web/src/screens/export/ExportScreen.test.tsx", "web/src/screens/export/ExportScreen.tsx"]
+at = "2026-11-08T10:15:30Z"
+actor = "lognd"
+rev = 1

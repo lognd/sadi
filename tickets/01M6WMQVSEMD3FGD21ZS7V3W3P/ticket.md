@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:55:23Z"
-updated = "2026-11-08T03:58:22Z"
+updated = "2026-11-08T03:58:25Z"
 labels = ["feature"]
 scope = ["python/sadi/labs/lctt/creep.py", "python/tests/labs/lctt/test_creep.py", "docs/lctt/creep.md"]
 

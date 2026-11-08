@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:45:33Z"
-updated = "2026-11-08T06:45:49Z"
-scope = ["crates/**"]
+updated = "2026-11-08T06:47:58Z"
+scope = ["crates/**", "docs/**"]
 +++
 
 found while working ~WKK27QJ

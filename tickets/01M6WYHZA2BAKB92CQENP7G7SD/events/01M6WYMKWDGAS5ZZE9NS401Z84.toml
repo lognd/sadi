@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T06:48:19Z"
+digest = "5393a559744221bc30fe527d89c7330de9204188db2ffedfae1fffd9ccc29762"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 6 items
+
+python/tests/labs/lctt/test_lab_export.py ......                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-692161-0.xml ---------------
+============================== 6 passed in 2.18s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_lab_export.py::test_figure_data_series_lengths_agree python/tests/labs/lctt/test_lab_export.py::test_figure_json_has_both_series python/tests/labs/lctt/test_lab_export.py::test_figure_json_refuses_without_events python/tests/labs/lctt/test_lab_export.py::test_lab_declares_lctt_csv python/tests/labs/lctt/test_lab_export.py::test_writer_refuses_without_events python/tests/labs/lctt/test_lab_export.py::test_writer_renders_full_header_from_run_events"
+size = 521
+status = "measured"
+test_count = 6
+tests_digest = "9ba68fc199e418980799968ba25bb9c78359624904d50b62ba11b9504e35a259"
+at = "2026-11-08T06:48:19Z"
+actor = "lognd"
+rev = 1

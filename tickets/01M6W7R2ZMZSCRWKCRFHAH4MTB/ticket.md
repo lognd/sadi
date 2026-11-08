@@ -8,10 +8,10 @@ points = 8
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:16:05Z"
+updated = "2026-11-08T03:21:49Z"
 idempotency_key = "sadi-ds6"
 labels = ["ws:store", "fault-injection", "model:sonnet", "creates:python/tests/crash/**", "creates:.github/workflows/crash.yml", "creates:docs/store/crash-testing.md"]
-scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md"]
+scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md", "docs/store/lock.md", "changelog.d/*HAH4MTB*"]
 
 [[links]]
 kind = "blocked-by"

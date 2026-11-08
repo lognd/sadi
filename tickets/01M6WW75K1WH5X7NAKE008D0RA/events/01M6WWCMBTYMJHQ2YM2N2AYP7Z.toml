@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["wsSubscribe forwards only RESULTS_ENVELOPE frame bodies from WS /api/stream", "reconnect replays never regress state and unsubscribe closes the socket"]
+moved = []
+at = "2026-11-08T06:09:04Z"
+actor = "lognd"
+rev = 1

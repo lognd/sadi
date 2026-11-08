@@ -4,3 +4,4 @@ export * from "./envelope";
 export * from "./store";
 export * from "./useResultsStream";
 export * from "./StreamedValue";
+export * from "./wsSubscribe";

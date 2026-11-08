@@ -8,8 +8,8 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:58:04Z"
-scope = ["web/src/api/**", "python/sadi/server/openapi_export.py", "python/tests/server/test_openapi_export.py", "web/package.json", "web/src/api/schema.test.ts", "docs/web-api-client.md", "changelog.d/01M6W7R0KH8QFP4K9PTM197V9E.changed.md", "changelog.d/01M6W7R0PMCGFDSFY53XDK2EVN.changed.md"]
+updated = "2026-11-08T05:58:05Z"
+scope = ["web/src/api/**", "python/sadi/server/openapi_export.py", "python/tests/server/test_openapi_export.py", "web/package.json", "web/src/api/schema.test.ts", "docs/web-api-client.md", "changelog.d/01M6W7R0KH8QFP4K9PTM197V9E.changed.md", "changelog.d/01M6W7R0PMCGFDSFY53XDK2EVN.changed.md", "changelog.d/01M6W7R0R9PGCDJWAD321F3H53.changed.md"]
 
 [[links]]
 kind = "blocked-by"

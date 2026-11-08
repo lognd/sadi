@@ -31,8 +31,10 @@ from sadi.core.pipeline import (
     Subscription,
     TraceFrame,
 )
+from sadi.jobs.state import ResultEnvelope, ResultState
 from sadi.logging_setup import get_logger
-from sadi.server.framing import encode_trace
+from sadi.server.framing import encode_envelope, encode_trace
+from sadi.server.results_stream import Connection, ResultsStream
 from sadi.server.service import SessionService
 
 _log = get_logger(__name__)
@@ -80,6 +82,8 @@ class _Client:
         """Start empty."""
         self.frames: deque[tuple[int, TraceFrame]] = deque()
         self.msgs: deque[dict[str, Any]] = deque()
+        self.envelopes: deque[ResultEnvelope] = deque()
+        self.conn: Connection | None = None
         self.stats = ClientStats()
 
     def offer_frame(self, seq: int, frame: TraceFrame) -> None:
@@ -96,12 +100,35 @@ class _Client:
             _log.warning("client json queue full; oldest message dropped")
         self.msgs.append(msg)
 
+    def offer_envelope(self, env: ResultEnvelope) -> None:
+        """Queue a versioned result envelope; the oldest goes first at the generous cap."""
+        if len(self.envelopes) >= CLIENT_JSON_DEPTH:
+            self.envelopes.popleft()
+            _log.warning("client envelope queue full; oldest envelope dropped")
+        self.envelopes.append(env)
+
+
+def encode_result(seq: int, env: ResultEnvelope) -> bytes:
+    """Encode `env` as a RESULTS_ENVELOPE frame (JSON body, stale flag from its state)."""
+    return encode_envelope(
+        seq,
+        env.emitted_ns / 1e9,
+        env.model_dump_json().encode("utf-8"),
+        stale=env.state is ResultState.STALE,
+    )
+
 
 class StreamHub:
     """Fans the pipeline bus out to WebSocket clients and remembers the latest state."""
 
-    def __init__(self, bus: Bus, sessions: SessionService | None = None) -> None:
-        """Subscribe once to `bus`; `sessions` (optional) supplies session info for `hello`."""
+    def __init__(
+        self,
+        bus: Bus,
+        sessions: SessionService | None = None,
+        results: ResultsStream | None = None,
+    ) -> None:
+        """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes."""
+        self.results = results
         self._sub: Subscription = bus.subscribe("ws-hub")
         self._sessions = sessions
         self._lock = threading.Lock()
@@ -109,9 +136,17 @@ class StreamHub:
         self._seq = 0
         self._latest: dict[str, dict[str, Any]] = {}
 
+    def next_seq(self) -> int:
+        """Allocate the next hub-wide frame sequence number."""
+        with self._lock:
+            self._seq += 1
+            return self._seq
+
     def attach(self) -> _Client:
         """Register a client; it sees only events from now on (resume from latest)."""
         c = _Client()
+        if self.results is not None:
+            c.conn = self.results.connect(c.offer_envelope)
         with self._lock:
             self._clients.append(c)
         _log.info("ws client attached (%d total)", len(self._clients))
@@ -119,6 +154,8 @@ class StreamHub:
 
     def detach(self, client: _Client) -> None:
         """Remove a client."""
+        if self.results is not None and client.conn is not None:
+            self.results.disconnect(client.conn)
         with self._lock:
             if client in self._clients:
                 self._clients.remove(client)
@@ -188,6 +225,9 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
                 busy = False
                 while client.msgs:
                     await ws.send_text(json.dumps(client.msgs.popleft()))
+                    busy = True
+                while client.envelopes:
+                    await ws.send_bytes(encode_result(hub.next_seq(), client.envelopes.popleft()))
                     busy = True
                 while client.frames:
                     seq, f = client.frames.popleft()

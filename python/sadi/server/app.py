@@ -28,6 +28,7 @@ from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import make_curve_source
+from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.problem import install_problem_handlers
@@ -61,6 +62,7 @@ class AppSettings(BaseModel):
     device: DeviceProbe | None = None
     budgets: BudgetSource | None = None
     inventory: InventoryProvider | None = None
+    results: ResultsStream | None = None
 
 
 class _NoWriter:
@@ -165,7 +167,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))
     if cfg.bus is not None:
-        app.state.stream_hub = StreamHub(cfg.bus, app.state.sessions)
+        app.state.results_stream = cfg.results or ResultsStream()
+        app.state.stream_hub = StreamHub(cfg.bus, app.state.sessions, app.state.results_stream)
         app.include_router(make_ws_router(app.state.stream_hub))
     source = cfg.curve_source or make_curve_source(cfg.data_root)
     app.include_router(make_stress_strain_router(source))

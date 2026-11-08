@@ -133,6 +133,23 @@ class ResultsStream:
         )
         return Ok[ResultEnvelope, StreamError](out)
 
+    def job_sink(self) -> Subscriber:
+        """Return a `JobManager` sink: refining/final envelopes are offered, others ignored.
+
+        Staleness is owned by `push_analytic`, so the manager's own stale envelopes are
+        not re-published; rejected offers (stale data) are logged and dropped.
+        """
+
+        def sink(env: ResultEnvelope) -> None:
+            if env.state not in (ResultState.REFINING, ResultState.FINAL):
+                _log.debug("key %s: job sink ignored %s envelope", env.key, env.state)
+                return
+            res = self.offer_refinement(env)
+            if res.is_err:
+                _log.debug("key %s: job sink offer rejected: %s", env.key, res.danger_err.code)
+
+        return sink
+
     def _mark_stale(self, key: JobKey) -> None:
         last = self._latest[key]
         if last.state is ResultState.STALE:

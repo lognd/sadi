@@ -45,9 +45,10 @@ TRACE payload (type 1), follows the header:
 Each channel is min/max-decimated to at most 256 buckets (peaks survive); a channel with
 fewer points has min == max. Total size: `62 + n_channels * (2 + 8 * n_points)` bytes.
 
-RESULTS_ENVELOPE (type 2) is reserved for the versioned results envelope defined by J4
+RESULTS_ENVELOPE (type 2) carries the versioned results envelope defined by J4
 (version, stale flag, progress): payload after the header is UTF-8 JSON, flags bit 0 is the
-stale flag. The server defines the frame and codec (`encode_envelope`) but emits none yet.
+stale flag. `StreamHub` emits it for each `ResultsStream` envelope (snapshot on connect, then
+live); see [results-stream.md](results-stream.md).
 
 The TypeScript decoder in F4 mirrors `framing.decode` byte for byte.
 

@@ -12,7 +12,7 @@ scope = ["frob.toml"]
 
 [[acceptance]]
 text = "frob check on main reports zero COV001 under web/src"
-bound = false
+bound = true
 +++
 
 found while working ~5PCC2QG: npx tsc at the repo root runs the wrong tsc package; use npm --prefix web exec -- tsc. Acceptance: zero web COV001 on main.

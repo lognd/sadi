@@ -2,7 +2,8 @@
 id = "01M6W7RAH93KKNK1WH67KWS2S7"
 title = "Live trace plot: scrolling binary-WebSocket trace with settle markers"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

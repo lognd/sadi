@@ -2,12 +2,12 @@
 id = "01M6WNV0R4RXDTR3JBBESM525T"
 title = "COV001: store/events.py settings_record reached by no test"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T04:14:35Z"
-updated = "2026-11-08T04:16:18Z"
+updated = "2026-11-08T04:16:19Z"
 scope = ["python/sadi/store/**"]
 +++
 

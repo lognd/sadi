@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RATGKGPEYSMC5H8WGMBV
+// frob:accept COV001 because="covered by ExportScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import type { Result } from "../../api/result";

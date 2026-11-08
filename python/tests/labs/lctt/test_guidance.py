@@ -66,6 +66,7 @@ def _inp(rs: ResultSet, n_cal: int = 0, hold: HoldState = HoldState.READY) -> Gu
 
 
 # frob:tests python/sadi/labs/lctt/guidance.py::guide
+# frob:tests python/sadi/labs/lctt/guidance.py::EvenScheduleSuggester.suggest
 def test_next_action_text_per_hold_state() -> None:
     empty = ResultSet()
     cfg = GuidanceConfig(load_range=RANGE)
@@ -159,6 +160,7 @@ def test_confidence_and_stop_early_proposed_not_forced() -> None:
 
 
 # frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun
+# frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.phase
 def test_accept_transition_walks_phases_then_errs() -> None:
     run = GuidedRun()
     assert _ok(run.accept_transition()) is Phase.ELASTIC

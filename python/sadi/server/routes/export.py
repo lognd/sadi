@@ -87,7 +87,9 @@ def render_export(
         return Err(from_sadi(analysis.danger_err))
     # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
     replays = cache if cache is not None else SessionReplayCache()
-    events = replays.events(svc.session_path().unwrap(), verify=True)  # frob:ticket ~RANVN2E
+    events = replays.events(
+        svc.session_path().unwrap(), verify=True
+    )  # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
     if events.is_err:
         _log.error("export %s: session replay failed: %s", format_id, events.danger_err)
         return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))

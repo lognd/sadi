@@ -3,7 +3,7 @@
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
 # frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
-# frob:ticket ~RANVN2E
+# frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
 
 from __future__ import annotations
 
@@ -196,7 +196,7 @@ class SessionReplayCache:
             self._verified_at[sdir] = now
         return have
 
-    # frob:ticket ~RANVN2E
+    # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
     def events(self, sdir: Path, *, verify: bool = False) -> Result[list[LiveEvent], str]:
         """Return `session_events(sdir)` via the cache; `verify=True` forces a full verified replay.
 

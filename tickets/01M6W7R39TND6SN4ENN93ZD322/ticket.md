@@ -2,13 +2,14 @@
 id = "01M6W7R39TND6SN4ENN93ZD322"
 title = "GP selector implementation and benchmark vs baselines"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "high"
 points = 8
 parent = "01M6W7R081S67XNGBH79ACCBZZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T02:27:18Z"
 idempotency_key = "sadi-gp2"
 labels = ["ws:plan", "model:sonnet", "creates:python/sadi/core/planning/gp.py", "creates:python/sadi/core/planning/stopping.py", "creates:python/tests/core/planning/test_gp.py", "creates:docs/core/planning-gp.md"]
 scope = ["python/sadi/core/planning/gp.py", "python/sadi/core/planning/stopping.py", "python/tests/core/planning/test_gp.py", "docs/core/planning-gp.md"]

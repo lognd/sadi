@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:04:50Z"
+updated = "2026-11-08T03:04:54Z"
 idempotency_key = "sadi-s2"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/capture.py", "creates:python/tests/labs/lctt/test_capture.py", "creates:docs/lctt/capture.md"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md"]
@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Pressing accept before settled records forced_early=true and warns"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/jobs/**", "python/tests/labs/**", "python/tests/plugins/**", "python/tests/server/**", "python/tests/store/**"]
+new = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/jobs/**", "python/tests/labs/**", "python/tests/plugins/**", "python/tests/server/**", "python/tests/store/**", "python/tests/uncertainty/**"]
+at = "2026-11-08T04:29:04Z"
+actor = "lognd"
+rev = 1

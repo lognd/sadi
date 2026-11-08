@@ -71,6 +71,11 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="reset the device and time the boot (enables DEV-050)",
     )
+    p.add_argument(
+        "--open-browser",
+        action="store_true",
+        help="open a browser at a throwaway local page (enables BRW-030)",
+    )  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     p.add_argument("--bundle", metavar="PATH", help="also write a redacted diagnostics zip to PATH")
     p.add_argument(
         "--apply", action="store_true", help="`fix`: run fixable commands (default: dry run)"
@@ -165,6 +170,7 @@ def _options(args: argparse.Namespace) -> RunOptions:
         port=args.port,
         stream_seconds=args.stream_seconds,
         with_reset=args.with_reset,
+        open_browser=args.open_browser,  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     )
 
 

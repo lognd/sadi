@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Literal, Protocol
 
 from typani import Err, Ok, Result
 
+from sadi.doctor import hostprobe
 from sadi.doctor.devprobe import DeviceFacts, SimFacts, probe_device, probe_sim
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts, survey_sessions
@@ -218,6 +219,26 @@ class Probes(Protocol):
         """Return what spawning a worker and orphaning a watchdog child observed."""
         ...
 
+    def build_target(self) -> str | None:
+        """Return the target tag baked into sadi_py at build, or None when it has none."""
+        ...
+
+    def long_paths_enabled(self) -> bool | None:
+        """Return the Windows LongPathsEnabled registry flag, None when not Windows."""
+        ...
+
+    def web_bundle_version(self) -> str | None:
+        """Return the SADI version recorded in dist/version.json, None when absent."""
+        ...
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Return (family, major version) of the default browser, None when unknown."""
+        ...
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Open the browser at a throwaway local listener; True when it fetched the page."""
+        ...
+
     def browser_available(self) -> bool:
         """Return True when a browser controller can be resolved."""
         ...
@@ -409,7 +430,15 @@ class RealProbes:
             return None
 
     def fstype(self, path: str) -> str | None:
-        """Return the longest-prefix mount's fstype from /proc/mounts (Linux/WSL), else None."""
+        """Return the longest-prefix mount's fstype from /proc/mounts (Linux/WSL), `mount` (macOS) or Win32."""
+        kind = self.os_kind()
+        if kind is Os.WINDOWS:
+            return hostprobe.windows_fstype(path)
+        if kind is Os.MACOS:
+            res = self.run(["mount"])
+            if not isinstance(res, Ok) or res.value.exit_code != 0:
+                return None
+            return hostprobe.mount_fstype(res.value.stdout_tail, str(Path(path).resolve()))
         text = self.read_text("/proc/mounts")
         if text is None:
             return None
@@ -594,6 +623,53 @@ class RealProbes:
         from sadi.store.spill import discover_spills
 
         return [str(p) for p in discover_spills(Path(data_root))]
+
+    def build_target(self) -> str | None:
+        """Return sadi_py.BUILD_TARGET when exposed."""
+        return hostprobe.build_target()
+
+    def long_paths_enabled(self) -> bool | None:
+        """Read LongPathsEnabled from the Windows registry."""
+        return hostprobe.windows_long_paths()
+
+    def web_bundle_version(self) -> str | None:
+        """Read dist/version.json next to the package."""
+        return hostprobe.web_bundle_version()
+
+    def browser_version(self) -> tuple[str, int] | None:
+        """Resolve the default browser and read its major version per OS."""
+        kind = self.os_kind()
+        if kind is Os.WINDOWS:
+            return hostprobe.windows_default_browser()
+        name = self._browser_name()
+        family = hostprobe.family_of(name) if name else None
+        if not name or family is None:
+            return None
+        if kind is Os.MACOS and family == "safari":
+            plist = "/Applications/Safari.app/Contents/Info"
+            res = self.run(["defaults", "read", plist, "CFBundleShortVersionString"])
+        else:
+            exe = self.which(name)
+            if exe is None:
+                return None
+            res = self.run([exe, "--version"])
+        if not isinstance(res, Ok) or res.value.exit_code != 0:
+            return None
+        major = hostprobe.major_version(res.value.stdout_tail)
+        return (family, major) if major is not None else None
+
+    def _browser_name(self) -> str | None:
+        """Return the executable name of the controller webbrowser would use."""
+        import webbrowser
+
+        try:
+            return Path(getattr(webbrowser.get(), "name", "") or "").name or None
+        except webbrowser.Error:
+            return None
+
+    def browser_launch_hit(self, timeout: float) -> bool:
+        """Run the launch dry run against a throwaway loopback listener."""
+        return hostprobe.launch_hit(timeout)
 
     def browser_available(self) -> bool:
         """Return True when webbrowser resolves a controller."""

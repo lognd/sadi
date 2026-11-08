@@ -12,7 +12,19 @@ from sadi.doctor.steps import action, cmd, manual
 GIB = 1024**3
 MIN_FREE_BYTES = 2 * GIB
 LOW_FREE_BYTES = 10 * GIB
-_NETWORK_FS = {"nfs", "nfs4", "cifs", "smb3", "smbfs", "sshfs", "fuse.sshfs", "fuse.rclone", "afs"}
+_NETWORK_FS = {
+    "nfs",
+    "nfs4",
+    "cifs",
+    "smb3",
+    "smbfs",
+    "sshfs",
+    "fuse.sshfs",
+    "fuse.rclone",
+    "afs",
+    "afpfs",
+    "webdav",
+}  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
 _FAT_FS = {"vfat", "exfat", "msdos", "fat32"}
 _DRVFS = {"9p", "drvfs"}
 SLOW_FSYNC_MS = 200.0
@@ -124,16 +136,14 @@ def _data_010_perm(ctx: Ctx, out: Outcome) -> Fix:
         "drvfs-9p": "The data root is on a Windows drive seen from WSL",
         "fat-exfat": "The data root is on FAT/exFAT (no reliable flush)",
     },
-    "filesystem type of the longest matching mount in /proc/mounts (Linux/WSL)",
+    "filesystem type of the longest matching mount: /proc/mounts (Linux/WSL), `mount` (macOS), GetVolumeInformationW (Windows)",
 )
 def data_020(ctx: Ctx) -> Outcome:
     """Reject filesystems where fsync or locks are unreliable."""
-    if ctx.os in (Os.WINDOWS, Os.MACOS):
-        return skip(SkipReason.UNVERIFIED, "Filesystem type probe is not implemented on this OS")
     root = _root(ctx)
-    fs = ctx.probes.fstype(root)
+    fs = ctx.probes.fstype(root)  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     if fs is None:
-        return skip(SkipReason.TOOL_MISSING, "Could not read /proc/mounts", root=root)
+        return skip(SkipReason.TOOL_MISSING, "Could not determine the filesystem type", root=root)
     if fs in _NETWORK_FS and not ctx.options.allow_network_fs:
         return fail("network-fs", f"{root} is on {fs}", fs=fs, root=root)
     if fs in _DRVFS and ctx.os is Os.WSL:

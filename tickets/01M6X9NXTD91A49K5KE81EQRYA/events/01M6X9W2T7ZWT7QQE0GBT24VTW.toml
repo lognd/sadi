@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md"]
+new = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md", "web/src/screens/run/RunView.tsx"]
+at = "2026-11-08T10:04:41Z"
+actor = "lognd"
+rev = 1

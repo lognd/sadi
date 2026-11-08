@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T02:16:46Z"
-updated = "2026-11-08T03:29:45Z"
+updated = "2026-11-08T03:29:48Z"
 scope = ["python/tests/labs/lctt/test_calibration.py"]
 
 [[acceptance]]
@@ -16,5 +16,5 @@ bound = true
 
 [[acceptance]]
 text = "Property tests bound the estimated-SE error with the Student-t quantile (not a normal 6-sigma) and are derandomized"
-bound = false
+bound = true
 +++

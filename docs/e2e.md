@@ -9,9 +9,10 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
 
 ## Layout
 
-- `web/e2e/playwright.config.ts`: one worker, chromium, starts the backend via `serve.mjs`.
-- `web/e2e/serve.mjs`: runs `sadi --sim --no-browser` on port 8765 (`SADI_E2E_PORT`) with a fresh
-  temp data dir, so real session data is never read, written or deleted.
+- `web/e2e/playwright.config.ts`: one worker, chromium, no shared server (see fixtures.ts).
+- `web/e2e/fixtures.ts`: overrides `baseURL` so every test starts its own `sadi --sim --no-browser` on a free
+  port (searched upward from `SADI_E2E_PORT`, default 8765) with a fresh temp data dir, removed after the test.
+  Real session data is never read, written or deleted and no session is shared between specs.
 - `web/e2e/guided-run.spec.ts`: Setup to Export; asserts the results panel, a non-empty CSV
   download (F3) and a non-empty PNG figure download.
 - `web/e2e/run-capture.spec.ts`: calibrate/tare/elastic/plastic capture phases (~A7JNFGT).
@@ -45,7 +46,7 @@ rather than "Calibrate" (the run heading still says "Calibrate").
 app treats the probe as a connection error; filed as a bug) and, when the Setup screen is shown,
 creates a fresh session through its form (never resumes or discards one). If no lab is registered
 (the launcher does not wire plugin labs yet; filed as a bug) the form cannot submit and the specs
-skip. `serve.mjs` passes `--web-dist web/dist` (run `npm run build` first); the readiness URL is
+skip. `fixtures.ts` passes `--web-dist web/dist` (run `npm run build` first); readiness is polled at
 `/openapi.json`. Run with `PYTHONPATH=crates/sadi-py/python` when `sadi_py` is not installed in the
 python venv. Playwright output dirs `test-results/` and `playwright-report/` are gitignored.
 
@@ -57,5 +58,4 @@ marker) so the detector can settle and the readout reaches `[Settled]`.
 The Run screen has per-phase input fields (see web/run-screens.md); `acceptWhenSettled(page, inputsFor(phase, i))`
 fills them, leaves the field (hotkeys are ignored in text inputs), marks a load change, waits for the
 marker ack and `[Settled]`, then presses Space. Known gaps (tickets): capture latency grows with WAL
-size so the full guided run does not finish (~2RWJ137); specs share one backend session so the second
-run-capture spec starts mid-run (~DKZDSBS).
+size so the full guided run does not finish (~2RWJ137). Each test has its own backend, so specs start at Setup (fixed in ~DKZDSBS).

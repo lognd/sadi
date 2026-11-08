@@ -2,7 +2,7 @@
 // creates:web/e2e/guided-run.spec.ts
 // Requires a browser (chromium) and `sadi --sim` (sadi_py built); see docs/e2e.md.
 import { readFile } from "node:fs/promises";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { acceptWhenSettled, expectStep, inputsFor, openWizard, skipSetup } from "./helpers";
 
 test("keyboard-only guided run Setup -> Export against the simulator", async ({ page }) => {

@@ -2,7 +2,7 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // creates:web/e2e/run-capture.spec.ts
 // Run-screen capture phases (covers ~A7JNFGT). Requires chromium and `sadi --sim`; see docs/e2e.md.
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { acceptWhenSettled, expectStep, inputsFor, openWizard, skipSetup } from "./helpers";
 
 test("simulator banner, live readout and Space capture on the calibrate screen", async ({ page }) => {

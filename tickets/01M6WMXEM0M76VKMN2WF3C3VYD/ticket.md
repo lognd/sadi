@@ -2,7 +2,8 @@
 id = "01M6WMXEM0M76VKMN2WF3C3VYD"
 title = "Wire a real CurveSource (active session events) into create_app for stress-strain fit"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

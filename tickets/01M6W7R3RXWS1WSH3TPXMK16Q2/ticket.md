@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:17:58Z"
+updated = "2026-11-08T05:18:01Z"
 idempotency_key = "sadi-ts1"
 labels = ["ws:py", "lctt", "oq:Q8", "model:sonnet", "creates:python/sadi/labs/lctt/lab.py", "creates:python/sadi/labs/lctt/specimens.py", "creates:python/tests/labs/lctt/test_lab.py", "creates:docs/lctt/lab-module.md"]
 scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/specimens.py", "python/tests/labs/lctt/test_lab.py", "docs/lctt/lab-module.md", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py", "docs/index.md"]
@@ -39,7 +39,7 @@ bound = true
 
 [[acceptance]]
 text = "Calibration and experiment loads come from the core point inputs (heights, masses), so a plugin-supplied inventory with swapped weights needs no re-entry in the lab"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

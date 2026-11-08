@@ -129,7 +129,7 @@ def _io(exc: OSError, path: Path) -> SessionIo:
 
 def _slug(raw: str) -> str:
     """Normalise a slug to <=32 portable chars (lowercase, no reserved names), default `session`."""
-    # frob:ticket ~9J7TDEC
+    # frob:ticket 01M6WC0KV4VWZ2E3A989J7TDEC
     base = _SLUG_RE.sub("-", raw.lower()).strip("-")[:32] or "session"
     return sanitize_name(base, max_len=_SLUG_MAX_LEN)
 

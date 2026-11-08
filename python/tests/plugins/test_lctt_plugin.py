@@ -40,15 +40,23 @@ def test_loader_and_registry_do_not_mention_lctt() -> None:
 
 
 # frob:tests python/sadi/labs/lctt/plugin.py::register
-# frob:tests python/sadi/labs/lctt/plugin.py::LcttLab.steps
-# frob:tests python/sadi/labs/lctt/plugin.py::LcttLab.recompute
+# frob:tests python/sadi/labs/lctt/lab.py::LcttLab.steps
+# frob:tests python/sadi/labs/lctt/lab.py::LcttLab.recompute
 def test_register_yields_working_lab() -> None:
     lab = register()
-    assert [s.id for s in lab.steps()] == ["setup", "calibrate", "elastic", "plastic"]
+    assert [s.id for s in lab.steps()] == [
+        "setup",
+        "calibrate",
+        "tare",
+        "elastic",
+        "plastic",
+        "results",
+        "export",
+    ]
     assert isinstance(lab.recompute(()), Ok)
 
 
-# frob:tests python/sadi/labs/lctt/plugin.py::setup_step
+# frob:tests python/sadi/labs/lctt/lab.py::setup_step
 def test_setup_step_hosts_clamp_check_with_criterion() -> None:
     """Setup is first on the rail, in Phase.SETUP, gated on one point per cycle."""
     # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM

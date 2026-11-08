@@ -42,6 +42,7 @@ Status: current
 - [LCTT capture modes](lctt/capture.md)
 - [LCTT loading: tare, load, stress, strain](lctt/loading.md)
 - [LCTT modulus, yield, saturation](lctt/modulus.md)
+- [LCTT lab module and two-specimen workflow](lctt/lab-module.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
 - [LCTT live results](lctt/live-results.md)
 - [LCTT CSV export](lctt/export-csv.md)

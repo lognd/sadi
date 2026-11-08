@@ -7,6 +7,10 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:46:56Z"
-updated = "2026-11-08T06:47:24Z"
+updated = "2026-11-08T06:47:55Z"
 scope = ["python/tests/labs/lctt/test_lab_export.py"]
+
+[[acceptance]]
+text = "test_writer_renders_full_header_from_run_events is named without a stale column count and passes"
+bound = false
 +++

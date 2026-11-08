@@ -2,4 +2,4 @@
 /** Public surface of the live trace plot. */
 export * from "./window";
 export * from "./scene";
-export { LivePlot, EXPORT_KEY } from "./LivePlot";
+export { LivePlot } from "./LivePlot";

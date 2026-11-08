@@ -2,7 +2,8 @@
 id = "01M6WJHW0YH103PNS1PGAG48CQ"
 title = "doctor: fix subcommand, --bundle, unified sadi launcher registration"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

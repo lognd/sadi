@@ -12,7 +12,7 @@ scope = ["python/sadi/server/**", "python/sadi/labs/**", "python/sadi/core/lab.p
 
 [[acceptance]]
 text = "GET /api/results/budgets returns the lab budgets when no source is injected"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A lab without the budgets hook yields an empty list"

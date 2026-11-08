@@ -1,0 +1,51 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:01:29Z"
+digest = "da769ff41c1b7727142f40a88c7886b9d114719b8994769bffa824b9be70ecbb"
+exit_code = 0
+head = "04cdba382aac503e984fe91dad707f544abc8df4"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_curve_source.py .                               [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-343471-0.xml ---------------
+forgot 8383a4c30f7c4a36a550adcdc8d364c7
+forgot b984d7b197bc44c9bbc97c775fdba872
+forgot a477d7e6b28c46578d8de0e477afbdc8
+forgot 13f9b84187984118be82bf2afa41af7e
+forgot 3346d44491ab4513a72858e7ece6586b
+forgot 49fd11e4d5d34bb795d85818ed345055
+forgot e326470fe2ac44dc9e422f1b8046418f
+forgot ef8b94bbafef48a5b7acd0e131bc0ed3
+forgot f044e260c721497a981dc3fd7f8b2996
+forgot 54d1d45049e6433c9b468625a72bf6f4
+forgot 3c4d93adae894829b23e8dd807af98d3
+forgot e25631fbff164aef845b76f360fc5278
+forgot fe47d833de3e4f4db148829a26327094
+forgot a98460ee27fe42e9b1541a85e763b383
+forgot f8df312756d340068e4310c2fe2554ea
+forgot 8780ce20a80640d5846795f2bf0f3724
+========================= 1 passed, 1 warning in 2.46s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_curve_source.py::test_active_session_feeds_fit_read_only"
+size = 1642
+status = "measured"
+test_count = 1
+tests_digest = "9a3370ed9d90822082e85ef28a07ec95f4893b16c2fef94e867e124df5fffb40"
+at = "2026-11-08T04:01:29Z"
+actor = "lognd"
+rev = 1

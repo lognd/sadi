@@ -215,9 +215,10 @@ class AcquisitionDriver:
             if self._ingest(block) is not None:
                 return
 
+    # frob:ticket 01M6WMVRTG5YQDSZYQQG368G2E
     def _halt_pipeline(self) -> None:
         """Make a device fault visible to the display through the pipeline's loud halt."""
-        self._pipe._halt("device_fault", "Check the device connection; saved data is safe")  # noqa: SLF001
+        self._pipe.halt("device_fault", "Check the device connection; saved data is safe")
 
     def _tick_loop(self) -> None:
         """Run the pipeline health check every tick interval until stopped."""

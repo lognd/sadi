@@ -28,7 +28,8 @@ blocks stay ordered.
 - WAL error, backpressure or stall (`tick()` runs `check_health`): the pipeline halts once. It
   stops the device, writes a best-effort `MARKER(kind="acquisition_stopped")`, publishes
   `PipelineStopped` (reason plus UI hint) and refuses further `ingest` with
-  `PipelineError.Halted`. Parked undurable items are never displayed.
+  `PipelineError.Halted`. External callers (the acquisition driver on a device fault) use the
+  public `halt(reason, hint)`, which is idempotent. Parked undurable items are never displayed.
 - A malformed block returns `PipelineError.BadBlock`; nothing is enqueued and acquisition
   continues.
 - An analysis exception is logged and published as `AnalysisFailed`. It never touches raw

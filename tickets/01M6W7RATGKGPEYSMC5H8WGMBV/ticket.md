@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:53:29Z"
+updated = "2026-11-08T05:53:31Z"
 idempotency_key = "sadi-f15"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/export/**", "creates:docs/web/export-screen.md"]
 scope = ["web/src/screens/export/**", "docs/web/export-screen.md", "docs/web/guidance.md"]
@@ -43,7 +43,7 @@ bound = true
 
 [[acceptance]]
 text = "problem+json errors show the server hint"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

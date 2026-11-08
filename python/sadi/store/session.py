@@ -36,6 +36,7 @@ from sadi.store.manifest import (
     read_manifest,
     write_manifest,
 )
+from sadi.store.names import sanitize_name
 from sadi.store.wal import ScanReport, WalError, WalReader
 
 _log = get_logger(__name__)
@@ -46,6 +47,7 @@ SUBDIRS = ("wal", "snapshots", "exports")
 MAX_VERSION = 999
 _DIR_RE = re.compile(r"^(?P<family>.+)\.v(?P<ver>\d{3})$")
 _SLUG_RE = re.compile(r"[^a-z0-9-]+")
+_SLUG_MAX_LEN = 32
 _IS_WIN = sys.platform == "win32"
 
 
@@ -126,8 +128,10 @@ def _io(exc: OSError, path: Path) -> SessionIo:
 
 
 def _slug(raw: str) -> str:
-    """Normalise a slug to at most 32 chars of [a-z0-9-], default `session`."""
-    return _SLUG_RE.sub("-", raw.lower()).strip("-")[:32] or "session"
+    """Normalise a slug to <=32 portable chars (lowercase, no reserved names), default `session`."""
+    # frob:ticket 01M6WC0KV4VWZ2E3A989J7TDEC
+    base = _SLUG_RE.sub("-", raw.lower()).strip("-")[:32] or "session"
+    return sanitize_name(base, max_len=_SLUG_MAX_LEN)
 
 
 def proc_start_token(pid: int) -> str | None:

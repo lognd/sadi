@@ -343,3 +343,17 @@ def test_stale_data_root_lock_is_reported_not_taken(tmp_path: Path) -> None:
     ok = create_session(tmp_path, META, NOW, recover_stale=True)
     assert ok.is_ok, ok
     ok.danger_ok.close()
+
+
+# frob:tests python/sadi/store/session.py::_slug
+@pytest.mark.parametrize("slug", ["con", "NUL", "com1", "a/b\\c:d*e?", "..", "", "x" * 200])
+def test_hostile_slug_cannot_reach_filesystem(tmp_path: Path, slug: str) -> None:
+    """Reserved Windows names and forbidden characters never appear in the session dir name."""
+    from sadi.store.names import is_safe_name  # noqa: PLC0415
+
+    h = create_session(tmp_path, SessionMeta(slug=slug), NOW).danger_ok
+    assert h.path.parent == tmp_path / "sessions"
+    assert is_safe_name(h.path.name, 128)
+    assert session._slug(slug).split(".", 1)[0].upper() not in {"CON", "NUL", "COM1"}
+    assert "/" not in h.path.name and "\\" not in h.path.name
+    assert h.close().is_ok

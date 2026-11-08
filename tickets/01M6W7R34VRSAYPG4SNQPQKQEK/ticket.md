@@ -2,13 +2,13 @@
 id = "01M6W7R34VRSAYPG4SNQPQKQEK"
 title = "Capture modes: human confirm key, auto-capture with max wait, forced-early"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:02:21Z"
 idempotency_key = "sadi-s2"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/capture.py", "creates:python/tests/labs/lctt/test_capture.py", "creates:docs/lctt/capture.md"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md"]

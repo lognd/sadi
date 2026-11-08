@@ -27,7 +27,7 @@ test("keyboard-only guided run Setup -> Export against the simulator", async ({ 
   const download = page.waitForEvent("download");
   await page.getByRole("link", { name: /download/i }).first().click();
   expect((await download).suggestedFilename()).toMatch(/\.csv$/i);
-  // frob:ticket 935NES4
+  // frob:ticket 01M6X7JNY6ZKZKDFRM3935NES4
   // Figure export fetches the figure data, renders it and saves a PNG download.
   const figure = page.waitForEvent("download");
   await page.getByRole("button", { name: /as png/i }).first().click();

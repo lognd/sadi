@@ -2,7 +2,8 @@
 id = "01M6WPBZK1AYHDYR3RSR656D8Z"
 title = "tests: isolate user data dir and OS temp dir in tests/server so startup spill import never scans real dirs"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

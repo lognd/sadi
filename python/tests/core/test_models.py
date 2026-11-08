@@ -132,7 +132,33 @@ def test_errors_are_frozen_and_usable_in_result() -> None:
 def test_store_code_covers_writer_failures() -> None:
     """StoreCode carries the writer-thread failures, each with a hint and a 500 body."""
     for name in ("backpressure", "disk_full", "closed", "stalled"):
-        err = E.StoreError(code=E.StoreCode(name))
+        err = E.StoreError(code=E.code_from_wire(E.StoreCode, name))
         assert err.hint
         assert err.problem()["type"] == f"urn:sadi:error:store:{name}"
         assert err.status == 500
+
+
+# frob:ticket 01M6WK3STJ55FH80KFAPYEFC79
+# frob:tests python/sadi/core/errors.py::wire
+def test_error_codes_are_error_sets_with_stable_wire_values() -> None:
+    """Every code family is an ErrorSet; wire values stay the legacy lowercase strings."""
+    from typani import ErrorSet
+
+    for fam in (E.DeviceCode, E.InputCode, E.StoreCode, E.ComputeCode, E.JobCode):
+        assert issubclass(fam, ErrorSet)
+        for code in fam:
+            assert E.code_from_wire(fam, E.wire(code)) is code
+            assert E.hint_for(code)
+    assert E.wire(E.StoreCode.DISK_FULL) == "disk_full"
+    assert E.wire(E.JobCode.WORKER_CRASHED) == "worker_crashed"
+
+
+# frob:ticket 01M6WK3STJ55FH80KFAPYEFC79
+# frob:tests python/sadi/store/writer_thread.py::WriterError
+def test_writer_errors_map_to_store_codes() -> None:
+    """Each writer failure carries a StoreCode and converts to a StoreError."""
+    from sadi.store import writer_thread as W
+
+    assert W.Closed().code is E.StoreCode.CLOSED
+    assert W.IoError(reason="x").to_store_error().code is E.StoreCode.IO
+    assert W.DiskFull(reason="x").to_store_error("d").detail == "d"

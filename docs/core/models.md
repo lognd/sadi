@@ -33,7 +33,9 @@ edits return typani `Result`.
 
 Errors are frozen pydantic values used as the `E` in `Result[T, E]`.
 Families: `DeviceError`, `InputError`, `StoreError`, `ComputeError`,
-`JobError`, each with a `StrEnum` of codes (`DeviceCode`, ...). Every code
+`JobError`, each with a typani `ErrorSet` of codes (`DeviceCode`, ...). Member names
+are UPPER_SNAKE; the wire value (problem `type`, stored data) is
+`wire(code)`, the lowercase name, and `code_from_wire(family, s)` reverses it. Every code
 has a user-facing "what to do" hint (`SadiError.hint`, `hint_for(code)`);
 a test asserts the table is complete.
 
@@ -48,3 +50,18 @@ from sadi.core.errors import DeviceCode, DeviceError
 
 return Err(DeviceError(code=DeviceCode.DISCONNECTED, detail="port closed"))
 ```
+
+### StrEnum vs ErrorSet audit (PYEFC79)
+
+Error families (failures returned as `Err`) are `ErrorSet`: `DeviceCode`,
+`InputCode`, `StoreCode`, `ComputeCode`, `JobCode`. The writer-thread
+errors (`WriterError` subclasses) carry a `code: StoreCode` and convert
+with `to_store_error()`.
+
+Kept as `StrEnum` because they are states, modes or labels, not errors:
+`ErrorFamily` (discriminator), `JobState`, `Outcome`, `ResultState`,
+`DeviceStatus`, `WriterState`, `McStatus`, `Notation`, `SettleState`,
+`SettleMode`, `SettleStatus`, `SaveState`, `StepStatus`, `PluginState`,
+`Phase`, `Severity`, `CaptureKind`, `CaptureMode`, `Marginal`,
+`SettleSource`, `VoltageUncertainty`, `SignPolicy`, `Specimen`.
+`NotSettledReason` is a reason label on a non-error result and also stays.

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T08:25:21Z"
-updated = "2026-11-08T08:31:04Z"
+updated = "2026-11-08T08:31:41Z"
 scope = ["python/sadi/store/incremental.py", "python/sadi/server/curve_source.py", "python/sadi/server/service.py", "python/tests/store/test_incremental_notes.py", "python/tests/server/test_curve_notes_latency.py", "docs/store/incremental-replay.md", "docs/server/app.md"]
 
 [[acceptance]]

@@ -2,12 +2,12 @@
 id = "01M6WMGMGPZ58NGQ5J5XVRN5TD"
 title = "Fix lctt export_csv import-boundary test failures"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:51:26Z"
-updated = "2026-11-08T03:51:26Z"
+updated = "2026-11-08T03:51:29Z"
 labels = ["bug"]
 +++
 

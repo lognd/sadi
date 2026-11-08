@@ -7,5 +7,9 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T07:32:10Z"
-updated = "2026-11-08T07:32:14Z"
+updated = "2026-11-08T07:33:12Z"
+
+[[acceptance]]
+text = "schema.ts matches generator output for openapi.json (schema.test.ts passes)"
+bound = false
 +++

@@ -8,5 +8,5 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T06:06:05Z"
 updated = "2026-11-08T06:08:11Z"
-scope = ["web/src/results-stream/wsSubscribe.ts", "web/src/results-stream/wsSubscribe.test.ts", "web/src/results-stream/index.ts"]
+scope = ["web/src/results-stream/wsSubscribe.ts", "web/src/results-stream/wsSubscribe.test.ts", "web/src/results-stream/index.ts", "docs/web/results-stream.md"]
 +++

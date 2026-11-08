@@ -325,6 +325,55 @@
         "title": "CheckResult",
         "type": "object"
       },
+      "ClampStatus": {
+        "description": "Wizard Setup panel state: procedure, progress and verdict (`passed` None until complete).",
+        "properties": {
+          "advice": {
+            "title": "Advice",
+            "type": "string"
+          },
+          "cycles": {
+            "items": {
+              "$ref": "#/components/schemas/RecordedCycle"
+            },
+            "title": "Cycles",
+            "type": "array"
+          },
+          "guidance": {
+            "title": "Guidance",
+            "type": "string"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "required": {
+            "title": "Required",
+            "type": "integer"
+          },
+          "return_tol": {
+            "title": "Return Tol",
+            "type": "number"
+          }
+        },
+        "required": [
+          "guidance",
+          "required",
+          "return_tol",
+          "cycles",
+          "passed",
+          "advice"
+        ],
+        "title": "ClampStatus",
+        "type": "object"
+      },
       "ComboBody": {
         "description": "The weight numbers to combine.",
         "properties": {
@@ -1498,6 +1547,40 @@
           "needs_device"
         ],
         "title": "RailItem",
+        "type": "object"
+      },
+      "RecordedCycle": {
+        "description": "One operator-recorded cycle (zeros plus slips seen during the hold) and its verdict.",
+        "properties": {
+          "index": {
+            "title": "Index",
+            "type": "integer"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          },
+          "returned": {
+            "title": "Returned",
+            "type": "boolean"
+          },
+          "slip_events": {
+            "title": "Slip Events",
+            "type": "integer"
+          },
+          "zero_shift": {
+            "title": "Zero Shift",
+            "type": "number"
+          }
+        },
+        "required": [
+          "index",
+          "zero_shift",
+          "slip_events",
+          "returned",
+          "passed"
+        ],
+        "title": "RecordedCycle",
         "type": "object"
       },
       "Remediation": {
@@ -2925,6 +3008,25 @@
           }
         },
         "summary": "Info"
+      }
+    },
+    "/api/session/clamp-check": {
+      "get": {
+        "description": "Procedure, recorded cycles and the clamp-check verdict.",
+        "operationId": "clamp_check_api_session_clamp_check_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClampStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Clamp Check"
       }
     },
     "/api/session/close": {

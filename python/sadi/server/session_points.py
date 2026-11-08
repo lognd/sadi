@@ -10,6 +10,7 @@ from sadi.core.errors import ComputeError
 from sadi.core.lab import AnalysisResult, InputsAwareLab, LabModule
 from sadi.core.models import CapturedPoint, SettleStatus, TimeWindow
 from sadi.core.point_inputs import (
+    PHASE_SETUP,
     CalibrationInputs,
     LoadInputs,
     PointInputs,
@@ -63,6 +64,8 @@ def analyze(lab: LabModule, views: list[PointView]) -> Result[AnalysisResult, Co
     Pure over the views; stored events are never rewritten.
     """
     # frob:ticket 01M6WSH43VHA5WGRPQ20X1NQA9
+    # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
+    views = [p for p in views if p.phase != PHASE_SETUP]  # clamp cycles are not load data
     captured = to_captured(views)
     if isinstance(lab, InputsAwareLab):
         return lab.analyze(captured, typed_inputs(views))

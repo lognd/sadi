@@ -2,7 +2,7 @@
 id = "01M6WH4Q5S0YYD0S8YW9T1EX41"
 title = "lctt plugin: wire real per-phase analysis into LcttLab.recompute (currently a stub)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"

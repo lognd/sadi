@@ -2,7 +2,8 @@
 id = "01M6WVADB5YKXAVC43CQNBQVJW"
 title = "LcttLab.export_formats is empty so /api/export lists nothing"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

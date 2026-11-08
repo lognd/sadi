@@ -2,7 +2,7 @@
 id = "01M6WZCNF9F9XSPWCKB34JHSD9"
 title = "Mount wizard shell and run/review/export screens in App.tsx"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"

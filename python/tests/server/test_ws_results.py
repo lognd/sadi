@@ -23,8 +23,8 @@ def _env(dv: int, state: ResultState) -> ResultEnvelope:
     )  # fmt: skip
 
 
-def _app(rs: ResultsStream) -> TestClient:
-    cfg = AppSettings(data_root=Path("x"), bus=Bus(), results=rs, require_root_lock=False)
+def _app(rs: ResultsStream, root: Path) -> TestClient:
+    cfg = AppSettings(data_root=root, bus=Bus(), results=rs, require_root_lock=False)
     return TestClient(create_app(cfg))
 
 
@@ -49,11 +49,12 @@ def test_job_sink_offers_refinements_and_ignores_others() -> None:
 
 
 # frob:tests python/sadi/server/ws.py::make_ws_router
+# frob:tests python/sadi/server/ws.py::StreamHub.__init__
 # frob:tests python/sadi/server/ws.py::encode_result
-def test_ws_pushes_snapshot_and_live_envelopes() -> None:
+def test_ws_pushes_snapshot_and_live_envelopes(tmp_path: Path) -> None:
     rs = ResultsStream(time_ns=lambda: 5_000_000_000)
     rs.push_analytic(1, {K: {"v": 2.0}})
-    with _app(rs) as client, client.websocket_connect("/api/stream") as ws:
+    with _app(rs, tmp_path) as client, client.websocket_connect("/api/stream") as ws:
         ws.receive_text()  # hello
         snap = _recv_env(ws)
         assert snap.type is framing.FrameType.RESULTS_ENVELOPE
@@ -68,9 +69,9 @@ def test_ws_pushes_snapshot_and_live_envelopes() -> None:
 
 
 # frob:tests python/sadi/server/ws.py::StreamHub.detach
-def test_disconnect_removes_results_client() -> None:
+def test_disconnect_removes_results_client(tmp_path: Path) -> None:
     rs = ResultsStream()
-    with _app(rs) as client:
+    with _app(rs, tmp_path) as client:
         with client.websocket_connect("/api/stream") as ws:
             ws.receive_text()
         for _ in range(100):

@@ -2,7 +2,8 @@
 id = "01M6WMGMJE0WEXXNQ3AD754A8M"
 title = "Wire stress-strain onWindowChange to API refit"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

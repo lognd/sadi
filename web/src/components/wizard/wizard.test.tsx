@@ -38,6 +38,14 @@ describe("NextActionPanel", () => {
     expect(renderToString(<NextActionPanel step={null} busy={false} canSkip={false} onPrimary={f} onSkip={f} />))
       .toContain("All steps are finished");
   });
+
+  // frob:ticket 01M6XAASPRSYNWC5K5MH77E8KJ
+  it("marks the primary button and Skip with distinct variant classes", () => {
+    const f = (): void => undefined;
+    const html = renderToString(<NextActionPanel step={rail[1] ?? null} busy={false} canSkip onPrimary={f} onSkip={f} />);
+    expect(html).toMatch(/class="btn btn-primary"[^>]*data-variant="primary"/);
+    expect(html).toMatch(/class="btn btn-secondary"[^>]*data-variant="secondary"/);
+  });
 });
 
 describe("StatusBar", () => {

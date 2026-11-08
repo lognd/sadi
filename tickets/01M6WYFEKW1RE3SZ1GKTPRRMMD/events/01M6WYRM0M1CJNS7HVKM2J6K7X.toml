@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:50:31Z"
+digest = "c831f6f82bee2ebf9d70d08b0e0327d2b0f8b0a9b12dcde9fb71e9e93395b3c6"
+exit_code = 0
+head = "7c0764223998c71e4b5d57d743e587c00f1cf84e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_settle_incremental.py .                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-709967-0.xml ---------------
+============================== 1 passed in 1.76s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_settle_incremental.py::test_streaming_push_is_fast_at_device_rate"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "647481c888a811a80c3ca469a332231a7f76319e10d53c5dd33b854e204827fb"
+at = "2026-11-08T06:50:31Z"
+actor = "lognd"
+rev = 1

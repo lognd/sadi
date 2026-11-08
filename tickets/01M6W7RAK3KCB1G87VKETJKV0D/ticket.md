@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:57:02Z"
+updated = "2026-11-08T05:57:12Z"
 idempotency_key = "sadi-j4"
 labels = ["ws:conc", "ws:srv", "model:sonnet", "creates:python/sadi/server/results_stream.py", "creates:python/tests/server/test_results_stream.py", "creates:docs/server/results-stream.md"]
-scope = ["python/sadi/server/results_stream.py", "python/tests/server/test_results_stream.py", "docs/server/results-stream.md"]
+scope = ["python/sadi/server/results_stream.py", "python/tests/server/test_results_stream.py", "docs/server/results-stream.md", "docs/server/websocket.md"]
 
 [[links]]
 kind = "blocked-by"

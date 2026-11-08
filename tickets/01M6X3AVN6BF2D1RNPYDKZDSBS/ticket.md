@@ -2,12 +2,12 @@
 id = "01M6X3AVN6BF2D1RNPYDKZDSBS"
 title = "e2e specs share one backend session: a failed spec poisons the next (run-capture second test skipped)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:10:26Z"
-updated = "2026-11-08T08:13:00Z"
+updated = "2026-11-08T08:13:01Z"
 scope = ["web/e2e/**"]
 +++
 

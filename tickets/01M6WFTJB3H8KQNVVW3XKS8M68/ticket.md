@@ -2,7 +2,8 @@
 id = "01M6WFTJB3H8KQNVVW3XKS8M68"
 title = "Scrub course-specific domain and sample-data docs from tracked tree"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

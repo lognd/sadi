@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2, 3, 4]
+captured_at = "2026-11-08T03:50:09Z"
+digest = "2bec2430b080bae60d0dd80a16e68aa2d2610436c10d6de568e1f928248a4b10"
+exit_code = 0
+head = "0119d45a00de64a9aaafd94f0a6b27c72ad705c9"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_sadi_doctor.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-311134-0.xml ---------------
+============================== 1 passed in 0.67s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_real_probes_degrade_and_workers_stay_clean"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "8e96007c58f43193a61aa84b4dc34ae3220c49cddfdecc5d70c9f0a1f664f77c"
+at = "2026-11-08T03:50:09Z"
+actor = "lognd"
+rev = 1

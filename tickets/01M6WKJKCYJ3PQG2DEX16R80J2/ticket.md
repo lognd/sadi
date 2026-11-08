@@ -2,7 +2,7 @@
 id = "01M6WKJKCYJ3PQG2DEX16R80J2"
 title = "Server doctor endpoints: GET /api/doctor and POST /api/doctor/{check_id}/run"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

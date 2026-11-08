@@ -16,6 +16,8 @@ dependencies = [
     "crc32c>=2.9.post0",
     "psutil",
     "packaging",
+    # frob:ticket 01M6WTZVYZDQFD96RR9ZWAPFH7
+    "platformdirs",
 ]
 
 [project.optional-dependencies]

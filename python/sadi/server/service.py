@@ -44,6 +44,7 @@ from sadi.server.schemas import (
 )
 from sadi.store.events import EventsWal, ReplayState, recover_state
 from sadi.store.manifest import read_manifest
+from sadi.store.records import FLAG_JSON, NewRecord, RecordType
 from sadi.store.session import (
     SESSIONS_DIRNAME,
     SessionHandle,
@@ -51,7 +52,6 @@ from sadi.store.session import (
     create_session_in_held_root,
     resume_session_in_held_root,
 )
-from sadi.store.records import NewRecord, RecordType
 from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
 
@@ -75,14 +75,20 @@ class _Open:
 
 # frob:ticket 01M6WTCAA5WR1VD7H7ES7757MP
 _FOLD_TYPES = frozenset(
-    {int(RecordType.POINT), int(RecordType.EDIT), int(RecordType.SETTINGS), int(RecordType.MARKER)}
+    {
+        int(RecordType.POINT),
+        int(RecordType.EDIT),
+        int(RecordType.SETTINGS),
+        int(RecordType.MARKER),
+        int(RecordType.NOTE),
+    }
 )
 
 
 def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
     """Append the parent's state records to `writer` in order and wait until durable.
 
-    Only POINT/EDIT/SETTINGS/MARKER records are copied (raw capture data stays in the parent);
+    Only POINT/EDIT/SETTINGS/MARKER/NOTE records are copied (raw capture data stays in the parent);
     relative order is kept so replay of the child equals replay of the parent. Returns the count.
     """
     last = 0
@@ -284,6 +290,44 @@ class SessionService:
     def history(self) -> Result[History, ApiProblem]:
         """Return the undo and redo stacks."""
         return self._read(lambda cur, rp: cur.wizard.history(rp))
+
+    # ---- notes ------------------------------------------------------------------------
+
+    # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
+    def append_note(self, payload: str) -> Result[int, ApiProblem]:
+        """Append a JSON NOTE record and return its seq once durable (never overwrites)."""
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            note = NewRecord(
+                type=int(RecordType.NOTE), payload=payload.encode("utf-8"), flags=FLAG_JSON
+            )
+            sub = cur.writer.submit(note)
+            if sub.is_err:
+                return Err(from_model(sub.danger_err, "store"))
+            durable = cur.writer.wait_durable(sub.danger_ok, DURABLE_TIMEOUT_S)
+            if durable.is_err:
+                return Err(from_model(durable.danger_err, "store"))
+            _log.info("note appended at seq %d (%d bytes)", sub.danger_ok, len(payload))
+            return Ok(sub.danger_ok)
+
+    # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
+    def notes(self) -> Result[list[str], ApiProblem]:
+        """Return every JSON NOTE payload of the open session in WAL order."""
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            out: list[str] = []
+            for item in WalReader(cur.handle.path / "wal").records():
+                if item.is_err:
+                    _log.error("note scan stopped by corruption: %s", item.danger_err)
+                    return Err(from_model(EventsWal(error=item.danger_err), "store"))
+                rec = item.danger_ok
+                if rec.type == int(RecordType.NOTE) and rec.flags & FLAG_JSON:
+                    out.append(rec.payload.decode("utf-8"))
+            return Ok(out)
 
     # ---- internals --------------------------------------------------------------------
 

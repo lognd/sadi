@@ -837,6 +837,7 @@ dependencies = [
     { name = "packaging" },
     { name = "pint", version = "0.25.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "pint", version = "0.26.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "platformdirs" },
     { name = "psutil" },
     { name = "pydantic" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -863,6 +864,7 @@ requires-dist = [
     { name = "numpy" },
     { name = "packaging" },
     { name = "pint" },
+    { name = "platformdirs" },
     { name = "psutil" },
     { name = "pydantic", specifier = ">=2" },
     { name = "scipy" },
@@ -870,6 +872,7 @@ requires-dist = [
     { name = "typani" },
     { name = "uvicorn" },
 ]
+provides-extras = ["device"]
 
 [package.metadata.requires-dev]
 dev = [

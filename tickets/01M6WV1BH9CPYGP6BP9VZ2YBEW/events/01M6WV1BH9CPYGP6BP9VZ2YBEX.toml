@@ -1,0 +1,10 @@
+kind = "create"
+title = "Wire a real DeviceService into launcher/app for /api/device/status"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/**"]
+body = "found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached"
+at = "2026-11-08T05:45:26Z"
+actor = "lognd"
+rev = 1

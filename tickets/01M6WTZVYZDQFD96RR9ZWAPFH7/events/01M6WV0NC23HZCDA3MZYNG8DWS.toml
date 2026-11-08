@@ -1,0 +1,15 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:45:03Z"
+digest = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+exit_code = 0
+head = "20b94063f9ff3d733af88613668df161670bca6a"
+inline = ""
+passed = true
+provider = "command"
+ref = "uv run --directory python --frozen python -c 'import platformdirs'"
+size = 0
+status = "measured"
+at = "2026-11-08T05:45:03Z"
+actor = "lognd"
+rev = 1

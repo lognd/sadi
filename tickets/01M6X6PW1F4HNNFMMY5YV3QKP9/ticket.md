@@ -2,7 +2,8 @@
 id = "01M6X6PW1F4HNNFMMY5YV3QKP9"
 title = "Wizard has no step that captures the specimen; LCTT CSV export 422 NotReady"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

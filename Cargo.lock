@@ -563,6 +563,7 @@ dependencies = [
  "numpy",
  "pyo3",
  "sadi-proto",
+ "serde_json",
  "thiserror",
  "tracing",
 ]

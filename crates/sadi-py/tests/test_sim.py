@@ -161,3 +161,33 @@ def test_open_accepts_session_config() -> None:
     s, _ = sim.open("clean", 1, sp.SessionConfig(read_timeout_ms=500))
     s.connect()
     s.close()
+
+
+# frob:tests crates/sadi-py/python/sadi_py/sim.pyi::validate_byte_fault_plan
+def test_byte_fault_plan_validation() -> None:
+    sim.validate_byte_fault_plan({"seed": 1, "drop": 0.01, "short_read": 0.5})
+    sim.validate_byte_fault_plan('{"flip": 0.1}')
+    for bad in ({"drop": 1.5}, {"bogus": 1}, {"drop": -0.1}):
+        with pytest.raises(sp.ScenarioFailure):
+            sim.validate_byte_fault_plan(bad)
+
+
+# frob:tests crates/sadi-py/python/sadi_py/sim.pyi::open
+def test_open_with_byte_faults_is_deterministic_and_lossy() -> None:
+    def raw(plan: dict | None) -> bytes:
+        s, _ = sim.open("clean", 1, byte_faults=plan)
+        s.connect()
+        s.start(sp.AdcMode.DLL_COMPATIBLE)
+        out = b""
+        for _ in range(5):
+            try:
+                out += bytes(s.read_block().raw)
+            except sp.SadiError:
+                break
+        return out
+
+    plan = {"seed": 1, "drop": 0.0005}
+    assert raw(plan) == raw(plan)
+    assert raw(plan) != raw(None)
+    with pytest.raises(sp.ScenarioFailure):
+        sim.open("clean", 1, byte_faults={"drop": 2.0})

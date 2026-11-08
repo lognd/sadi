@@ -55,8 +55,8 @@ Rust enums are mirrored by exhaustive matches without wildcard arms.
 
 ## Simulator control (`sadi_py.sim`)
 
-`sim.open(scenario, seed=None, cfg=None)` (`cfg` is a `SessionConfig`, as for
-`open_sim`) returns `(Session, SimControl)`; `scenario`
+`sim.open(scenario, seed=None, cfg=None, byte_faults=None)` (`cfg` is a
+`SessionConfig`, as for `open_sim`) returns `(Session, SimControl)`; `scenario`
 is a builtin name, JSON text or a dict. `SimControl` shares the scenario with
 the device behind a mutex, so any thread may call `set_scenario`,
 `set_fault_plan`, `set_load_program([(t_s, mass_kg), ...])`, `add_weight(kg)`,
@@ -65,6 +65,14 @@ session streams. "Now" is the latest simulated time the device sampled.
 Everything is validated before it replaces state; an invalid plan raises
 `ScenarioFailure` (kind `scenario`) and leaves the running scenario unchanged.
 `sim.validate_scenario` and `sim.validate_fault_plan` check without opening.
+
+`byte_faults` (JSON text or dict) is a `ByteFaultPlan`
+(`docs/device/sim-byte-faults.md`: `seed` plus `drop`, `duplicate`, `flip`,
+`truncate`, `stall`, `short_read` probabilities in [0, 1]) and wraps the
+simulator transport in `FaultyTransport`. It is fixed at open time; the same
+plan replays the same faults. Unknown keys or out-of-range rates raise
+`ScenarioFailure`; `sim.validate_byte_fault_plan` checks without opening. High
+byte-drop rates can break the connect handshake itself.
 Tests live in `crates/sadi-py/tests/test_sim.py` (both test dirs are in pytest `testpaths`; Rust unit tests in
 `src/sim.rs` run via `cargo test -p sadi-py`).
 

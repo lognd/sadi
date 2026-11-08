@@ -53,8 +53,12 @@ before and after the resume.
 - Analysis is decimated by 25 (50 kHz to 2 kHz) and sent in 10-block batches:
   the streaming settle detector re-fits the open point on every push, which is
   too slow at the device rate. The raw bytes are never decimated.
-- `ByteFaultPlan` is not exposed by the Python bindings, so dropped bytes are
-  emulated test-side: bytes are cut from the batch raw and `dropped_bytes` and
-  `gap_events` are set, which is exactly what the framer reports to ingest.
+- `ByteFaultPlan` is exposed as `sadi_py.sim.open(..., byte_faults=...)` (see
+  `docs/device/python-binding.md`), but the dropped scenarios still emulate
+  loss test-side: a real plan corrupts the stream per byte, so the framer
+  resynchronises and the lost-byte count is not controllable per block. The
+  harness cuts exact byte counts from the batch raw and sets `dropped_bytes`
+  and `gap_events`, which is what the framer reports to ingest, so the
+  assertions stay exact. Use `byte_faults` for statistical or robustness tests.
 - Simulator defaults inject noise and creep when a plan omits them, so
   scenarios set explicit zeros (`QUIET`) to keep faults separable.

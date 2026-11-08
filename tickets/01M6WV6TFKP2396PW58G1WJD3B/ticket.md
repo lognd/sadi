@@ -2,7 +2,8 @@
 id = "01M6WV6TFKP2396PW58G1WJD3B"
 title = "Verify stream clock vs record window_end/time_since_load for live marks"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

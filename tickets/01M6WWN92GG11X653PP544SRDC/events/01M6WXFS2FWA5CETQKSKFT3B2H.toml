@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["GET /api/plots/calibration returns points plus fit line and 95% band (fit null below 3 points)", "GET /api/plots/stress-strain returns strain, MPa stress and excluded flags, read-only", "No open session yields 409 problem+json with a hint"]
+moved = []
+at = "2026-11-08T06:28:15Z"
+actor = "lognd"
+rev = 1

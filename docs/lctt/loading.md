@@ -33,6 +33,6 @@ stored as the `Measured.std_unc` and combined by RSS exactly as the closed forms
 
 ## Validation
 
-Tests compare against the domain closed forms computed independently in the test. The
-docs oracle `expected_values.py` was moved out of the tracked tree (private), so the
-1e-9 comparison against the local short-run file is not run here; see the filed follow-up.
+Tests compare against the domain closed forms computed independently in the test. A
+private, locally run test also checks every row of a recorded short-run file at 1e-9
+(force, stress, strain and their uncertainties); it skips when that file is absent.

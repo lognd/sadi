@@ -30,3 +30,7 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
   `point_ids`, `first_sample`, `last_sample`, `algorithm`). Point ids and sample span are those of
   the active (non-excluded) points fed to `recompute`; `algorithm` is `<lab>.recompute`. It is
   empty while the lctt recompute is a stub.
+
+- `PointView` (session points, which feed these routes) carries `settled` and `forced_early`
+  booleans copied from the captured `PointV1`; they are the operator-supplied capture flags
+  and default to false for points recorded without them.

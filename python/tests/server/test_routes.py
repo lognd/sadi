@@ -115,3 +115,26 @@ def test_recover_state_reads_open_wal(client: TestClient, tmp_path: Path) -> Non
     """The WAL can be replayed while the writer is still open."""
     info = _create(client)
     assert recover_state(tmp_path / "sessions" / info["name"]).is_ok
+
+
+# frob:ticket 01M6WVJ5SYGQK3ESRH7AMECWPX
+# frob:tests python/sadi/server/schemas.py::PointView.of
+def test_points_carry_settle_flags(client: TestClient) -> None:
+    """Captured settled/forced_early flags reach the PointView wire shape."""
+    _create(client)
+    assert client.post("/api/session/wizard/skip", json={"step": "setup"}).status_code == 200
+    for flags in ({"settled": True}, {"forced_early": True}, {}):
+        body = {
+            "phase": "calibration",
+            "inputs": {"volts": 1.0, "height": 0.01},
+            "window": WINDOW,
+            **flags,
+        }
+        res = client.post("/api/session/points", json=body)
+        assert res.status_code == 201, res.text
+    pts = client.get("/api/session/points").json()
+    assert [(p["settled"], p["forced_early"]) for p in pts] == [
+        (True, False),
+        (False, True),
+        (False, False),
+    ]

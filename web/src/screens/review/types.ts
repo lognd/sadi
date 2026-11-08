@@ -10,7 +10,7 @@ export interface PointWindow {
   last_sample: number;
 }
 
-/** A captured point with its edits applied (PointView); settled/forced_early are shown when the server sends them. */
+/** A captured point with its edits applied (PointView); the server always sends settled/forced_early, optional here for fixtures. */
 export interface PointView {
   point_id: string;
   seq: number;

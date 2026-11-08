@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
 updated = "2026-11-08T06:24:32Z"
-scope = ["src/sadi/server/**", "python/sadi/server/routes/plots.py", "python/tests/server/test_plots_routes.py", "docs/server/plots.md"]
+scope = ["src/sadi/server/**", "python/sadi/server/routes/plots.py", "python/tests/server/test_plots_routes.py", "docs/server/plots.md", "docs/server/api.md"]
 +++
 
 found while working ~74FQXWT

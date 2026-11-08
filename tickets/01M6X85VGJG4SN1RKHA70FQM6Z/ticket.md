@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:35:05Z"
-updated = "2026-11-08T09:42:37Z"
+updated = "2026-11-08T09:42:42Z"
 scope = ["python/sadi/core/wizard.py", "python/tests/server/test_routes_acquisition.py", "changelog.d/01M6X85VGJG4SN1RKHA70FQM6Z.fixed.md"]
 
 [[acceptance]]

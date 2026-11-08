@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Identify the syntax causing parse holes in python/sadi/core/device.py, jobs/{manager,pool,state,testing}.py, tests/store/test_lock.py, tools/check_typani_collisions.py; remove them with idiomatic rewrites or document the frob limitation in docs; frob check shows no partial-parse note"]
+moved = []
+at = "2026-11-08T10:41:26Z"
+actor = "lognd"
+rev = 1

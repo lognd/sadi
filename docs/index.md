@@ -24,6 +24,7 @@ Status: current
 - [Device service and session phases](core/device.md)
 - [Wizard framework](core/wizard.md)
 - [Job system core](jobs/jobs.md)
+- [frob parse holes on match statements](frob-parse-holes.md)
 - [AD3 Digilent DWF binding](bench/ad3.md)
 - [Signal injection bench](bench/injection.md)
 - [Web layout](web-layout.md)

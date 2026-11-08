@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
 updated = "2026-11-08T10:16:40Z"
-scope = ["web/src/App.tsx", "web/src/App.test.tsx", "web/src/components/wizard/StepRail.tsx", "web/src/components/wizard/wizard.test.tsx"]
+scope = ["web/src/App.tsx", "web/src/App.test.tsx", "web/src/components/wizard/StepRail.tsx", "web/src/components/wizard/wizard.test.tsx", "docs/usability-report.md"]
 
 [[acceptance]]
 text = "Step rail is a labelled nav, current step has aria-current=step and is the single tab stop; Doctor nav precedes the wizard in Tab order; vitest covers both"

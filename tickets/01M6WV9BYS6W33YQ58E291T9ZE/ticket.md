@@ -2,12 +2,12 @@
 id = "01M6WV9BYS6W33YQ58E291T9ZE"
 title = "Link docs/release.md from docs/index.md"
 type = "docs"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:49:48Z"
-updated = "2026-11-08T05:50:53Z"
+updated = "2026-11-08T05:51:44Z"
 scope = ["docs/index.md"]
 +++
 

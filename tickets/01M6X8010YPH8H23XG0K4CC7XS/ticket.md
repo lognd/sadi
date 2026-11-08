@@ -2,11 +2,12 @@
 id = "01M6X8010YPH8H23XG0K4CC7XS"
 title = "Add docs/index.md entry for user-guide-screens.md"
 type = "chore"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-08T09:31:54Z"
-updated = "2026-11-08T09:31:54Z"
+updated = "2026-11-08T09:35:57Z"
 scope = ["docs/index.md"]
 +++
 

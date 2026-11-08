@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:46Z"
-scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
+updated = "2026-11-08T04:32:47Z"
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md"]
 
 [[acceptance]]
 text = "Checks run in a thread pool but never before their in-selection depends_on prerequisites finish"

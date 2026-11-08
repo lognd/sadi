@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:51:44Z"
+digest = "d87f4d9383cf4377302499e23016771fe622728aa476d242b1aca9fe51e47eae"
+head = "8a22e6fc656d29d14f21f5f9b7d5d1f595f45e1d"
+provider = "file"
+ref = "web/docs-shots/screenshots.spec.ts"
+size = 2599
+status = "measured"
+at = "2026-11-08T09:51:44Z"
+actor = "lognd"
+rev = 1

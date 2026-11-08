@@ -1,0 +1,8 @@
+kind = "create"
+title = "Doctor screenshot fakes EXT-040 as pass; show the real sim state or caption it honestly"
+type = "bug"
+category = "todo"
+priority = "low"
+at = "2026-11-08T09:57:18Z"
+actor = "lognd"
+rev = 1

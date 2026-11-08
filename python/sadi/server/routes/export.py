@@ -16,7 +16,7 @@ from sadi.core.lab import ExportFormat, LabId, LabModule
 from sadi.core.models import RunState
 from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
-from sadi.server.curve_source import session_events
+from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze, to_captured
@@ -62,7 +62,10 @@ def _open_lab(svc: SessionService, labs: LabRegistry) -> Result[tuple[str, LabMo
 
 @propagate
 def render_export(
-    svc: SessionService, labs: LabRegistry, format_id: str
+    svc: SessionService,
+    labs: LabRegistry,
+    format_id: str,
+    cache: SessionReplayCache | None = None,
 ) -> Result[tuple[ExportFormat, str, bytes], ApiProblem]:
     """Render `format_id` for the open session in memory; nothing is written to disk or the WAL."""
     name, lab = _open_lab(svc, labs).unwrap()
@@ -83,7 +86,8 @@ def render_export(
         _log.warning("export %s: recompute failed: %s", format_id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))
     # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
-    events = session_events(svc.session_path().unwrap())
+    replays = cache if cache is not None else SessionReplayCache()
+    events = replays.events(svc.session_path().unwrap())
     if events.is_err:
         _log.error("export %s: session replay failed: %s", format_id, events.danger_err)
         return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))
@@ -96,8 +100,11 @@ def render_export(
     return Ok((fmt, name, body.danger_ok))
 
 
-def make_export_router(svc: SessionService, labs: LabRegistry) -> APIRouter:
+def make_export_router(
+    svc: SessionService, labs: LabRegistry, cache: SessionReplayCache | None = None
+) -> APIRouter:
     """Build the export router over `svc`; handlers only delegate and never mutate the session."""
+    replays = cache if cache is not None else SessionReplayCache()
     r = APIRouter(prefix="/api")
 
     @r.get("/export")
@@ -109,7 +116,7 @@ def make_export_router(svc: SessionService, labs: LabRegistry) -> APIRouter:
     @r.get("/export/{format_id}")
     def export(format_id: str) -> Response:
         """Stream one export: a CSV-style attachment, or inline JSON for figure data."""
-        fmt, name, body = unwrap(render_export(svc, labs, format_id))
+        fmt, name, body = unwrap(render_export(svc, labs, format_id, replays))
         headers: dict[str, str] = {}
         if _is_download(fmt):
             ext = _EXT.get(fmt.media_type, "bin")

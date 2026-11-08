@@ -29,3 +29,7 @@ exposes the open session's lab `export_formats` (see `sadi.core.lab.ExportFormat
   results from `CapturedPoint`/`AnalysisResult` alone can ignore the field.
 - The lctt lab declares `lctt-csv` (see [lctt/export-csv.md](../lctt/export-csv.md)) and
   `lctt-figure-json` (see [lctt/figure-data.md](../lctt/figure-data.md)).
+
+Events for the run state come from the shared `curve_source.SessionReplayCache` (the same incremental
+replayer the plots and stress-strain routes use), not a full WAL walk per request; the result equals a
+full replay and anomalies fall back to the verified full replay.

@@ -1160,6 +1160,72 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:54:22.740243493Z"
 
 [[symbol]]
+identity = "web/src/screens/review/session.ts"
+symref = "web/src/screens/review/session.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "9456379fb0f19f7212d0699da62861847867c6f51e8d5a0a93aa86f49ee60d5f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
+identity = "web/src/screens/review/session.ts::ActionOutcome"
+symref = "web/src/screens/review/session.ts::ActionOutcome"
+sig = "ec1bb89b03021ffa39be64d092115801d299f9182954b7e8ed329692d020f8bb"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "4a7349d8cf976a005ad8b5ad5b69cbfc109d66baf003b2af62c0c82b90bb3c5a"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "897daef8c136fe593ed7bbcbc8f1722693bb9f353d89daf1ed0986a53e2a0a1f"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
+identity = "web/src/screens/review/session.ts::ReviewData"
+symref = "web/src/screens/review/session.ts::ReviewData"
+sig = "1c659d1fc8f3961f42f73b36923458b9e003b8a5ec92804035ea5e6ca1e4405b"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "8bb9d4bbd9b3b8ea68125e719be7c45afb83dfa207d4d1fde3a6d652d70bc89d"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "ac03d9bc54a59fbcfdb16b2c9213c934101260fc5aedf267b0c8d42136db87cd"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
+identity = "web/src/screens/review/session.ts::loadReview"
+symref = "web/src/screens/review/session.ts::loadReview"
+sig = "ef5c30d35fabcd18e2349e246c93f62b836f735b3a55571a87e5eaae3c8b79cd"
+body = "73419ff79e2d834fcbcc584d4b76ba1a577e0cd63f620261bcb7b1569e460be6"
+doc = "e3fd1c0ef4fd54fed4558c45da3f32bbec01bc1bfc74bf8998dd61cdb9755993"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "b6c0a3a617230bc628622a0ed0f40db1fe79f4a21a5ae7133dbe56cff96c18e8"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
+identity = "web/src/screens/review/session.ts::log"
+symref = "web/src/screens/review/session.ts::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "5394c317528a4df7d06db75c898c02547b1f0865564a670bb6271a1e9fbbcd65"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
+identity = "web/src/screens/review/session.ts::runAction"
+symref = "web/src/screens/review/session.ts::runAction"
+sig = "0aa49b3a22777ab057d91dc586594f02d2542cf0216305113a41d99d0d5158db"
+body = "dd76340889e362ff88aff5510a2b3cfe51a5ca4c90394abb27cc224f01f312e4"
+doc = "1e6402e1b1c5c991eb31a6862e0b2dce3534b05f20aa6888a9ccf0a32e5f8e39"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "1dc38f85a9448e24dc7b39dd354498265dcc4e8c26e79be296829e84c3fccf31"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:54:23.362479179Z"
+
+[[symbol]]
 identity = "web/src/ws/ws.test.ts"
 symref = "web/src/ws/ws.test.ts"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

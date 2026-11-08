@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:10:04Z"
+updated = "2026-11-08T03:12:31Z"
 idempotency_key = "sadi-wiz1"
 labels = ["ws:py", "model:sonnet", "creates:python/sadi/core/wizard.py", "creates:python/tests/core/test_wizard.py", "creates:docs/core/wizard.md"]
-scope = ["python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "docs/core/wizard.md"]
+scope = ["python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "docs/core/wizard.md", "docs/core/lab-modules.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,7 +23,7 @@ target = "01M6W7R2F3KJWQCWEKZK6BT3MG"
 
 [[acceptance]]
 text = "Wizard state derived from lab StepSpecs + session events: current step, completed steps, gated transitions (e.g. cannot Tare before Calibrate unless skipped explicitly), step rail projection for the UI"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Undo/redo implemented as compensating WAL events (history never rewritten); tested for point capture, edit, window change"

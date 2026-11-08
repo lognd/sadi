@@ -1,0 +1,8 @@
+kind = "create"
+title = "Dedupe plots route derivation with lctt figure_data"
+type = "task"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T06:33:12Z"
+actor = "lognd"
+rev = 1

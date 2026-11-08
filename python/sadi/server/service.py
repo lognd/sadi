@@ -23,6 +23,7 @@ from sadi.core.lab import LabId, LabModule, StepId
 from sadi.core.point_inputs import PointMeta, build_point, parse_inputs
 from sadi.core.registry import LabRegistry
 from sadi.core.wizard import Command, History, Wizard, WizardError, WizardState
+from sadi.labs.lctt.guidance import Phase
 from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import (
     ApiProblem,
@@ -32,12 +33,14 @@ from sadi.server.routes.problem import (
     from_wizard,
     not_found,
 )
+from sadi.server.run_phase import check_transition, fold_phase, next_allowed, phase_record
 from sadi.server.schemas import (
     CaptureBody,
     Committed,
     EditBody,
     LabInfo,
     PointView,
+    RunPhaseView,
     SessionCreate,
     SessionInfo,
     SessionSummary,
@@ -118,6 +121,11 @@ def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
             return Err(from_model(durable.danger_err, "store"))
     _log.info("folded %d state records from %s", count, parent.name)
     return Ok(count)
+
+
+def _phase_view(phase: Phase | None) -> RunPhaseView:
+    """Project a recorded phase into the REST view."""
+    return RunPhaseView(phase=phase, next_phase=next_allowed(phase))
 
 
 class SessionService:
@@ -356,6 +364,45 @@ class SessionService:
                 _log.error("note scan stopped by corruption: %s", got.danger_err)
                 return Err(from_model(got.danger_err, "store"))
             return Ok(list(got.danger_ok))
+
+    # ---- run phase --------------------------------------------------------------------
+
+    # frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
+    def run_phase(self) -> Result[RunPhaseView, ApiProblem]:
+        """The recorded guided-run phase (None for old sessions) and the next allowed one."""
+        return self._read(lambda _cur, rp: _phase_view(fold_phase(rp.markers)))
+
+    # frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
+    def enter_phase(self, phase: Phase) -> Result[RunPhaseView, ApiProblem]:
+        """Record entry into `phase` (append-only MARKER, durable); only the next phase is legal."""
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            rp = self._replay(cur)
+            if rp.is_err:
+                return Err(rp.danger_err)
+            now = fold_phase(rp.danger_ok.markers)
+            ok = check_transition(now, phase)
+            if ok.is_err:
+                refusal = ok.danger_err
+                _log.info("run phase %s refused: %s", phase, refusal.reason)
+                return Err(
+                    conflict(
+                        "bad_phase_transition",
+                        f"cannot enter {phase.value} from {'no phase' if now is None else now.value}: "
+                        f"{refusal.reason}",
+                        "Phases advance in order: calibrate, elastic, plastic.",
+                    )
+                )
+            sub = cur.writer.submit(phase_record(phase))
+            if sub.is_err:
+                return Err(from_model(sub.danger_err, "store"))
+            durable = cur.writer.wait_durable(sub.danger_ok, DURABLE_TIMEOUT_S)
+            if durable.is_err:
+                return Err(from_model(durable.danger_err, "store"))
+            _log.info("run phase %s -> %s at seq %d", now, phase, sub.danger_ok)
+            return Ok(_phase_view(phase))
 
     # ---- internals --------------------------------------------------------------------
 

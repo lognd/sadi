@@ -15,6 +15,8 @@ from sadi.server.schemas import (
     LabInfo,
     PointView,
     RevertBody,
+    RunPhaseBody,
+    RunPhaseView,
     SessionCreate,
     SessionInfo,
     SessionResume,
@@ -107,5 +109,15 @@ def make_sessions_router(svc: SessionService) -> APIRouter:
     def history() -> History:
         """Undo and redo stacks."""
         return unwrap(svc.history())
+
+    @r.get("/session/run-phase")
+    def run_phase() -> RunPhaseView:
+        """The recorded guided-run phase and the next allowed one."""
+        return unwrap(svc.run_phase())
+
+    @r.post("/session/run-phase")
+    def enter_run_phase(body: RunPhaseBody) -> RunPhaseView:
+        """Enter the next guided-run phase (409 when out of order); recorded durably."""
+        return unwrap(svc.enter_phase(body.phase))
 
     return r

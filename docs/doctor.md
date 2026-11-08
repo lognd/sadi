@@ -743,9 +743,9 @@ sadi doctor --allow-probe-write          DATA-040 (creates and deletes one probe
 sadi doctor --allow-network-fs           downgrade DATA-020 network-fs from blocker to warning
 sadi doctor --data-root PATH  --port NAME  --api-port N
 sadi doctor --os wsl                     render remediations for another OS
-sadi doctor --bundle PATH                also write a support bundle (report JSON + log tail + doctor-checks version) to PATH
+sadi doctor --bundle PATH                also write a redacted support bundle (zip: report.json, log_tail.txt, meta.json) to a NEW PATH
 sadi doctor --running                    include NET-040 against a running SADI
-sadi doctor fix CHECK-ID [--yes] [--non-interactive]
+sadi doctor fix CHECK-ID [--apply] [--yes] [--non-interactive]   dry run unless --apply
 sadi doctor list                         print the catalog (id, layer, severity, title, applies-to)
 sadi doctor explain CHECK-ID [--os X]    print every mode and its remediation without running
 ```
@@ -781,6 +781,32 @@ Mapping between the three surfaces:
 | evidence | `Details:` block | `evidence.facts` | collapsed "Details" |
 | verdict | summary line | `summary.verdict`, `first_action` | banner at top: "Ready", "Some things need attention: <first_action>", "SADI cannot run yet: <first_action>" |
 | log | `Log:` path | `log_path` | "Open log folder" link |
+
+### 7.1 Implemented `fix` and `--bundle` (~GAG48CQ)
+
+`sadi doctor ...` and `sadi-doctor ...` reach the same `sadi.doctor.cli.main`
+(the launcher passes everything after `doctor` through), so both spellings
+accept `fix` and `--bundle`.
+
+`fix CHECK-ID` is a dry run by default: it prints the remediation and tags each
+command `[fixable]` or `[run it yourself]`, changes nothing and exits 1 (the
+problem is still there). With `--apply` it asks `Run ...? [y/N]` for each
+fixable command and runs it without a shell. A command is fixable only when
+the catalog marks it `fixable`, its step is class `system` or `process`, and
+its line does not mention the data root; `data`, `data-dir` and `install`
+steps are never run. `--yes` skips the prompts and needs a terminal or
+`--non-interactive`. Exit codes: 0 verify passes, 1 still failing, 3 declined,
+64 usage. No catalog command is marked `fixable` yet, so `--apply` currently
+reports that there is nothing to run.
+
+`--bundle PATH` writes a zip with `report.json`, `log_tail.txt` (the
+warnings and errors of the run) and `meta.json` (format, run id, catalog
+hash). The write goes to a temp file next to PATH, is fsynced and renamed
+without replacing; an existing PATH, or a PATH inside the data root, is
+refused (exit 64). Lines that look like secrets (key, token, password,
+secret, authorization, `.env`) are replaced by `[redacted line]`, the home
+directory becomes `~`, and neither the environment nor any `.env` file is
+read into the bundle.
 
 ## 8. UI Doctor screen (~JCJ0197)
 

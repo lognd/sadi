@@ -1,4 +1,4 @@
-"""`sadi-doctor` command line: run, list, explain; exit 0 ready, 1 problem, 2 blocker, 64 usage, 70 crash."""
+"""`sadi-doctor` command line: run, list, explain, fix, --bundle; exit 0 ready, 1 problem, 2 blocker, 64 usage, 70 crash."""
 
 # frob:ticket 01M6WA9WYE9D71BBA7AV3H5CGF
 from __future__ import annotations
@@ -7,11 +7,15 @@ import argparse
 import logging
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from sadi.doctor import exit_code, run
+from sadi.doctor.bundle import capture_log, write_bundle
+from sadi.doctor.fix import fix
+from sadi.doctor.probes import RealProbes
 from sadi.doctor.registry import all_checks
 from sadi.doctor.render_text import render
-from sadi.doctor.schema import Layer, Os, RunOptions
+from sadi.doctor.schema import DoctorError, Layer, Os, RunOptions
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
@@ -33,8 +37,10 @@ def _err(text: str) -> None:
 def _parser() -> argparse.ArgumentParser:
     """Build the argument parser."""
     p = argparse.ArgumentParser(prog="sadi-doctor", description="Check this machine for SADI.")
-    p.add_argument("command", nargs="?", default="run", choices=["run", "list", "explain", "docs"])
-    p.add_argument("target", nargs="?", help="check id for `explain`")
+    p.add_argument(
+        "command", nargs="?", default="run", choices=["run", "list", "explain", "docs", "fix"]
+    )
+    p.add_argument("target", nargs="?", help="check id for `explain` and `fix`")
     p.add_argument(
         "--check", action="append", metavar="ID", help="run only this check (repeatable)"
     )
@@ -60,6 +66,12 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="reset the device and time the boot (enables DEV-050)",
     )
+    p.add_argument("--bundle", metavar="PATH", help="also write a redacted diagnostics zip to PATH")
+    p.add_argument(
+        "--apply", action="store_true", help="`fix`: run fixable commands (default: dry run)"
+    )
+    p.add_argument("--yes", action="store_true", help="`fix --apply`: answer yes to every prompt")
+    p.add_argument("--non-interactive", action="store_true", help="allow --yes without a terminal")
     return p
 
 
@@ -129,7 +141,15 @@ def _main(argv: Sequence[str] | None) -> int:
         return 0
     if args.command == "explain":
         return _explain(args.target)
-    options = RunOptions(
+    options = _options(args)
+    if args.command == "fix":
+        return _fix(args, options)
+    return _run(args, options)
+
+
+def _options(args: argparse.Namespace) -> RunOptions:
+    """Build RunOptions from parsed arguments."""
+    return RunOptions(
         checks=tuple(args.check) if args.check else None,
         layers=tuple(Layer(x) for x in args.layer) if args.layer else None,
         skip=tuple(args.skip or ()),
@@ -140,8 +160,38 @@ def _main(argv: Sequence[str] | None) -> int:
         stream_seconds=args.stream_seconds,
         with_reset=args.with_reset,
     )
+
+
+def _fix(args: argparse.Namespace, options: RunOptions) -> int:
+    """Dispatch `fix`: dry run unless --apply."""
+    if not args.target:
+        _err("usage: sadi-doctor fix CHECK-ID [--apply] [--yes] [--non-interactive]\n")
+        return EXIT_USAGE
     try:
-        result = run(options)
+        got = fix(
+            args.target,
+            options,
+            RealProbes(),
+            _out,
+            apply=args.apply,
+            yes=args.yes,
+            non_interactive=args.non_interactive,
+        )
+    except Exception:  # noqa: BLE001 - last resort: tell the user, exit 70
+        _log.exception("doctor fix crashed")
+        _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
+        return EXIT_CRASH
+    if got.is_err:
+        _err(f"{got.err.value}\n")
+        return EXIT_USAGE
+    return got.unwrap()
+
+
+def _run(args: argparse.Namespace, options: RunOptions) -> int:
+    """Run the checks, print the report and optionally write the bundle."""
+    try:
+        with capture_log() as captured:
+            result = run(options)
     except Exception:  # noqa: BLE001 - last resort: tell the user, exit 70
         _log.exception("doctor crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
@@ -150,6 +200,12 @@ def _main(argv: Sequence[str] | None) -> int:
         _err(f"{result.err.value}\n")
         return EXIT_USAGE
     report = result.unwrap()
+    if args.bundle:
+        wrote = write_bundle(report, captured.lines, Path(args.bundle), Path(report.host.data_root))
+        if wrote.is_err:
+            _err(f"{wrote.err.value}\n")
+            return EXIT_CRASH if wrote.err is DoctorError.BundleWriteFailed else EXIT_USAGE
+        _err(f"bundle written: {wrote.unwrap()}\n")
     _out(
         report.model_dump_json(indent=2) + "\n"
         if args.json

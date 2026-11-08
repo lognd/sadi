@@ -593,6 +593,7 @@ def test_doctor_is_read_only() -> None:
         and "shutil.which" not in line
         and "import shutil" not in line
         and "chmod 660" not in line
+        and p.name != "bundle.py"  # the only writer: new path, no-replace, outside the data root
     ]
     assert hits == []
 

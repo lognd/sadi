@@ -23,6 +23,10 @@ class DoctorError(ErrorSet):
 
     UnknownCheck = "A requested check id is not in the catalog; run `sadi-doctor list`"
     UnknownLayer = "A requested layer is not in the catalog; run `sadi-doctor list`"
+    BundleExists = "The bundle path already exists; the doctor never overwrites, pick a new path"
+    BundleInsideDataRoot = "The bundle path is inside the data root; choose a path outside it"
+    FixNeedsTerminal = "--yes without a terminal also needs --non-interactive"
+    BundleWriteFailed = "The bundle could not be written; see the log for the OS error"
 
 
 class Layer(StrEnum):

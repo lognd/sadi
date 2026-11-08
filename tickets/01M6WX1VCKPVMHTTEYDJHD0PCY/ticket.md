@@ -2,7 +2,8 @@
 id = "01M6WX1VCKPVMHTTEYDJHD0PCY"
 title = "Add figure-data export format to LcttLab"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

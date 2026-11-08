@@ -27,7 +27,9 @@ only expected to match MC when the formula is near linear over the input spread.
 
 ## Degenerate inputs
 
-Hypothesis drives exact-zero and tiny (1e-12 to 1e-3) divisors through all methods; each must
-return `Ok` or a typed `Err`, never raise. Two strict xfails pin known engine defects: ~SJ9VQC9
-(numeric step floor fails for SI-small inputs such as area 1.2e-4 m^2) and ~0FYTGN8 (overflow
-for divisors below ~1e-80 raises instead of returning an error). Remove each xfail with its fix.
+Hypothesis drives exact-zero and tiny (1e-300 to 1e-3) divisors through all methods; each must
+return `Ok` or a typed `Err`, never raise. Overflow of a contribution or variance in `_derive`
+returns `UncertaintyError.InvalidUncertainty`, and `coverage.effective_dof` normalises by the
+largest contribution so it cannot overflow. A strict xfail pins the remaining known engine defect
+~SJ9VQC9 (numeric step floor fails for SI-small inputs such as area 1.2e-4 m^2); remove it with
+its fix.

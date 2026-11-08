@@ -15,7 +15,7 @@ from typani import Err, Ok
 
 from sadi.labs.lctt import calibration, loading, modulus, yield_
 from sadi.logging_setup import get_logger
-from sadi.uncertainty import Measured, Uncertain, UncertainError
+from sadi.uncertainty import Measured, Uncertain, UncertainError, UncertaintyError
 from sadi.uncertainty.montecarlo import MonteCarloError
 from sadi.uncertainty.numeric import NumericError, central_difference
 
@@ -87,13 +87,13 @@ def test_correlation_changes_the_uncertainty_consistently() -> None:
     assert not math.isclose(u[False], u[True], rel_tol=1e-3)
 
 
-# Exact zero plus tiny magnitudes down to 1e-12; below ~1e-80 propagation overflows (~0FYTGN8).
+# Exact zero plus tiny magnitudes down to 1e-300 (overflow range, ~0FYTGN8).
 _SMALL = st.one_of(
     st.just(0.0),
-    st.floats(min_value=1e-12, max_value=1e-3),
-    st.floats(min_value=-1e-3, max_value=-1e-12),
+    st.floats(min_value=1e-300, max_value=1e-3),
+    st.floats(min_value=-1e-3, max_value=-1e-300),
 )
-_TYPED = (UncertainError, NumericError, MonteCarloError)
+_TYPED = (UncertaintyError, UncertainError, NumericError, MonteCarloError)
 
 
 # frob:tests python/sadi/labs/lctt/modulus.py::secant_modulus
@@ -134,10 +134,13 @@ def test_si_small_stress_numeric_path() -> None:
 
 
 # frob:tests python/sadi/uncertainty/uncertain.py::Uncertain.__call__
-@pytest.mark.xfail(strict=True, reason="bug ~0FYTGN8: overflow leaks pydantic ValidationError")
-def test_extreme_underflow_denominator_is_typed() -> None:
-    """A 1e-80 divisor must give a typed Err; today the analytic path raises ValidationError."""
-    fn = Uncertain(lambda a, b: a / b, method="analytic")
+@pytest.mark.parametrize("method", ["analytic", "numeric"])
+def test_extreme_underflow_denominator_is_typed(method: str) -> None:
+    """A 1e-80 divisor gives Ok or a typed Err on the analytic and numeric paths."""
+    fn = Uncertain(lambda a, b: a / b, method=method)  # type: ignore[arg-type]
     a = Measured.create(1.0, 0.01).unwrap()
     b = Measured.create(8.7e-80, 8.7e-82).unwrap()
-    assert isinstance(fn(a, b), (Ok, Err))
+    result = fn(a, b)
+    assert isinstance(result, (Ok, Err))
+    if isinstance(result, Err):
+        assert isinstance(result.danger_err, _TYPED)

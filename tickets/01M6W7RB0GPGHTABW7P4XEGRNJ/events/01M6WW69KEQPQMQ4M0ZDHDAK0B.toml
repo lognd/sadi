@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/results-stream/**", "docs/web/results-stream.md"]
+new = ["web/src/results-stream/**", "docs/web/results-stream.md", "docs/index.md"]
+at = "2026-11-08T06:05:36Z"
+actor = "lognd"
+rev = 1

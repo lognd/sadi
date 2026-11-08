@@ -2,16 +2,17 @@
 id = "01M6W7R3J00J2HQ7XPW19WDD6Q"
 title = "Live recompute engine: update all results after every captured point"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:25:50Z"
+updated = "2026-11-08T03:34:24Z"
 idempotency_key = "sadi-a4"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/live.py", "creates:python/sadi/core/results.py", "creates:python/tests/labs/lctt/test_live.py", "creates:docs/lctt/live-results.md"]
-scope = ["python/sadi/labs/lctt/live.py", "python/sadi/core/results.py", "python/tests/labs/lctt/test_live.py", "docs/lctt/live-results.md"]
+scope = ["python/sadi/labs/lctt/live.py", "python/sadi/core/results.py", "python/tests/labs/lctt/test_live.py", "docs/lctt/live-results.md", "docs/index.md", "docs/README.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -35,19 +36,19 @@ target = "01M6W7R3BBDEXG9CPYWTQ7ZKZW"
 
 [[acceptance]]
 text = "Pure function recompute(events) -> ResultSet recomputing from RAW-derived points (never from cached display values): calibration slope/intercept, tare, E, r^2, yield each as value, standard uncertainty, 95% interval and plain-language confidence string with class-rule sig figs"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Incremental update after each point meets a latency budget (<50 ms for 200 points) and equals the batch result exactly (property test)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Editing a point or window in review recomputes everything consistently; RSS vs Monte Carlo cross-check flag included"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Analytic RSS results are computed synchronously and shown instantly; MC and other heavy refinement is delegated to jobs (J3), never run inline"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

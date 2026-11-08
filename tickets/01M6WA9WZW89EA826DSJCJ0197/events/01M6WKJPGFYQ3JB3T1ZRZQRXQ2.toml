@@ -1,0 +1,42 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T03:35:04Z"
+digest = "28aec9ed5e74d28cc3417dbaaaa11e88c7e7dee1b89ea9041868eb68b1b3bb7c"
+exit_code = 0
+head = "49a477b71f9870ed0c049aeb94e84268d61120de"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/doctor/DoctorScreen.test.tsx > doctor ui > opens from a connection error
+[doctor.route] doctor opened { reason: 'connection-error' }
+[doctor.route] doctor closed {}
+
+stdout | web/src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] request { path: '/api/doctor/NET-001/run', method: 'POST' }
+
+stdout | web/src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] request { path: '/api/doctor' }
+
+ \u{2713} web/src/doctor/DoctorScreen.test.tsx (4 tests) 19ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  22:35:05
+   Duration  580ms (transform 108ms, setup 0ms, collect 140ms, tests 19ms, environment 0ms, prepare 144ms)
+
+JSON report written to /tmp/frob-vitest-277478-0.json
+stderr | web/src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] http error { path: '/api/doctor', status: 500 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/doctor/DoctorScreen.test.tsx"
+size = 990
+status = "measured"
+test_count = 4
+tests_digest = "fbf261adc9e8f8cc03f726c10090ce608178ddcabde74ce0090742123828505c"
+at = "2026-11-08T03:35:04Z"
+actor = "lognd"
+rev = 1

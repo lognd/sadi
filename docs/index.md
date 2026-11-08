@@ -37,3 +37,4 @@ Status: current
 - [LCTT loading: tare, load, stress, strain](lctt/loading.md)
 - [LCTT modulus, yield, saturation](lctt/modulus.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
+- [LCTT live results](lctt/live-results.md)

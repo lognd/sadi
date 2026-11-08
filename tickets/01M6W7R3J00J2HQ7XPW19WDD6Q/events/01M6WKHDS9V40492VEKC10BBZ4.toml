@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3, 4]
+captured_at = "2026-11-08T03:34:21Z"
+digest = "c5f95a1a0a025af746dc0a8467751099ba2517d15f07d8d763ed81e3078cf2cb"
+exit_code = 0
+head = "2c3a67e8bb79233f06b81bee0525545c4dcf28fc"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_live.py ..                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-276053-0.xml ---------------
+============================== 2 passed in 2.28s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_live.py::test_review_edits_recompute_consistently python/tests/labs/lctt/test_live.py::test_mc_crosscheck_flag"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "568a7d7594f5496cdfddb8390c342f2a7193cbf121ba1d32ccc4f986dc24e445"
+at = "2026-11-08T03:34:21Z"
+actor = "lognd"
+rev = 1

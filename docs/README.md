@@ -63,6 +63,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/lctt/calibration.md` | ~NQKWT3Y | LCTT calibration: LINEST-equivalent fit with standard errors and t95 |
 | [`docs/lctt/capture.md`](lctt/capture.md) | ~QPQKQEK | Capture modes: human confirm key, auto-capture with max wait, forced-early |
 | `docs/lctt/clamp-check.md` | ~DQ1C3W6 | Pre-test clamp-slip check procedure |
+| [`docs/lctt/live-results.md`](lctt/live-results.md) | ~19WDD6Q | Live recompute engine: all results after every captured point |
 | `docs/lctt/creep.md` | ~7NDJSG8 | Creep fit: strain vs log-time per hold |
 | `docs/lctt/slip.md` | ~T3M5GJG | Slip detector: sudden strain steps without load change |
 | `docs/lctt/export-csv.md` | ~7P8582F | CSV export in the 32-column LabVIEW schema |

@@ -9,6 +9,14 @@ reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
 updated = "2026-11-08T06:23:17Z"
 scope = ["web/src/screens/run/**", "docs/web/run-screens.md"]
+
+[[acceptance]]
+text = "F3 on the run screen downloads GET /api/export/{format} (default lctt-csv) via resolveKey"
+bound = false
+
+[[acceptance]]
+text = "Export failures surface as a status message"
+bound = false
 +++
 
 found while working ~74FQXWT

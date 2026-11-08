@@ -2,7 +2,8 @@
 id = "01M6WMGMM1BP37GS27VRRX9AYP"
 title = "Add sadi launcher CLI entry that starts server and serves web"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

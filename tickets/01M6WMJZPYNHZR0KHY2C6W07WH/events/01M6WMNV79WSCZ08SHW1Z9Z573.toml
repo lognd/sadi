@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:54:16Z"
+digest = "860d863318fc66817e98b59b7895058376ff2efcd4aca6bfef901a884f2df20a"
+exit_code = 0
+head = "1bcae11d7fab2a67b3d80a852d78bdb39a7437e7"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_app.py .                                        [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-323867-0.xml ---------------
+========================= 1 passed, 1 warning in 0.52s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_app.py::test_save_indicator_reachable_and_latches_on_failure"
+size = 1002
+status = "measured"
+test_count = 1
+tests_digest = "cacdff299701105cb34f79f01c2b7b116f7f2d4787452deb064ccddb6ae8ff60"
+at = "2026-11-08T03:54:16Z"
+actor = "lognd"
+rev = 1

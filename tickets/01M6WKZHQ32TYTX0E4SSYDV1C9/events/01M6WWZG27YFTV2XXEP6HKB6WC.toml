@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Private mapping doc and test cover all 32 reference columns and metadata keys", "Tracked docs/lctt/export-csv.md describes differences without reference names"]
+moved = []
+at = "2026-11-08T06:19:22Z"
+actor = "lognd"
+rev = 1

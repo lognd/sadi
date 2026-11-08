@@ -7,5 +7,13 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:42:07Z"
-updated = "2026-11-08T06:18:17Z"
+updated = "2026-11-08T06:19:22Z"
+
+[[acceptance]]
+text = "Private mapping doc and test cover all 32 reference columns and metadata keys"
+bound = false
+
+[[acceptance]]
+text = "Tracked docs/lctt/export-csv.md describes differences without reference names"
+bound = false
 +++

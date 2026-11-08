@@ -11,7 +11,7 @@ created = "2026-11-08T00:08:28Z"
 updated = "2026-11-08T05:49:39Z"
 idempotency_key = "sadi-c2"
 labels = ["ws:ci", "model:sonnet", "creates:.github/workflows/wheels.yml", "creates:docs/release.md"]
-scope = [".github/workflows/wheels.yml", "docs/release.md", "python/tests/packaging/test_wheels_workflow.py"]
+scope = [".github/workflows/wheels.yml", "docs/release.md", "python/tests/packaging/test_wheels_workflow.py", "python/pyproject.toml"]
 
 [[links]]
 kind = "blocked-by"

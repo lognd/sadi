@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:38Z"
-updated = "2026-11-08T02:46:08Z"
+updated = "2026-11-08T02:46:09Z"
 labels = ["plugins", "creates:python/sadi/plugins/__init__.py", "creates:python/sadi/plugins/manifest.py", "creates:python/sadi/plugins/errors.py", "creates:python/tests/plugins/test_manifest.py"]
 scope = ["python/sadi/plugins/__init__.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/errors.py", "python/tests/plugins/test_manifest.py", "python/pyproject.toml", "python/uv.lock"]
 
@@ -22,7 +22,7 @@ bound = true
 
 [[acceptance]]
 text = "Incompatible api_version yields Err(PluginApiVersionError) naming both versions"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "python -m typani.lint clean; frob check --ticket passes"

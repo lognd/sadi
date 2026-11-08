@@ -4,9 +4,10 @@ title = "Launcher registers no labs: GET /api/labs is empty so no session can be
 type = "bug"
 category = "todo"
 priority = "high"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T07:15:48Z"
-updated = "2026-11-08T07:15:48Z"
+updated = "2026-11-08T07:17:21Z"
 scope = ["python/sadi/launcher.py"]
 +++
 

@@ -4,9 +4,10 @@ title = "Wire a real CurveSource (active session events) into create_app for str
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:58:26Z"
-updated = "2026-11-08T03:58:26Z"
+updated = "2026-11-08T03:59:35Z"
 scope = ["python/sadi/server/**"]
 +++
 

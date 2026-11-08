@@ -2,7 +2,8 @@
 id = "01M6WTJHAMF6T0HAKHXV4MVSC0"
 title = "docs: update server api.md resume bullet (parent state is now folded, ~S7757MP)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

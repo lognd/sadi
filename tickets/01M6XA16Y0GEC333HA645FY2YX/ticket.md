@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:07:30Z"
 updated = "2026-11-08T10:12:19Z"
-scope = ["docs/server/websocket.md", "python/sadi/server/app.py", "python/sadi/server/routes/results.py"]
+scope = ["docs/server/websocket.md", "python/sadi/server/app.py", "python/sadi/server/routes/results.py", "python/sadi/server/ws.py"]
 
 [[acceptance]]
 text = "Hub publishes guidance after result/settle-state changes, de-duplicated, via an end-to-end WS test"

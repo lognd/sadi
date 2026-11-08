@@ -19,6 +19,7 @@ from typani import Err, Ok, Result
 
 from sadi.logging_setup import get_logger
 from sadi.plugins.builtin import builtin_source
+from sadi.plugins.doctor import DoctorFinding, check_plugins
 from sadi.plugins.local import LocalDirSource
 from sadi.plugins.registry import PluginRecord, PluginRegistry
 from sadi.plugins.settings import PluginSettings
@@ -128,12 +129,32 @@ def _lookup(registry: PluginRegistry, plugin_id: str) -> Result[PluginRecord, Cl
     return Ok(rec)
 
 
-def cmd_info(registry: PluginRegistry, plugin_id: str) -> Result[int, CliFailure]:
-    """Print manifest, source, state and errors of one plugin."""
+def _findings_for(registry: PluginRegistry, plugin_id: str) -> list[DoctorFinding]:
+    """Return the doctor findings that concern one plugin."""
+    found = [f for f in check_plugins(registry) if f.plugin_id == plugin_id]
+    _log.debug("info %s: %d doctor findings", plugin_id, len(found))
+    return found
+
+
+def cmd_info(
+    registry: PluginRegistry, plugin_id: str, as_json: bool = False
+) -> Result[int, CliFailure]:
+    """Print manifest, source, state, errors and doctor findings (with fix steps) of one plugin."""
     found = _lookup(registry, plugin_id)
     if isinstance(found, Err):
         return Err(found.error)
     rec = found.value
+    findings = _findings_for(registry, plugin_id)
+    if as_json:
+        detail = {
+            **_row(rec),
+            "api": rec.manifest.api_version if rec.manifest else None,
+            "labs": list(rec.manifest.contributions.labs) if rec.manifest else [],
+            "requires": [r.id for r in rec.manifest.requires] if rec.manifest else [],
+            "findings": [f.model_dump(mode="json") for f in findings],
+        }
+        _out(json.dumps(detail, indent=2))
+        return Ok(Exit.OK)
     _out(f"id:       {rec.id}")
     _out(f"version:  {rec.manifest.version if rec.manifest else '-'}")
     _out(f"source:   {rec.source}")
@@ -146,6 +167,12 @@ def cmd_info(registry: PluginRegistry, plugin_id: str) -> Result[int, CliFailure
         _out("errors:")
         for issue in rec.errors:
             _out(f"  - {issue.kind.name}: {issue.note}" if issue.note else f"  - {issue.kind.name}")
+    if findings:
+        _out("findings:")
+        for f in findings:
+            _out(f"  - [{f.severity.value}] {f.code}: {f.message}")
+            for step in f.fixes:
+                _out(f"      {step}")
     return Ok(Exit.OK)
 
 
@@ -170,7 +197,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
     p_list = sub.add_parser("list", help="list discovered plugins")
     p_list.add_argument("--json", action="store_true", help="machine-readable output")
-    sub.add_parser("info", help="show one plugin in detail").add_argument("id")
+    p_info = sub.add_parser("info", help="show one plugin in detail, with doctor findings")
+    p_info.add_argument("id")
+    p_info.add_argument("--json", action="store_true", help="machine-readable output")
     sub.add_parser("enable", help="enable a plugin (next start)").add_argument("id")
     sub.add_parser("disable", help="disable a plugin (next start)").add_argument("id")
     return parser
@@ -198,7 +227,7 @@ def _dispatch(
     if args.command == "list":
         result = cmd_list(registry, args.json)
     elif args.command == "info":
-        result = cmd_info(registry, args.id)
+        result = cmd_info(registry, args.id, args.json)
     else:
         result = cmd_set(registry, settings, args.id, args.command == "enable")
     if isinstance(result, Err):

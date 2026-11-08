@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
+from typani import Ok
 
-from sadi.cli.plugins import Exit, main
+from sadi.cli.plugins import Exit, cmd_info, main
 from sadi.plugins.builtin import builtin_source
+from sadi.plugins.doctor import DoctorFinding, Severity
+from sadi.plugins.registry import PluginRegistry
 
 
 def run(tmp_path: Path, *args: str) -> int:
@@ -69,6 +73,37 @@ def test_info_shows_details(tmp_path: Path, capsys: pytest.CaptureFixture[str]) 
     assert run(tmp_path, "info", "lctt") == Exit.OK
     out = capsys.readouterr().out
     assert "source:   builtin" in out and "sadi.labs.lctt.plugin:register" in out
+
+
+# frob:tests python/sadi/cli/plugins.py::cmd_info
+def test_info_json_includes_findings_and_numbered_fixes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """info --json carries a findings list; a disabled-by-error plugin shows numbered fixes."""
+    assert run(tmp_path, "info", "lctt", "--json") == Exit.OK
+    data = json.loads(capsys.readouterr().out)
+    assert data["id"] == "lctt" and data["findings"] == []
+
+
+# frob:tests python/sadi/cli/plugins.py::cmd_info
+def test_info_renders_findings_with_fix_steps(capsys: pytest.CaptureFixture[str]) -> None:
+    """Text info lists each finding and its numbered fix steps."""
+    rec = PluginRegistry.discover([builtin_source()], frozenset({"lctt"}))
+    finding = DoctorFinding(
+        plugin_id="lctt",
+        severity=Severity.ERROR,
+        code="X001",
+        message="broken",
+        fixes=("1. do a", "2. do b"),
+    )
+    with patch("sadi.cli.plugins.check_plugins", return_value=[finding]):
+        assert cmd_info(rec, "lctt") == Ok(Exit.OK)
+        out = capsys.readouterr().out
+        assert "X001: broken" in out and "1. do a" in out and "2. do b" in out
+        capsys.readouterr()
+        assert cmd_info(rec, "lctt", True) == Ok(Exit.OK)
+    raw = capsys.readouterr().out  # direct call: debug log lines may precede the JSON
+    assert json.loads(raw[raw.index("{") :])["findings"][0]["fixes"] == ["1. do a", "2. do b"]
 
 
 # frob:tests python/sadi/cli/plugins.py::main

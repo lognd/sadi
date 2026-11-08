@@ -32,6 +32,7 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 sadi-store = "sadi.cli.store:main"
+sadi-plugins = "sadi.cli.plugins:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sadi"]

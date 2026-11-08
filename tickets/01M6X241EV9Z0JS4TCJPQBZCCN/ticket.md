@@ -7,12 +7,12 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:49:14Z"
-updated = "2026-11-08T08:12:29Z"
+updated = "2026-11-08T08:12:36Z"
 scope = ["web/e2e/**", "web/src/screens/run/**", "docs/e2e.md", "docs/web/run-screens.md"]
 
 [[acceptance]]
 text = "Run screen shows per-phase input fields and sends them; vitest covers validation"
-bound = false
+bound = true
 +++
 
 found while working ~M84ZB2J: RunScreen sends empty inputs so POST capture returns 422 'calibration needs volts and height'; guided-run and run-capture e2e fail at capture after Settled. Needs input fields per phase (see core/point_inputs.py parse_inputs).

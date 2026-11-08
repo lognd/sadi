@@ -16,3 +16,5 @@ and [@uncertain](../uncertainty/uncertain.md) (`.latex`).
   does not exist yet (owned by ~J73KJ11); until then the call yields an http error Result.
 - KaTeX stylesheet (`katex/dist/katex.min.css`) is not yet imported by the app shell; wiring
   it into `main.tsx` is left to the screen that mounts the panel.
+
+See also: [guidance panel](guidance.md).

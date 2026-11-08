@@ -7,5 +7,6 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:11:39Z"
-updated = "2026-11-08T06:11:41Z"
+updated = "2026-11-08T06:11:48Z"
+scope = ["python/tests/server/test_ws_results.py"]
 +++

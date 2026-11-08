@@ -2,12 +2,12 @@
 id = "01M6WTZVX9DFPHBKVJ1NXB07G0"
 title = "launcher: --sim must make the server use the simulator (SADI_SIM is not read)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:44:37Z"
+updated = "2026-11-08T05:50:23Z"
 labels = ["ws:srv"]
 +++
 

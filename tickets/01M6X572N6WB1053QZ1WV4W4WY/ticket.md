@@ -2,7 +2,8 @@
 id = "01M6X572N6WB1053QZ1WV4W4WY"
 title = "e2e guided-run: sim LVDT voltage ignores typed calibration heights so calibration fit is degenerate (E pending, CSV export 422)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

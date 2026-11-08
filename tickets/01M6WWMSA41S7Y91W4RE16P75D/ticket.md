@@ -2,7 +2,8 @@
 id = "01M6WWMSA41S7Y91W4RE16P75D"
 title = "Add TYP004 hints to problem+json errors in routes/inventory.py and routes/export.py"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

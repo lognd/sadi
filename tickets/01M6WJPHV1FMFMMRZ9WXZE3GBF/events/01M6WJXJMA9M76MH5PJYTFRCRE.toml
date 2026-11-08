@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Labs import only the core public API (test_labs_import_only_core_public_api passes)"]
+moved = []
+at = "2026-11-08T03:23:33Z"
+actor = "lognd"
+rev = 1

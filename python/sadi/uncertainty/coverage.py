@@ -58,16 +58,23 @@ def effective_dof(
     """
     if not contributions:
         return Err(UncertaintyError.NoContributions)
-    total = 0.0
-    denom = 0.0
     for u_i, dof_i in contributions:
         if not (math.isfinite(u_i) and u_i >= 0):
             return Err(UncertaintyError.InvalidUncertainty)
         if dof_i is not None and (math.isnan(dof_i) or dof_i <= 0):
             return Err(UncertaintyError.InvalidDof)
-        total += u_i**2
+    # The ratio total^2 / denom is invariant under a common scale, so normalise by the largest
+    # contribution: r**2 and r**4 then cannot overflow for any finite u_i.  frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
+    scale = max(u for u, _ in contributions)
+    if scale == 0.0:
+        return Ok(math.inf)
+    total = 0.0
+    denom = 0.0
+    for u_i, dof_i in contributions:
+        r = u_i / scale
+        total += r**2
         if dof_i is not None and math.isfinite(dof_i):
-            denom += u_i**4 / dof_i
+            denom += r**4 / dof_i
     if denom == 0.0:
         return Ok(math.inf)
     return Ok(total**2 / denom)

@@ -7,8 +7,8 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:01:31Z"
-updated = "2026-11-08T07:02:10Z"
-scope = ["web/src/App.tsx", "web/src/main.tsx"]
+updated = "2026-11-08T07:03:09Z"
+scope = ["web/src/App.tsx", "web/src/main.tsx", "web/src/screens/**"]
 +++
 
 found while working ~GW7ER11: App only renders health page and Doctor; guided-run e2e specs skip until mounted

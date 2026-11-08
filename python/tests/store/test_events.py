@@ -39,7 +39,7 @@ from sadi.store.records import (
 )
 from sadi.store.session import SessionHandle, SessionMeta, create_session
 from sadi.store.snapshot import SnapshotAhead, SnapshotIo, load_latest_snapshot, write_snapshot
-from sadi.store.wal import WalConfig, WalWriter
+from sadi.store.wal import WalConfig, WalReader, WalWriter
 
 NOW = datetime(2026, 11, 8, 15, 30, 0, tzinfo=UTC)
 WIN = PointWindow(first_raw_seq=2, last_raw_seq=9)
@@ -79,10 +79,12 @@ def as_records(items: list[NewRecord]) -> list[Record]:
     ]
 
 
-def make_session(tmp_path: Path, items: list[NewRecord]) -> SessionHandle:
-    """Create a session and append `items` durably to its WAL."""
+def make_session(
+    tmp_path: Path, items: list[NewRecord], cfg: WalConfig | None = None
+) -> SessionHandle:
+    """Create a session and append `items` durably to its WAL (optionally with a small `cfg`)."""
     h = create_session(tmp_path, SessionMeta(slug="ev"), NOW).danger_ok
-    w = WalWriter.open(h.path / "wal", uuid.UUID(h.manifest.session_uuid), 1, WalConfig())
+    w = WalWriter.open(h.path / "wal", uuid.UUID(h.manifest.session_uuid), 1, cfg or WalConfig())
     w.expect("open wal")
     for n in items:
         w.danger_ok.append(n).expect("append")
@@ -373,3 +375,62 @@ def test_replay_is_deterministic_and_snapshot_resumable(items: list[NewRecord], 
     restored = ReplayState.model_validate_json(head.model_dump_json())
     assert replay(recs, restored).danger_ok == a
     assert replay(recs[k:], restored).danger_ok == a if k else True
+
+
+# ---- rotated WALs (SEAL records consume a seq but are not data records) -----------------
+
+ROTATING = WalConfig(segment_max_bytes=600)
+
+
+def rotated_session(tmp_path: Path) -> SessionHandle:
+    """A session whose WAL spans several segments (and so several seals)."""
+    items = [point_record(pt(i)) for i in range(1, 25)]
+    h = make_session(tmp_path, items, ROTATING)
+    assert len(list((h.path / "wal").glob("seg-*.wal"))) >= 3
+    return h
+
+
+# frob:ticket 01M6WJMCTQ6M9SW2C3W6H5B4R2
+# frob:tests python/sadi/store/events.py::replay_wal
+def test_replay_wal_across_rotations(tmp_path: Path) -> None:
+    """A multi-segment WAL replays completely; seals are skipped but never lose a record."""
+    h = rotated_session(tmp_path)
+    state = replay_wal(h.path / "wal").danger_ok
+    assert [p.point.point_id for p in state.points] == [f"p{i}" for i in range(1, 25)]
+    assert state.record_count == 24
+    assert state.covers_seq > 24  # seals consumed seqs
+
+
+# frob:ticket 01M6WJMCTQ6M9SW2C3W6H5B4R2
+# frob:tests python/sadi/store/events.py::recover_state
+def test_snapshot_assisted_recovery_across_a_seal(tmp_path: Path) -> None:
+    """A snapshot taken just before a seal plus the tail equals a full replay."""
+    h = rotated_session(tmp_path)
+    scan = WalReader.scan(h.path / "wal").danger_ok
+    assert scan.seal_seqs
+    full = replay_wal(h.path / "wal").danger_ok
+    for seal in scan.seal_seqs[:2]:
+        cover = seal - 1  # last data seq before this seal
+        recs = [r.danger_ok for r in WalReader(h.path / "wal").records() if r.is_ok]
+        base = replay([r for r in recs if r.seq <= cover], None, scan.seal_seqs).danger_ok
+        assert base.covers_seq == cover
+        write_snapshot(h, base, cover, now=NOW).expect("snapshot")
+        assert recover_state(h.path).danger_ok == full
+
+
+# frob:ticket 01M6WJMCTQ6M9SW2C3W6H5B4R2
+# frob:tests python/sadi/store/events.py::replay
+def test_only_seal_seqs_are_tolerated_as_jumps() -> None:
+    """A jump over a declared seal seq is fine; any other gap is still EventsGap."""
+    recs = as_records(BASIC)
+    skipped_seal = [r.model_copy(update={"seq": r.seq + (1 if r.seq > 3 else 0)}) for r in recs]
+    ok = replay(skipped_seal, None, seal_seqs={4})
+    assert ok.is_ok and ok.danger_ok.record_count == len(BASIC)
+    undeclared = replay(skipped_seal)
+    assert undeclared.is_err and undeclared.danger_err == EventsGap(expected=4, found=5)
+    wrong = replay(skipped_seal, None, seal_seqs={7})
+    assert wrong.is_err and isinstance(wrong.danger_err, EventsGap)
+    # a genuine gap next to a real seal is still detected
+    dropped = [r for r in skipped_seal if r.seq != 6]
+    res = replay(dropped, None, seal_seqs={4})
+    assert res.is_err and res.danger_err == EventsGap(expected=6, found=7)

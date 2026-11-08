@@ -852,6 +852,7 @@ class ScanReport(BaseModel):
     last_seq: int | None
     prefix_hash: str
     tail: TornTail | None
+    seal_seqs: tuple[int, ...] = ()
 
 
 class _Walker:
@@ -868,6 +869,7 @@ class _Walker:
         self.last_seq: int | None = None
         self.phash = new_prefix_hash()
         self.uuid: uuid.UUID | None = None
+        self.seal_seqs: list[int] = []
 
     def report(self) -> ScanReport:
         """Build the ScanReport for what has been verified so far."""
@@ -880,6 +882,7 @@ class _Walker:
             last_seq=self.last_seq,
             prefix_hash=self.phash.hexdigest(),
             tail=self.tail,
+            seal_seqs=tuple(self.seal_seqs),
         )
 
     def _corrupt(self, segment: int, offset: int, reason: str) -> None:
@@ -989,6 +992,7 @@ class _Walker:
                 if not self._check_seal(st, rec, shash, end):
                     return
                 st.sealed = True
+                self.seal_seqs.append(rec.seq)
                 st.expected = rec.seq + 1
                 st.pos = end
                 _log.debug("segment %d sealed ok", st.no)

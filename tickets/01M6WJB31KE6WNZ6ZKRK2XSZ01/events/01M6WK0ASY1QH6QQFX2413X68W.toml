@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/index.md links docs/core/wizard.md"]
+moved = []
+at = "2026-11-08T03:25:04Z"
+actor = "lognd"
+rev = 1

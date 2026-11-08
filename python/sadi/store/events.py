@@ -11,7 +11,7 @@ semantically odd ones (edit of an unknown point) in `View.anomalies`; the WAL is
 from __future__ import annotations
 
 import uuid
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from pathlib import Path
 from typing import Any, Literal
 
@@ -286,18 +286,29 @@ def _apply(acc: _Acc, rec: Record) -> None:
 
 
 def replay(
-    records: Iterable[Record], base: ReplayState | None = None
+    records: Iterable[Record],
+    base: ReplayState | None = None,
+    seal_seqs: Collection[int] = (),
 ) -> Result[ReplayState, EventsError]:
-    """Fold verified records into a state; records at or below `base.covers_seq` are ignored."""
+    """Fold verified records into a state; records at or below `base.covers_seq` are ignored.
+
+    A seq jump is accepted only over seqs in `seal_seqs` (SEAL records consume a seq but are
+    not data records); any other discontinuity is an `EventsGap`.
+    """
+    # frob:ticket 01M6WJMCTQ6M9SW2C3W6H5B4R2
     state = base or ReplayState()
     acc = _Acc(state)
     started = base is not None and base.covers_seq > 0
     for rec in records:
         if started and rec.seq <= state.covers_seq:
             continue
-        if started and rec.seq != acc.covers_seq + 1:
-            _log.error("replay gap: expected seq %d got %d", acc.covers_seq + 1, rec.seq)
-            return Err(EventsGap(expected=acc.covers_seq + 1, found=rec.seq))
+        if started:
+            expected = acc.covers_seq + 1
+            while expected in seal_seqs:
+                expected += 1
+            if rec.seq != expected:
+                _log.error("replay gap: expected seq %d got %d", expected, rec.seq)
+                return Err(EventsGap(expected=expected, found=rec.seq))
         started = True
         _apply(acc, rec)
     out = acc.freeze()
@@ -322,7 +333,8 @@ def replay_wal(wal_dir: Path, base: ReplayState | None = None) -> Result[ReplayS
             _log.error("replay of %s stopped by corruption: %s", wal_dir, item.danger_err)
             return Err(EventsWal(error=item.danger_err))
         recs.append(item.danger_ok)
-    return replay(recs, base)
+    seals = reader.report.seal_seqs if reader.report else ()
+    return replay(recs, base, seals)
 
 
 def restore_state(snap: snapshot.SnapshotV1) -> ReplayState | None:

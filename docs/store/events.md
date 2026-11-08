@@ -21,6 +21,10 @@ the current values on demand.
 - Replay is pure and deterministic: same records give an identical state and JSON.
 - `replay_wal(wal_dir)` reads through the read-only `WalReader`; it never truncates or
   rewrites. Mid-log corruption is `Err(EventsWal)` with the files untouched.
+- SEAL records (segment rotation) consume a seq but are not data records. `WalReader`
+  reports every verified seal seq in `ScanReport.seal_seqs`; `replay(records, base,
+  seal_seqs)` accepts a seq jump only over exactly those seqs. Any other discontinuity is
+  `Err(EventsGap)`, so multi-segment WALs replay and real gaps stay loud.
 
 ## Snapshots
 

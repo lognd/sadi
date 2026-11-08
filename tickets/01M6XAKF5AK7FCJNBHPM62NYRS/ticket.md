@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T10:17:28Z"
 updated = "2026-11-08T10:23:13Z"
-scope = ["docs/server/api.md", "docs/server/results.md", "python/sadi/server/routes/results.py"]
+scope = ["docs/server/api.md", "docs/server/results.md", "python/sadi/server/routes/results.py", "python/sadi/server/routes/sessions.py"]
 
 [[acceptance]]
 text = "The live run's phase is owned by SessionService, advanced only through validated forward transitions recorded as append-only WAL markers; WS guidance reads it and infers only for sessions without a recorded phase"

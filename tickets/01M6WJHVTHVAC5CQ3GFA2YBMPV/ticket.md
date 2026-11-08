@@ -2,7 +2,8 @@
 id = "01M6WJHVTHVAC5CQ3GFA2YBMPV"
 title = "doctor: EXT-020..050, NET-030/040, PY-050/060"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

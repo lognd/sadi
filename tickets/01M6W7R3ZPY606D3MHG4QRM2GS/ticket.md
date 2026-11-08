@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:35:09Z"
+updated = "2026-11-08T05:38:31Z"
 idempotency_key = "sadi-b5"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/ws.py", "creates:python/sadi/server/framing.py", "creates:python/tests/server/test_ws.py", "creates:docs/server/websocket.md"]
 scope = ["python/sadi/server/ws.py", "python/sadi/server/framing.py", "python/tests/server/test_ws.py", "docs/server/websocket.md", "python/sadi/server/app.py", "docs/server/app.md", "docs/server/api.md"]
@@ -35,6 +35,10 @@ bound = false
 
 [[acceptance]]
 text = "Frame type reserved for the versioned results envelope defined by J4 (version, stale flag, progress)"
+bound = false
+
+[[acceptance]]
+text = "Server tests cover codec round-trip, back-pressure counter, resume and 50 kS/s budget"
 bound = false
 +++
 

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Review point rows expose exactly one Tab stop each (roving tabindex; Left/Right arrows move between Edit and Exclude) while the Skip to Finish link and aria-labels stay"]
+moved = []
+at = "2026-11-08T10:08:15Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,16 @@
+kind = "create"
+title = "Resume should fold parent state into the new WAL version"
+type = "task"
+category = "todo"
+priority = "medium"
+parent = "01M6W7R09P668G2VDDAWEDCSRM"
+scope = ["python/sadi/server/service.py"]
+acceptance = ["Resume should fold parent state into the new WAL version"]
+body = "found while working ~X3H80G2 (split out of its original acceptance). resume creates a fresh WAL; the child does not see the parent's points or wizard state."
+at = "2026-11-08T05:33:56Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M6W7R3XY1B0BF689RX3H80G2"

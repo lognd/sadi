@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Every SESS-* and WAL-* catalog check reports each declared mode read-only, with a remediation for all four OSes, and the survey never modifies a session"]
+moved = []
+at = "2026-11-08T03:37:51Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,8 @@
+kind = "create"
+title = "Rename stale test test_writer_renders_32_columns_from_run_events"
+type = "chore"
+category = "todo"
+priority = "low"
+at = "2026-11-08T06:46:56Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6X06TPZ3W86FDHQPX01MME8"
 title = "Launcher registers no labs: GET /api/labs is empty so no session can be created"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

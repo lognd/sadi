@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/api/**"]
+new = ["web/src/api/**", "python/sadi/server/openapi_export.py"]
+at = "2026-11-08T05:58:03Z"
+actor = "lognd"
+rev = 1

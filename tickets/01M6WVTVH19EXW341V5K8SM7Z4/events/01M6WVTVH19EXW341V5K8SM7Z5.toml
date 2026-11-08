@@ -1,0 +1,9 @@
+kind = "create"
+title = "Export screen: render results provenance (point ids, sample span, algorithm)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+at = "2026-11-08T05:59:21Z"
+actor = "lognd"
+rev = 1

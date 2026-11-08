@@ -7,8 +7,9 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:50:23Z"
-updated = "2026-11-08T05:59:22Z"
+updated = "2026-11-08T05:59:36Z"
 labels = ["refactor"]
+scope = ["python/sadi/server/session_points.py"]
 +++
 
 routes/export.py imports private helpers from routes/results.py; extract to a shared public module.

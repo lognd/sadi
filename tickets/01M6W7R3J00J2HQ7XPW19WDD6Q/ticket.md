@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:33:45Z"
+updated = "2026-11-08T03:34:05Z"
 idempotency_key = "sadi-a4"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/live.py", "creates:python/sadi/core/results.py", "creates:python/tests/labs/lctt/test_live.py", "creates:docs/lctt/live-results.md"]
 scope = ["python/sadi/labs/lctt/live.py", "python/sadi/core/results.py", "python/tests/labs/lctt/test_live.py", "docs/lctt/live-results.md", "docs/index.md", "docs/README.md"]
@@ -35,7 +35,7 @@ target = "01M6W7R3BBDEXG9CPYWTQ7ZKZW"
 
 [[acceptance]]
 text = "Pure function recompute(events) -> ResultSet recomputing from RAW-derived points (never from cached display values): calibration slope/intercept, tare, E, r^2, yield each as value, standard uncertainty, 95% interval and plain-language confidence string with class-rule sig figs"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Incremental update after each point meets a latency budget (<50 ms for 200 points) and equals the batch result exactly (property test)"

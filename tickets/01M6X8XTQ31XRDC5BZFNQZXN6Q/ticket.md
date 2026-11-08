@@ -4,7 +4,8 @@ title = "Plots and export routes reuse IncrementalReplay instead of walking the 
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:48:10Z"
-updated = "2026-11-08T09:48:10Z"
+updated = "2026-11-08T09:48:15Z"
 +++

@@ -16,6 +16,10 @@ durable in the WAL, so nothing here can lose raw data.
   `SessionService.info()`, `latest` messages by kind, `bus_dropped`), `state` (settle status),
   `result` (finalized point), `analysis_failed`, `stopped`, `guidance`, `stats`
   (`sent_frames`, `dropped_frames`, every 1 s).
+- `guidance` carries `GuidancePayload` (frozen, extra=forbid; `sadi.server.ws`): `phase`
+  (`calibrate|elastic|plastic`), `next_action`, `stop_early`, `stop_reason`; built with
+  `GuidancePayload.from_state(GuidanceState)` and sent via `StreamHub.publish_guidance`. The run
+  screen shows the newest `next_action` (`SideState.guidance`).
 - `hello` also carries `simulated` (bool: the data source is the simulator). `state` carries
   `drift_vps` (server drift rate of the open point in V/s, or null), `window`
   (`first_raw_seq`, `last_raw_seq`: raw-seq span of the open point's capture window; the first

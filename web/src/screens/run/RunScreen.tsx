@@ -1,5 +1,6 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M6WWN96C55R68VNZF2D1NB2V
+// frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -121,6 +122,11 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   return (
     <WizardShell status={{ source: view.source, motion: view.motion, signal: view.signal }} onKeyAction={onKey} onWizard={p.onWizard}>
       {(p.simulated === true || side.simulated) && <p data-testid="sim-banner">SIMULATED DATA</p>}
+      {side.guidance != null && (
+        <p data-testid="guidance-note">
+          {side.guidance.nextAction}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
+        </p>
+      )}
       <RunView
         phase={p.phase} view={view} trace={<TraceCanvas snapshot={live.snapshot} conn={live.conn} />} plot={p.plot ?? null}
         fields={fields} onField={onField}

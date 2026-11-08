@@ -1,6 +1,7 @@
 """Tests for the binary frame codec and the WebSocket stream."""
 
 # frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
+# frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 
 from __future__ import annotations
 
@@ -11,12 +12,15 @@ import time
 from pathlib import Path
 
 import numpy as np
+import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
 from sadi.core.pipeline import Bus, PipelineStopped, SettleUpdate, TraceFrame
+from sadi.labs.lctt.guidance import Phase
 from sadi.server import framing
 from sadi.server.app import AppSettings, create_app
-from sadi.server.ws import CLIENT_FRAME_DEPTH
+from sadi.server.ws import CLIENT_FRAME_DEPTH, GuidancePayload
 
 
 def _frame(i: int, n: int = 256, t0: float | None = None) -> TraceFrame:
@@ -127,9 +131,27 @@ def test_guidance_pushed_to_clients() -> None:
     app = create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False))
     with TestClient(app).websocket_connect("/api/stream") as ws:
         ws.receive_text()
-        app.state.stream_hub.publish_guidance({"text": "wait"})
+        app.state.stream_hub.publish_guidance(
+            GuidancePayload(phase=Phase.ELASTIC, next_action="wait", stop_reason="r")
+        )
         msg = json.loads(ws.receive_text())
-        assert msg == {"kind": "guidance", "text": "wait"}
+        assert msg == {
+            "kind": "guidance",
+            "phase": "elastic",
+            "next_action": "wait",
+            "stop_early": False,
+            "stop_reason": "r",
+        }
+
+
+# frob:tests python/sadi/server/ws.py::GuidancePayload
+def test_guidance_payload_frozen_and_strict() -> None:
+    """The payload is immutable and rejects unknown fields."""
+    p = GuidancePayload(phase=Phase.CALIBRATE, next_action="go")
+    with pytest.raises(ValidationError):
+        p.__setattr__("next_action", "x")
+    with pytest.raises(ValidationError):
+        GuidancePayload.model_validate({"phase": "calibrate", "next_action": "a", "bogus": 1})
 
 
 # frob:tests python/sadi/server/ws.py::make_ws_router
@@ -194,3 +216,26 @@ def test_state_carries_drift_window_and_simulated() -> None:
     ]
     assert all(m["simulated"] is True for m in msgs)
     assert hub.hello()["simulated"] is True
+
+
+# frob:tests python/sadi/server/ws.py::GuidancePayload.from_state
+def test_guidance_payload_from_state() -> None:
+    """from_state projects phase, next action and stop advice."""
+    from sadi.labs.lctt.guidance import Confidence, GuidanceState
+
+    st = GuidanceState(
+        phase=Phase.PLASTIC,
+        next_action="hold",
+        confidence=Confidence(quantity="E", fraction=1.0, met=True),
+        points_taken=3,
+        max_points=5,
+        stop_early=True,
+        stop_reason="met",
+    )
+    p = GuidancePayload.from_state(st)
+    assert (p.phase, p.next_action, p.stop_early, p.stop_reason) == (
+        Phase.PLASTIC,
+        "hold",
+        True,
+        "met",
+    )

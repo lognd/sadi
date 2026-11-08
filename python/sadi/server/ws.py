@@ -9,6 +9,7 @@ the live stream (no replay of missed frames). Session info comes from `SessionSe
 
 # frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
 # frob:ticket 01M6WWN90MKGKGY4H7Y8PWYEQZ
+# frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ from collections.abc import Callable
 from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from sadi.core.pipeline import (
     AnalysisFailed,
@@ -34,6 +35,7 @@ from sadi.core.pipeline import (
     TraceFrame,
 )
 from sadi.jobs.state import ResultEnvelope, ResultState
+from sadi.labs.lctt.guidance import GuidanceState, Phase
 from sadi.logging_setup import get_logger
 from sadi.server.framing import encode_envelope, encode_trace
 from sadi.server.results_stream import Connection, ResultsStream
@@ -74,6 +76,27 @@ def _json_of(event: BusEvent) -> dict[str, Any] | None:
     if isinstance(event, PipelineStopped):
         return {"kind": "stopped", **event.model_dump(mode="json")}
     return None
+
+
+class GuidancePayload(BaseModel):
+    """Payload of the WS `guidance` message: the guided-run next step and stop advice."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    phase: Phase
+    next_action: str
+    stop_early: bool = False
+    stop_reason: str = ""
+
+    @classmethod
+    def from_state(cls, state: GuidanceState) -> GuidancePayload:
+        """Project a full GuidanceState onto the WS payload."""
+        return cls(
+            phase=state.phase,
+            next_action=state.next_action,
+            stop_early=state.stop_early,
+            stop_reason=state.stop_reason,
+        )
 
 
 class ClientStats(BaseModel):
@@ -177,9 +200,10 @@ class StreamHub:
                 self._clients.remove(client)
         _log.info("ws client detached; dropped_frames=%d", client.stats.dropped_frames)
 
-    def publish_guidance(self, message: dict[str, Any]) -> None:
-        """Push a guidance message (JSON side channel) to every client."""
-        self._fanout_msg({"kind": "guidance", **message})
+    def publish_guidance(self, payload: GuidancePayload) -> None:
+        """Push a typed guidance message (JSON side channel) to every client."""
+        _log.info("publishing guidance phase=%s stop_early=%s", payload.phase, payload.stop_early)
+        self._fanout_msg({"kind": "guidance", **payload.model_dump(mode="json")})
 
     def is_simulated(self) -> bool:
         """True when the data source is the simulator."""

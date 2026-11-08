@@ -93,9 +93,17 @@ describe("live derivation from a mocked sim stream", () => {
     const w = new TraceWindow(5, 0);
     expect(deriveLive(w.snapshot(100), OPEN, s.settle, s.simulated, s.driftVps).driftVps).toBe(0.25);
   });
+  it("foldSide keeps the newest guidance and state messages preserve it", () => {
+    const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: false };
+    const g = parseMessage('{"kind":"guidance","phase":"elastic","next_action":"Add load","stop_early":true,"stop_reason":"met"}');
+    const s1 = g.ok ? foldSide(s, g.value) : s;
+    expect(s1.guidance).toEqual({ phase: "elastic", nextAction: "Add load", stopEarly: true, stopReason: "met" });
+    const st = parseMessage('{"kind":"state","raw_seq":2,"status":{"state":"settled"}}');
+    expect((st.ok ? foldSide(s1, st.value) : s1).guidance).toEqual(s1.guidance);
+  });
   it("foldSide ignores unrelated kinds", () => {
     const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: false };
-    const m: ServerMessage = { kind: "guidance" };
+    const m: ServerMessage = { kind: "stats", sentFrames: 1, droppedFrames: 0 };
     expect(foldSide(s, m)).toBe(s);
   });
 });

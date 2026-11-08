@@ -12,5 +12,5 @@ scope = ["web/src/screens/export/ExportScreen.tsx", "web/src/screens/export/type
 
 [[acceptance]]
 text = "Export screen renders per-quantity provenance (point ids, sample span, algorithm) from GET /api/results"
-bound = false
+bound = true
 +++

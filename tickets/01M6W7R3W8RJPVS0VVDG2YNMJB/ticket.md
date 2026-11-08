@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R081S67XNGBH79ACCBZZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:19:17Z"
+updated = "2026-11-08T05:21:32Z"
 idempotency_key = "sadi-ph1"
 labels = ["ws:plan", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/guidance.py", "creates:python/tests/labs/lctt/test_guidance.py", "creates:docs/lctt/guidance.md"]
-scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "docs/lctt/guidance.md"]
+scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "docs/lctt/guidance.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"

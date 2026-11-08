@@ -7,7 +7,7 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:05:45Z"
-updated = "2026-11-08T10:10:37Z"
+updated = "2026-11-08T10:10:39Z"
 scope = ["docs/usability-report.md", "web/e2e/keyboard-only.spec.ts", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md", "changelog.d/01M6X9Y0CWQ6YRMDT8QF5JD036.changed.md"]
 
 [[acceptance]]

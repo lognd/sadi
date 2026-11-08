@@ -53,12 +53,16 @@ def load_disabled(config_dir: Path) -> Result[frozenset[str], PluginStateError]:
         return Ok(frozenset())
     except OSError as exc:
         _log.error("cannot read %s: %s", path, exc)
-        return Err(PluginStateError.Unreadable).note(f"{path}: {exc}")
+        return Err[frozenset[str], PluginStateError](PluginStateError.Unreadable).note(
+            f"{path}: {exc}"
+        )
     try:
         parsed = PluginStateFile.model_validate(json.loads(raw))
     except (ValueError, ValidationError) as exc:
         _log.error("plugin state %s is corrupt: %s", path, exc)
-        return Err(PluginStateError.Corrupt).note(f"{path}: {exc}")
+        return Err[frozenset[str], PluginStateError](PluginStateError.Corrupt).note(
+            f"{path}: {exc}"
+        )
     return Ok(frozenset(parsed.disabled))
 
 
@@ -111,7 +115,9 @@ def set_enabled(
         if err is PluginStateError.Corrupt:
             aside = _keep_aside(state_path(config_dir))
             where = f"kept as {aside}" if aside else "could not be moved aside"
-            return Err(err).note(f"{state_path(config_dir)} {where}")
+            return Err[frozenset[str], PluginStateError](err).note(
+                f"{state_path(config_dir)} {where}"
+            )
         return Err(err)
     disabled = set(current.danger_ok)
     disabled.discard(plugin_id) if enabled else disabled.add(plugin_id)
@@ -120,6 +126,8 @@ def set_enabled(
         _atomic_write(state_path(config_dir), body.model_dump_json(indent=2) + "\n")
     except OSError as exc:
         _log.error("cannot write plugin state: %s", exc)
-        return Err(PluginStateError.WriteFailed).note(f"{state_path(config_dir)}: {exc}")
+        return Err[frozenset[str], PluginStateError](PluginStateError.WriteFailed).note(
+            f"{state_path(config_dir)}: {exc}"
+        )
     _log.info("plugin %s %s", plugin_id, "enabled" if enabled else "disabled")
     return Ok(frozenset(disabled))

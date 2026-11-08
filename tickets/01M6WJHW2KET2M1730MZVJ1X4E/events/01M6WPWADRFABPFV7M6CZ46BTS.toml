@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [6]
+captured_at = "2026-11-08T04:32:46Z"
+digest = "821c4d59b0aee94b6477c2eb3864809e5cb56966c4e56c16a64132299b8e1495"
+exit_code = 0
+head = "5b71f68fe90a473ebf743886fd2b97bf6cf95431"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_runner.py .                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-428675-0.xml ---------------
+============================== 1 passed in 0.30s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_runner.py::test_dependency_cycle_is_a_bug"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "7614f402806cc205a4eb59eba974af769aae76fc7c9b63a454ccf5e5ef613964"
+at = "2026-11-08T04:32:46Z"
+actor = "lognd"
+rev = 1

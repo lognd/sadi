@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/2GGPZ5K; scope: crates/sadi-proto/src/v3/**, crates/sadi-proto/tests/vectors_v3.rs, docs/device/v3.md; ttl 7200s"
+at = "2026-11-08T04:32:36Z"
+actor = "lognd"
+rev = 1

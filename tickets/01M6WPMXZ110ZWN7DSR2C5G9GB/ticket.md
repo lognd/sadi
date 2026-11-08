@@ -7,8 +7,16 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:28:44Z"
-updated = "2026-11-08T04:29:04Z"
+updated = "2026-11-08T04:32:52Z"
 scope = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/jobs/**", "python/tests/labs/**", "python/tests/plugins/**", "python/tests/server/**", "python/tests/store/**", "python/tests/uncertainty/**"]
+
+[[acceptance]]
+text = "ty check reports zero diagnostics for python/tests excluding tests/doctor"
+bound = false
+
+[[acceptance]]
+text = "python/tests suite still passes"
+bound = false
 +++
 
 Clear ty diagnostics under python/tests/** except python/tests/doctor/** (owned by in-flight doctor tickets). Fix annotations/fixtures properly; targeted ty: ignore with reason only where unavoidable. No test behaviour changes. Acceptance: ty check reports zero diagnostics for python/tests excluding doctor; suite passes.

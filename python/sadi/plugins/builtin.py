@@ -29,7 +29,7 @@ def builtin_manifests() -> list[PluginManifest]:
         if isinstance(loaded, Ok):
             out.append(loaded.value)
         else:
-            _log.error("built-in plugin %s manifest invalid: %s", pkg, loaded.error)
+            _log.error("built-in plugin %s manifest invalid: %s", pkg, loaded.unwrap_err())
     return out
 
 

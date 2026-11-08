@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from typing import cast
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Result
@@ -48,7 +49,7 @@ def drive(steps: Steps, token: CancelToken, name: str) -> dict[str, object]:
             cancelled = token.check(tick.fraction, tick.partial)
             tick = steps.send(cancelled)
     except StopIteration as stop:
-        result: Result[dict[str, object], TaskError] = stop.value
+        result = cast(Result[dict[str, object], TaskError], stop.value)
     if cancelled:
         _log.info("%s: cancelled; discarding partial work", name)
         return {}

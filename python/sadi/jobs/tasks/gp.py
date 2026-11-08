@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import math
+from typing import cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -38,6 +39,11 @@ def _rbf(a: NDArray[np.float64], b: NDArray[np.float64], ls: float) -> NDArray[n
     """Unit-variance squared-exponential kernel matrix between rows of `a` and `b`."""
     d2 = ((a[:, None, :] - b[None, :, :]) ** 2).sum(axis=2)
     return np.exp(-0.5 * d2 / (ls * ls))
+
+
+def _log_marginal(fit: dict[str, object]) -> float:
+    """Read the log marginal likelihood out of a fit mapping."""
+    return float(cast(float, fit["log_marginal"]))
 
 
 def _fit_one(
@@ -109,7 +115,7 @@ def gp_steps(raw: dict[str, object]) -> Steps:
         fit = _fit_one(x, y, cand, ls, inp.noise)
         if isinstance(fit, Ok):
             got = fit.danger_ok
-            if best is None or float(got["log_marginal"]) > float(best["log_marginal"]):  # type: ignore[arg-type]
+            if best is None or _log_marginal(got) > _log_marginal(best):
                 best = got
                 _log.debug("gp job: new best ls=%g", ls)
         if best is None:

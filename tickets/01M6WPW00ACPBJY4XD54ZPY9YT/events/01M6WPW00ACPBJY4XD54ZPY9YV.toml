@@ -1,0 +1,10 @@
+kind = "create"
+title = "Replace remaining StrEnum error families in doctor/ and server/ with typani ErrorSet"
+type = "task"
+category = "todo"
+priority = "low"
+points = 2
+body = "Follow-up from PYEFC79: StrEnum uses in python/sadi/doctor (schema.py) and python/sadi/server were skipped due to leases. Convert error families to typani ErrorSet; leave non-error StrEnums."
+at = "2026-11-08T04:32:36Z"
+actor = "lognd"
+rev = 1

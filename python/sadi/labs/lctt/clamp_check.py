@@ -103,8 +103,8 @@ def _judge(i: int, cyc: ClampCycle, cfg: ClampCheckConfig) -> Result[CycleVerdic
         _log.error("cycle %d: non-finite zero reading", i)
         return Err(ClampCheckError.NonFinite)
     res = detect_slip(cyc.times, cyc.strain, cyc.t_load, cyc.load, cfg.slip)
-    if isinstance(res, Err):
-        err: SlipError = res.error
+    if not isinstance(res, Ok):
+        err: SlipError = res.unwrap_err()
         _log.error("cycle %d: slip detector rejected hold: %s", i, err.name)
         return Err(ClampCheckError.BadHold)
     events = res.value.events
@@ -135,8 +135,8 @@ def check_clamp_slip(
     verdicts: list[CycleVerdict] = []
     for i, cyc in enumerate(cycles):
         res = _judge(i, cyc, cfg)
-        if isinstance(res, Err):
-            return Err(res.error)
+        if not isinstance(res, Ok):
+            return Err(res.unwrap_err())
         verdicts.append(res.value)
     passed = all(v.passed for v in verdicts)
     advice = ADVICE_OK if passed else ADVICE_RETIGHTEN

@@ -2,7 +2,8 @@
 id = "01M6WFZ1N70HDJJRZWRHWP4E7Y"
 title = "Migrate lctt to a built-in plugin and update the lab boundary test"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

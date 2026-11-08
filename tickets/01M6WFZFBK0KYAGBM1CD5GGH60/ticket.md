@@ -2,7 +2,8 @@
 id = "01M6WFZFBK0KYAGBM1CD5GGH60"
 title = "Session provenance: record plugin id+version per run, warn on reopen"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

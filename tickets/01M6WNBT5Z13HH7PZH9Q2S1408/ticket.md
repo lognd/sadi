@@ -7,9 +7,17 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:06:17Z"
-updated = "2026-11-08T04:10:26Z"
+updated = "2026-11-08T04:10:29Z"
 labels = ["rust"]
 scope = ["crates/sadi-py/**", "docs/device/python-binding.md", "creates:changelog.d/**"]
+
+[[acceptance]]
+text = "sim.open accepts a SessionConfig and stubs agree"
+bound = false
+
+[[acceptance]]
+text = "sim.rs Rust unit tests and crates/sadi-py/tests run in the suites"
+bound = false
 +++
 
 From ~JBD8YVD. Also run the Rust unit tests for sim.rs via goway (only compiled/clippy-checked locally).

@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:04:41Z"
+updated = "2026-11-08T03:04:48Z"
 idempotency_key = "sadi-s2"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/capture.py", "creates:python/tests/labs/lctt/test_capture.py", "creates:docs/lctt/capture.md"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md"]
@@ -23,7 +23,7 @@ target = "01M6W7R2F3KJWQCWEKZK6BT3MG"
 
 [[acceptance]]
 text = "Modes: confirm (human accepts when indicator says settled), auto (capture on settle or at max wait, flagged forced-early), fixed-dwell"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Capture appends a point event with averaging window referencing raw WAL seq range; points are re-editable (window change) and analysis recomputes from raw"

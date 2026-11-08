@@ -32,6 +32,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
+sadi = "sadi.launcher:main"
 sadi-store = "sadi.cli.store:main"
 sadi-plugins = "sadi.cli.plugins:main"
 sadi-doctor = "sadi.doctor.cli:main"

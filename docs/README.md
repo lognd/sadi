@@ -104,7 +104,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/user-guide.md` | ~JS6PJJY | User guide: running a test with the app (procedure, two specimens, creep) |
 | `docs/ux.md` | ~GKVPN2E | UX design doc: wizard flow, step rail, wireframes (ASCII), keyboard map |
 | `docs/web-layout.md` | ~21F3H53 | Web scaffold: Vite + React + TypeScript, lint, vitest, API client |
-| [`docs/web/budget-panel.md`](web/budget-panel.md) | ~61M215J | Uncertainty budget and formula panel: dominant input, rendered LaTeX derivation |
+| `docs/web/budget-panel.md` | ~61M215J | Uncertainty budget and formula panel: dominant input, rendered LaTeX derivation |
 | `docs/web/calibration-plot.md` | ~DDAPA9P | Calibration plot: fit with CI band, equation annotation and residuals |
 | `docs/web/creep-plot.md` | ~7WJVKMW | Creep plot: strain vs log-time per hold with fit and slip markers |
 | `docs/web/export-screen.md` | ~H8WGMBV | Results/Export screen: report view, figure export, CSV download |

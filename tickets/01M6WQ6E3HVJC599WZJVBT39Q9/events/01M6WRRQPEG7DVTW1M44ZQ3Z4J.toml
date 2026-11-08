@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/tests/server/test_spill_isolation.py"]
+at = "2026-11-08T05:05:46Z"
+actor = "lognd"
+rev = 1

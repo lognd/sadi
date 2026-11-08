@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T05:06:29Z"
+digest = "faca8f3007b20145d6df1e9cf0f9e6ec716f2634728cd9bd6dde688ec8c1c203"
+exit_code = 0
+head = "6c6c1632e78b57e8cd6bf3adae784fb8abd4dc6a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/server/test_spill_isolation.py ..                           [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-451282-0.xml ---------------
+========================= 2 passed, 1 warning in 2.66s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_spill_isolation.py::test_control_spill_in_scanned_data_root_is_imported python/tests/server/test_spill_isolation.py::test_control_standin_spill_is_imported_without_isolation"
+size = 1003
+status = "measured"
+test_count = 2
+tests_digest = "3a86a8ff9e95e099cb4f79d1e3fb121d23a42dd4a13a8f3a328bb63aa86d69d1"
+at = "2026-11-08T05:06:29Z"
+actor = "lognd"
+rev = 1

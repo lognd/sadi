@@ -12,7 +12,7 @@ from enum import StrEnum
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 from pydantic import BaseModel, ConfigDict
-from typani import Err
+from typani import Err, Ok
 
 from sadi.core.lab import LabModule
 from sadi.core.registry import validate_lab
@@ -152,9 +152,9 @@ class PluginRegistry:
                     PluginIssue(kind=PluginSourceError.Unavailable, note=f"{exc!r}")
                 )
                 continue
-            if isinstance(found, Err):
+            if not isinstance(found, Ok):
                 note = "; ".join((getattr(source, "name", "?"), *found.notes))
-                source_errors.append(PluginIssue(kind=found.error, note=note))
+                source_errors.append(PluginIssue(kind=found.unwrap_err(), note=note))
                 continue
             records.extend(cls._vet(c, disabled, records) for c in found.value)
         records = cls._resolve_requires(records)

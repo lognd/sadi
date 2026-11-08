@@ -14,6 +14,8 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.logging_setup import get_logger
 from sadi.uncertainty import (
     Measured,
+    MonteCarloError,
+    NumericError,
     Provenance,
     UncertainError,
     UncertaintyError,
@@ -22,6 +24,9 @@ from sadi.uncertainty import (
 )
 
 _log = get_logger(__name__)
+
+EvalError = UncertainError | UncertaintyError | NumericError | MonteCarloError
+"""Every error an `@uncertain` evaluation can return."""
 
 MIN_POINTS = 3
 _MAX_ITER = 100
@@ -95,13 +100,11 @@ class CalibrationFit(BaseModel):
             half_width=tuple(float(a) for a in half),
         )
 
-    def height_at(self, volts: Measured) -> Result[Measured, UncertainError | UncertaintyError]:
+    def height_at(self, volts: Measured) -> Result[Measured, EvalError]:
         """Height for a voltage Measured, with the slope/intercept covariance propagated."""
         return height_at(self.slope, self.intercept, volts)
 
-    def displacement(
-        self, delta_volts: Measured
-    ) -> Result[Measured, UncertainError | UncertaintyError]:
+    def displacement(self, delta_volts: Measured) -> Result[Measured, EvalError]:
         """Length change for a voltage change Measured; uses the slope only (Q6)."""
         return displacement(self.slope, delta_volts)
 

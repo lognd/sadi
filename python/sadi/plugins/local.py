@@ -11,7 +11,7 @@ from collections.abc import Sequence
 from importlib.machinery import ModuleSpec
 from pathlib import Path
 
-from typani import Err, Ok, Result
+from typani import Ok, Result
 
 from sadi.logging_setup import get_logger
 from sadi.plugins.errors import PluginImportError, PluginManifestError, PluginSourceError
@@ -146,11 +146,11 @@ class LocalDirSource:
                 issues=(PluginIssue(kind=PluginManifestError.Unreadable, note=note),),
             )
         parsed = load_manifest_toml(manifest_path)
-        if isinstance(parsed, Err):
+        if not isinstance(parsed, Ok):
             return PluginCandidate(
                 name=directory.name,
                 source=self.name,
-                issues=(PluginIssue(kind=parsed.error, note="; ".join(parsed.notes)),),
+                issues=(PluginIssue(kind=parsed.unwrap_err(), note="; ".join(parsed.notes)),),
             )
         manifest = parsed.value
         issue = _load_package(manifest, directory)

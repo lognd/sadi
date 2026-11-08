@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from importlib.metadata import entry_points
 from typing import Protocol, runtime_checkable
 
@@ -78,7 +78,7 @@ def _candidate_from(name: str, source: str, obj: object) -> PluginCandidate:
         parsed = parse_manifest(obj)
         if isinstance(parsed, Ok):
             return PluginCandidate(name=parsed.value.id, source=source, manifest=parsed.value)
-        err = parsed.error
+        err = parsed.unwrap_err()
         note = "; ".join((name, *parsed.notes))
         return PluginCandidate(
             name=str(obj.get("id", name)),
@@ -98,6 +98,19 @@ def _candidate_from(name: str, source: str, obj: object) -> PluginCandidate:
     )
 
 
+class _EntryPointLike(Protocol):
+    """The slice of importlib.metadata.EntryPoint this source relies on."""
+
+    @property
+    def name(self) -> str:
+        """Entry-point name, used for ordering and diagnostics."""
+        ...
+
+    def load(self) -> object:
+        """Import and return the advertised object."""
+        ...
+
+
 class EntryPointSource:
     """Installed packages registered under the `sadi.plugins` entry-point group.
 
@@ -108,7 +121,9 @@ class EntryPointSource:
     name = "entry-points"
 
     def __init__(
-        self, group: str = PLUGIN_ENTRY_POINT_GROUP, lister: Callable[..., object] | None = None
+        self,
+        group: str = PLUGIN_ENTRY_POINT_GROUP,
+        lister: Callable[..., Iterable[_EntryPointLike]] | None = None,
     ) -> None:
         """Choose the group to read; `lister` overrides entry_points for tests."""
         self._group = group
@@ -117,21 +132,23 @@ class EntryPointSource:
     def discover(self) -> Result[list[PluginCandidate], PluginSourceError]:
         """Load every entry point; a failing one yields a candidate with an issue."""
         try:
-            eps = sorted(self._lister(group=self._group), key=lambda e: e.name)  # type: ignore[attr-defined]
+            eps = sorted(self._lister(group=self._group), key=lambda e: e.name)
         except (OSError, ValueError, TypeError) as exc:  # metadata backend is outside our control
             _log.exception("entry point listing failed for %s", self._group)
-            return Err(PluginSourceError.Unavailable).note(f"{self._group}: {exc}")
+            return Err[list[PluginCandidate], PluginSourceError](
+                PluginSourceError.Unavailable
+            ).note(f"{self._group}: {exc}")
         out: list[PluginCandidate] = []
         for ep in eps:
             out.append(self._load_one(ep))
         _log.info("entry-point source %s: %d candidates", self._group, len(out))
         return Ok(out)
 
-    def _load_one(self, ep: object) -> PluginCandidate:
+    def _load_one(self, ep: _EntryPointLike) -> PluginCandidate:
         """Load one entry point into a candidate without raising."""
         name = str(getattr(ep, "name", "?"))
         try:
-            obj = ep.load()  # type: ignore[attr-defined]
+            obj = ep.load()
             if callable(obj) and not isinstance(obj, (PluginManifest, dict)):
                 obj = obj()
         except Exception as exc:  # noqa: BLE001 - third-party code; report as value

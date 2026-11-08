@@ -20,7 +20,7 @@ PLUGIN_PATH_ENV = "SADI_PLUGIN_PATH"
 def default_config_dir() -> Path:
     """Return the per-user SADI config dir (XDG_CONFIG_HOME/sadi or ~/.config/sadi)."""
     base = os.environ.get("XDG_CONFIG_HOME")
-    root = Path(base) if base else Path.home() / ".config"
+    root = Path(base) if base is not None and base != "" else Path.home() / ".config"
     return root / "sadi"
 
 

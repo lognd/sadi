@@ -7,12 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T06:04:49Z"
-updated = "2026-11-08T06:07:00Z"
+updated = "2026-11-08T06:07:03Z"
 scope = ["web/src/api/schema.ts", "web/src/api/openapi.json", "web/src/screens/export/types.ts"]
 
 [[acceptance]]
 text = "schema.ts contains QuantityProvenance and provenance (schema drift test passes)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "export/types.ts uses the generated QuantityProvenance type"

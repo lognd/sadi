@@ -1,0 +1,3148 @@
+{
+  "components": {
+    "schemas": {
+      "Action": {
+        "description": "One undoable user action: a captured point or a substantive edit.",
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref",
+          "label"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
+      "BudgetRow": {
+        "description": "One input's line in the budget: value, u, sensitivity and variance share.",
+        "properties": {
+          "contribution": {
+            "title": "Contribution",
+            "type": "number"
+          },
+          "cross": {
+            "title": "Cross",
+            "type": "number"
+          },
+          "direct": {
+            "title": "Direct",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "percent": {
+            "title": "Percent",
+            "type": "number"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "sensitivity": {
+            "title": "Sensitivity",
+            "type": "number"
+          },
+          "std_unc": {
+            "title": "Std Unc",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "id",
+          "value",
+          "unit",
+          "std_unc",
+          "sensitivity",
+          "direct",
+          "cross",
+          "contribution",
+          "percent",
+          "rank"
+        ],
+        "title": "BudgetRow",
+        "type": "object"
+      },
+      "CaptureBody": {
+        "additionalProperties": false,
+        "description": "Capture a point from typed `inputs` of `phase` over the raw sample `window`.",
+        "properties": {
+          "drift_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drift Rate"
+          },
+          "forced_early": {
+            "default": false,
+            "title": "Forced Early",
+            "type": "boolean"
+          },
+          "inputs": {
+            "additionalProperties": true,
+            "title": "Inputs",
+            "type": "object"
+          },
+          "phase": {
+            "minLength": 1,
+            "title": "Phase",
+            "type": "string"
+          },
+          "settled": {
+            "default": false,
+            "title": "Settled",
+            "type": "boolean"
+          },
+          "t_since_load_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Since Load S"
+          },
+          "window": {
+            "$ref": "#/components/schemas/PointWindow"
+          }
+        },
+        "required": [
+          "phase",
+          "inputs",
+          "window"
+        ],
+        "title": "CaptureBody",
+        "type": "object"
+      },
+      "CaptureKind": {
+        "description": "What a wizard step captures; the core wizard dispatches on this.",
+        "enum": [
+          "none",
+          "device_points",
+          "operator_input"
+        ],
+        "title": "CaptureKind",
+        "type": "string"
+      },
+      "CheckResult": {
+        "additionalProperties": false,
+        "description": "Outcome of one check in one run.",
+        "properties": {
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/Evidence"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "id": {
+            "pattern": "^[A-Z]{2,4}-\\d{3}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "layer": {
+            "$ref": "#/components/schemas/Layer"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          },
+          "remediation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Remediation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "skip_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SkipReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "layer",
+          "severity",
+          "status",
+          "headline",
+          "evidence",
+          "duration_ms"
+        ],
+        "title": "CheckResult",
+        "type": "object"
+      },
+      "ComboBody": {
+        "description": "The weight numbers to combine.",
+        "properties": {
+          "numbers": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Numbers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "numbers"
+        ],
+        "title": "ComboBody",
+        "type": "object"
+      },
+      "Command": {
+        "additionalProperties": false,
+        "description": "One copy-paste command line of a step.",
+        "properties": {
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "fixable": {
+            "default": false,
+            "title": "Fixable",
+            "type": "boolean"
+          },
+          "line": {
+            "title": "Line",
+            "type": "string"
+          },
+          "shell": {
+            "$ref": "#/components/schemas/Shell"
+          }
+        },
+        "required": [
+          "shell",
+          "line"
+        ],
+        "title": "Command",
+        "type": "object"
+      },
+      "CommandRun": {
+        "additionalProperties": false,
+        "description": "A read-only external command the doctor executed, for transparency.",
+        "properties": {
+          "argv": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Argv",
+            "type": "array"
+          },
+          "duration_ms": {
+            "default": 0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "exit_code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Code"
+          },
+          "stderr_tail": {
+            "default": "",
+            "title": "Stderr Tail",
+            "type": "string"
+          },
+          "stdout_tail": {
+            "default": "",
+            "title": "Stdout Tail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "argv",
+          "exit_code"
+        ],
+        "title": "CommandRun",
+        "type": "object"
+      },
+      "Committed": {
+        "description": "What an accepted write produced: the durable seq, the new wizard state and history.",
+        "properties": {
+          "history": {
+            "$ref": "#/components/schemas/History"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "wizard": {
+            "$ref": "#/components/schemas/WizardState"
+          }
+        },
+        "required": [
+          "seq",
+          "summary",
+          "wizard",
+          "history"
+        ],
+        "title": "Committed",
+        "type": "object"
+      },
+      "Confidence": {
+        "description": "Running confidence: current 95 % half-width against the user's target.",
+        "properties": {
+          "fraction": {
+            "default": 0.0,
+            "description": "Progress to target",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fraction",
+            "type": "number"
+          },
+          "half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Half Width"
+          },
+          "met": {
+            "default": false,
+            "title": "Met",
+            "type": "boolean"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "string"
+          },
+          "relative": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative"
+          },
+          "target_half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Half Width"
+          }
+        },
+        "required": [
+          "quantity"
+        ],
+        "title": "Confidence",
+        "type": "object"
+      },
+      "DeviceView": {
+        "description": "Device state for the header: coarse status, whether a service exists, and any fault.",
+        "properties": {
+          "attached": {
+            "title": "Attached",
+            "type": "boolean"
+          },
+          "fault": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault"
+          },
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "attached"
+        ],
+        "title": "DeviceView",
+        "type": "object"
+      },
+      "DoctorReport": {
+        "additionalProperties": false,
+        "description": "Whole run: the JSON document and the UI screen's state.",
+        "properties": {
+          "finished_at": {
+            "format": "date-time",
+            "title": "Finished At",
+            "type": "string"
+          },
+          "host": {
+            "$ref": "#/components/schemas/Host"
+          },
+          "log_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log Path"
+          },
+          "options": {
+            "$ref": "#/components/schemas/RunOptions"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CheckResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/Summary"
+          }
+        },
+        "required": [
+          "run_id",
+          "started_at",
+          "finished_at",
+          "host",
+          "options",
+          "results",
+          "summary"
+        ],
+        "title": "DoctorReport",
+        "type": "object"
+      },
+      "EditBody": {
+        "additionalProperties": false,
+        "description": "Append an edit of point `target` (or `analysis`); history is kept, nothing is deleted.",
+        "properties": {
+          "args": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Args",
+            "type": "object"
+          },
+          "op": {
+            "enum": [
+              "exclude",
+              "include",
+              "set_window",
+              "override_input",
+              "set_fit_window",
+              "undo",
+              "redo"
+            ],
+            "title": "Op",
+            "type": "string"
+          }
+        },
+        "required": [
+          "op"
+        ],
+        "title": "EditBody",
+        "type": "object"
+      },
+      "EntryBody": {
+        "additionalProperties": true,
+        "description": "A weight or group entry; its fields are validated by the provider, not here.",
+        "properties": {},
+        "title": "EntryBody",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "description": "4xx body the client can display: a stable `error` code and a `detail` hint.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "detail"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "description": "What the probes saw; shown under Details and emitted as JSON.",
+        "properties": {
+          "commands_run": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CommandRun"
+            },
+            "title": "Commands Run",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProbeError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "facts": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Facts",
+            "type": "object"
+          }
+        },
+        "title": "Evidence",
+        "type": "object"
+      },
+      "ExportFormatView": {
+        "description": "One export format as listed on the wire.",
+        "properties": {
+          "download": {
+            "title": "Download",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "media_type",
+          "download"
+        ],
+        "title": "ExportFormatView",
+        "type": "object"
+      },
+      "FitWindowRequest": {
+        "description": "Request body: inclusive point-index window of the active (non-excluded) curve.",
+        "properties": {
+          "first": {
+            "title": "First",
+            "type": "integer"
+          },
+          "last": {
+            "title": "Last",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "first",
+          "last"
+        ],
+        "title": "FitWindowRequest",
+        "type": "object"
+      },
+      "GuidanceState": {
+        "description": "Everything the guidance panel shows for one phase after one point.",
+        "properties": {
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "expected_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Value"
+          },
+          "max_points": {
+            "title": "Max Points",
+            "type": "integer"
+          },
+          "next_action": {
+            "title": "Next Action",
+            "type": "string"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/sadi__labs__lctt__guidance__Phase"
+          },
+          "points_taken": {
+            "title": "Points Taken",
+            "type": "integer"
+          },
+          "proposed_next_phase": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/sadi__labs__lctt__guidance__Phase"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "run_complete_proposed": {
+            "default": false,
+            "title": "Run Complete Proposed",
+            "type": "boolean"
+          },
+          "stop_early": {
+            "default": false,
+            "title": "Stop Early",
+            "type": "boolean"
+          },
+          "stop_reason": {
+            "default": "",
+            "title": "Stop Reason",
+            "type": "string"
+          },
+          "suggested_load_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Load Kg"
+          },
+          "unit": {
+            "default": "",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phase",
+          "next_action",
+          "confidence",
+          "points_taken",
+          "max_points"
+        ],
+        "title": "GuidanceState",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "History": {
+        "description": "Undo and redo stacks, oldest first; the last element is what undo/redo would act on.",
+        "properties": {
+          "redo": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            },
+            "title": "Redo",
+            "type": "array"
+          },
+          "undo": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            },
+            "title": "Undo",
+            "type": "array"
+          }
+        },
+        "title": "History",
+        "type": "object"
+      },
+      "HoldState": {
+        "description": "Where the current point is: ready for the next, still creeping, or settled to accept.",
+        "enum": [
+          "ready",
+          "creeping",
+          "awaiting_accept"
+        ],
+        "title": "HoldState",
+        "type": "string"
+      },
+      "Host": {
+        "additionalProperties": false,
+        "description": "Where the run happened.",
+        "properties": {
+          "arch": {
+            "title": "Arch",
+            "type": "string"
+          },
+          "data_root": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Root"
+          },
+          "hostname_hash": {
+            "title": "Hostname Hash",
+            "type": "string"
+          },
+          "os": {
+            "$ref": "#/components/schemas/Os"
+          },
+          "os_version": {
+            "title": "Os Version",
+            "type": "string"
+          },
+          "python": {
+            "title": "Python",
+            "type": "string"
+          },
+          "sadi_py_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sadi Py Version"
+          },
+          "sadi_version": {
+            "title": "Sadi Version",
+            "type": "string"
+          },
+          "wsl_distro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wsl Distro"
+          }
+        },
+        "required": [
+          "os",
+          "os_version",
+          "arch",
+          "python",
+          "sadi_version",
+          "hostname_hash"
+        ],
+        "title": "Host",
+        "type": "object"
+      },
+      "InventoryCommitted": {
+        "description": "Result of a durable inventory write: its WAL seq and the resulting view.",
+        "properties": {
+          "inventory": {
+            "additionalProperties": true,
+            "title": "Inventory",
+            "type": "object"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seq",
+          "inventory"
+        ],
+        "title": "InventoryCommitted",
+        "type": "object"
+      },
+      "LabInfo": {
+        "description": "A registered lab the operator can start a session for.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "LabInfo",
+        "type": "object"
+      },
+      "Layer": {
+        "description": "Subsystem a check belongs to; also the run order.",
+        "enum": [
+          "plat",
+          "py",
+          "ext",
+          "web",
+          "net",
+          "data",
+          "sess",
+          "wal",
+          "usb",
+          "dev",
+          "sim",
+          "clk",
+          "res",
+          "wrk",
+          "brw",
+          "plg"
+        ],
+        "title": "Layer",
+        "type": "string"
+      },
+      "McCrossCheck": {
+        "description": "RSS vs MC flag; MC runs as a job (J3), so a fresh result starts PENDING.",
+        "properties": {
+          "mc_std_unc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mc Std Unc"
+          },
+          "status": {
+            "$ref": "#/components/schemas/McStatus",
+            "default": "pending"
+          }
+        },
+        "title": "McCrossCheck",
+        "type": "object"
+      },
+      "McStatus": {
+        "description": "State of the RSS vs Monte Carlo cross-check.",
+        "enum": [
+          "pending",
+          "agrees",
+          "disagrees"
+        ],
+        "title": "McStatus",
+        "type": "string"
+      },
+      "ModulusFitView": {
+        "description": "Response matching the web client's ModulusFitView (MPa for the line, GPa for E).",
+        "properties": {
+          "display": {
+            "title": "Display",
+            "type": "string"
+          },
+          "eGpa": {
+            "title": "Egpa",
+            "type": "number"
+          },
+          "eU95Gpa": {
+            "title": "Eu95Gpa",
+            "type": "number"
+          },
+          "first": {
+            "title": "First",
+            "type": "integer"
+          },
+          "interceptMpa": {
+            "title": "Interceptmpa",
+            "type": "number"
+          },
+          "last": {
+            "title": "Last",
+            "type": "integer"
+          },
+          "lowR2": {
+            "title": "Lowr2",
+            "type": "boolean"
+          },
+          "modulusMpa": {
+            "title": "Modulusmpa",
+            "type": "number"
+          },
+          "r2": {
+            "title": "R2",
+            "type": "number"
+          }
+        },
+        "required": [
+          "first",
+          "last",
+          "modulusMpa",
+          "interceptMpa",
+          "display",
+          "eGpa",
+          "eU95Gpa",
+          "r2",
+          "lowR2"
+        ],
+        "title": "ModulusFitView",
+        "type": "object"
+      },
+      "Mutates": {
+        "description": "Mutation class of a step.",
+        "enum": [
+          "none",
+          "process",
+          "system",
+          "install",
+          "data-dir",
+          "data"
+        ],
+        "title": "Mutates",
+        "type": "string"
+      },
+      "Os": {
+        "description": "Detected host OS; WSL is distinct because its fixes differ.",
+        "enum": [
+          "windows",
+          "linux",
+          "macos",
+          "wsl"
+        ],
+        "title": "Os",
+        "type": "string"
+      },
+      "Phase-Input": {
+        "description": "Run phases in order: LVDT calibration, elastic (long wire), plastic (short wire).",
+        "enum": [
+          "calibrate",
+          "elastic",
+          "plastic"
+        ],
+        "title": "Phase",
+        "type": "string"
+      },
+      "PluginState": {
+        "description": "Lifecycle state of one discovered plugin.",
+        "enum": [
+          "enabled",
+          "disabled",
+          "failed",
+          "incompatible"
+        ],
+        "title": "PluginState",
+        "type": "string"
+      },
+      "PluginStatus": {
+        "description": "Read-only JSON view of one plugin: identity, state, error text and what to do next.",
+        "properties": {
+          "errors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "findings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/PluginState"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "state"
+        ],
+        "title": "PluginStatus",
+        "type": "object"
+      },
+      "PointView": {
+        "description": "A captured point with its edits applied.",
+        "properties": {
+          "excluded": {
+            "title": "Excluded",
+            "type": "boolean"
+          },
+          "history": {
+            "items": {
+              "type": "string"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "inputs": {
+            "additionalProperties": true,
+            "title": "Inputs",
+            "type": "object"
+          },
+          "phase": {
+            "title": "Phase",
+            "type": "string"
+          },
+          "point_id": {
+            "title": "Point Id",
+            "type": "string"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          },
+          "window": {
+            "$ref": "#/components/schemas/PointWindow"
+          }
+        },
+        "required": [
+          "point_id",
+          "seq",
+          "phase",
+          "excluded",
+          "inputs",
+          "window",
+          "history"
+        ],
+        "title": "PointView",
+        "type": "object"
+      },
+      "PointWindow": {
+        "additionalProperties": true,
+        "description": "The raw samples a captured point averages over (first/last raw seq and sample offsets).",
+        "properties": {
+          "first_raw_seq": {
+            "title": "First Raw Seq",
+            "type": "integer"
+          },
+          "first_sample": {
+            "default": 0,
+            "title": "First Sample",
+            "type": "integer"
+          },
+          "last_raw_seq": {
+            "title": "Last Raw Seq",
+            "type": "integer"
+          },
+          "last_sample": {
+            "default": 0,
+            "title": "Last Sample",
+            "type": "integer"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "v": {
+            "default": 1,
+            "title": "V",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "first_raw_seq",
+          "last_raw_seq"
+        ],
+        "title": "PointWindow",
+        "type": "object"
+      },
+      "ProbeError": {
+        "additionalProperties": false,
+        "description": "A probe raised or timed out; the check fails with this attached.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "exception",
+              "timeout",
+              "tool-missing"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "detail"
+        ],
+        "title": "ProbeError",
+        "type": "object"
+      },
+      "RailItem": {
+        "description": "One entry of the step rail: what the UI draws and whether it can be acted on.",
+        "properties": {
+          "capture": {
+            "$ref": "#/components/schemas/CaptureKind"
+          },
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "needs_device": {
+            "title": "Needs Device",
+            "type": "boolean"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/sadi__core__models__Phase"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StepStatus"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "phase",
+          "capture",
+          "status",
+          "needs_device"
+        ],
+        "title": "RailItem",
+        "type": "object"
+      },
+      "Remediation": {
+        "additionalProperties": false,
+        "description": "Ordered steps for one (check, mode, os) triple.",
+        "properties": {
+          "check_id": {
+            "pattern": "^[A-Z]{2,4}-\\d{3}$",
+            "title": "Check Id",
+            "type": "string"
+          },
+          "docs": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Docs",
+            "type": "array"
+          },
+          "mode": {
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "title": "Mode",
+            "type": "string"
+          },
+          "os": {
+            "$ref": "#/components/schemas/Os"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/Step"
+            },
+            "minItems": 2,
+            "title": "Steps",
+            "type": "array"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "check_id",
+          "mode",
+          "os",
+          "summary",
+          "steps"
+        ],
+        "title": "Remediation",
+        "type": "object"
+      },
+      "ResultBudget": {
+        "description": "Ranked budget for one result plus its LaTeX derivation (mirrors web budget/types.ts).",
+        "properties": {
+          "dominant": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BudgetRow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "latex": {
+            "title": "Latex",
+            "type": "string"
+          },
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "total_std_unc": {
+            "title": "Total Std Unc",
+            "type": "number"
+          },
+          "total_variance": {
+            "title": "Total Variance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "result",
+          "label",
+          "total_variance",
+          "total_std_unc",
+          "dominant",
+          "rows",
+          "latex"
+        ],
+        "title": "ResultBudget",
+        "type": "object"
+      },
+      "ResultSet": {
+        "description": "Everything the live panel shows after one recompute; analytic RSS only (instant).",
+        "properties": {
+          "n_points": {
+            "default": 0,
+            "title": "N Points",
+            "type": "integer"
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "pending": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Pending",
+            "type": "array"
+          },
+          "refinement": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Refinement",
+            "type": "array"
+          },
+          "values": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ResultValue"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "title": "ResultSet",
+        "type": "object"
+      },
+      "ResultValue": {
+        "description": "One reported quantity: value, standard and 95 % uncertainty, interval, readouts.",
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "display": {
+            "title": "Display",
+            "type": "string"
+          },
+          "dof": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dof"
+          },
+          "high95": {
+            "title": "High95",
+            "type": "number"
+          },
+          "low95": {
+            "title": "Low95",
+            "type": "number"
+          },
+          "mc": {
+            "$ref": "#/components/schemas/McCrossCheck",
+            "default": {
+              "status": "pending"
+            }
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "std_unc": {
+            "title": "Std Unc",
+            "type": "number"
+          },
+          "u95": {
+            "title": "U95",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "std_unc",
+          "u95",
+          "low95",
+          "high95",
+          "unit",
+          "display",
+          "confidence"
+        ],
+        "title": "ResultValue",
+        "type": "object"
+      },
+      "RevertBody": {
+        "additionalProperties": false,
+        "description": "Reopen the latest finished step; `step` (optional) must name exactly that step.",
+        "properties": {
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          }
+        },
+        "title": "RevertBody",
+        "type": "object"
+      },
+      "RunOptions": {
+        "additionalProperties": false,
+        "description": "Flags that shaped the run; recorded so a report is reproducible.",
+        "properties": {
+          "allow_network_fs": {
+            "default": false,
+            "title": "Allow Network Fs",
+            "type": "boolean"
+          },
+          "allow_probe_write": {
+            "default": false,
+            "title": "Allow Probe Write",
+            "type": "boolean"
+          },
+          "api_port": {
+            "default": 8000,
+            "title": "Api Port",
+            "type": "integer"
+          },
+          "checks": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Z]{2,4}-\\d{3}$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checks"
+          },
+          "data_root": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Root"
+          },
+          "deep": {
+            "default": false,
+            "title": "Deep",
+            "type": "boolean"
+          },
+          "layers": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Layer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layers"
+          },
+          "open_browser": {
+            "default": false,
+            "title": "Open Browser",
+            "type": "boolean"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port"
+          },
+          "render_os": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Os"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "running": {
+            "default": false,
+            "title": "Running",
+            "type": "boolean"
+          },
+          "skip": {
+            "default": [],
+            "items": {
+              "pattern": "^[A-Z]{2,4}-\\d{3}$",
+              "type": "string"
+            },
+            "title": "Skip",
+            "type": "array"
+          },
+          "stream_seconds": {
+            "default": 0,
+            "title": "Stream Seconds",
+            "type": "integer"
+          },
+          "with_reset": {
+            "default": false,
+            "title": "With Reset",
+            "type": "boolean"
+          }
+        },
+        "title": "RunOptions",
+        "type": "object"
+      },
+      "SaveState": {
+        "description": "The three header save states; NOT_SAVED only on a durable-write failure.",
+        "enum": [
+          "saved",
+          "saving",
+          "not_saved"
+        ],
+        "title": "SaveState",
+        "type": "string"
+      },
+      "SaveView": {
+        "description": "What the header shows; `label` is the exact user-facing text.",
+        "properties": {
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          },
+          "poll_ms": {
+            "default": 250,
+            "title": "Poll Ms",
+            "type": "integer"
+          },
+          "saved_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saved At"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SaveState"
+          }
+        },
+        "required": [
+          "state",
+          "label",
+          "pending"
+        ],
+        "title": "SaveView",
+        "type": "object"
+      },
+      "SessionCreate": {
+        "additionalProperties": false,
+        "description": "Start a new session family for `lab`.",
+        "properties": {
+          "lab": {
+            "minLength": 1,
+            "title": "Lab",
+            "type": "string"
+          },
+          "slug": {
+            "default": "session",
+            "title": "Slug",
+            "type": "string"
+          },
+          "specimen": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Specimen",
+            "type": "object"
+          }
+        },
+        "required": [
+          "lab"
+        ],
+        "title": "SessionCreate",
+        "type": "object"
+      },
+      "SessionInfo": {
+        "description": "The open session: identity, lineage and its durable high-water mark.",
+        "properties": {
+          "durable_seq": {
+            "title": "Durable Seq",
+            "type": "integer"
+          },
+          "lab": {
+            "title": "Lab",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          },
+          "parent_last_seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Last Seq"
+          }
+        },
+        "required": [
+          "name",
+          "lab",
+          "durable_seq"
+        ],
+        "title": "SessionInfo",
+        "type": "object"
+      },
+      "SessionResume": {
+        "additionalProperties": false,
+        "description": "Resume the session version directory named `name` as a new version.",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "SessionResume",
+        "type": "object"
+      },
+      "SessionSummary": {
+        "description": "One session version on disk, as listed (manifest data only; never primary data).",
+        "properties": {
+          "family": {
+            "title": "Family",
+            "type": "string"
+          },
+          "lab": {
+            "title": "Lab",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "family",
+          "version",
+          "lab",
+          "state"
+        ],
+        "title": "SessionSummary",
+        "type": "object"
+      },
+      "Severity": {
+        "description": "How bad a fail of this check is for the user.",
+        "enum": [
+          "blocker",
+          "error",
+          "warning",
+          "info"
+        ],
+        "title": "Severity",
+        "type": "string"
+      },
+      "Shell": {
+        "description": "Shell a command line is written for; drives the prompt glyph.",
+        "enum": [
+          "sh",
+          "powershell",
+          "cmd"
+        ],
+        "title": "Shell",
+        "type": "string"
+      },
+      "SkipReason": {
+        "description": "Why a check did not run.",
+        "enum": [
+          "not-applicable-os",
+          "prerequisite-failed",
+          "opt-in",
+          "read-only",
+          "port-busy",
+          "tool-missing",
+          "timeout",
+          "disabled",
+          "unverified",
+          "no-device"
+        ],
+        "title": "SkipReason",
+        "type": "string"
+      },
+      "Status": {
+        "description": "Outcome of one run of one check.",
+        "enum": [
+          "pass",
+          "warn",
+          "fail",
+          "skip"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "Step": {
+        "additionalProperties": false,
+        "description": "One numbered remediation step with expected output.",
+        "properties": {
+          "alt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alt"
+          },
+          "changes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changes"
+          },
+          "commands": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Command"
+            },
+            "title": "Commands",
+            "type": "array"
+          },
+          "expect": {
+            "title": "Expect",
+            "type": "string"
+          },
+          "if_not": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "If Not"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/StepKind"
+          },
+          "mutates": {
+            "$ref": "#/components/schemas/Mutates",
+            "default": "none"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "text",
+          "expect"
+        ],
+        "title": "Step",
+        "type": "object"
+      },
+      "StepKind": {
+        "description": "Role of a step; the last step of a remediation must be VERIFY.",
+        "enum": [
+          "action",
+          "manual",
+          "verify"
+        ],
+        "title": "StepKind",
+        "type": "string"
+      },
+      "StepRef": {
+        "additionalProperties": false,
+        "description": "Names the step an action applies to (must be the current one).",
+        "properties": {
+          "step": {
+            "minLength": 1,
+            "title": "Step",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step"
+        ],
+        "title": "StepRef",
+        "type": "object"
+      },
+      "StepStatus": {
+        "description": "Where a step stands on the rail.",
+        "enum": [
+          "done",
+          "skipped",
+          "current",
+          "locked"
+        ],
+        "title": "StepStatus",
+        "type": "string"
+      },
+      "Summary": {
+        "additionalProperties": false,
+        "description": "Counts and the overall verdict.",
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/Status"
+            },
+            "title": "Counts",
+            "type": "object"
+          },
+          "first_action": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Action"
+          },
+          "verdict": {
+            "enum": [
+              "ready",
+              "degraded",
+              "blocked"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          },
+          "worst_severity_failed": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Severity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "counts",
+          "worst_severity_failed",
+          "verdict",
+          "first_action"
+        ],
+        "title": "Summary",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WizardState": {
+        "description": "Derived wizard position: the rail, the current step and any odd marker events.",
+        "properties": {
+          "anomalies": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Anomalies",
+            "type": "array"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "rail": {
+            "items": {
+              "$ref": "#/components/schemas/RailItem"
+            },
+            "title": "Rail",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rail",
+          "current"
+        ],
+        "title": "WizardState",
+        "type": "object"
+      },
+      "sadi__core__models__Phase": {
+        "description": "Guided-run phase.",
+        "enum": [
+          "setup",
+          "calibration",
+          "elastic",
+          "plastic"
+        ],
+        "title": "Phase",
+        "type": "string"
+      },
+      "sadi__labs__lctt__guidance__Phase": {
+        "description": "Run phases in order: LVDT calibration, elastic (long wire), plastic (short wire).",
+        "enum": [
+          "calibrate",
+          "elastic",
+          "plastic"
+        ],
+        "title": "Phase",
+        "type": "string"
+      }
+    }
+  },
+  "info": {
+    "title": "SADI",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/device/status": {
+      "get": {
+        "description": "Device status; attached=false (status error) when no device service is configured.",
+        "operationId": "device_status_api_device_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Device Status"
+      }
+    },
+    "/api/doctor": {
+      "get": {
+        "description": "Run every check and return the full DoctorReport.",
+        "operationId": "get_doctor_api_doctor_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoctorReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Doctor",
+        "tags": [
+          "doctor"
+        ]
+      }
+    },
+    "/api/doctor/{check_id}/run": {
+      "post": {
+        "description": "Re-run one check and return its CheckResult, or 404 for an unknown id.",
+        "operationId": "run_check_api_doctor__check_id__run_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "check_id",
+            "required": true,
+            "schema": {
+              "title": "Check Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Check",
+        "tags": [
+          "doctor"
+        ]
+      }
+    },
+    "/api/export": {
+      "get": {
+        "description": "List the open session's lab export formats.",
+        "operationId": "list_formats_api_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExportFormatView"
+                  },
+                  "title": "Response List Formats Api Export Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Formats"
+      }
+    },
+    "/api/export/{format_id}": {
+      "get": {
+        "description": "Stream one export: a CSV-style attachment, or inline JSON for figure data.",
+        "operationId": "export_api_export__format_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "format_id",
+            "required": true,
+            "schema": {
+              "title": "Format Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export"
+      }
+    },
+    "/api/labs": {
+      "get": {
+        "description": "List registered labs.",
+        "operationId": "labs_api_labs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LabInfo"
+                  },
+                  "title": "Response Labs Api Labs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Labs"
+      }
+    },
+    "/api/plugins": {
+      "get": {
+        "description": "List every plugin, failed ones included, always with HTTP 200.",
+        "operationId": "list_plugins_api_plugins_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PluginStatus"
+                  },
+                  "title": "Response List Plugins Api Plugins Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Plugins",
+        "tags": [
+          "plugins"
+        ]
+      }
+    },
+    "/api/plugins/{plugin_id}": {
+      "get": {
+        "description": "Return one plugin's status or 404 when the id is unknown.",
+        "operationId": "get_plugin_api_plugins__plugin_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plugin_id",
+            "required": true,
+            "schema": {
+              "title": "Plugin Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PluginStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Plugin",
+        "tags": [
+          "plugins"
+        ]
+      }
+    },
+    "/api/results": {
+      "get": {
+        "description": "Live recompute of the open session's results.",
+        "operationId": "results_api_results_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultSet"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Results"
+      }
+    },
+    "/api/results/budgets": {
+      "get": {
+        "description": "Per-result uncertainty budgets; empty until the lab supplies a budget source.",
+        "operationId": "result_budgets_api_results_budgets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ResultBudget"
+                  },
+                  "title": "Response Result Budgets Api Results Budgets Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Result Budgets"
+      }
+    },
+    "/api/results/guidance": {
+      "get": {
+        "description": "Guided-run advice for `phase` from the live results; never changes the phase.",
+        "operationId": "guidance_api_results_guidance_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "phase",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Phase-Input",
+              "default": "calibrate"
+            }
+          },
+          {
+            "in": "query",
+            "name": "hold",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/HoldState",
+              "default": "ready"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidanceState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Guidance"
+      }
+    },
+    "/api/root-lock": {
+      "get": {
+        "description": "Report whether this process holds the data-root lock (ok=false when degraded).",
+        "operationId": "root_lock_state_api_root_lock_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Root Lock State Api Root Lock Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root Lock State"
+      }
+    },
+    "/api/save-indicator": {
+      "get": {
+        "description": "Return the current save state for the header.",
+        "operationId": "get_save_indicator_api_save_indicator_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Save Indicator",
+        "tags": [
+          "save"
+        ]
+      }
+    },
+    "/api/session": {
+      "get": {
+        "description": "Describe the open session.",
+        "operationId": "info_api_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Info"
+      }
+    },
+    "/api/session/close": {
+      "post": {
+        "description": "Close the open session.",
+        "operationId": "close_api_session_close_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Close"
+      }
+    },
+    "/api/session/history": {
+      "get": {
+        "description": "Undo and redo stacks.",
+        "operationId": "history_api_session_history_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "History"
+      }
+    },
+    "/api/session/inventory": {
+      "get": {
+        "description": "Current inventory: weights with history, groups and reconciliation.",
+        "operationId": "view_api_session_inventory_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response View Api Session Inventory Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "View"
+      }
+    },
+    "/api/session/inventory/combo": {
+      "post": {
+        "description": "Derive the combined value of a subset of weights (read-only).",
+        "operationId": "combo_api_session_inventory_combo_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComboBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Combo Api Session Inventory Combo Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Combo"
+      }
+    },
+    "/api/session/inventory/groups": {
+      "post": {
+        "description": "Record a group balance weighing of a named subset of weights.",
+        "operationId": "put_group_api_session_inventory_groups_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryCommitted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Group"
+      }
+    },
+    "/api/session/inventory/weights": {
+      "post": {
+        "description": "Add or edit a numbered weight (an edit is a later event; history is kept).",
+        "operationId": "put_weight_api_session_inventory_weights_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryCommitted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Weight"
+      }
+    },
+    "/api/session/points": {
+      "get": {
+        "description": "List captured points.",
+        "operationId": "points_api_session_points_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PointView"
+                  },
+                  "title": "Response Points Api Session Points Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Points"
+      },
+      "post": {
+        "description": "Capture a point.",
+        "operationId": "capture_api_session_points_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Capture"
+      }
+    },
+    "/api/session/points/{target}/edit": {
+      "post": {
+        "description": "Edit a point; the original stays in the log.",
+        "operationId": "edit_api_session_points__target__edit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "target",
+            "required": true,
+            "schema": {
+              "title": "Target",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edit"
+      }
+    },
+    "/api/session/redo": {
+      "post": {
+        "description": "Redo the latest undone action.",
+        "operationId": "redo_api_session_redo_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Redo"
+      }
+    },
+    "/api/session/undo": {
+      "post": {
+        "description": "Undo the latest action.",
+        "operationId": "undo_api_session_undo_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Undo"
+      }
+    },
+    "/api/session/wizard": {
+      "get": {
+        "description": "Wizard rail and current step.",
+        "operationId": "wizard_api_session_wizard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WizardState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Wizard"
+      }
+    },
+    "/api/session/wizard/complete": {
+      "post": {
+        "description": "Complete the current step.",
+        "operationId": "complete_api_session_wizard_complete_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepRef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete"
+      }
+    },
+    "/api/session/wizard/revert": {
+      "post": {
+        "description": "Reopen a finished step.",
+        "operationId": "revert_api_session_wizard_revert_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevertBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revert"
+      }
+    },
+    "/api/session/wizard/skip": {
+      "post": {
+        "description": "Skip the current step.",
+        "operationId": "skip_api_session_wizard_skip_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepRef"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Committed"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Skip"
+      }
+    },
+    "/api/sessions": {
+      "get": {
+        "description": "List session versions on disk.",
+        "operationId": "sessions_api_sessions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionSummary"
+                  },
+                  "title": "Response Sessions Api Sessions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sessions"
+      },
+      "post": {
+        "description": "Create and open a new session.",
+        "operationId": "create_api_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create"
+      }
+    },
+    "/api/sessions/resume": {
+      "post": {
+        "description": "Resume a session as a new version.",
+        "operationId": "resume_api_sessions_resume_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionResume"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resume"
+      }
+    },
+    "/api/stress-strain/fit": {
+      "post": {
+        "description": "Recompute E, r^2 and U95 over the window from stored data; read-only.",
+        "operationId": "post_fit_api_stress_strain_fit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FitWindowRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModulusFitView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "4XX": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Client Error"
+          }
+        },
+        "summary": "Post Fit",
+        "tags": [
+          "stress-strain"
+        ]
+      }
+    }
+  }
+}

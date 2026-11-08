@@ -2,7 +2,8 @@
 id = "01M6WJHVZC0JYPV6W1CCFWSS8S"
 title = "doctor: BRW-020/030, PLAT-020/040, WEB-020, Windows/macOS fstype probe"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

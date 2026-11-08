@@ -2,7 +2,8 @@
 id = "01M6X9NXRHXGBXA9YPKJAZDW9B"
 title = "e2e: keyboard-only walkthrough using Tab+Enter (see docs/usability-report.md)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

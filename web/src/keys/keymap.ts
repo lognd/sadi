@@ -1,4 +1,6 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M6WV6TC9NXXA0GCFGJNV4CSJ
+// frob:accept COV001 because="covered by keymap.test.ts (vitest); TypeScript test discovery needs grimble, not installed here"
 /** Pure keyboard map for the wizard (docs/ux.md section 4); no DOM access so it is unit-testable. */
 
 /** Every action a key can request from the wizard shell. */
@@ -16,6 +18,7 @@ export type KeyAction =
   | "next-step"
   | "finish-phase"
   | "cancel"
+  | "export"
   | "help";
 
 /** The subset of KeyboardEvent the map needs. */
@@ -51,6 +54,7 @@ export const SHORTCUTS: readonly Shortcut[] = [
   { keys: "Left / Right", label: "Nudge the window (or previous / next step)" },
   { keys: "[ ]  Shift+[ ]", label: "Nudge window start / end" },
   { keys: "F", label: "Finish the current phase" },
+  { keys: "F3", label: "Export the current plot as PNG" },
   { keys: "Esc", label: "Cancel" },
   { keys: "?", label: "Show shortcuts" },
 ];
@@ -72,6 +76,8 @@ export function resolveKey(e: KeyLike, ctx: KeyContext): KeyAction | null {
       return "primary";
     case "Escape":
       return "cancel";
+    case "F3":
+      return "export";
     case "?":
       return "help";
     case "ArrowLeft":

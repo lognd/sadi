@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M6WV6TC9NXXA0GCFGJNV4CSJ
 import { describe, expect, it } from "vitest";
 import { isTextTarget, resolveKey, SHORTCUTS, type KeyLike } from "./keymap";
 
@@ -10,6 +11,11 @@ describe("keymap", () => {
   it("accepts on Space and Shift+Space", () => {
     expect(resolveKey(ev(" "), ctx)).toBe("accept");
     expect(resolveKey(ev(" ", { shiftKey: true }), ctx)).toBe("accept-unsettled");
+  });
+  it("maps F3 to export, inert in text fields", () => {
+    expect(resolveKey(ev("F3"), ctx)).toBe("export");
+    expect(resolveKey(ev("F3"), { ...ctx, textFocus: true })).toBeNull();
+    expect(SHORTCUTS.some((s) => s.keys === "F3")).toBe(true);
   });
   it("maps Enter to the primary button", () => {
     expect(resolveKey(ev("Enter"), ctx)).toBe("primary");

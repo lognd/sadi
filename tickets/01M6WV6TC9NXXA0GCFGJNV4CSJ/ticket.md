@@ -2,13 +2,18 @@
 id = "01M6WV6TC9NXXA0GCFGJNV4CSJ"
 title = "F3 export missing from keys keymap as KeyAction"
 type = "bug"
-category = "todo"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:55:51Z"
-scope = ["web/src/keys/**"]
+updated = "2026-11-08T05:57:06Z"
+scope = ["web/src/keys/**", "docs/web/wizard.md"]
+
+[[acceptance]]
+text = "F3 resolves to the export KeyAction and is listed in SHORTCUTS"
+bound = true
 +++
 
 found while working 7KWS2S7

@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/ETJKV0D; scope: python/sadi/server/results_stream.py, python/tests/server/test_results_stream.py, docs/server/results-stream.md; ttl 7200s"
+at = "2026-11-08T05:55:51Z"
+actor = "lognd"
+rev = 1

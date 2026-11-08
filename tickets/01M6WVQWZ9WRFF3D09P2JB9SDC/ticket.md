@@ -2,7 +2,8 @@
 id = "01M6WVQWZ9WRFF3D09P2JB9SDC"
 title = "Wire ResultsStream to JobManager sink and the WebSocket router"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

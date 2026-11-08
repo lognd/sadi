@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:00:14Z"
+digest = "1b507abea80c8c8776b04067c2161c1c3a301c3ca34d5b15a1c379ae1f77d5c6"
+exit_code = 0
+head = "e489f513c03db2bf50d49dc8c723618da2bb7674"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_pipeline.py .                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-341576-0.xml ---------------
+============================== 1 passed in 1.93s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_pipeline.py::test_public_halt_stops_once_and_refuses_ingest"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "de7aca56fd424db2b425e01b97b54b636a28ca33f6d727692b15d7feddfb8bd4"
+at = "2026-11-08T04:00:14Z"
+actor = "lognd"
+rev = 1

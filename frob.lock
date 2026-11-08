@@ -1314,6 +1314,61 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T06:05:38.432359673Z"
 
 [[symbol]]
+identity = "web/src/results-stream/useResultsStream.ts"
+symref = "web/src/results-stream/useResultsStream.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "8291ee68c99690a2ec2b3c8cb9f16396cdca9964cfa9f5cf7188a809d40dd8fa"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:39.058969841Z"
+
+[[symbol]]
+identity = "web/src/results-stream/useResultsStream.ts::Subscribe"
+symref = "web/src/results-stream/useResultsStream.ts::Subscribe"
+sig = "011985ee303db09e934c06904ca79b12a7f161aa15f9a6e3e21a5dc1faa08410"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "3bea24e09b62e1d62ac958cc1adfbb7303402ab2d9595245da12f3e8d8520f07"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "9dab24f5518f12e277fb485e63635cec42e6264ba2ca45da5243e40cfc5ac53a"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:39.058969841Z"
+
+[[symbol]]
+identity = "web/src/results-stream/useResultsStream.ts::connectResults"
+symref = "web/src/results-stream/useResultsStream.ts::connectResults"
+sig = "7cdd3f8c22c0e2b55ebd9067791d259dee1294d7074b689cc3b4bc43c23471d7"
+body = "6dca92d2d2b5e170fc8950d47abe66599cc88039380c73a2cbcf3022f6674343"
+doc = "410e78a3a8fd2883ab76203b79fa5db6781da4e4f158ee8ebc8c8279f0f7eb11"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "4ad031edc600c7459c794bb03c2e829e60d78ea2e5e968a4ff50c2f60d766bb7"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:39.058969841Z"
+
+[[symbol]]
+identity = "web/src/results-stream/useResultsStream.ts::log"
+symref = "web/src/results-stream/useResultsStream.ts::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "5afaf7a491f33dad26be67ec6b3c3d4f59bcb382fb2c11b9831057453d0519a3"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:39.058969841Z"
+
+[[symbol]]
+identity = "web/src/results-stream/useResultsStream.ts::useResultsStream"
+symref = "web/src/results-stream/useResultsStream.ts::useResultsStream"
+sig = "eb8e1f73dec48ba17b2f3848123255d98305950076c3df508ea387c3c87e7c0c"
+body = "bd45bcc88d914960b2d033db1d8251041208d69e2036ff18bf65ad3dd6e3492e"
+doc = "730807a2302c0ac65c4c51e781ae2d192212398cfe478f4de3300bbdfff3cf45"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "46dcaa55230fb2422c1a602b6e2a8c2ed7e205c0832bc469628e9b73b76cc949"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:39.058969841Z"
+
+[[symbol]]
 identity = "web/src/screens/export/ExportScreen.test.tsx"
 symref = "web/src/screens/export/ExportScreen.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

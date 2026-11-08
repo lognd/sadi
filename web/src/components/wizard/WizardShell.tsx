@@ -44,9 +44,11 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
     });
   }, []);
 
+  const currentId = wizard?.current ?? wizard?.rail.find((s) => s.status === "current")?.id;
   const write = useCallback(async (what: WizardWrite): Promise<void> => {
     setBusy(true);
-    const r = await postWizard(what);
+    const stepped = what === "wizard/complete" || what === "wizard/skip" || what === "wizard/revert";
+    const r = await postWizard(what, fetch, stepped ? currentId : undefined);
     setBusy(false);
     if (r.ok) {
       log.info("committed", { what, seq: r.value.seq });
@@ -58,7 +60,7 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
       log.warn("write failed", { what });
       setFailure(r.error);
     }
-  }, []);
+  }, [currentId]);
 
   const current = wizard?.rail.find((s) => s.status === "current") ?? null;
   const act = useCallback((a: KeyAction): void => {

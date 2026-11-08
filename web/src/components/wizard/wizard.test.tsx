@@ -79,6 +79,13 @@ describe("postWizard", () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.kind).toBe("problem");
   });
+  it("sends the step as a JSON body for wizard transitions", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response(JSON.stringify({ seq: 1 }), { status: 200 }));
+    await postWizard("wizard/skip", fetchImpl, "setup");
+    const init = fetchImpl.mock.calls[0]?.[1] as RequestInit;
+    expect(init.body).toBe(JSON.stringify({ step: "setup" }));
+    expect((init.headers as Record<string, string>)["Content-Type"]).toBe("application/json");
+  });
   it("reports network failure", async () => {
     const fetchImpl = vi.fn().mockRejectedValue(new Error("down"));
     const r = await postWizard("redo", fetchImpl);

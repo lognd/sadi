@@ -3,24 +3,24 @@
 // Requires a browser (chromium) and `sadi --sim` (sadi_py built); see docs/e2e.md.
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
-import { acceptWhenSettled, currentStep, openWizard } from "./helpers";
+import { acceptWhenSettled, expectStep, openWizard, skipSetup } from "./helpers";
 
 test("keyboard-only guided run Setup -> Export against the simulator", async ({ page }) => {
   const mounted = await openWizard(page);
   test.skip(!mounted, "wizard shell did not mount (is the backend up? see docs/e2e.md)");
 
-  expect(await currentStep(page)).toContain("Setup");
-  await page.keyboard.press("Enter"); // Setup (or skip) -> Calibrate
+  await expectStep(page, "Setup");
+  await skipSetup(page); // Setup needs captured points and has no capture UI; skip it
   for (const phase of ["LVDT calibration", "Tare", "Elastic", "Plastic"]) {
-    expect(await currentStep(page)).toContain(phase);
+    await expectStep(page, phase);
     const points = phase === "LVDT calibration" ? 3 : phase === "Plastic" ? 3 : 1;
     for (let i = 0; i < points; i += 1) await acceptWhenSettled(page);
     await page.keyboard.press("f"); // finish the phase
   }
-  expect(await currentStep(page)).toContain("Results");
+  await expectStep(page, "Results");
   await page.keyboard.press("Enter");
 
-  expect(await currentStep(page)).toContain("Export");
+  await expectStep(page, "Export");
   await expect(page.getByRole("region", { name: /results/i })).toContainText(/E\b/);
 
   const csv = page.waitForEvent("download");

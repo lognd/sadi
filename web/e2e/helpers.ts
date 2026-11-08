@@ -33,9 +33,20 @@ export async function currentStep(page: Page): Promise<string> {
   return (await li.innerText()).replace(/\s+/g, " ");
 }
 
+/** Wait (retrying) until the current rail step contains `text`; avoids racing the async wizard write. */
+export async function expectStep(page: Page, text: string): Promise<void> {
+  await expect(page.locator('ol.step-rail li[aria-current="step"]')).toContainText(text);
+}
+
 /** Wait until the live view reports Settled, then press Space (keyboard-only accept). */
 export async function acceptWhenSettled(page: Page): Promise<void> {
   await expect(page.getByTestId("readout")).toContainText("[Settled]", { timeout: 60_000 });
   await page.keyboard.press(" ");
   await expect(page.getByTestId("run-message")).toContainText("Captured");
+}
+
+/** Leave the Setup step via "Skip this step": Setup needs captured clamp-check points and has no capture UI yet. */
+export async function skipSetup(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "Skip this step" }).click();
+  await expect(page.locator('ol.step-rail li[aria-current="step"]')).not.toContainText("Setup");
 }

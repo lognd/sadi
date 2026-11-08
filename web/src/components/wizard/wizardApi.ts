@@ -20,16 +20,19 @@ export async function getWizard(fetchImpl: typeof fetch = fetch): Promise<Result
   return err(toFailure(r.error));
 }
 
-/** POST a wizard transition or undo/redo; returns the committed state. */
+/** POST a wizard transition (with the `step` it applies to) or undo/redo; returns the committed state. */
 export async function postWizard(
   what: WizardWrite,
   fetchImpl: typeof fetch = fetch,
+  step?: string,
 ): Promise<Result<Committed, WizardFailure>> {
   const path = `/api/session/${what}`;
   log.info("write", { path });
   let res: Response;
   try {
-    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+    const headers: Record<string, string> = { Accept: "application/json" };
+    if (step !== undefined) headers["Content-Type"] = "application/json";
+    res = await fetchImpl(path, { method: "POST", headers, body: step === undefined ? undefined : JSON.stringify({ step }) });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     log.error("network failure", { path, message });

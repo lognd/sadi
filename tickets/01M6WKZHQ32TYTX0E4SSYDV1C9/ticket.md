@@ -4,7 +4,8 @@ title = "Verify CSV export 32-column names and metadata keys against the private
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T03:42:07Z"
-updated = "2026-11-08T03:42:07Z"
+updated = "2026-11-08T06:18:16Z"
 +++

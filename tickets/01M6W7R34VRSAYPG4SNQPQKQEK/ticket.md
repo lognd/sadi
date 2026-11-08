@@ -2,7 +2,8 @@
 id = "01M6W7R34VRSAYPG4SNQPQKQEK"
 title = "Capture modes: human confirm key, auto-capture with max wait, forced-early"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

@@ -1,0 +1,6 @@
+kind = "field"
+field = "labels"
+new = ["creates:python/sadi/labs/lctt/figure_data.py", "creates:docs/lctt/figure-data.md"]
+at = "2026-11-08T06:32:18Z"
+actor = "lognd"
+rev = 1

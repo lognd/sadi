@@ -55,7 +55,11 @@ PluginSourceError]`. A candidate holds a manifest or the `PluginIssue`s that kep
 forming. Three sources ship:
 
 1. **builtin** (`BuiltinSource`, list in `sadi.plugins.builtin.BUILTIN_PACKAGES`): first-party
-   packages that ship a `sadi_plugin.toml` (today `sadi.labs.lctt`).
+   packages that ship a `sadi_plugin.toml` (today `sadi.labs.lctt`). The `sadi` launcher
+   discovers this source at startup (`sadi.launcher.load_builtin_plugins`) and passes the
+   resulting `PluginRegistry` and `LabRegistry` to the app, so `GET /api/labs` lists `lctt`.
+   A plugin or source that fails is logged, warned on stderr and shown as failed in
+   `/api/plugins`; the app still starts.
 2. **entry points** (`EntryPointSource`, group `sadi.plugins`): an installed package registers
    an entry point that loads to a `PluginManifest`, a manifest mapping, or a zero-argument
    callable returning either. The older group `sadi.labs` (a zero-arg lab factory) is

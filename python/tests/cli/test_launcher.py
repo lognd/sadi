@@ -326,3 +326,38 @@ def test_open_sim_device_real_simulator_streams_samples() -> None:
         assert svc.stop_streaming().is_ok
     finally:
         svc.close()
+
+
+def test_launcher_app_serves_builtin_labs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """frob:tests sadi.launcher.load_builtin_plugins - launcher-built app lists lctt."""
+    monkeypatch.setattr(launcher, "preflight", _ok)
+    monkeypatch.setattr(launcher, "_port_free", lambda *_a: True)
+    bodies: list[object] = []
+
+    def serve(app: FastAPI, _host: str, _port: int) -> None:
+        with TestClient(app) as client:
+            res = client.get("/api/labs")
+            assert res.status_code == 200
+            bodies.append(res.json())
+
+    assert launcher.main(["--data-root", str(tmp_path), "--no-browser"], serve) == 0
+    assert bodies
+    assert "lctt" in str(bodies[0])
+
+
+def test_load_builtin_plugins_failure_is_surfaced(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """frob:tests sadi.launcher.load_builtin_plugins - a broken source warns, never raises."""
+
+    class Broken:
+        name = "builtin"
+
+        def discover(self) -> object:
+            raise RuntimeError("boom")
+
+    monkeypatch.setattr(launcher, "builtin_source", Broken)
+    plugins, labs = launcher.load_builtin_plugins()
+    assert labs.ids() == []
+    assert plugins.source_errors()
+    assert "warning" in capsys.readouterr().err

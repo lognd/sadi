@@ -3,6 +3,7 @@
 # frob:ticket 01M6WMGMM1BP37GS27VRRX9AYP
 # frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 # frob:ticket 01M6WTZVX9DFPHBKVJ1NXB07G0
+# frob:ticket 01M6X06TPZ3W86FDHQPX01MME8
 from __future__ import annotations
 
 import argparse
@@ -24,11 +25,14 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from typani import Err, Ok, Result
 
+from sadi.core.registry import LabRegistry
 from sadi.doctor import exit_code, run
 from sadi.doctor.cli import main as doctor_main
 from sadi.doctor.render_text import render
 from sadi.doctor.schema import DoctorReport, RunOptions
 from sadi.logging_setup import get_logger
+from sadi.plugins.builtin import builtin_source
+from sadi.plugins.registry import PluginRegistry, PluginState
 from sadi.server.app import AppSettings, RootLockStartupError, create_app
 
 if TYPE_CHECKING:
@@ -235,6 +239,32 @@ def preflight(data_root: Path, port: int) -> Result[DoctorReport, str]:
     return Ok(report)
 
 
+def load_builtin_plugins() -> tuple[PluginRegistry, LabRegistry]:
+    """Discover the built-in plugins and build the lab registry; failures are logged and warned.
+
+    Never raises: a plugin that fails to load stays visible in the plugin registry (and
+    `/api/plugins`) as failed, and is reported on stderr, but the app still starts.
+    """
+    plugins = PluginRegistry.discover([builtin_source()])
+    for rec in plugins.records():
+        if rec.state is PluginState.ENABLED:
+            _log.info("built-in plugin %s enabled (%d labs)", rec.id, len(rec.labs))
+            continue
+        notes = "; ".join(f"{i.kind}: {i.note}" for i in rec.errors) or rec.state.value
+        _log.error("built-in plugin %s is %s: %s", rec.id, rec.state.value, notes)
+        _err(f"sadi: warning: plugin {rec.id} is {rec.state.value}: {notes}\n")
+    for issue in plugins.source_errors():
+        _log.error("plugin source failed: %s", issue.note)
+        _err(f"sadi: warning: plugin source failed: {issue.note}\n")
+    labs = LabRegistry()
+    for err in labs.add_plugins(plugins):
+        _log.error("lab registration failed: %s", err)
+    if not labs.ids():
+        _log.error("no labs registered; sessions cannot be created")
+        _err("sadi: warning: no labs available; sessions cannot be created\n")
+    return plugins, labs
+
+
 def _uvicorn_serve(app: FastAPI, host: str, port: int) -> None:
     """Run uvicorn on `app` (blocking)."""
     uvicorn.run(app, host=host, port=port, log_level="info")
@@ -311,7 +341,8 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _err(f"sadi: {opened.danger_err}\n")
             return EXIT_DEVICE
         device = opened.danger_ok
-    app = create_app(AppSettings(data_root=data_root, device=device))
+    plugins, labs = load_builtin_plugins()
+    app = create_app(AppSettings(data_root=data_root, device=device, registry=plugins, labs=labs))
     mount_web(app, resolve_web_dist(args.web_dist))
     _out(f"sadi: serving at http://{args.host}:{port}/\n")
     if not args.no_browser:

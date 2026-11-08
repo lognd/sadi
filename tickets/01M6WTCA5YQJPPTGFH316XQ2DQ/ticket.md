@@ -4,10 +4,11 @@ title = "Publish OpenAPI and generate TypeScript client into web/src/api"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:33:56Z"
+updated = "2026-11-08T05:57:45Z"
 scope = ["web/src/api/**"]
 
 [[links]]

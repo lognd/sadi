@@ -19,7 +19,7 @@ def test_lab_declares_lctt_csv() -> None:
     assert fmts[0].media_type == "text/csv"
 
 
-# frob:tests python/sadi/labs/lctt/lab.py::CSV_FORMAT
+# frob:tests python/sadi/labs/lctt/lab.py::_write_csv
 def test_writer_renders_32_columns_from_run_events() -> None:
     """Events on the RunState produce a CSV the reader parses back with every point."""
     run = RunState(session_id="s", events=tuple(_events(8)))
@@ -30,7 +30,7 @@ def test_writer_renders_32_columns_from_run_events() -> None:
     assert len(doc.danger_ok.rows) == 8
 
 
-# frob:tests python/sadi/labs/lctt/lab.py::CSV_FORMAT
+# frob:tests python/sadi/labs/lctt/lab.py::_write_csv
 def test_writer_refuses_without_events() -> None:
     """A session with no recorded inputs is a compute error, not an empty file."""
     out = CSV_FORMAT.writer(RunState(session_id="s"), AnalysisResult(values={}))

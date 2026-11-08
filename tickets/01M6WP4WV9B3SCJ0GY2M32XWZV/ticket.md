@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:19:59Z"
-updated = "2026-11-08T04:21:11Z"
+updated = "2026-11-08T04:21:14Z"
 labels = ["creates:python/tests/cli/test_launcher_spill.py"]
 scope = ["python/sadi/server/app.py", "python/tests/cli/test_launcher_spill.py", "docs/store/spill.md"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "A failed import leaves the spill file intact and is reported"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "No spill file is a no-op"

@@ -221,6 +221,7 @@ def test_selftest_reports_missing_binding(monkeypatch: pytest.MonkeyPatch) -> No
     assert launcher.selftest().danger_ok == 5
 
 
+# frob:tests python/sadi/launcher.py::package_version
 def test_version_flag(capsys: pytest.CaptureFixture[str]) -> None:
     """frob:tests sadi.launcher.package_version - --version prints and exits 0."""
     assert launcher.main(["--version"]) == 0

@@ -18,6 +18,7 @@ from sadi.labs.lctt.live import (
     LiveEngine,
     LiveError,
     LiveEvent,
+    LoadCache,
     LoadPoint,
     OverridePoint,
     SetWindow,
@@ -146,6 +147,8 @@ def test_incremental_latency_200_points(monkeypatch: pytest.MonkeyPatch) -> None
 # frob:tests python/sadi/labs/lctt/live.py::LiveEngine
 @settings(max_examples=15, deadline=None)
 @given(n=st.integers(0, 14), drop=st.lists(st.integers(0, 13), max_size=3, unique=True))
+# frob:tests python/sadi/labs/lctt/live.py::LiveEngine.__init__
+# frob:tests python/sadi/labs/lctt/live.py::LiveEngine.add
 def test_incremental_equals_batch(n: int, drop: list[int]) -> None:
     events: list[LiveEvent] = [*_setup(), *_points(n)]
     events += [ExcludePoint(point_id=f"p{i}") for i in drop if i < n]
@@ -219,3 +222,35 @@ def test_explicit_window_overrides_auto() -> None:
 def test_auto_window_is_pure() -> None:
     events = [*_setup(), *_points(12)]
     assert _e(events) == _e(events)
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/labs/lctt/live.py::LiveEngine.events
+# frob:tests python/sadi/labs/lctt/live.py::LiveEngine.add
+def test_engine_events_history_and_rejected_event_not_kept() -> None:
+    eng = LiveEngine()
+    setup = _setup()
+    for ev in setup:
+        assert not isinstance(eng.add(ev), Err)
+    assert eng.events == tuple(setup)
+    bad = ExcludePoint(point_id="nope")
+    assert isinstance(eng.add(bad), Err)
+    assert eng.events == tuple(setup)  # a rejected event is not kept
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/labs/lctt/live.py::LoadCache.__init__
+# frob:tests python/sadi/labs/lctt/live.py::LoadCache.get
+# frob:tests python/sadi/labs/lctt/live.py::LoadCache.put
+def test_load_cache_miss_then_hit_and_recompute_fills_it() -> None:
+    cache = LoadCache()
+    key = (1.0, 2.0)
+    assert cache.get(key) is None
+    events: list[LiveEvent] = [*_setup(), *_points(4)]
+    assert not isinstance(recompute(events, cache=cache), Err)
+    filled = list(cache._data.items())
+    assert filled  # points were memoised under their keys
+    for k, v in filled:
+        assert cache.get(k) is v
+    cache.put(key, filled[0][1])
+    assert cache.get(key) is filled[0][1]

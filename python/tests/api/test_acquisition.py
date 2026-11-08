@@ -87,6 +87,9 @@ def _wait(pred: Any) -> None:
         time.sleep(0.01)
 
 
+# frob:tests python/sadi/api/acquisition.py::AcquisitionDriver.__init__
+# frob:tests python/sadi/api/acquisition.py::BlockSource.next_block
+# frob:tests python/sadi/api/acquisition.py::BlockSource.stop_streaming
 # frob:tests python/sadi/api/acquisition.py::AcquisitionDriver.start
 # frob:tests python/sadi/api/acquisition.py::AcquisitionDriver.ingested
 # frob:tests python/sadi/api/acquisition.py::AcquisitionDriver.running

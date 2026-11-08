@@ -124,6 +124,7 @@ def test_settings_record_builds_settings_wal_record() -> None:
 
 
 # frob:tests python/sadi/store/events.py::replay
+# frob:tests python/sadi/store/events.py::ReplayState.view
 def test_current_state_is_replay_with_full_history() -> None:
     """Points, edits, settings and markers are records; state is their fold; history is kept."""
     state = replay(as_records(BASIC)).danger_ok

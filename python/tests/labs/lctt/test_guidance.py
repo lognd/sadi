@@ -94,6 +94,7 @@ class _WeightsSuggester:
 
 
 # frob:tests python/sadi/labs/lctt/guidance.py::LoadSuggester
+# frob:tests python/sadi/labs/lctt/guidance.py::LoadSuggester.suggest
 def test_custom_suggester_text_is_used() -> None:
     cfg = GuidanceConfig(load_range=RANGE)
     st = _ok(guide(Phase.ELASTIC, _inp(ResultSet()), cfg, _WeightsSuggester()))
@@ -121,6 +122,7 @@ def test_unsafe_suggestion_is_refused(kg: float) -> None:
 
 
 # frob:tests python/sadi/labs/lctt/guidance.py::make_range
+# frob:tests python/sadi/labs/lctt/guidance.py::check_target
 def test_bad_range_and_target() -> None:
     assert isinstance(make_range(3.0, 1.0), Err)
     assert isinstance(make_range(float("nan"), 1.0), Err)
@@ -162,6 +164,7 @@ def test_confidence_and_stop_early_proposed_not_forced() -> None:
 
 # frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun
 # frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.phase
+# frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.__init__
 def test_accept_transition_walks_phases_then_errs() -> None:
     run = GuidedRun()
     assert _ok(run.accept_transition()) is Phase.ELASTIC

@@ -293,3 +293,15 @@ def test_no_typani_name_reuse() -> None:
 
     if hasattr(unc, "uncertain"):
         assert unc.uncertain is not typani.propagate
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/uncertainty/covariance.py::CovarianceRegistry.known
+def test_registry_known_tracks_register_and_forget() -> None:
+    """known() is True exactly while a variance is registered for the id."""
+    reg = CovarianceRegistry()
+    assert not reg.known("a")
+    reg.register("a", 0.25)
+    assert reg.known("a") and not reg.known("b")
+    reg.forget("a")
+    assert not reg.known("a")

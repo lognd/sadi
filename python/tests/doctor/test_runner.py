@@ -177,3 +177,13 @@ def test_full_run_is_deterministic() -> None:
     key = [(r.id, r.status, r.mode, r.skip_reason) for r in a.results]
     assert key == [(r.id, r.status, r.mode, r.skip_reason) for r in b.results]
     assert [r.id for r in a.results] == [s.id for s, _ in registry.all_checks()]
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/doctor/runner.py::Budget.for_deep
+def test_deep_budget_only_lengthens_the_whole_run_limit() -> None:
+    """--deep raises the run timeout; per-check timeout and worker count stay at defaults."""
+    normal, deep = Budget.for_deep(False), Budget.for_deep(True)
+    assert normal == Budget()
+    assert deep.run_timeout_s > normal.run_timeout_s
+    assert (deep.check_timeout_s, deep.workers) == (normal.check_timeout_s, normal.workers)

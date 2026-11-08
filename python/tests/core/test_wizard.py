@@ -58,6 +58,7 @@ def _point(pid: str, phase: str = "calibration") -> PointV1:
 
 
 # frob:tests python/sadi/core/wizard.py::Wizard.create
+# frob:tests python/sadi/core/wizard.py::Wizard.__init__
 def test_create_rejects_empty_and_duplicates() -> None:
     assert Wizard.create([]).danger_err is WizardError.NoSteps
     s = _specs()[0]

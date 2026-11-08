@@ -81,6 +81,7 @@ def _open(tmp_path: Path, seg_bytes: int) -> tuple[Path, WalWriter]:
     max_examples=40, deadline=None, suppress_health_check=[HealthCheck.function_scoped_fixture]
 )
 @given(steps=st.lists(STEP, min_size=0, max_size=60), seg=st.sampled_from([600, 2000, 1 << 20]))
+# frob:tests python/sadi/store/incremental.py::IncrementalReplay.__init__
 def test_incremental_equals_full_replay(steps: list[tuple[str, int]], seg: int) -> None:
     """After every random batch (with rotation) the cache equals recover_state."""
     import tempfile

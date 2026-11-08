@@ -109,6 +109,8 @@ def _gate_fsync(monkeypatch: pytest.MonkeyPatch) -> _Gate:
 
 
 # frob:ticket 01M6W7R2DCY0H5XQ9F53F2W55E
+# frob:tests python/sadi/store/writer_thread.py::WriterHandle.__init__
+# frob:tests python/sadi/store/writer_thread.py::WriterHandle.open
 # frob:tests python/sadi/store/writer_thread.py::WriterHandle.submit
 # frob:tests python/sadi/store/writer_thread.py::WriterHandle.metrics
 def test_submit_assigns_dense_seq_and_metrics_track_durability(tmp_path: Path) -> None:

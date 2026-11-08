@@ -55,6 +55,7 @@ def _states(reg: PluginRegistry) -> dict[str, PluginState]:
 
 # frob:tests python/sadi/plugins/registry.py::PluginRegistry.discover
 # frob:tests python/sadi/plugins/sources.py::BuiltinSource.discover
+# frob:tests python/sadi/plugins/registry.py::PluginRegistry.labs
 def test_broken_plugin_isolated() -> None:
     src = BuiltinSource(
         [

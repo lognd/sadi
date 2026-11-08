@@ -1006,6 +1006,10 @@ def test_missing_binding_skips_sim_checks() -> None:
     assert got["SIM-010"].status is Status.SKIP and got["SIM-020"].status is Status.SKIP
 
 
+# frob:tests python/sadi/doctor/probes.py::RealProbes.__init__
+# frob:tests python/sadi/doctor/probes.py::Probes.device_facts
+# frob:tests python/sadi/doctor/probes.py::Probes.sim_facts
+# frob:tests python/sadi/doctor/probes.py::Probes.worker_facts
 # frob:tests python/sadi/doctor/workerprobe.py::selftest
 # frob:tests python/sadi/doctor/workerprobe.py::watchdog
 # frob:tests python/sadi/doctor/workerprobe.py::probe_workers
@@ -1257,3 +1261,22 @@ def test_real_probes_delegate_to_hostprobe(monkeypatch: pytest.MonkeyPatch) -> N
     assert real.browser_version() == ("firefox", 120)
     monkeypatch.setattr(real, "_browser_name", lambda: None)
     assert real.browser_version() is None
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/doctor/render_text.py::render_result
+def test_render_result_problem_has_fix_and_steps_but_pass_is_one_line() -> None:
+    """A problem renders its Fix line and numbered steps; a pass renders a single line."""
+    from sadi.doctor.render_text import render_result
+
+    p = healthy()
+    p.web_ver = "0.0.9"
+    report = _run(p, Os.LINUX, data_root=ROOT)
+    bad = next(r for r in report.results if r.id == "WEB-020")
+    lines = render_result(bad)
+    assert lines[0].startswith("[") and "WEB-020" in lines[0]
+    assert any(ln.startswith("  Fix: ") for ln in lines)
+    assert any(ln.startswith("  1. ") for ln in lines)
+    assert any("Expect:" in ln for ln in lines)
+    good = next(r for r in report.results if r.status is Status.PASS)
+    assert render_result(good) == [f"[PASS] {good.id}  {good.headline}"]

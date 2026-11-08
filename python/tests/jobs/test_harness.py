@@ -158,6 +158,7 @@ def test_unacknowledged_cancel_is_killed_after_grace() -> None:
     assert (m.killed_total, m.worker_restarts) == (1, 1)
 
 
+# frob:tests python/sadi/jobs/manager.py::Clock.time_ns
 # frob:tests python/sadi/jobs/manager.py::JobManager.metrics
 # frob:tests python/sadi/jobs/pool.py::WorkerSlot.pending_coalesced
 # frob:tests python/sadi/jobs/testing.py::FakeSlot.pending_coalesced
@@ -203,6 +204,7 @@ def test_task_exception_and_unknown_task_fail() -> None:
     assert all(o.error and o.error.code is JobCode.TASK_FAILED for o in h.outcomes)
 
 
+# frob:tests python/sadi/jobs/manager.py::Clock.monotonic
 # frob:tests python/sadi/jobs/testing.py::FakeClock.sleep
 # frob:tests python/sadi/jobs/testing.py::FakeClock.deadline
 # frob:tests python/sadi/jobs/testing.py::FakeClock.monotonic

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Phase has tare, results and export members distinct from calibration and plastic", "LCTT steps bind tare/results/export to their own phases"]
+moved = []
+at = "2026-11-08T06:39:34Z"
+actor = "lognd"
+rev = 1

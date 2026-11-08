@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Stale 34-column mentions in lctt lab.py and the header test name read 42 columns"]
+moved = []
+at = "2026-11-08T06:43:19Z"
+actor = "lognd"
+rev = 1

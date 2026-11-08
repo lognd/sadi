@@ -1,0 +1,92 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:32:51Z"
+digest = "3594f30e42497f7eaa04fe6238a57887f816cf20619eac2eb4f0ed50fe1a7a75"
+exit_code = 0
+head = "348d5f0ffd885b618bf42cecae5412e72e58de1d"
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/ws/ws.test.ts > openStream > reconnects with backoff, reports state, routes data, stops on close
+[ws.client] connecting { url: 'ws://x', attempt: 1 }
+[ws.client] stream open {}
+[ws.client] connecting { url: 'ws://x', attempt: 2 }
+[ws.client] connecting { url: 'ws://x', attempt: 3 }
+[ws.client] stream open {}
+[ws.client] stream closed by caller {}
+
+ \u{2713} src/ws/ws.test.ts (7 tests) 14ms
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+ \u{2713} src/screens/run/RunScreen.test.tsx (16 tests) 58ms
+
+ Test Files  2 passed (2)
+      Tests  23 passed (23)
+   Start at  01:32:51
+   Duration  1.16s (transform 509ms, setup 0ms, collect 726ms, tests 72ms, environment 1ms, prepare 468ms)
+
+JSON report written to /tmp/frob-vitest-632981-0.json
+stderr | src/ws/ws.test.ts > decodeFrame > rejects bad input without throwing
+[ws.frame] trace frame size mismatch { bytes: 70, nCh: 1, nPoints: 1 }
+
+stderr | src/ws/ws.test.ts > openStream > reconnects with backoff, reports state, routes data, stops on close
+[ws.client] stream lost; will reconnect { next_attempt: 2, delayMs: 250 }
+[ws.client] stream lost; will reconnect { next_attempt: 3, delayMs: 500 }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export http error { format: 'x', status: 404 }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export network failure { format: 'x', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "--root web src/ws/ws.test.ts src/screens/run/RunScreen.test.tsx"
+size = 3909
+status = "measured"
+test_count = 23
+tests_digest = "8ebcb4733f84ff8f1ca0b77c56f250282571f859432a1275f1f84ba4ac498d45"
+at = "2026-11-08T06:32:51Z"
+actor = "lognd"
+rev = 1

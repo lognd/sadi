@@ -1,0 +1,33 @@
+kind = "evidence"
+accepts = [1, 4]
+captured_at = "2026-11-08T06:44:41Z"
+digest = "4d2a6842d21b6f244301ce34d65be21f665c0d96d3a96b96f8974a02757d7f61"
+exit_code = 0
+head = "3119811b4ff37bff541d18815cabbc1df297726f"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 15 items
+
+python/tests/e2e/test_fault_scenarios.py ...............                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-673095-0.xml ---------------
+forgot 08013035b24f43bf9e95fc38191dc8aa
+============================= 15 passed in 11.47s ==============================
+forgot 9090355fb9e84a43ac7b7ccaf08ee1ad
+forgot 44f95cf0a5b548bd8496a770b92e0f6f
+forgot be211b2b3cfe4c25a00f5fe209ceaad3
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_fault_scenarios.py"
+size = 682
+status = "measured"
+test_count = 15
+tests_digest = "7d59e247e2d953eadc92df0a28ef3f11417e1b8b38c2bd30fef2e8b69bad8d21"
+at = "2026-11-08T06:44:41Z"
+actor = "lognd"
+rev = 1

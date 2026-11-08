@@ -85,6 +85,8 @@ class LoadPoint(_Ev):
     forced_early: bool = False
     drift_rate: float | None = None
     t_since_load_s: float | None = None
+    # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+    volts_sd: float | None = None  # per-sample std dev of the raw volts in the window
 
 
 class OverridePoint(_Ev):

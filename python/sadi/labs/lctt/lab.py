@@ -33,6 +33,7 @@ from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
 from sadi.labs.lctt.export_csv import build_document, render_document
+from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
     CalPoint,
     ExcludePoint,
@@ -92,8 +93,6 @@ def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
 
 def lctt_steps() -> list[StepSpec]:
     """Return the ordered steps: Setup, Calibrate, Tare, Elastic, Plastic, Results, Export."""
-    # Tare shares the calibration phase and Results/Export the plastic phase: core Phase has
-    # exactly setup/calibration/elastic/plastic, and the last two steps capture nothing.
     return [
         setup_step(),
         StepSpec(
@@ -106,7 +105,7 @@ def lctt_steps() -> list[StepSpec]:
         StepSpec(
             id=StepId("tare"),
             title="Tare",
-            phase=Phase.CALIBRATION,
+            phase=Phase.TARE,
             capture=CaptureKind.DEVICE_POINTS,
             guidance=_guide("With no load on the wire, capture the zero-load LVDT voltage."),
         ),
@@ -127,14 +126,14 @@ def lctt_steps() -> list[StepSpec]:
         StepSpec(
             id=StepId("results"),
             title="Results",
-            phase=Phase.PLASTIC,
+            phase=Phase.RESULTS,
             capture=CaptureKind.NONE,
             guidance=_guide("Review E (long specimen) and yield (short specimen) with sources."),
         ),
         StepSpec(
             id=StepId("export"),
             title="Export",
-            phase=Phase.PLASTIC,
+            phase=Phase.EXPORT,
             capture=CaptureKind.NONE,
             guidance=_guide("Export the run; the files record which specimen gave which result."),
         ),
@@ -202,6 +201,7 @@ def events_from_inputs(
                     point_id=f"{prefix}-{n_load}",
                     volts=item.volts,
                     u_volts=item.u_volts,
+                    volts_sd=item.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
                     mass_kg=item.mass_kg,
                     u_mass_kg=item.u_mass_kg,
                 )
@@ -273,7 +273,7 @@ def combine_runs(
 
 # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
 def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
-    """Render the 32-column lctt CSV from the raw session events carried on `run` (in memory)."""
+    """Render the 42-column lctt CSV from the raw session events carried on `run` (in memory)."""
     events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
     doc = build_document(events, date=datetime.now(UTC))
     if isinstance(doc, Err):
@@ -287,12 +287,31 @@ _LIVE_EVENT_TYPES = (
 )  # fmt: skip
 
 
-#: The lctt-csv export format: project-defined 32-column layout, see docs/lctt/export-csv.md.
+#: The lctt-csv export format: project-defined 42-column layout, see docs/lctt/export-csv.md.
 CSV_FORMAT = ExportFormat(
     id=ExportFormatId("lctt-csv"),
     title="LCTT CSV (32 columns)",
     media_type="text/csv",
     writer=_write_csv,
+)
+
+
+# frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
+def _write_figure_json(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render the calibration and stress-strain series as JSON from the raw session events."""
+    events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
+    data = figure_data(events)
+    if isinstance(data, Err):
+        return Err(data.danger_err)
+    return Ok(data.danger_ok.model_dump_json(indent=2).encode("utf-8"))
+
+
+#: The lctt-figure-json export format: series behind the calibration and stress-strain plots.
+FIGURE_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-figure-json"),
+    title="LCTT figure data (JSON)",
+    media_type="application/json",
+    writer=_write_figure_json,
 )
 
 
@@ -302,7 +321,7 @@ class LcttLab:
     id = LabId("lctt")
     title = "Load-controlled creep/thermal test"
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
-    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT,)
+    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT, FIGURE_FORMAT)
 
     def steps(self) -> list[StepSpec]:
         """Return the ordered wizard steps, bound to calibration, elastic and plastic phases."""

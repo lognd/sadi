@@ -65,6 +65,9 @@ def test_captured_inputs_average_window_volts() -> None:
     assert cap.inputs.volts == pytest.approx(0.5, abs=1e-3)
     assert cap.inputs.mass_kg == 2.0 and cap.inputs.u_mass_kg == 1e-4
     assert 0.0 < cap.inputs.u_volts < 1e-3
+    # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+    assert cap.inputs.volts_sd is not None
+    assert cap.inputs.volts_sd > cap.inputs.u_volts
     assert cap.point.inputs == cap.inputs.model_dump(exclude={"phase"})
 
 

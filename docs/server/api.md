@@ -9,7 +9,7 @@ them in the threadpool and the event loop stays free). All logic lives in
 
 Live data (trace frames, state, results) is pushed over a WebSocket: [websocket.md](websocket.md).
 
-Related REST surfaces: [results.md](results.md) and [export.md](export.md).
+Related REST surfaces: [results.md](results.md), [export.md](export.md) and [plots.md](plots.md).
 
 ## Data safety
 

@@ -93,6 +93,13 @@ def test_point_flags_window_and_run_state_transitions() -> None:
     assert s1.phase is Phase.PLASTIC and len(s1.points) == 1
 
 
+def test_phase_has_tare_results_export() -> None:
+    """Tare, results and export are distinct phases whose values match WAL phase names."""
+    assert [p.value for p in Phase] == [
+        "setup", "calibration", "tare", "elastic", "plastic", "results", "export"
+    ]  # fmt: skip
+
+
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
 # frob:tests python/sadi/core/errors.py::hint_for
 # frob:tests python/sadi/core/errors.py::SadiError.hint

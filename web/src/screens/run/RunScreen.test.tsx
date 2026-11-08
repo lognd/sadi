@@ -11,6 +11,7 @@ import { encodeTrace } from "../../ws/testframes";
 import { buildBody, decide, postCapture } from "./capture";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
 import { RunView, settleText, type RunViewProps } from "./RunView";
+import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
 
 const html = (el: React.JSX.Element): string => rts(el).replaceAll("<!-- -->", "");
@@ -20,7 +21,7 @@ const OPEN: ConnState = { status: "open" };
 function simStream(levels: number[], texts: string[]): { w: TraceWindow; side: SideState } {
   const w = new TraceWindow(5, 0);
   const lastPoint: { v: number | null } = { v: null };
-  let side: SideState = { settle: null, rawSeq: 0, pointIndex: null };
+  let side: SideState = { settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false };
   levels.forEach((lv, i) => {
     const n = 64;
     const mn = Array.from({ length: n }, () => lv - 0.001);
@@ -83,8 +84,16 @@ describe("live derivation from a mocked sim stream", () => {
   it("driftOver needs three columns", () => {
     expect(driftOver(new Float64Array([0, 1]), new Float64Array([0, 1]), 0)).toBeNull();
   });
+  it("foldSide keeps server drift, capture window and simulated flag; deriveLive prefers server drift", () => {
+    const m = parseMessage('{"kind":"state","raw_seq":9,"drift_vps":0.25,"simulated":true,"window":{"first_raw_seq":4,"last_raw_seq":9},"status":{"state":"creeping","point_index":2}}');
+    const s0: SideState = { settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false };
+    const s = m.ok ? foldSide(s0, m.value) : s0;
+    expect(s).toMatchObject({ driftVps: 0.25, window: { firstRawSeq: 4, lastRawSeq: 9 }, simulated: true });
+    const w = new TraceWindow(5, 0);
+    expect(deriveLive(w.snapshot(100), OPEN, s.settle, s.simulated, s.driftVps).driftVps).toBe(0.25);
+  });
   it("foldSide ignores unrelated kinds", () => {
-    const s: SideState = { settle: null, rawSeq: 1, pointIndex: null };
+    const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: false };
     const m: ServerMessage = { kind: "guidance" };
     expect(foldSide(s, m)).toBe(s);
   });
@@ -136,5 +145,23 @@ describe("RunView", () => {
     const data = { points: [], fit: null, yield: null };
     expect(html(<RunView {...props({ phase: "elastic", plot: { kind: "stress-strain", data } })} />)).toContain("Stress-strain");
     expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Record tare");
+  });
+});
+
+describe("run F3 export", () => {
+  it("fetches the lctt-csv export", async () => {
+    const urls: string[] = [];
+    const f = ((u: string) => { urls.push(u); return Promise.resolve(new Response("a,b\n1,2\n")); }) as unknown as typeof fetch;
+    const r = await fetchRunExport("lctt-csv", f);
+    expect(urls).toEqual(["/api/export/lctt-csv"]);
+    expect(r.ok && r.value.filename).toBe("sadi-lctt-csv.csv");
+  });
+  it("reports http and network failures", async () => {
+    const bad = (() => Promise.resolve(new Response("nope", { status: 404 }))) as unknown as typeof fetch;
+    const r = await fetchRunExport("x", bad);
+    expect(!r.ok && exportErrorText(r.error)).toContain("HTTP 404");
+    const down = (() => Promise.reject(new Error("down"))) as unknown as typeof fetch;
+    const r2 = await fetchRunExport("x", down);
+    expect(!r2.ok && exportErrorText(r2.error)).toContain("down");
   });
 });

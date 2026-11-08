@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/2X49DSV; scope: python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md; ttl 7200s"
+at = "2026-11-08T06:33:26Z"
+actor = "lognd"
+rev = 1

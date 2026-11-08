@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Parametrised full-run scenarios through API: each FaultPlan (noise, drift, creep, slip steps, dropped bytes, saturation, combined) asserts settle behaviour, slip flagged, saturation warning, byte resync with counted gaps, results within tolerance of ground truth, raw preserved in WAL", "A kill-during-run scenario recovers the session and continues with a new version", "docs/testing.md documents the scenario matrix and how to add one"]
+new = ["Parametrised full-run scenarios through API: each FaultPlan (noise, drift, creep, slip steps, dropped bytes, saturation, combined) asserts settle behaviour, slip flagged, saturation warning, byte resync with counted gaps, results within tolerance of ground truth, raw preserved in WAL", "A kill-during-run scenario recovers the session and continues with a new version", "docs/testing.md documents the scenario matrix and how to add one", "Parametrised full-run scenarios through the API: each FaultPlan (noise, drift, creep, slip steps, dropped bytes, saturation, combined) asserts settle behaviour, slip flagged, saturation warning, byte resync with counted gaps, results within tolerance of ground truth, raw preserved in WAL"]
+moved = [1, 2, 3]
+at = "2026-11-08T06:44:09Z"
+actor = "lognd"
+rev = 1

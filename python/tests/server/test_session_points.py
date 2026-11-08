@@ -32,3 +32,18 @@ def test_to_captured_reindexes_and_clamps_window() -> None:
     assert [c.index for c in out] == [0, 1]
     assert out[0].window.end == 4.0
     assert out[1].window.end == 9.0
+
+
+# frob:ticket 01M6WV1BEFANVC4BZ2S63NEPH5
+# frob:tests python/sadi/server/session_points.py::to_captured
+def test_to_captured_carries_time_drift_and_status() -> None:
+    """Time since load, drift rate and forced-early status survive the projection."""
+    view = PointView.model_construct(
+        excluded=False,
+        window=SimpleNamespace(first_sample=0, last_sample=3),
+        t_since_load_s=12.5,
+        drift_rate=-0.25,
+        forced_early=True,
+    )
+    (out,) = to_captured([view])
+    assert (out.t_since_load, out.drift_rate, out.forced_early) == (12.5, -0.25, True)

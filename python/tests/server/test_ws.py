@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 from fastapi.testclient import TestClient
 
-from sadi.core.pipeline import Bus, PipelineStopped, TraceFrame
+from sadi.core.pipeline import Bus, PipelineStopped, SettleUpdate, TraceFrame
 from sadi.server import framing
 from sadi.server.app import AppSettings, create_app
 from sadi.server.ws import CLIENT_FRAME_DEPTH
@@ -162,3 +162,35 @@ def test_50ksps_real_time_budget() -> None:
         t.join()
     assert len(lat) >= 0.95 * n_frames
     assert float(np.percentile(lat, 95)) < 0.1
+
+
+# frob:ticket 01M6WWN90MKGKGY4H7Y8PWYEQZ
+# frob:tests python/sadi/server/ws.py::StreamHub.poll
+# frob:tests python/sadi/server/ws.py::StreamHub.hello
+def test_state_carries_drift_window_and_simulated() -> None:
+    """State messages carry drift_vps, the capture window's raw seqs and the simulated flag."""
+    from sadi.labs.lctt.settle_stream import SettleState, StreamStatus
+    from sadi.server.ws import StreamHub
+    from sadi.uncertainty.measured import Measured
+
+    bus = Bus()
+    hub = StreamHub(bus, simulated=lambda: True)
+    c = hub.attach()
+
+    def upd(seq: int, point: int, drift: float | None) -> SettleUpdate:
+        d = None if drift is None else Measured(value=drift, std_unc=0.0)
+        st = StreamStatus(state=SettleState.CREEPING, point_index=point, drift_rate=d)
+        return SettleUpdate(raw_seq=seq, status=st)
+
+    for ev in (upd(5, 1, 0.25), upd(6, 1, None), upd(7, 2, 0.5)):
+        bus.publish(ev)
+    hub.poll()
+    msgs = list(c.msgs)
+    assert [m["drift_vps"] for m in msgs] == [0.25, None, 0.5]
+    assert [m["window"] for m in msgs] == [
+        {"first_raw_seq": 5, "last_raw_seq": 5},
+        {"first_raw_seq": 5, "last_raw_seq": 6},
+        {"first_raw_seq": 7, "last_raw_seq": 7},
+    ]
+    assert all(m["simulated"] is True for m in msgs)
+    assert hub.hello()["simulated"] is True

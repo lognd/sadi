@@ -67,6 +67,8 @@ class LoadInputs(_Inputs):
     mass_kg: float
     u_volts: float = 0.0
     u_mass_kg: float = 0.0
+    # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+    volts_sd: float | None = None  # per-sample std dev of the raw volts in the window
 
 
 class PointMeta(BaseModel):
@@ -127,6 +129,7 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
             mass_kg=mass,
             u_volts=_opt(inputs, "u_volts"),
             u_mass_kg=_opt(inputs, "u_mass_kg"),
+            volts_sd=_num(inputs, "volts_sd"),  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
         )
     )
 

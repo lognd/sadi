@@ -22,12 +22,14 @@ messages, so there is no second socket. `TraceCanvas` draws the shared live scen
 - Per-phase plot: calibrate uses `CalibrationPlot`, elastic and plastic use
   `StressStrainScreen`, tare has none. The payload is a host prop.
 
+- Export: F3 (resolved by `resolveKey` to `export`) downloads `GET /api/export/{format}`
+  (`exportTrace.ts`, default `lctt-csv`, prop `exportFormat`). Failures show in the status line.
+
 ## Gaps (filed as tickets)
 
 - G1: the stream carries no live drift rate, capture-window raw seq or simulated flag. Drift is
   estimated client-side from the trace and the simulated flag is a prop.
 - G2: no endpoint serves per-phase plot data, hence the host prop.
-- F3 export is not offered by the run screen's trace.
 
 ## Tests
 

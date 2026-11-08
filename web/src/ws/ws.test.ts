@@ -38,7 +38,9 @@ describe("decodeFrame", () => {
 describe("parseMessage", () => {
   it("parses state, result, stats and unknown kinds", () => {
     const s = parseMessage('{"kind":"state","raw_seq":3,"status":{"state":"creeping","point_index":2,"time_since_load":1.5}}');
-    expect(s).toEqual({ ok: true, value: { kind: "state", rawSeq: 3, state: "creeping", pointIndex: 2, timeSinceLoad: 1.5 } });
+    expect(s).toEqual({ ok: true, value: { kind: "state", rawSeq: 3, state: "creeping", pointIndex: 2, timeSinceLoad: 1.5, driftVps: null, window: null, simulated: false } });
+    const d = parseMessage('{"kind":"state","raw_seq":9,"drift_vps":0.25,"simulated":true,"window":{"first_raw_seq":4,"last_raw_seq":9},"status":{"state":"settled"}}');
+    expect(d).toEqual({ ok: true, value: { kind: "state", rawSeq: 9, state: "settled", pointIndex: null, timeSinceLoad: null, driftVps: 0.25, window: { firstRawSeq: 4, lastRawSeq: 9 }, simulated: true } });
     const r = parseMessage('{"kind":"result","raw_seq":4,"record":{"point_index":2,"settled":true,"forced_early":false,"window_end":9}}');
     expect(r.ok && r.value.kind === "result" && r.value.windowEnd).toBe(9);
     const st = parseMessage('{"kind":"stats","sent_frames":5,"dropped_frames":1}');

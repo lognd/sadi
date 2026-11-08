@@ -1,8 +1,8 @@
-"""LCTT CSV export and reader in the 32-column LabVIEW layout (domain.md section 4).
+"""LCTT CSV export and reader in the 42-column LabVIEW layout (domain.md section 4).
 
 The document is DERIVED from session events (never the source of truth, invariant I7): the
 events are recomputed through the loading, modulus and yield engines, rendered as a metadata
-block, a blank line, the 32-column header and one row per logged point, and published through
+block, a blank line, the 42-column header and one row per logged point, and published through
 the store exports primitive (tmp + fsync + no-replace rename, provenance sidecar). The reader
 parses such a file back into a `CsvDocument` and into live events for post-processing.
 Bytes: UTF-8, no BOM, CRLF after every row (see store/csv_export.py); the reader also accepts
@@ -10,6 +10,8 @@ LF and a BOM so files re-saved by other tools still load.
 """
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
+# frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
+# frob:ticket 01M6WX3GJK2D59J39ZZS1J03DV
 from __future__ import annotations
 
 import csv
@@ -26,6 +28,7 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.core.export_api import UTF8_BOM, ExportResult, HasPath, render_csv, write_export
 from sadi.labs.lctt.calibration import fit_calibration
 from sadi.labs.lctt.live import (
+    CalPoint,
     ExcludePoint,
     LiveConfig,
     LiveEvent,
@@ -44,7 +47,8 @@ from sadi.uncertainty import Measured, Provenance
 _log = get_logger(__name__)
 
 EXPORT_KIND = "lctt-csv"
-SCHEMA_VERSION = "1"
+# frob:ticket 01M6WX3GPBQA22B9AAJK7BN9MY
+SCHEMA_VERSION = "3"  # v3: uncertainty columns (42); cal point meta rows are additive, no bump
 TITLE = "SADI LCTT tensile test"
 NAN = float("nan")
 
@@ -56,25 +60,29 @@ class ExportCsvError(ErrorSet):
     Compute = "A result could not be computed from the session events; see the log"
     Write = "The export could not be written; the recording itself is safe"
     BadFile = "The file is not a LabVIEW-schema LCTT CSV (missing blank line or header)"
-    BadHeader = "The column header does not match the 32-column schema"
+    BadHeader = "The column header does not match the 42-column schema"
     BadCell = "A cell could not be parsed as its column type"
     Encoding = "The file is not valid UTF-8"
 
 
 class PointRow(BaseModel):
-    """One logged point; field order IS the 32-column header order."""
+    """One logged point; field order IS the 42-column header order."""
 
     model_config = ConfigDict(frozen=True)
 
     point_id: str
     index: int
+    elapsed_s: float  # seconds since load was applied; NaN when unknown
     volts: float
     u_volts: float
+    volts_sd: float  # per-sample std dev of the raw volts; NaN when unknown
     mass_kg: float
     u_mass_kg: float
     delta_volts: float
+    u_delta_volts: float  # sqrt(u_volts^2 + u_tare_v^2)
     height_m: float
     displacement_m: float
+    u_displacement_m: float  # propagated from delta volts and calibration slope
     load_n: float
     u_load_n: float
     area_m2: float
@@ -84,7 +92,9 @@ class PointRow(BaseModel):
     strain: float
     u_strain: float
     secant_modulus_pa: float
+    u_secant_modulus_pa: float  # quotient propagation of stress and strain; NaN when undefined
     hanger_kg: float
+    u_hanger_kg: float
     total_mass_kg: float
     offset_line_pa: float
     excluded: bool
@@ -97,12 +107,16 @@ class PointRow(BaseModel):
     warnings: str
     slope_m_per_v: float
     tare_v: float
+    u_tare_v: float
     l0_m: float
+    u_l0_m: float  # gauge length is an exact configured constant: 0
+    diameter_m: float
+    u_diameter_m: float
 
 
 COLUMNS: tuple[str, ...] = tuple(PointRow.model_fields)
 _TYPES: tuple[Any, ...] = tuple(f.annotation for f in PointRow.model_fields.values())
-assert len(COLUMNS) == 32, "the LabVIEW schema has exactly 32 columns"  # noqa: S101
+assert len(COLUMNS) == 42, "the schema has exactly 42 columns"  # noqa: S101
 
 
 class CsvDocument(BaseModel):
@@ -204,13 +218,27 @@ def read_file(path: Path) -> Result[CsvDocument, ExportCsvError]:
         return Err(ExportCsvError.BadFile)
 
 
+def _cal_events(doc: CsvDocument) -> list[LiveEvent]:
+    """Rebuild `CalPoint` events from consecutive `Cal point N` rows (stops at the first gap)."""
+    out: list[LiveEvent] = []
+    i = 1
+    while True:
+        v, h = doc.get_float(f"Cal point {i} volts (V)"), doc.get_float(f"Cal point {i} height (m)")
+        if math.isnan(v) or math.isnan(h):
+            break
+        out.append(CalPoint(volts=v, height=h))
+        i += 1
+    _log.info("rebuilt %d calibration points from metadata", len(out))
+    return out
+
+
 def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     """Rebuild raw live events (tare, specimen, points, exclusions, window) for re-analysis.
 
-    Calibration points are not in the file (only the fit), so no `CalPoint` is produced; the
-    caller supplies the slope/intercept metadata or the original calibration data.
+    Raw calibration points are read from the numbered `Cal point N ...` metadata rows (files
+    without them yield no `CalPoint`; the fit rows are then the only calibration record).
     """
-    events: list[LiveEvent] = []
+    events: list[LiveEvent] = _cal_events(doc)
     n, sd = doc.get_float("Tare n"), doc.get_float("Tare sd (V)")
     if not math.isnan(n):
         events.append(TareBlock(mean=doc.get_float("Tare mean (V)"), sd=sd, n=int(n)))
@@ -225,7 +253,9 @@ def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     for r in doc.rows:
         events.append(
             LoadPoint(point_id=r.point_id, volts=r.volts, u_volts=r.u_volts,
-                      mass_kg=r.mass_kg, u_mass_kg=r.u_mass_kg)
+                      mass_kg=r.mass_kg, u_mass_kg=r.u_mass_kg,
+                      t_since_load_s=None if math.isnan(r.elapsed_s) else r.elapsed_s,
+                      volts_sd=None if math.isnan(r.volts_sd) else r.volts_sd)
         )  # fmt: skip
         if r.excluded:
             events.append(ExcludePoint(point_id=r.point_id))
@@ -243,6 +273,15 @@ def _m(value: float, unc: float, unit: str, src: str) -> Result[Measured, Export
         _log.error("export: measured %s failed: %s", src, made.danger_err)
         return Err(ExportCsvError.Compute)
     return Ok(made.danger_ok)
+
+
+def _u_quotient(num: Measured, den: Measured) -> float:
+    """Standard uncertainty of num/den for independent inputs; NaN when den is zero."""
+    if not den.value:
+        return NAN
+    q = num.value / den.value
+    return abs(q) * math.hypot(num.std_unc / num.value if num.value else 0.0,
+                               den.std_unc / den.value)  # fmt: skip
 
 
 def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split would obscure it
@@ -307,33 +346,45 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
     rows: list[PointRow] = []
     for pid, p in st.points.items():
         lr = loaded[pid]
+        u_dv = math.hypot(p.u_volts, tare.std_unc)
         ai = active.index(pid) if pid in active else -1
         sat = isinstance(mod, Ok) and ai in mod.danger_ok.saturated_points
         rows.append(
             PointRow(
                 point_id=pid, index=len(rows), volts=p.volts, u_volts=p.u_volts,
+                elapsed_s=NAN if p.t_since_load_s is None else p.t_since_load_s,
+                volts_sd=NAN if p.volts_sd is None else p.volts_sd,
                 mass_kg=p.mass_kg, u_mass_kg=p.u_mass_kg,
-                delta_volts=p.volts - tare.value,
+                delta_volts=p.volts - tare.value, u_delta_volts=u_dv,
                 height_m=fit.slope.value * p.volts + fit.intercept.value,
                 displacement_m=fit.slope.value * (p.volts - tare.value),
+                u_displacement_m=math.hypot(
+                    fit.slope.value * u_dv, (p.volts - tare.value) * fit.slope.std_unc
+                ),
                 load_n=lr.load.value, u_load_n=lr.load.std_unc,
                 area_m2=lr.area.value, u_area_m2=lr.area.std_unc,
                 stress_pa=lr.stress.value, u_stress_pa=lr.stress.std_unc,
                 strain=lr.strain.value, u_strain=lr.strain.std_unc,
                 secant_modulus_pa=lr.stress.value / lr.strain.value if lr.strain.value else NAN,
-                hanger_kg=spec.hanger_kg, total_mass_kg=p.mass_kg + spec.hanger_kg,
+                u_secant_modulus_pa=_u_quotient(lr.stress, lr.strain),
+                hanger_kg=spec.hanger_kg, u_hanger_kg=spec.u_hanger_kg,
+                total_mass_kg=p.mass_kg + spec.hanger_kg,
                 offset_line_pa=e_val * (lr.strain.value - cfg.offset),
                 excluded=pid in st.excluded,
                 in_window=ai >= 0 and first <= ai <= last and isinstance(mod, Ok),
                 saturated=sat, settle_source="", is_yield=ai == y_idx and ai >= 0,
                 is_ultimate=ai == u_idx and ai >= 0, low_r2=low_r2,
                 warnings=";".join(lr.warnings),
-                slope_m_per_v=fit.slope.value, tare_v=tare.value, l0_m=cfg.loading.gauge_length,
+                slope_m_per_v=fit.slope.value, tare_v=tare.value, u_tare_v=tare.std_unc,
+                l0_m=cfg.loading.gauge_length, u_l0_m=0.0,
+                diameter_m=spec.diameter, u_diameter_m=spec.u_diameter,
             )
         )  # fmt: skip
     tare_n = sum(t.n for t in st.tare)
     tare_sd = tare.std_unc / 2.0  # pool_tare: U_tare = 2 Sx (domain 3.2)
-    meta = _meta(date, operator, description, cfg, tare, tare_sd, tare_n, fit, spec, mod, yld)
+    meta = _meta(
+        date, operator, description, cfg, tare, tare_sd, tare_n, fit, spec, mod, yld, st.cal
+    )
     _log.info("export: built document with %d points", len(rows))
     return Ok(CsvDocument(meta=tuple(meta), rows=tuple(rows)))
 
@@ -341,7 +392,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
 def _meta(  # noqa: PLR0913
     date: datetime, operator: str, description: str, cfg: LiveConfig,
     tare: Measured, tare_sd: float, tare_n: int, fit: Any, spec: SpecimenSetup, mod: Any,
-    yld: Any,
+    yld: Any, cal: Sequence[CalPoint] = (),
 ) -> list[tuple[str, str]]:  # fmt: skip
     """Ordered metadata block: title, run info, tare, calibration, specimen, modulus fit."""
     f = format_number
@@ -355,6 +406,12 @@ def _meta(  # noqa: PLR0913
         ("Cal slope (m/V)", f(fit.slope.value)), ("Cal intercept (m)", f(fit.intercept.value)),
         ("Cal se slope", f(fit.se_slope)), ("Cal se intercept", f(fit.se_intercept)),
         ("Cal r2", f(fit.r2)), ("Cal t95", f(fit.t95)), ("Cal n", str(fit.n)),
+        *[
+            kv
+            for i, c in enumerate(cal, start=1)
+            for kv in ((f"Cal point {i} volts (V)", f(c.volts)),
+                       (f"Cal point {i} height (m)", f(c.height)))
+        ],
         ("Specimen diameter (m)", f(spec.diameter)),
         ("Specimen u diameter (m)", f(spec.u_diameter)),
         ("Specimen L0 (m)", f(cfg.loading.gauge_length)),

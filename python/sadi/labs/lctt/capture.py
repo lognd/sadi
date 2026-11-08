@@ -201,16 +201,17 @@ class CaptureController:
         assert self._started is not None
         return self._clock() - self._started
 
-    def _window_volts(self, start: float, end: float) -> tuple[float, float]:
-        """Mean raw volts over [start, end] and the standard error of that mean (0 if n<2)."""
+    def _window_volts(self, start: float, end: float) -> tuple[float, float, float | None]:
+        """Mean raw volts over [start, end], std error of the mean (0 if n<2) and sample std dev."""
+        # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
         times, volts = self._det.raw
         ys = [y for t, y in zip(times, volts, strict=True) if start <= t <= end]
         n = len(ys)
         mean = math.fsum(ys) / n
         if n < 2:
-            return mean, 0.0
+            return mean, 0.0, None
         sd = math.sqrt(math.fsum((y - mean) ** 2 for y in ys) / (n - 1))
-        return mean, sd / math.sqrt(n)
+        return mean, sd / math.sqrt(n), sd
 
     def _capture(
         self, *, forced: bool, warnings: tuple[str, ...]
@@ -228,11 +229,12 @@ class CaptureController:
         if window is None:
             _log.error("no raw range for window [%g, %g]", rec.window_start, rec.window_end)
             return Err(CaptureError.NoRawRange)
-        volts, u_volts = self._window_volts(rec.window_start, rec.window_end)
+        volts, u_volts, volts_sd = self._window_volts(rec.window_start, rec.window_end)
         inputs = LoadInputs(
             phase=self._cfg.phase,
             volts=volts,
             u_volts=u_volts,
+            volts_sd=volts_sd,
             mass_kg=self._mass_kg,
             u_mass_kg=self._u_mass_kg,
         )

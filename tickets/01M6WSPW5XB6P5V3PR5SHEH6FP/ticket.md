@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T05:22:14Z"
-updated = "2026-11-08T05:26:35Z"
+updated = "2026-11-08T05:26:36Z"
 labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/__init__.py", "creates:python/sadi/bench/ad3/__init__.py", "creates:python/sadi/bench/ad3/consts.py", "creates:python/sadi/bench/ad3/backend.py", "creates:python/sadi/bench/ad3/dll.py", "creates:python/tests/bench/test_ad3_binding.py", "creates:docs/bench/ad3.md"]
 scope = ["python/sadi/bench/**", "python/tests/bench/**", "docs/bench/ad3.md", "docs/index.md"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "Backend calls marshal arguments and out-params correctly and map nonzero DWF status to Err carrying the last error message (verified with an injected fake library)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Device handle is move-only (typestate): using a closed handle is a type error and a runtime Err"

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:19:35Z"
+digest = "14a2025fa1e2b1afdc89e5e69490b0ef5ae1eeb4a8248662a0911ea6e9bcfbef"
+exit_code = 0
+head = "e90e0e8e11e2e807157ab1f33f2809907c0d7c72"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 6 items
+
+python/tests/concurrency/test_kill_with_jobs.py ......                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-609683-0.xml ---------------
+============================== 6 passed in 13.90s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/concurrency/test_kill_with_jobs.py::test_kill_mid_write_while_jobs_run"
+size = 521
+status = "measured"
+test_count = 6
+tests_digest = "8d701a2fa8a9db596bcf30663bb2835a66b71d0041dbbb9a91796e306bcc89df"
+at = "2026-11-08T06:19:35Z"
+actor = "lognd"
+rev = 1

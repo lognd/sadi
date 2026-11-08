@@ -1,0 +1,9 @@
+kind = "create"
+title = "Add figure-data export format to LcttLab"
+type = "task"
+category = "todo"
+priority = "medium"
+body = "Follow-up of QNBQVJW: declare an application/json figure-data export format (stress-strain curve) now that RunState.events carries raw events."
+at = "2026-11-08T06:20:39Z"
+actor = "lognd"
+rev = 1

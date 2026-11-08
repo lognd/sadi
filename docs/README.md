@@ -19,6 +19,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 |---|---|
 | [architecture.md](architecture.md) | Process model, repo layout, session layout, error convention (~1DQHSR7) |
 | [concurrency.md](concurrency.md) | Concurrency model: threads, GIL, queues, job lifecycle, versioned results (~DK06Q2F) |
+| [concurrency-testing.md](concurrency-testing.md) | Race, deadlock and kill-mid-write test suite (~7B4SZGG) |
 | [jobs/jobs.md](jobs/jobs.md) | Job system core: lifecycle, process pool, cancel and supersede (~V9NMTHC) |
 | [plan.md](plan.md) | Delivery plan and ticket map |
 | [domain.md](domain.md) | LCTT domain facts and formulas |
@@ -32,7 +33,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | Doc | Owner | Ticket title |
 |---|---|---|
 | `docs/ci.md` | ~M7BT5SB | CI matrix: Windows, Linux, macOS (Rust, Python, web) |
-| `docs/concurrency-testing.md` | ~7B4SZGG | Race/deadlock suite incl. kill-mid-write while jobs are running |
+| [`docs/concurrency-testing.md`](concurrency-testing.md) | ~7B4SZGG | Race/deadlock suite incl. kill-mid-write while jobs are running |
 | [`docs/concurrency.md`](concurrency.md) | ~DK06Q2F | Concurrency model design: threads, GIL, queues, job lifecycle, versioned results |
 | `docs/core/device.md` | ~GX511CP | Device service: sadi_py wrapper returning typani Results, reconnect, sim/real select |
 | `docs/core/formatting.md` | ~M27Y4NY | Significant-figure and confidence-readout formatter (class rule) |

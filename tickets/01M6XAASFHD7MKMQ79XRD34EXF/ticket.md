@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:14:55Z"
+updated = "2026-11-08T10:14:56Z"
 scope = ["web/src/keys/keymap.ts", "web/src/keys/useKeyCapture.ts", "web/src/keys/keymap.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md", "docs/usability-report.md", "docs/web/run-screens.md"]
 
 [[acceptance]]

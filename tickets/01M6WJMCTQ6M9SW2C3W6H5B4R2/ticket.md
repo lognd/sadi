@@ -7,7 +7,7 @@ priority = "critical"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:18:33Z"
-updated = "2026-11-08T03:24:37Z"
+updated = "2026-11-08T03:24:38Z"
 scope = ["python/sadi/store/events.py", "python/tests/store/test_events.py", "python/sadi/store/wal.py", "docs/store/events.md", "docs/store/wal.md"]
 
 [[acceptance]]

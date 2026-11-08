@@ -2,7 +2,8 @@
 id = "01M6WTZVYZDQFD96RR9ZWAPFH7"
 title = "pyproject: declare platformdirs dependency"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

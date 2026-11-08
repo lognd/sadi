@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:24:36Z"
-updated = "2026-11-08T09:49:37Z"
+updated = "2026-11-08T09:49:42Z"
 scope = ["web/src/screens/export/**", "web/e2e/guided-run.spec.ts", "docs/e2e.md"]
 +++
 

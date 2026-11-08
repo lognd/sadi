@@ -2,12 +2,12 @@
 id = "01M6X572N6WB1053QZ1WV4W4WY"
 title = "e2e guided-run: sim LVDT voltage ignores typed calibration heights so calibration fit is degenerate (E pending, CSV export 422)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:43:19Z"
-updated = "2026-11-08T08:43:36Z"
+updated = "2026-11-08T08:43:37Z"
 scope = ["crates/sadi-py/src/**", "python/sadi/launcher.py", "python/sadi/core/device.py", "python/sadi/server/routes/acquisition.py", "web/e2e/**"]
 +++
 

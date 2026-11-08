@@ -1,5 +1,4 @@
 # User guide: screenshots
-<!-- frob:waive DOC007 index.md is leased by another ticket; entry tracked in ~K4CC7XS -->
 
 Status: current
 

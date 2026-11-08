@@ -196,6 +196,28 @@ def test_slow_fsync_never_blocks_ingest_and_display_waits(
     h.close()
 
 
+# frob:ticket 01M6WMVRTG5YQDSZYQQG368G2E
+# frob:tests python/sadi/core/pipeline.py::AcquisitionPipeline.halt
+def test_public_halt_stops_once_and_refuses_ingest(tmp_path: Path) -> None:
+    """Public halt() stops the device, publishes one PipelineStopped, and is idempotent."""
+    h = _open(tmp_path)
+    calls: list[int] = []
+    pipe = AcquisitionPipeline(h, _config(), stop_device=lambda: calls.append(1))
+    sub = pipe.bus.subscribe("t")
+    pipe.halt("device_fault", "check cable")
+    pipe.halt("device_fault", "again")
+    assert pipe.halted
+    assert calls == [1]
+    res = pipe.ingest(_Block())
+    assert res.is_err
+    assert res.danger_err == PipelineError.Halted
+    stops = [e for e in sub.drain() if isinstance(e, PipelineStopped)]
+    assert len(stops) == 1
+    assert stops[0].reason == "device_fault"
+    assert stops[0].hint == "check cable"
+    h.close()
+
+
 # frob:ticket 01M6W7R36G6BYYB4RBC60ZNFTD
 # frob:tests python/sadi/core/pipeline.py::AcquisitionPipeline._halt
 # frob:tests python/sadi/core/pipeline.py::AcquisitionPipeline.halted

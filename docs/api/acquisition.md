@@ -8,7 +8,7 @@ Owner: ~62E6T8C. Code: `python/sadi/api/acquisition.py`.
 object with `next_block` / `stop_streaming`) to `AcquisitionPipeline`.
 
 - Acquire loop thread: `next_block` -> `pipeline.ingest`, so every block is written to the WAL.
-  A device error halts the pipeline loudly (marker plus `PipelineStopped`) and is kept on
+  A device error halts the pipeline loudly via the public `pipeline.halt()` (marker plus `PipelineStopped`) and is kept on
   `driver.fault`; a pipeline refusal stops the loop and is also kept as a fault.
 - Tick timer thread: `pipeline.tick()` every `tick_interval_s` (default 0.5 s); a failed or
   stalled writer records a `wal` fault and stops the loop.

@@ -404,6 +404,11 @@ class AcquisitionPipeline:
         """Writer-thread callback: the WAL failed; stop acquisition."""
         self._halt("store_" + type(err).__name__.lower(), err.hint)
 
+    # frob:ticket 01M6WMVRTG5YQDSZYQQG368G2E
+    def halt(self, reason: str, hint: str) -> None:
+        """Stop acquisition once, loudly, for an external caller such as a device fault."""
+        self._halt(reason, hint)
+
     def _halt(self, reason: str, hint: str) -> None:
         """Stop acquisition once: stop the device, best-effort stop marker, tell the display."""
         with self._state_lock:

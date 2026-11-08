@@ -8,7 +8,7 @@ points = 1
 reporter = "lognd"
 created = "2026-11-08T06:13:31Z"
 updated = "2026-11-08T06:16:56Z"
-scope = ["docs/web/live-trace.md", "web/src/keys/keymap.test.ts"]
+scope = ["docs/web/live-trace.md", "web/src/keys/keymap.test.ts", "web/src/plots/live/LivePlot.tsx"]
 
 [[acceptance]]
 text = "LivePlot export is driven by the keymap export KeyAction, not a hard-coded F3 key"

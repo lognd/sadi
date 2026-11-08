@@ -29,9 +29,17 @@ A "Mark load change" button (`loadChange.ts`) POSTs /api/session/load-change so 
 detector can settle after a load is applied. The sim banner also shows when the stream hello
 reports `simulated`.
 
-## Gaps (filed as tickets)
+## Capture inputs
 
-- G3: no input entry (volts/height, mean/n, diameter, mass); capture returns 422 (ticket ~PQBZCCN).
+`inputFields.ts` defines the per-phase fields (SI units, mirroring `parse_inputs`): calibrate
+volts + gauge height (m); tare mean volts + n (+ optional sd); elastic and plastic volts +
+total hanging mass (kg) (+ optional mass uncertainty). Blank volts/mean means "use the live
+block-mean reading" (shown as the placeholder and recorded). Required fields are never
+defaulted: `collectInputs` refuses with one clear message per problem before any POST, and a
+backend 422 body is shown in the status line. Typed values persist between points. Hotkeys are
+ignored while a field has focus.
+
+## Gaps (filed as tickets)
 
 - G1: the stream carries no live drift rate, capture-window raw seq or simulated flag. Drift is
   estimated client-side from the trace and the simulated flag is a prop.

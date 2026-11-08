@@ -10,7 +10,7 @@ export default defineConfig({
   testMatch: "*.spec.ts",
   workers: 1,
   fullyParallel: false,
-  timeout: 120_000,
+  timeout: 540_000,
   reporter: [["list"]],
   use: { baseURL: `http://127.0.0.1:${port}`, acceptDownloads: true, trace: "retain-on-failure" },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],

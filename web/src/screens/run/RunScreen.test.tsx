@@ -43,7 +43,7 @@ const view = (o: Partial<LiveView> = {}): LiveView =>
   ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
 const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
   phase: "calibrate", view: view(), trace: <canvas data-testid="live-canvas" />, plot: null, blockedWhy: null,
-  confirming: false, message: null, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
+  confirming: false, message: null, fields: {}, onField: () => undefined, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
 });
 
 describe("live derivation from a mocked sim stream", () => {

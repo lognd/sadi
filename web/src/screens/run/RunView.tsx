@@ -4,6 +4,7 @@ import type { CalibrationData } from "../../plots/calibration";
 import { StressStrainScreen } from "../StressStrainScreen";
 import type { StressStrainData } from "../../plots/stressstrain";
 import type { LiveView } from "./live";
+import { PHASE_FIELDS } from "./inputFields";
 import { PHASES, type RunPhase } from "./phases";
 
 /** Per-phase live plot payload supplied by the host (see docs/web/run-screens.md gap G2). */
@@ -23,6 +24,9 @@ export interface RunViewProps {
   /** True while the forced-early confirmation is open. */
   readonly confirming: boolean;
   readonly message: string | null;
+  /** Raw text of each input field, by key. */
+  readonly fields: Readonly<Record<string, string>>;
+  readonly onField: (key: string, value: string) => void;
   readonly onAccept: () => void;
   /** Operator confirms a load was applied (marks a load change on the live run). */
   readonly onLoadChange: () => void;
@@ -59,6 +63,19 @@ export function RunView(p: RunViewProps): React.JSX.Element {
         Live V: {v.volts === null ? "--" : v.volts.toFixed(4)} V {settleText(v)}{v.stale ? " (stale)" : ""}
       </p>
       {p.trace}
+      <fieldset aria-label="Capture inputs">
+        <legend>Capture inputs (SI units)</legend>
+        {PHASE_FIELDS[p.phase].map((f) => (
+          <label key={f.key} style={{ display: "inline-block", marginRight: "1rem" }}>
+            {f.label}{f.unit ? ` (${f.unit})` : ""}{f.required ? " *" : ""}{" "}
+            <input
+              type="text" inputMode="decimal" name={f.key} value={p.fields[f.key] ?? ""}
+              placeholder={f.live === true ? (v.volts === null ? "live" : `live ${v.volts.toFixed(4)}`) : ""}
+              onChange={(e) => { p.onField(f.key, e.target.value); }}
+            />
+          </label>
+        ))}
+      </fieldset>
       {p.plot?.kind === "calibration" && <CalibrationPlot data={p.plot.data} />}
       {p.plot?.kind === "stress-strain" && <StressStrainScreen key={p.plot.data.points.length} initial={p.plot.data} />}
       {p.confirming ? (

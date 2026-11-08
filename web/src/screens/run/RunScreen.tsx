@@ -15,6 +15,7 @@ import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTra
 import { postLoadChange } from "./loadChange";
 import { buildBody, decide, postCapture, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
+import { collectInputs } from "./inputFields";
 import { RunView, type PhasePlot } from "./RunView";
 import { useRunLive } from "./useRunLive";
 
@@ -64,16 +65,20 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const live = useRunLive({ ...p.trace, simulated: p.simulated ?? false });
   const [confirm, setConfirm] = useState<Confirm>("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const [fields, setFields] = useState<Readonly<Record<string, string>>>({});
   const { view, side } = live;
+  const onField = useCallback((k: string, v: string): void => { setFields((f) => ({ ...f, [k]: v })); }, []);
   const preview = decide(view, false, "idle");
   const blockedWhy = preview.kind === "blocked" ? preview.why : null;
 
   const capture = useCallback(async (early: boolean): Promise<void> => {
-    const r = await postCapture(buildBody(p.phase, p.inputs ?? {}, side.rawSeq, view, early), p.fetchImpl);
+    const typed = collectInputs(p.phase, fields, view.volts);
+    if (!typed.ok) { setConfirm("idle"); setMessage(typed.error.join(" ")); return; }
+    const r = await postCapture(buildBody(p.phase, { ...typed.value, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
     setConfirm("idle");
     if (r.ok) { setMessage(`Captured: ${r.value.summary}`); p.onCaptured?.(); }
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
-  }, [p, side.rawSeq, view]);
+  }, [p, side.rawSeq, view, fields]);
 
   const accept = useCallback((early: boolean): void => {
     const d = decide(view, early, confirm);
@@ -109,6 +114,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
       {(p.simulated === true || side.simulated) && <p data-testid="sim-banner">SIMULATED DATA</p>}
       <RunView
         phase={p.phase} view={view} trace={<TraceCanvas snapshot={live.snapshot} conn={live.conn} />} plot={p.plot ?? null}
+        fields={fields} onField={onField}
         blockedWhy={blockedWhy} confirming={confirm === "asking"} message={message ?? live.notice}
         onAccept={() => { accept(false); }} onLoadChange={() => { void markLoadChange(); }} onConfirmEarly={() => { accept(true); }}
         onCancelEarly={() => { setConfirm("idle"); }}

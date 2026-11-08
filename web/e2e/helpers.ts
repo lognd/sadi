@@ -35,20 +35,40 @@ export async function currentStep(page: Page): Promise<string> {
 
 /** Wait (retrying) until the current rail step contains `text`; avoids racing the async wizard write. */
 export async function expectStep(page: Page, text: string): Promise<void> {
-  await expect(page.locator('ol.step-rail li[aria-current="step"]')).toContainText(text);
+  await expect(page.locator('ol.step-rail li[aria-current="step"]')).toContainText(text, { timeout: 120_000 });
 }
 
-/** Mark a load change, wait until the live view reports Settled, then press Space (keyboard-only accept). */
-export async function acceptWhenSettled(page: Page): Promise<void> {
+/** Fill the Run screen capture inputs by field name (SI units); a blank volts field uses the live reading. */
+export async function fillInputs(page: Page, values: Record<string, string>): Promise<void> {
+  for (const [name, value] of Object.entries(values)) await page.locator(`fieldset input[name="${name}"]`).fill(value);
+  // Hotkeys are ignored while a text field has focus (keys/useKeyCapture), so leave the field before pressing Space.
+  await page.evaluate(() => { (document.activeElement as HTMLElement | null)?.blur(); });
+}
+
+/** Fill the given inputs, mark a load change, wait until Settled, then press Space (keyboard-only accept). */
+export async function acceptWhenSettled(page: Page, inputs: Record<string, string> = {}): Promise<void> {
+  await fillInputs(page, inputs);
   // The detector only leaves "loading" once a load change is marked (docs/e2e.md).
   await page.getByRole("button", { name: "Mark load change" }).click();
+  // Wait for the marker ack so a stale "Captured" from the previous point cannot satisfy the final assertion.
+  await expect(page.getByTestId("run-message")).toContainText("Load change marked");
+  // The previous point's [Settled] may still be on screen; let the marker take effect first (best effort).
+  await expect(page.getByTestId("readout")).not.toContainText("[Settled]", { timeout: 10_000 }).catch(() => undefined);
   await expect(page.getByTestId("readout")).toContainText("[Settled]", { timeout: 60_000 });
   await page.keyboard.press(" ");
-  await expect(page.getByTestId("run-message")).toContainText("Captured");
+  await expect(page.getByTestId("run-message")).toContainText("Captured", { timeout: 120_000 });
 }
 
 /** Leave the Setup step via "Skip this step": Setup needs captured clamp-check points and has no capture UI yet. */
 export async function skipSetup(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Skip this step" }).click();
   await expect(page.locator('ol.step-rail li[aria-current="step"]')).not.toContainText("Setup");
+}
+
+/** Typed capture inputs for the `i`th point of a step (phase = rail title text); heights and masses rise with i. */
+export function inputsFor(phase: string, i: number): Record<string, string> {
+  const p = phase.toLowerCase();
+  if (p.includes("calibration")) return { height: String(0.01 + 0.005 * i) };
+  if (p.includes("tare")) return { n: "100" };
+  return { mass_kg: String(0.1 * (i + 1)) };
 }

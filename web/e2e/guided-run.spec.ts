@@ -3,7 +3,7 @@
 // Requires a browser (chromium) and `sadi --sim` (sadi_py built); see docs/e2e.md.
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
-import { acceptWhenSettled, expectStep, openWizard, skipSetup } from "./helpers";
+import { acceptWhenSettled, expectStep, inputsFor, openWizard, skipSetup } from "./helpers";
 
 test("keyboard-only guided run Setup -> Export against the simulator", async ({ page }) => {
   const mounted = await openWizard(page);
@@ -14,7 +14,7 @@ test("keyboard-only guided run Setup -> Export against the simulator", async ({ 
   for (const phase of ["LVDT calibration", "Tare", "Elastic", "Plastic"]) {
     await expectStep(page, phase);
     const points = phase === "LVDT calibration" ? 3 : phase === "Plastic" ? 3 : 1;
-    for (let i = 0; i < points; i += 1) await acceptWhenSettled(page);
+    for (let i = 0; i < points; i += 1) await acceptWhenSettled(page, inputsFor(phase, i));
     await page.keyboard.press("f"); // finish the phase
   }
   await expectStep(page, "Results");

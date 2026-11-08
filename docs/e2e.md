@@ -54,6 +54,8 @@ leave Setup with "Skip this step" (`skipSetup`). The launcher now wires a live a
 is mounted and the readout updates once a session is open (see server/launcher.md).
 `acceptWhenSettled` first presses "Mark load change" (POST /api/session/load-change, recorded as a WAL
 marker) so the detector can settle and the readout reaches `[Settled]`.
-Known gap: the Run screen has no input entry (calibration volts/height, tare mean/n, specimen
-diameter, load mass), so capture returns 422 and the specs fail at the "Captured" assertion; filed
-as a separate ticket.
+The Run screen has per-phase input fields (see web/run-screens.md); `acceptWhenSettled(page, inputsFor(phase, i))`
+fills them, leaves the field (hotkeys are ignored in text inputs), marks a load change, waits for the
+marker ack and `[Settled]`, then presses Space. Known gaps (tickets): capture latency grows with WAL
+size so the full guided run does not finish (~2RWJ137); specs share one backend session so the second
+run-capture spec starts mid-run (~DKZDSBS).

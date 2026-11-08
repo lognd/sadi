@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T00:53:00Z"
-updated = "2026-11-08T03:17:49Z"
+updated = "2026-11-08T03:17:56Z"
 labels = ["model:sonnet", "ws:srv", "creates:python/sadi/doctor/**", "creates:python/tests/doctor/**", "creates:docs/doctor-checks.md"]
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor-checks.md", "python/pyproject.toml", "docs/doctor.md", "docs/README.md", "docs/index.md"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Every failing check prints numbered step-by-step remediation with exact commands for the detected OS and a verify step"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Tests inject failures for each check via fixtures and assert the remediation text; JSON output validates against the pydantic schema"

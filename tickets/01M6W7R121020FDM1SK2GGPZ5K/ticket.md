@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:17Z"
-updated = "2026-11-08T04:34:32Z"
+updated = "2026-11-08T04:34:35Z"
 idempotency_key = "sadi-r6"
 labels = ["ws:rust", "optional", "unverified-protocol", "model:sonnet", "creates:crates/sadi-proto/src/v3/**", "creates:crates/sadi-proto/tests/vectors_v3.rs", "creates:docs/device/v3.md"]
 scope = ["crates/sadi-proto/src/v3/**", "crates/sadi-proto/tests/vectors_v3.rs", "docs/device/v3.md", "docs/index.md", "docs/README.md"]
@@ -23,7 +23,7 @@ bound = true
 
 [[acceptance]]
 text = "Passes the v3_41_generic vectors in docs/protocol-vectors.json"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Auto-detect probe sketch documented (v1.003 Query then v3 0x94) but not wired into the default build"

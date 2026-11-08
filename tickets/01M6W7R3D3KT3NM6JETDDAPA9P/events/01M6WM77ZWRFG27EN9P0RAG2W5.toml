@@ -1,0 +1,101 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:46:17Z"
+digest = "76b94842cb1815b05711bb6029f26d516a4156f4d47808171f6299d183575b82"
+exit_code = 0
+head = "4ad82d1cb35559b1ed44d81d07f8010d1c875859"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/calibration/calibration.test.tsx > calibration scenes > maps points, error bars, fit, band and annotation (acceptance 1)
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.layout] annotation auto-placed { anchor: 'br', hits: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)'
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+
+stdout | web/src/plots/calibration/calibration.test.tsx > calibration live update and golden > scene changes after each captured point (acceptance 2)
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.calibration] building calibration scenes { n: 6, errorBars: true }
+[plots.layout] annotation auto-placed { anchor: 'br', hits: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)'
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+[plots.layout] annotation auto-placed { anchor: 'br', hits: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 3,
+  yTicks: 4,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)'
+}
+[plots.drawlist] draw list built { ops: 66, series: 1 }
+
+stdout | web/src/plots/calibration/calibration.test.tsx > calibration live update and golden > matches the golden SVG for both panels
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.layout] annotation auto-placed { anchor: 'br', hits: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)'
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 180,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Residuals',
+  xTitle: 'Voltage (V)'
+}
+[plots.drawlist] draw list built { ops: 44, series: 1 }
+
+stdout | web/src/plots/calibration/calibration.test.tsx > calibration live update and golden > component renders both canvases, or a status when empty
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+
+ \u{2713} web/src/plots/calibration/calibration.test.tsx (5 tests) 31ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  22:46:18
+   Duration  791ms (transform 187ms, setup 0ms, collect 245ms, tests 31ms, environment 0ms, prepare 188ms)
+
+JSON report written to /tmp/frob-vitest-303333-0.json
+stderr | web/src/plots/calibration/calibration.test.tsx > calibration scenes > rejects bad payloads without throwing
+[plots.calibration] rejecting calibration payload { kind: 'empty' }
+[plots.calibration] rejecting calibration payload { kind: 'length_mismatch' }
+[plots.calibration] rejecting calibration payload { kind: 'non_finite' }
+[plots.calibration] rejecting calibration payload { kind: 'missing_text' }
+
+stderr | web/src/plots/calibration/calibration.test.tsx > calibration live update and golden > component renders both canvases, or a status when empty
+[plots.calibration] rejecting calibration payload { kind: 'empty' }
+[plots.calibration.view] calibration plot unavailable { kind: 'empty' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/calibration/calibration.test.tsx"
+size = 3328
+status = "measured"
+test_count = 5
+tests_digest = "6dc98de0951d29acd9968c7385683bb8c2a3730dec3b97ffa85a2186c59732c3"
+at = "2026-11-08T03:46:17Z"
+actor = "lognd"
+rev = 1

@@ -21,7 +21,7 @@ only at display time, in the formatter (~M27Y4NY) and the UI.
 | `TimeWindow` | `start`, `end` (s since run start) |
 | `PointEdit` | `field`, `old`, `new`, `at` |
 | `CapturedPoint` | `index`, `window`, `t_since_load`, `drift_rate`, `status` (`settled` / `forced_early`), `edits` |
-| `Phase` | `setup`, `calibration`, `elastic`, `plastic` |
+| `Phase` | `setup`, `calibration`, `tare`, `elastic`, `plastic`, `results`, `export` |
 | `RunState` | `session_id`, `phase`, `specimen`, `tare`, `points`, `events` (opaque raw lab events for export writers); `advance`, `with_point` return copies |
 
 Models are immutable; updates return new values so replay from the event

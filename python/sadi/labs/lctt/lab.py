@@ -93,8 +93,6 @@ def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
 
 def lctt_steps() -> list[StepSpec]:
     """Return the ordered steps: Setup, Calibrate, Tare, Elastic, Plastic, Results, Export."""
-    # Tare shares the calibration phase and Results/Export the plastic phase: core Phase has
-    # exactly setup/calibration/elastic/plastic, and the last two steps capture nothing.
     return [
         setup_step(),
         StepSpec(
@@ -107,7 +105,7 @@ def lctt_steps() -> list[StepSpec]:
         StepSpec(
             id=StepId("tare"),
             title="Tare",
-            phase=Phase.CALIBRATION,
+            phase=Phase.TARE,
             capture=CaptureKind.DEVICE_POINTS,
             guidance=_guide("With no load on the wire, capture the zero-load LVDT voltage."),
         ),
@@ -128,14 +126,14 @@ def lctt_steps() -> list[StepSpec]:
         StepSpec(
             id=StepId("results"),
             title="Results",
-            phase=Phase.PLASTIC,
+            phase=Phase.RESULTS,
             capture=CaptureKind.NONE,
             guidance=_guide("Review E (long specimen) and yield (short specimen) with sources."),
         ),
         StepSpec(
             id=StepId("export"),
             title="Export",
-            phase=Phase.PLASTIC,
+            phase=Phase.EXPORT,
             capture=CaptureKind.NONE,
             guidance=_guide("Export the run; the files record which specimen gave which result."),
         ),

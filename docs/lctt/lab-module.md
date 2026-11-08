@@ -14,11 +14,11 @@ The lctt [plugin](../plugins.md) contributes one `LabModule` ([contract](../core
 | --- | --- | --- |
 | Setup (clamp-slip check) | setup | device points |
 | Calibrate (LVDT) | (a) calibration | device points |
-| Tare | calibration (core `Phase` has no tare) | device points |
+| Tare | tare | device points |
 | Elastic (long specimen) | (b) elastic | device points |
 | Plastic (short specimen) | (c) plastic | device points |
-| Results | plastic | none |
-| Export | plastic | none |
+| Results | results | none |
+| Export | export | none |
 
 There is no weights step in this lab: a weights/height inventory is supplied by whatever
 plugin provides one. Calibration heights and experiment masses arrive as the core typed

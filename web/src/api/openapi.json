@@ -2339,8 +2339,11 @@
         "enum": [
           "setup",
           "calibration",
+          "tare",
           "elastic",
-          "plastic"
+          "plastic",
+          "results",
+          "export"
         ],
         "title": "Phase",
         "type": "string"

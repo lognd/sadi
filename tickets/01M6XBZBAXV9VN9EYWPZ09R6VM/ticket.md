@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:41:26Z"
-updated = "2026-11-08T10:42:24Z"
+updated = "2026-11-08T10:42:43Z"
 scope = ["docs/frob-parse-holes.md", "docs/index.md"]
 
 [[acceptance]]

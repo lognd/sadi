@@ -2,7 +2,8 @@
 id = "01M6XBY9FQS5658X6WQ5PCC2QG"
 title = "Web COV001 still unresolved after typedcalls test"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

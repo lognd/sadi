@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T06:44:09Z"
+updated = "2026-11-08T06:44:31Z"
 idempotency_key = "sadi-t1"
 labels = ["ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/e2e/**", "creates:docs/testing.md"]
 scope = ["python/tests/e2e/**", "docs/testing.md"]
@@ -51,7 +51,7 @@ bound = false
 
 [[acceptance]]
 text = "A kill-during-run scenario recovers the session and continues with a new version"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/testing.md documents the scenario matrix and how to add one"

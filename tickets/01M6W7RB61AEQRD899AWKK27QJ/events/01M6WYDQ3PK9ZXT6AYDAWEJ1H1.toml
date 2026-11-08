@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:44:31Z"
+digest = "9afe0eea605c3b3898bb0850fb8f8606fdf81f16a00ffb12ffe615a678102e14"
+exit_code = 0
+head = "3119811b4ff37bff541d18815cabbc1df297726f"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/e2e/test_kill_resume.py .                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-672813-0.xml ---------------
+forgot 26bed50230d94f48b56462cd04417675
+============================== 1 passed in 4.34s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_kill_resume.py::test_sigkill_mid_run_recovers_and_continues_as_new_version"
+size = 560
+status = "measured"
+test_count = 1
+tests_digest = "ef673661c3dbe4eaff6ebcb1dacc927669f34b9a1723ddf0025e32b0769023bf"
+at = "2026-11-08T06:44:31Z"
+actor = "lognd"
+rev = 1

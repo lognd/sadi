@@ -2,7 +2,8 @@
 id = "01M6WF38QK5F60GK3RVQT3RGZY"
 title = "Flaky: test_property_slope_recovered_within_standard_error fails in full suite"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

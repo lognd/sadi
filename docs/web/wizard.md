@@ -53,3 +53,12 @@ disabled and says so.
 The Setup step renders `ClampCheckPanel` (`screens/setup/`), which reads `GET /api/session/clamp-check`
 and captures each cycle as a `setup` phase point. See [clamp check](../lctt/clamp-check.md). Skip
 stays available and is never blocked.
+
+## Run-phase sync
+
+The server records the guided-run phase (`GET/POST /api/session/run-phase`; only the next of
+calibrate, elastic, plastic is legal, otherwise 409 `bad_phase_transition` with a hint). When
+`WizardHost` shows the calibrate, elastic or plastic screen it calls `enterRunPhase`
+(`web/src/api/runPhase.ts`): GET first, do nothing if the server is already in or past that phase
+(so repeats and reloads show no error), otherwise POST each missing phase in order. A refusal is
+shown above the run screen through `ErrorNotice` with the server's hint. Tare is not a server phase.

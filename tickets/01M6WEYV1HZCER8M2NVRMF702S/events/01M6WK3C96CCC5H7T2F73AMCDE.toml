@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:26:42Z"
+digest = "67d112eddc7225a8f7454846468accf426900680de199860b5f1b1a1d93651ff"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 12 items
+
+python/tests/cli/test_store_cli.py ............                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-264650-0.xml ---------------
+============================== 12 passed in 0.82s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/cli/test_store_cli.py::test_export_writes_and_refuses_existing python/tests/cli/test_store_cli.py::test_list_empty python/tests/cli/test_store_cli.py::test_list_is_read_only python/tests/cli/test_store_cli.py::test_recover_creates_new_version_and_keeps_parent python/tests/cli/test_store_cli.py::test_recover_held_lock_is_refused python/tests/cli/test_store_cli.py::test_recover_refuses_bad_name python/tests/cli/test_store_cli.py::test_recover_stale_lock_is_explained_then_recoverable python/tests/cli/test_store_cli.py::test_usage_error_exits_2 python/tests/cli/test_store_cli.py::test_verify_corrupt_midlog python/tests/cli/test_store_cli.py::test_verify_not_a_session python/tests/cli/test_store_cli.py::test_verify_ok_reports_segments python/tests/cli/test_store_cli.py::test_verify_torn_tail"
+size = 522
+status = "measured"
+test_count = 12
+tests_digest = "ed3acd1c5d7bdc56b434b1c1c7e9bbbe7d7ce413060107721670758c4accb0a9"
+at = "2026-11-08T03:26:42Z"
+actor = "lognd"
+rev = 1

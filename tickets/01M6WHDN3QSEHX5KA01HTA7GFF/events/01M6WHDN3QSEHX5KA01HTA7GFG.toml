@@ -1,0 +1,10 @@
+kind = "create"
+title = "plugins CLI: show doctor findings in info and add console script"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+body = "sadi plugins info should include check_plugins() findings with numbered fix steps (python/sadi/plugins/doctor.py). Add a console script entry in python/pyproject.toml so it runs without python -m. Keep LocalDirSource import behaviour."
+at = "2026-11-08T02:57:23Z"
+actor = "lognd"
+rev = 1

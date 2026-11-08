@@ -1,0 +1,10 @@
+kind = "create"
+title = "Pipeline: write RAW_JUNK records for dropped_bytes"
+type = "task"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/core/pipeline.py"]
+body = "found while working ~60ZNFTD"
+at = "2026-11-08T03:21:36Z"
+actor = "lognd"
+rev = 1

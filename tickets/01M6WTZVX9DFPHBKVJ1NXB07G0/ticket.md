@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
 updated = "2026-11-08T05:51:29Z"
 labels = ["ws:srv"]
-scope = ["python/sadi/launcher.py", "python/sadi/__main__.py"]
+scope = ["python/sadi/launcher.py", "python/sadi/__main__.py", "python/tests/cli/test_launcher.py"]
 +++
 
 found in ~0VYJVFZ. launcher exports SADI_SIM=1 but nothing in server/app reads it. Also add python/sadi/__main__.py for python -m sadi.

@@ -12,7 +12,7 @@ scope = ["web/src/plots/live/**"]
 
 [[acceptance]]
 text = "Pure frame-time statistics helpers are unit tested"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Opt-in frame benchmark harness exists, is tested with a fake clock, and docs state the 60 fps result is UNVERIFIED"

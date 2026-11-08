@@ -6,19 +6,11 @@ from __future__ import annotations
 import uuid
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
 
 from sadi.server.app import AppSettings, create_app
 from sadi.store.records import RecordType, encode_frame
 from sadi.store.wal import encode_segment_header
-
-
-@pytest.fixture(autouse=True)
-def _isolate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Point user-data and temp dirs at empty tmp dirs so only the data root is scanned."""
-    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdg"))
-    monkeypatch.setattr("tempfile.tempdir", str(tmp_path / "tmp"))
 
 
 def _spill(path: Path, n: int = 3, garbage: bool = False) -> bytes:

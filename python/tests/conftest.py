@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+# frob:ticket 01M6WPBZK1AYHDYR3RSR656D8Z
 from pathlib import Path
 
 import pytest
@@ -13,3 +14,19 @@ def tmp_session_dir(tmp_path: Path) -> Path:
     root = tmp_path / "sessions"
     root.mkdir()
     return root
+
+
+@pytest.fixture
+def isolated_spill_dirs(
+    tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch
+) -> tuple[Path, Path]:
+    """Redirect user-data and OS temp dirs to empty tmp dirs; return (user_dir, temp_dir)."""
+    home = tmp_path_factory.mktemp("isolated-home")
+    xdg = home / "xdg"
+    temp = home / "tmp"
+    temp.mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_DATA_HOME", str(xdg))
+    monkeypatch.setenv("LOCALAPPDATA", str(home / "local"))
+    monkeypatch.setattr("tempfile.tempdir", str(temp))
+    return xdg / "sadi", temp

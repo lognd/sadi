@@ -1,0 +1,11 @@
+kind = "create"
+title = "Mount save-indicator router in app and register mark_failed"
+type = "task"
+category = "todo"
+priority = "high"
+points = 2
+labels = ["feature"]
+body = "make_save_indicator_router (python/sadi/api/save_indicator.py) is not mounted in sadi/server/app.py and SaveIndicator.mark_failed is not registered as WriterHandle.on_failure, so GET /api/save-indicator is unreachable. Wire both and test through the app."
+at = "2026-11-08T03:52:43Z"
+actor = "lognd"
+rev = 1

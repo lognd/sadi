@@ -1,11 +1,14 @@
+// frob:ticket 01M6XAZ42NR9WARFYVZMS85NR2
 // frob:ticket 01M6WZCNF9F9XSPWCKB34JHSD9
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 // frob:accept COV001 because="covered by WizardHost.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../api/log";
+import { enterRunPhase, isServerPhase } from "../api/runPhase";
+import { ErrorNotice } from "../components/wizard/ErrorNotice";
 import { WizardShell } from "../components/wizard/WizardShell";
 import type { RailItem, WizardState } from "../components/wizard/types";
-import { getWizard } from "../components/wizard/wizardApi";
+import { getWizard, type WizardFailure } from "../components/wizard/wizardApi";
 import type { KeyAction } from "../keys/keymap";
 import { useStore } from "../state/store";
 import { ExportScreen, saveBlob } from "./export/ExportScreen";
@@ -83,10 +86,27 @@ export function WizardHost(): React.JSX.Element {
 
   useEffect(() => { load(); }, [load]);
 
+  const [phaseError, setPhaseError] = useState<WizardFailure | null>(null);
+  useEffect(() => {
+    setPhaseError(null);
+    if (screen === null || !isServerPhase(screen)) return;
+    let live = true;
+    void enterRunPhase(screen).then((r) => {
+      if (!live) return;
+      if (!r.ok) { log.warn("run phase refused", { screen }); setPhaseError(r.error); }
+    });
+    return () => { live = false; };
+  }, [screen]);
+
   if (screen === null) return <p>Loading steps...</p>;
   if (screen === "session") return <SessionSetup onOpened={load} />;
   if (screen === "setup" || screen === "results" || screen === "export") {
     return <StaticStep key={screen} kind={screen} onWizard={onWizard} />;
   }
-  return <RunScreen key={screen} phase={screen} onWizard={onWizard} />;
+  return (
+    <>
+      {phaseError !== null && <ErrorNotice failure={phaseError} />}
+      <RunScreen key={screen} phase={screen} onWizard={onWizard} />
+    </>
+  );
 }

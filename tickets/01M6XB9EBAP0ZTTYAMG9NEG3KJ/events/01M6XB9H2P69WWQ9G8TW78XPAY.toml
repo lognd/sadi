@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Plot palettes meet 3:1 against plot background and are distinguishable under simulated deuteranopia/protanopia, or series carry non-colour cues; verified by vitest"]
+moved = []
+at = "2026-11-08T10:29:31Z"
+actor = "lognd"
+rev = 1

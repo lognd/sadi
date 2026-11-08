@@ -1,0 +1,53 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:25:52Z"
+digest = "9f9162e96fb7e11b7432ad3336388a8d767157ce555d0a47d182bb7e01b74522"
+exit_code = 0
+head = "f979706edd7cd74c5ccce42179a16a69970b2998"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/api/runPhase.test.ts > runPhase > GETs and POSTs the phase body
+[api.runPhase] enter phase { phase: 'elastic' }
+
+stdout | web/src/api/runPhase.test.ts > runPhase > repeating the current phase makes no POST
+[api.runPhase] already in or past phase { target: 'elastic', recorded: 'elastic' }
+
+stdout | web/src/api/runPhase.test.ts > runPhase > posts the next phase, and catches up through missing ones
+[api.runPhase] enter phase { phase: 'calibrate' }
+
+stdout | web/src/api/runPhase.test.ts > runPhase > posts the next phase, and catches up through missing ones
+[api.runPhase] enter phase { phase: 'elastic' }
+
+stdout | web/src/api/runPhase.test.ts > runPhase > posts the next phase, and catches up through missing ones
+[api.runPhase] already in or past phase { target: 'elastic', recorded: 'elastic' }
+
+stdout | web/src/api/runPhase.test.ts > runPhase > surfaces a 409 hint as a problem failure
+[api.runPhase] enter phase { phase: 'elastic' }
+
+ \u{2713} web/src/api/runPhase.test.ts (6 tests) 33ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  05:25:52
+   Duration  1.18s (transform 197ms, setup 0ms, collect 220ms, tests 33ms, environment 0ms, prepare 289ms)
+
+JSON report written to /tmp/frob-vitest-1209102-0.json
+stderr | web/src/api/runPhase.test.ts > runPhase > surfaces a 409 hint as a problem failure
+[api.runPhase] run-phase refused { method: 'POST', status: 409 }
+
+stderr | web/src/api/runPhase.test.ts > runPhase > reports a network failure as transport
+[api.runPhase] network failure { method: undefined, message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/api/runPhase.test.ts"
+size = 1596
+status = "measured"
+test_count = 6
+tests_digest = "87d43e04513f08d6d6c47e4610f7ad48dd684677295d7140af7e0c6eefe92a54"
+at = "2026-11-08T10:25:52Z"
+actor = "lognd"
+rev = 1

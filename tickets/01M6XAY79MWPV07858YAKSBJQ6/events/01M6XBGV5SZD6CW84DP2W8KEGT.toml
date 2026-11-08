@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:33:27Z"
+digest = "72a044a4f1eab56a80270691a7404e617deb439fba66acacda253cec1c3a17db"
+exit_code = 0
+head = "2421dd12a42017662bb72a70b4f5b106dad3ff65"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 11 items
+
+python/tests/doctor/test_runner.py .........PLAT-010 pass (None) in 52 ms
+..                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1234040-0.xml --------------
+============================== 11 passed in 2.75s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_runner.py"
+size = 552
+status = "measured"
+test_count = 11
+tests_digest = "25e390b89a0683c597eb68079cbfbace0d3b54c8209c56a9f27fb19ac961d104"
+at = "2026-11-08T10:33:27Z"
+actor = "lognd"
+rev = 1

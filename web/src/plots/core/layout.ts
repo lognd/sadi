@@ -4,8 +4,9 @@
 import { getLogger } from "../../api/log";
 import { aroundPoint, placeBoxes } from "./place";
 import type { PlaceRequest } from "./place";
-import { axisTitle, pickColor } from "./scene";
-import type { Anchor, AnnotationBox, AxisSpec, Column, Scene } from "./scene";
+// frob:ticket 01M6XB9EBAP0ZTTYAMG9NEG3KJ
+import { axisTitle, pickColor, seriesCue } from "./scene";
+import type { Anchor, AnnotationBox, AxisSpec, Column, MarkerKind, Scene } from "./scene";
 import { formatTick, logTicks, niceTicks } from "./ticks";
 
 const log = getLogger("plots.layout");
@@ -50,6 +51,10 @@ export interface LegendRow {
   readonly kind: "line" | "points" | "band" | "fit";
   readonly label: string;
   readonly color: string;
+  /** Series marker glyph (points rows). */
+  readonly marker?: MarkerKind;
+  /** Dash cue (line rows). */
+  readonly dashed?: boolean;
   readonly y: number;
 }
 
@@ -266,8 +271,8 @@ export function computeLayout(scene: Scene): Layout {
 
   let legend: LegendLayout | null = null;
   if (scene.legend !== false) {
-    const entries: { kind: LegendRow["kind"]; label: string; color: string }[] = [
-      ...scene.series.map((s, i) => ({ kind: s.style, label: s.label, color: pickColor(theme, i, s.color) })),
+    const entries: { kind: LegendRow["kind"]; label: string; color: string; marker?: MarkerKind; dashed?: boolean }[] = [
+      ...scene.series.map((s, i) => ({ kind: s.style, label: s.label, color: pickColor(theme, i, s.color), marker: seriesCue(s, i).marker, dashed: seriesCue(s, i).dashed })),
       ...bands.map((b, i) => ({ kind: "band" as const, label: b.label, color: pickColor(theme, scene.series.length + i, b.color) })),
       ...fits.map((f, i) => ({ kind: "fit" as const, label: f.label, color: pickColor(theme, scene.series.length + bands.length + i, f.color) })),
     ];

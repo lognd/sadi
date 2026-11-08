@@ -568,6 +568,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/session/run-phase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Run Phase
+         * @description The recorded guided-run phase and the next allowed one.
+         */
+        get: operations["run_phase_api_session_run_phase_get"];
+        put?: never;
+        /**
+         * Enter Run Phase
+         * @description Enter the next guided-run phase (409 when out of order); recorded durably.
+         */
+        post: operations["enter_run_phase_api_session_run_phase_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/session/undo": {
         parameters: {
             query?: never;
@@ -1624,6 +1648,21 @@ export interface components {
             with_reset: boolean;
         };
         /**
+         * RunPhaseBody
+         * @description Request to enter a guided-run phase (must be the next one in order).
+         */
+        RunPhaseBody: {
+            phase: components["schemas"]["Phase-Input"];
+        };
+        /**
+         * RunPhaseView
+         * @description The recorded guided-run phase (None for sessions that never recorded one) and the next.
+         */
+        RunPhaseView: {
+            next_phase: components["schemas"]["sadi__labs__lctt__guidance__Phase"] | null;
+            phase: components["schemas"]["sadi__labs__lctt__guidance__Phase"] | null;
+        };
+        /**
          * SaveState
          * @description The three header save states; NOT_SAVED only on a durable-write failure.
          * @enum {string}
@@ -2556,6 +2595,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Committed"];
+                };
+            };
+        };
+    };
+    run_phase_api_session_run_phase_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunPhaseView"];
+                };
+            };
+        };
+    };
+    enter_run_phase_api_session_run_phase_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunPhaseBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunPhaseView"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:33:18Z"
+digest = "19bd7bb45d3f43e900842072baf75fc0197455e2b0971cd2aae35d7dc4c22db5"
+exit_code = 0
+head = "2421dd12a42017662bb72a70b4f5b106dad3ff65"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/jobs/test_pool_slot.py ...                                  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1233904-0.xml --------------
+============================== 3 passed in 1.80s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/jobs/test_pool_slot.py"
+size = 521
+status = "measured"
+test_count = 3
+tests_digest = "074ff76ca0dbc7c897c11b918e5f8d163b1957f9b870c0bdbb7edb8621d15be1"
+at = "2026-11-08T10:33:18Z"
+actor = "lognd"
+rev = 1

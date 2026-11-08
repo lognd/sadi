@@ -31,25 +31,25 @@ exports[`scene mapping > is deterministic and renders to SVG (golden) 1`] = `
 <circle cx="315.28" cy="177.98" r="3" fill="none" stroke="#d55e00" stroke-width="1.25"/>
 <line x1="631.21" y1="55.4" x2="637.21" y2="61.4" stroke="#009e73" stroke-width="1.25"/>
 <line x1="631.21" y1="61.4" x2="637.21" y2="55.4" stroke="#009e73" stroke-width="1.25"/>
-<polyline points="60.14,395.54 60.14,392.46" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="60.14,395.54 60.14,392.46" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="58.86,394 61.42,394" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="123.93,341.54 123.93,338.45" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="123.93,341.54 123.93,338.45" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="122.65,340 125.2,340" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="187.71,287.53 187.71,284.45" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="187.71,287.53 187.71,284.45" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="186.44,285.99 188.99,285.99" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="251.5,233.53 251.5,230.44" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="251.5,233.53 251.5,230.44" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="250.22,231.99 252.77,231.99" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="315.28,179.52 315.28,176.44" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="315.28,179.52 315.28,176.44" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="314.01,177.98 316.56,177.98" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="379.07,125.52 379.07,122.43" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="379.07,125.52 379.07,122.43" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="377.79,123.98 380.35,123.98" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="442.86,71.52 442.86,68.43" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="442.86,71.52 442.86,68.43" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="441.58,69.97 444.13,69.97" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="506.64,67.66 506.64,64.57" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="506.64,67.66 506.64,64.57" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="505.37,66.12 507.92,66.12" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="570.43,63.8 570.43,60.71" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="570.43,63.8 570.43,60.71" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="569.15,62.26 571.7,62.26" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="634.21,59.94 634.21,56.86" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="634.21,59.94 634.21,56.86" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
 <polyline points="632.94,58.4 635.49,58.4" fill="none" stroke="#555555" stroke-width="1.5"/>
 <circle cx="442.86" cy="177.98" r="3" fill="none" stroke="#c0392b" stroke-width="1.25"/>
 </g>

@@ -72,3 +72,5 @@ non-excluded points. No session, replay failure or an unready session gives 409 
 handlers; see [api.md](api.md). `AppSettings.labs` injects the `LabRegistry` (default empty).
 
 Results, budgets, guidance and device status routes: [results.md](results.md). `AppSettings.device` and `AppSettings.budgets` inject their sources.
+
+Per-action state comes from `IncrementalReplay` (docs/store/incremental-replay.md), not a full WAL walk per request, so action latency stays flat as raw data accumulates.

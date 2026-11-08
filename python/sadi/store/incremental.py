@@ -1,0 +1,154 @@
+"""Incremental replay: keep the folded session state and apply only newly appended WAL records.
+
+`recover_state` walks and CRC-verifies the whole WAL, which is O(WAL) and, with a simulator
+writing raw blocks continuously, grows without bound. `IncrementalReplay` does that once (and
+again whenever anything is unexpected) and afterwards reads only the bytes appended past the last
+applied frame. Safety rule: the fast path never guesses. A CRC failure, seq discontinuity, bad
+header, SEAL record or missing segment all fall back to a full verified replay, which is the
+single source of truth for corruption, torn tails and gaps. The result is therefore always
+equal to `recover_state` of the same bytes (property-tested). Not thread-safe; callers lock.
+"""
+
+# frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
+from __future__ import annotations
+
+from pathlib import Path
+
+from typani import Err, Ok, Result
+
+from sadi.logging_setup import get_logger
+from sadi.store import snapshot
+from sadi.store.events import (
+    EventsError,
+    EventsWal,
+    ReplayState,
+    _Acc,
+    _apply,
+    replay,
+    restore_state,
+)
+from sadi.store.records import (
+    FRAME_HEADER_LEN,
+    RecordType,
+    decode_payload_check,
+    parse_header,
+)
+from sadi.store.wal import (
+    SEGMENT_HEADER_LEN,
+    WalReader,
+    decode_segment_header,
+    segment_name,
+)
+
+_log = get_logger(__name__)
+
+
+class IncrementalReplay:
+    """Cached fold of one session's WAL, advanced by tailing the active segment."""
+
+    def __init__(self, session_dir: Path) -> None:
+        """Track the WAL under `session_dir`; nothing is read until `state` is called."""
+        self._wal = session_dir / "wal"
+        self._session_dir = session_dir
+        self._acc: _Acc | None = None
+        self._frozen: ReplayState | None = None
+        self._seg = 1
+        self._pos = 0
+        self._expected: int | None = None
+        self.rebases = 0
+
+    def state(self) -> Result[ReplayState, EventsError]:
+        """Return the state of the verified WAL as of now (equal to a full replay)."""
+        if self._acc is not None:
+            before = self._acc.count
+            if self._advance():
+                if self._acc.count != before or self._frozen is None:
+                    self._frozen = self._acc.freeze()
+                return Ok(self._frozen)
+        return self._rebase()
+
+    def _rebase(self) -> Result[ReplayState, EventsError]:
+        """Full verified replay (snapshot + WAL); re-derive the tail position from its report."""
+        self.rebases += 1
+        self._acc = None
+        self._frozen = None
+        base: ReplayState | None = None
+        loaded = snapshot.load_latest_snapshot(self._session_dir)
+        if loaded.is_err:
+            _log.warning("snapshot lookup failed (%s); replaying whole WAL", loaded.danger_err)
+        elif loaded.danger_ok is not None:
+            base = restore_state(loaded.danger_ok)
+        reader = WalReader(self._wal)
+        recs = []
+        for item in reader.records(from_seq=(base.covers_seq + 1) if base else 1):
+            if item.is_err:
+                _log.error("replay of %s stopped by corruption: %s", self._wal, item.danger_err)
+                return Err(EventsWal(error=item.danger_err))
+            recs.append(item.danger_ok)
+        report = reader.report
+        seals = report.seal_seqs if report else ()
+        folded = replay(recs, base, seals)
+        if folded.is_err:
+            return Err(folded.danger_err)
+        state = folded.danger_ok
+        if report is None or not report.segments:
+            _log.info("no segment position for %s; incremental cache stays cold", self._wal)
+            return Ok(state)
+        last = report.segments[-1]
+        if last.sealed:
+            self._seg, self._pos = last.segment_no + 1, 0
+            self._expected = (report.seal_seqs[-1] + 1) if report.seal_seqs else None
+        else:
+            self._seg, self._pos = last.segment_no, last.verified_bytes
+            self._expected = state.covers_seq + 1 if state.covers_seq else None
+        self._acc = _Acc(state)
+        self._frozen = state
+        _log.info(
+            "incremental replay rebased: covers_seq=%d seg=%d pos=%d",
+            state.covers_seq,
+            self._seg,
+            self._pos,
+        )
+        return Ok(state)
+
+    def _advance(self) -> bool:
+        """Apply frames appended since the last call; False means 'fall back to a rebase'."""
+        acc = self._acc
+        assert acc is not None
+        path = self._wal / segment_name(self._seg)
+        try:
+            size = path.stat().st_size
+        except FileNotFoundError:
+            return self._seg > 1 and self._pos == 0  # next segment not created yet
+        with path.open("rb") as f:
+            if self._pos < SEGMENT_HEADER_LEN or self._expected is None:
+                if size < SEGMENT_HEADER_LEN:
+                    return self._pos == 0
+                hdr = decode_segment_header(f.read(SEGMENT_HEADER_LEN), self._seg)
+                if hdr.is_err or hdr.danger_ok.segment_no != self._seg:
+                    return False
+                first = hdr.danger_ok.first_seq
+                if self._pos < SEGMENT_HEADER_LEN and self._expected not in (None, first):
+                    return False
+                self._expected = first if self._expected is None else self._expected
+                self._pos = max(self._pos, SEGMENT_HEADER_LEN)
+            f.seek(self._pos)
+            while self._pos + FRAME_HEADER_LEN <= size:
+                header = f.read(FRAME_HEADER_LEN)
+                parsed = parse_header(header, self._pos)
+                if parsed.is_err:
+                    return False
+                length = parsed.danger_ok[4]
+                end = self._pos + FRAME_HEADER_LEN + length
+                if end > size:
+                    break  # frame still being written
+                decoded = decode_payload_check(header, f.read(length), self._pos)
+                if decoded.is_err:
+                    return False
+                rec = decoded.danger_ok
+                if rec.seq != self._expected or rec.type == int(RecordType.SEAL):
+                    return False
+                _apply(acc, rec)
+                self._expected = rec.seq + 1
+                self._pos = end
+        return True

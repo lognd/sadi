@@ -13,7 +13,7 @@ from __future__ import annotations
 import threading
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypeVar
 
@@ -42,7 +42,8 @@ from sadi.server.schemas import (
     SessionInfo,
     SessionSummary,
 )
-from sadi.store.events import EventsWal, ReplayState, recover_state
+from sadi.store.events import EventsWal, ReplayState
+from sadi.store.incremental import IncrementalReplay
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FLAG_JSON, NewRecord, RecordType
 from sadi.store.session import (
@@ -71,6 +72,12 @@ class _Open:
     writer: WriterHandle
     lab: LabModule
     wizard: Wizard
+    # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
+    replayer: IncrementalReplay = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Attach the incremental replay cache for this session's directory."""
+        self.replayer = IncrementalReplay(self.handle.path)
 
 
 # frob:ticket 01M6WTCAA5WR1VD7H7ES7757MP
@@ -412,9 +419,10 @@ class SessionService:
             self._on_open(opened.danger_ok, handle.path)
         return Ok(self._info(self._open))
 
+    # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
     def _replay(self, cur: _Open) -> Result[ReplayState, ApiProblem]:
-        """Recover the current ReplayState from disk."""
-        got = recover_state(cur.handle.path)
+        """Return the current ReplayState (incrementally cached; equal to a full replay)."""
+        got = cur.replayer.state()
         if got.is_err:
             return Err(from_model(got.danger_err, "store"))
         return Ok(got.danger_ok)

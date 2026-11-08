@@ -2,7 +2,8 @@
 id = "01M6WTCA3WJA26T204SWR6VW70"
 title = "REST: export endpoints (CSV and figure data)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

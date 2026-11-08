@@ -206,8 +206,7 @@ def decode_data_packet(frame: bytes, adc_mode: AdcMode, ranges: Sequence[AdcRang
 def adc_to_volts(raw: int, range: AdcRange, adc_mode: AdcMode) -> float:
     """Convert one raw ADC code to volts."""
 
-class sim:
-    """Simulator helpers (registered stub; populated by later tickets)."""
+from sadi_py import sim as sim
 
 __all__: Final[list[str]]
 

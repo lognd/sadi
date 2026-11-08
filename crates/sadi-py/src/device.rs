@@ -95,7 +95,7 @@ impl SessionConfig {
 
 impl SessionConfig {
     /// Applies the overrides onto sadi-proto's defaults.
-    fn to_proto(&self) -> Result<ProtoConfig, BindError> {
+    pub(crate) fn to_proto(&self) -> Result<ProtoConfig, BindError> {
         let mut cfg = ProtoConfig::default();
         if let Some(ms) = self.read_timeout_ms {
             cfg = cfg.with_read_timeout(ReadTimeout::from_millis(ms)?);

@@ -235,3 +235,26 @@ def test_older_schema_header_rejected() -> None:
     old = text.replace(",u_delta_volts", "", 1).encode("utf-8")
     res = read_document(old)
     assert isinstance(res, Err) and res.danger_err == ExportCsvError.BadHeader
+
+
+# frob:ticket 01M6WX3GPBQA22B9AAJK7BN9MY
+# frob:tests python/sadi/labs/lctt/export_csv.py::to_live_events
+def test_calibration_points_round_trip_to_cal_events() -> None:
+    orig = [e for e in _events() if isinstance(e, CalPoint)]
+    assert orig
+    back = read_document(render_document(_doc())).danger_ok
+    got = [e for e in to_live_events(back) if isinstance(e, CalPoint)]
+    assert len(got) == len(orig)
+    for a, b in zip(orig, got, strict=True):
+        assert b.volts == pytest.approx(a.volts, rel=1e-9)
+        assert b.height == pytest.approx(a.height, rel=1e-9)
+    assert recompute(to_live_events(back)) is not None
+
+
+# frob:ticket 01M6WX3GPBQA22B9AAJK7BN9MY
+# frob:tests python/sadi/labs/lctt/export_csv.py::to_live_events
+def test_file_without_cal_point_rows_yields_no_cal_events() -> None:
+    doc = _doc()
+    stripped = CsvDocument(meta=tuple(kv for kv in doc.meta if not kv[0].startswith("Cal point")),
+                           rows=doc.rows)  # fmt: skip
+    assert not any(isinstance(e, CalPoint) for e in to_live_events(stripped))

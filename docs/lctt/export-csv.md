@@ -39,6 +39,12 @@ when strain is zero. `diameter_m` is added beside its uncertainty.
 Schema version is `3` (columns added); the reader requires the exact header, so version-1 and
 version-2 files are rejected with `BadHeader`.
 
+Raw calibration points are stored in the metadata block as numbered rows `Cal point N volts (V)`
+and `Cal point N height (m)` (N from 1, after `Cal n`). `to_live_events` rebuilds one `CalPoint`
+per consecutive pair (stopping at the first gap), so a file can be fully re-analysed. This adds
+metadata rows only, the 42-column header is unchanged, so the schema stays `3`; files without the
+rows still read and simply yield no `CalPoint`.
+
 Numbers: 10 significant digits, `.` decimal, `NaN`, `Inf`, `-Inf` literal; booleans `1`/`0`.
 
 ## Derivation and writing

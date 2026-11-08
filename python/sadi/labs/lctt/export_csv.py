@@ -28,6 +28,7 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.core.export_api import UTF8_BOM, ExportResult, HasPath, render_csv, write_export
 from sadi.labs.lctt.calibration import fit_calibration
 from sadi.labs.lctt.live import (
+    CalPoint,
     ExcludePoint,
     LiveConfig,
     LiveEvent,
@@ -46,7 +47,8 @@ from sadi.uncertainty import Measured, Provenance
 _log = get_logger(__name__)
 
 EXPORT_KIND = "lctt-csv"
-SCHEMA_VERSION = "3"  # v3: per-quantity uncertainty columns (42 columns); v2: elapsed_s, volts_sd
+# frob:ticket 01M6WX3GPBQA22B9AAJK7BN9MY
+SCHEMA_VERSION = "3"  # v3: uncertainty columns (42); cal point meta rows are additive, no bump
 TITLE = "SADI LCTT tensile test"
 NAN = float("nan")
 
@@ -216,13 +218,27 @@ def read_file(path: Path) -> Result[CsvDocument, ExportCsvError]:
         return Err(ExportCsvError.BadFile)
 
 
+def _cal_events(doc: CsvDocument) -> list[LiveEvent]:
+    """Rebuild `CalPoint` events from consecutive `Cal point N` rows (stops at the first gap)."""
+    out: list[LiveEvent] = []
+    i = 1
+    while True:
+        v, h = doc.get_float(f"Cal point {i} volts (V)"), doc.get_float(f"Cal point {i} height (m)")
+        if math.isnan(v) or math.isnan(h):
+            break
+        out.append(CalPoint(volts=v, height=h))
+        i += 1
+    _log.info("rebuilt %d calibration points from metadata", len(out))
+    return out
+
+
 def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     """Rebuild raw live events (tare, specimen, points, exclusions, window) for re-analysis.
 
-    Calibration points are not in the file (only the fit), so no `CalPoint` is produced; the
-    caller supplies the slope/intercept metadata or the original calibration data.
+    Raw calibration points are read from the numbered `Cal point N ...` metadata rows (files
+    without them yield no `CalPoint`; the fit rows are then the only calibration record).
     """
-    events: list[LiveEvent] = []
+    events: list[LiveEvent] = _cal_events(doc)
     n, sd = doc.get_float("Tare n"), doc.get_float("Tare sd (V)")
     if not math.isnan(n):
         events.append(TareBlock(mean=doc.get_float("Tare mean (V)"), sd=sd, n=int(n)))
@@ -366,7 +382,9 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         )  # fmt: skip
     tare_n = sum(t.n for t in st.tare)
     tare_sd = tare.std_unc / 2.0  # pool_tare: U_tare = 2 Sx (domain 3.2)
-    meta = _meta(date, operator, description, cfg, tare, tare_sd, tare_n, fit, spec, mod, yld)
+    meta = _meta(
+        date, operator, description, cfg, tare, tare_sd, tare_n, fit, spec, mod, yld, st.cal
+    )
     _log.info("export: built document with %d points", len(rows))
     return Ok(CsvDocument(meta=tuple(meta), rows=tuple(rows)))
 
@@ -374,7 +392,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
 def _meta(  # noqa: PLR0913
     date: datetime, operator: str, description: str, cfg: LiveConfig,
     tare: Measured, tare_sd: float, tare_n: int, fit: Any, spec: SpecimenSetup, mod: Any,
-    yld: Any,
+    yld: Any, cal: Sequence[CalPoint] = (),
 ) -> list[tuple[str, str]]:  # fmt: skip
     """Ordered metadata block: title, run info, tare, calibration, specimen, modulus fit."""
     f = format_number
@@ -388,6 +406,12 @@ def _meta(  # noqa: PLR0913
         ("Cal slope (m/V)", f(fit.slope.value)), ("Cal intercept (m)", f(fit.intercept.value)),
         ("Cal se slope", f(fit.se_slope)), ("Cal se intercept", f(fit.se_intercept)),
         ("Cal r2", f(fit.r2)), ("Cal t95", f(fit.t95)), ("Cal n", str(fit.n)),
+        *[
+            kv
+            for i, c in enumerate(cal, start=1)
+            for kv in ((f"Cal point {i} volts (V)", f(c.volts)),
+                       (f"Cal point {i} height (m)", f(c.height)))
+        ],
         ("Specimen diameter (m)", f(spec.diameter)),
         ("Specimen u diameter (m)", f(spec.u_diameter)),
         ("Specimen L0 (m)", f(cfg.loading.gauge_length)),

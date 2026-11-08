@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:02Z"
-updated = "2026-11-08T03:23:17Z"
+updated = "2026-11-08T03:23:20Z"
 scope = ["python/sadi/uncertainty/measured.py", "python/sadi/uncertainty/coverage.py", "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py", "docs/uncertainty/crosscheck.md"]
 +++
 

@@ -2,7 +2,8 @@
 id = "01M6WSPW5XB6P5V3PR5SHEH6FP"
 title = "ad3: typed Digilent DWF binding (ctypes edge, Protocol backend, Result errors)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

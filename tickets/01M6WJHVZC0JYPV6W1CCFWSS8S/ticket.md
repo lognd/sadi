@@ -28,7 +28,7 @@ bound = true
 
 [[acceptance]]
 text = "BRW-030 is opt-in via --open-browser and warns when the browser never fetches the throwaway page"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "DATA-020 probes the filesystem type on Windows and macOS"

@@ -12,7 +12,7 @@ scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
 text = "ty check on python/sadi/doctor and python/tests/doctor reports zero diagnostics"
-bound = false
+bound = true
 +++
 
 ty reports ~125 diagnostics in doctor sources and tests. Fix without behavior change; add an acceptance command evidence: ty check on both paths reports zero. Start after ~4ZPY9YT lands (shared doctor scope).

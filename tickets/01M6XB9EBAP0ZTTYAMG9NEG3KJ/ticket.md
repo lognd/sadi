@@ -2,7 +2,8 @@
 id = "01M6XB9EBAP0ZTTYAMG9NEG3KJ"
 title = "Plots: verify palette contrast and colour-blind safety, add non-colour cues"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 3
 reporter = "lognd"

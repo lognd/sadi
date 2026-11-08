@@ -4,7 +4,8 @@ title = "Doctor screenshot fakes EXT-040 as pass; show the real sim state or cap
 type = "bug"
 category = "todo"
 priority = "low"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T09:57:18Z"
-updated = "2026-11-08T09:57:18Z"
+updated = "2026-11-08T09:57:19Z"
 +++

@@ -7,6 +7,6 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:59:21Z"
-updated = "2026-11-08T06:02:14Z"
-scope = ["web/src/screens/export/ExportScreen.tsx"]
+updated = "2026-11-08T06:02:15Z"
+scope = ["web/src/screens/export/ExportScreen.tsx", "web/src/screens/export/types.ts"]
 +++

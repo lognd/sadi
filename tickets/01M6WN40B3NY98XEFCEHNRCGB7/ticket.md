@@ -2,12 +2,12 @@
 id = "01M6WN40B3NY98XEFCEHNRCGB7"
 title = "Recording side must write WAL POINT events in the phase mapping the fit curve source reads"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:02:01Z"
-updated = "2026-11-08T04:02:01Z"
+updated = "2026-11-08T04:05:01Z"
 labels = ["server"]
 +++
 

@@ -15,6 +15,7 @@ dependencies = [
     "hypothesis",
     "crc32c>=2.9.post0",
     "psutil",
+    "packaging",
 ]
 
 [dependency-groups]

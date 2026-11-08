@@ -7,13 +7,13 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:51:26Z"
-updated = "2026-11-08T03:53:19Z"
+updated = "2026-11-08T03:53:22Z"
 labels = ["bug"]
 scope = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/core/export_api.py", "docs/core/lab-modules.md"]
 
 [[acceptance]]
 text = "lctt export_csv imports only the core public API (sadi.core.export_api); boundary tests pass without loosening"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Export publish semantics (atomic, no-replace) unchanged"

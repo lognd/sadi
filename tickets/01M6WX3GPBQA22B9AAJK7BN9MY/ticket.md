@@ -4,9 +4,10 @@ title = "CSV export: store raw calibration points in metadata for full re-analys
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T06:21:34Z"
-updated = "2026-11-08T06:21:34Z"
+updated = "2026-11-08T06:39:05Z"
 scope = ["python/sadi/labs/lctt/export_csv.py,python/tests/labs/lctt/**,docs/lctt/export-csv.md"]
 
 [[acceptance]]

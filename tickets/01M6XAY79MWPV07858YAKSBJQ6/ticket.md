@@ -2,12 +2,12 @@
 id = "01M6XAY79MWPV07858YAKSBJQ6"
 title = "Reduce remaining COV001 findings in python/sadi (about 40 left)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:20Z"
-updated = "2026-11-08T10:24:14Z"
+updated = "2026-11-08T10:24:15Z"
 
 [[acceptance]]
 text = "COV001 count under python/sadi reduced below 10 with real tests or frob:tests markers; no test weakened"

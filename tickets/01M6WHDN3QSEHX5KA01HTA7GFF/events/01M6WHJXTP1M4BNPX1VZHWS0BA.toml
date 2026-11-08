@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:00:15Z"
+digest = "6afaa13aa65f1381ce99b2881c9e261f518bd86fcf69e69cda3f9ddff2a5c070"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 10 items
+
+python/tests/cli/test_plugins_cli.py ..........                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-217480-0.xml ---------------
+============================== 10 passed in 0.30s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/cli/test_plugins_cli.py::test_corrupt_state_warns_and_is_preserved python/tests/cli/test_plugins_cli.py::test_default_sources_stack python/tests/cli/test_plugins_cli.py::test_disable_then_enable python/tests/cli/test_plugins_cli.py::test_info_json_includes_findings_and_numbered_fixes python/tests/cli/test_plugins_cli.py::test_info_renders_findings_with_fix_steps python/tests/cli/test_plugins_cli.py::test_info_shows_details python/tests/cli/test_plugins_cli.py::test_list_shows_lctt_builtin_enabled python/tests/cli/test_plugins_cli.py::test_unknown_id_exit_2_no_traceback"
+size = 522
+status = "measured"
+test_count = 10
+tests_digest = "a9edef954bd3b64a7dd2918338311d156a9aec8762038d78dd5931e6a7275d6c"
+at = "2026-11-08T03:00:15Z"
+actor = "lognd"
+rev = 1

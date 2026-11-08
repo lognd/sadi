@@ -30,6 +30,10 @@ def _series(kind: str, seed: int, n: int = 1500) -> tuple[list[float], list[floa
     return t, y
 
 
+# frob:tests python/sadi/labs/lctt/settle.py::SettleScanner.n_fed
+# frob:tests python/sadi/labs/lctt/settle.py::SettleScanner.last_time
+# frob:tests python/sadi/labs/lctt/settle.py::SettleScanner.settled
+# frob:tests python/sadi/labs/lctt/settle.py::SettleScanner.feed
 @pytest.mark.parametrize("kind", ["noise", "drift", "creep"])
 @pytest.mark.parametrize("seed", range(5))
 def test_incremental_matches_full_refit(kind: str, seed: int) -> None:

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T05:21:39Z"
+digest = "2fdbbd57c0f9f54a4552b5e1cd7a981ceb8ff91b45a819565e73b2fb02a4de37"
+exit_code = 0
+head = "12c3a8b3eb32047c6d00a120b6758deb3df0b498"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/labs/lctt/test_guidance.py ....                             [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-456134-0.xml ---------------
+============================== 4 passed in 1.50s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_guidance.py::test_unsafe_suggestion_is_refused"
+size = 521
+status = "measured"
+test_count = 4
+tests_digest = "092cd9c70813e5afdfc407c0da0cdbcd3426c7468559cdd31540c21c1bf176ff"
+at = "2026-11-08T05:21:39Z"
+actor = "lognd"
+rev = 1

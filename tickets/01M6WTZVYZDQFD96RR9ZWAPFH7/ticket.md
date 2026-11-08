@@ -7,9 +7,9 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:44:52Z"
+updated = "2026-11-08T05:44:53Z"
 labels = ["ws:srv"]
-scope = ["python/pyproject.toml"]
+scope = ["python/pyproject.toml", "python/uv.lock"]
 +++
 
 found in ~0VYJVFZ: launcher.default_data_dir uses platformdirs, only transitively installed.

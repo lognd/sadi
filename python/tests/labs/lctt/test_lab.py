@@ -4,11 +4,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import pytest
 from typani import Err, Ok
 
 from sadi.core.lab import LabId
-from sadi.core.models import Phase
+from sadi.core.models import CapturedPoint, Phase, SettleStatus, TimeWindow
 from sadi.core.point_inputs import (
     CalibrationInputs,
     LoadInputs,
@@ -224,3 +226,47 @@ def test_core_recompute_real_values() -> None:
 # frob:tests python/sadi/labs/lctt/specimens.py::SpecimenSpec.name
 def test_spec_name_prefers_label() -> None:
     assert SpecimenSpec(role=SpecimenRole.PLASTIC, label="wire B").name == "wire B"
+
+
+def _phased(inputs: list[PointInputs], phase: str) -> list[PointInputs]:
+    """Re-tag load inputs with a run phase (elastic or plastic)."""
+    return [
+        i.model_copy(update={"phase": phase}) if isinstance(i, LoadInputs) else i for i in inputs
+    ]
+
+
+def _captured(inputs: Sequence[PointInputs]) -> tuple[CapturedPoint, ...]:
+    """CapturedPoints for the load inputs, as the server projects them."""
+    loads = [i for i in inputs if isinstance(i, LoadInputs)]
+    return tuple(
+        CapturedPoint(
+            index=k,
+            window=TimeWindow(start=0.0, end=1.0),
+            t_since_load=1.0,
+            drift_rate=0.0,
+            status=SettleStatus.SETTLED,
+            volts=i.volts,
+            load_kg=i.mass_kg,
+        )
+        for k, i in enumerate(loads)
+    )
+
+
+# frob:tests python/sadi/labs/lctt/lab.py::context_from_inputs
+# frob:tests python/sadi/labs/lctt/lab.py::LcttLab.analyze
+# frob:tests python/sadi/labs/lctt/lab.py::LcttLab.__init__
+def test_analyze_builds_context_and_combines_runs() -> None:
+    shared = _shared()
+    el = _phased(_elastic_points(0.5, ELASTIC_MASSES), "elastic")
+    pl = _phased(_plastic_points(0.08313), "plastic")
+    inputs = [*shared, *el, *pl]
+    pts = _captured(inputs)
+    res = LcttLab().analyze(pts, inputs).danger_ok
+    assert {"stress", "strain", "secant_modulus", "E", "r2"} <= set(res.values)
+    assert res.values["E"].value == pytest.approx(E_TRUE, rel=0.05)
+    only = [*shared, *el]
+    one = LcttLab().analyze(_captured(only), only).danger_ok
+    assert "E" not in one.values and "strain" in one.values
+    bare = [i for i in el if isinstance(i, LoadInputs)]
+    assert "strain" not in LcttLab().analyze(_captured(bare), bare).danger_ok.values
+    assert isinstance(LcttLab().analyze((), []), Err)

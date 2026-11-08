@@ -4,8 +4,18 @@
 
 from __future__ import annotations
 
+from typani import Result
+
+from sadi.core.errors import ComputeError
+from sadi.core.lab import AnalysisResult, InputsAwareLab, LabModule
 from sadi.core.models import CapturedPoint, SettleStatus, TimeWindow
-from sadi.core.point_inputs import CalibrationInputs, LoadInputs, TareInputs, parse_inputs
+from sadi.core.point_inputs import (
+    CalibrationInputs,
+    LoadInputs,
+    PointInputs,
+    TareInputs,
+    parse_inputs,
+)
 from sadi.logging_setup import get_logger
 from sadi.server.schemas import PointView
 
@@ -33,6 +43,30 @@ def _raw_fields(p: PointView) -> tuple[float | None, float | None, float | None]
     if isinstance(item, TareInputs):
         return item.mean, item.sd, None
     return None, None, None
+
+
+def typed_inputs(views: list[PointView]) -> list[PointInputs]:
+    """Parse each view's raw inputs into typed inputs; unreadable points are logged and skipped."""
+    out: list[PointInputs] = []
+    for p in views:
+        parsed = parse_inputs(p.phase, p.inputs)
+        if parsed.is_err:
+            _log.warning("point %s: raw inputs unreadable: %s", p.point_id, parsed.danger_err)
+        else:
+            out.append(parsed.danger_ok)
+    return out
+
+
+def analyze(lab: LabModule, views: list[PointView]) -> Result[AnalysisResult, ComputeError]:
+    """The one recompute path for results and export: input-aware when the lab supports it.
+
+    Pure over the views; stored events are never rewritten.
+    """
+    # frob:ticket 01M6WSH43VHA5WGRPQ20X1NQA9
+    captured = to_captured(views)
+    if isinstance(lab, InputsAwareLab):
+        return lab.analyze(captured, typed_inputs(views))
+    return lab.recompute(captured)
 
 
 def to_captured(views: list[PointView]) -> tuple[CapturedPoint, ...]:

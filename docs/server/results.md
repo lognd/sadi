@@ -22,14 +22,19 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
 - The lctt lab supplies nominal `stress` and `E` (chord modulus) budgets built with the public
   uncertainty engine (`sadi.labs.lctt.budgets.nominal_budgets`) at representative inputs, not
   from live session data, until its `recompute` is real.
-- The lctt `recompute` is a stub, so `values` is empty today; captured points are passed with
-  zeroed time fields because the point wire shape carries none.
+- Results and export share one recompute path, `session_points.analyze(lab, views)`: a lab that
+  implements the optional `sadi.core.lab.InputsAwareLab` hook (`analyze(points, inputs)`) also
+  sees the typed session inputs. For lctt these give a `LoadingContext` (specimen diameter and
+  hanger mass, last tare, slope fitted from three or more calibration points), so `values`
+  include `strain` and `secant_modulus` once tare and calibration exist; with both elastic and
+  plastic runs captured `combine_runs` adds `E`, `r2` and `yield_stress`. Too few usable points
+  is an empty result with a note. The recompute is pure; stored events are never rewritten.
 - Device status reads an injected `AppSettings.device` (a `DeviceService`); without one the
   response is `attached=false, status=error` with a hint.
 - `GET /api/results` also returns `provenance`: one `QuantityProvenance` per value (`name`,
   `point_ids`, `first_sample`, `last_sample`, `algorithm`). Point ids and sample span are those of
   the active (non-excluded) points fed to `recompute`; `algorithm` is `<lab>.recompute`. It is
-  empty while the lctt recompute is a stub.
+  empty until the session has usable load points.
 
 - `PointView` (session points, which feed these routes) carries `settled` and `forced_early`
   booleans copied from the captured `PointV1`; they are the operator-supplied capture flags

@@ -11,7 +11,7 @@ there is no sandboxing and no hot reload, so enabled plugins are trusted in-proc
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from enum import StrEnum
 from typing import NewType, Protocol, assert_never, runtime_checkable
 
@@ -20,6 +20,7 @@ from typani import Result
 
 from sadi.core.errors import ComputeError
 from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
+from sadi.core.point_inputs import PointInputs
 from sadi.logging_setup import get_logger
 from sadi.uncertainty.budget import Budget
 
@@ -103,6 +104,17 @@ class LabModule(Protocol):
 
     def recompute(self, points: tuple[CapturedPoint, ...]) -> Result[AnalysisResult, ComputeError]:
         """Recompute the lab's results from the captured points."""
+        ...
+
+
+@runtime_checkable
+class InputsAwareLab(Protocol):
+    """Optional lab hook: recompute that also sees the typed session inputs (geometry, tare...)."""
+
+    def analyze(
+        self, points: tuple[CapturedPoint, ...], inputs: Sequence[PointInputs]
+    ) -> Result[AnalysisResult, ComputeError]:
+        """Pure recompute of the points under the context the inputs imply."""
         ...
 
 

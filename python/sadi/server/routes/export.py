@@ -19,7 +19,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.curve_source import session_events
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.service import SessionService
-from sadi.server.session_points import active_points, to_captured
+from sadi.server.session_points import active_points, analyze, to_captured
 
 _log = get_logger(__name__)
 
@@ -76,8 +76,9 @@ def render_export(
                 f"Pick one of this lab's formats ({known}); GET /api/export lists them.",
             )
         )
-    captured = to_captured(active_points(svc.points().unwrap()))
-    analysis = lab.recompute(captured)
+    active = active_points(svc.points().unwrap())
+    captured = to_captured(active)
+    analysis = analyze(lab, active)
     if analysis.is_err:
         _log.warning("export %s: recompute failed: %s", format_id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))

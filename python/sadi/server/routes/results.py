@@ -32,7 +32,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
-from sadi.server.session_points import active_points, to_captured
+from sadi.server.session_points import active_points, analyze
 from sadi.uncertainty.budget import Budget, BudgetRow
 
 _log = get_logger(__name__)
@@ -176,7 +176,7 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
             not_found(info.danger_ok.lab, "Register the session's lab or resume with another.")
         )
     active = active_points(pts.danger_ok)
-    analysis = lab.recompute(to_captured(active))
+    analysis = analyze(lab, active)
     values = []
     notes: list[str] = []
     if analysis.is_err and analysis.danger_err.code == ComputeCode.TOO_FEW_POINTS:

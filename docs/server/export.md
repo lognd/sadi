@@ -16,6 +16,7 @@ exposes the open session's lab `export_formats` (see `sadi.core.lab.ExportFormat
   filename="<session>-<format>.<ext>"`. `application/json` formats are figure data for the
   web plots and are sent inline with no disposition.
 - Read-only: the payload is rendered in memory from a live recompute of the active points
+  (the same `session_points.analyze` path the results route uses, see [results](results.md))
   and sent as the response. Nothing is written to disk or the WAL, so no existing file can be
   overwritten. A future save-to-disk export must use `sadi.store.durable` temp + atomic
   rename and refuse to replace an existing file.

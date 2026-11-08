@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:32:28Z"
+digest = "c33212bd888af806eaff25a01306987d26eae57f901930f21b3f27acd511d4f1"
+exit_code = 0
+head = "e2781325c49a8389ee33936ed723be34b70ce189"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/uncertainty/crosscheck/test_labs_crosscheck.py .            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-272825-0.xml ---------------
+============================== 1 passed in 1.65s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py::test_mc_overflowing_statistics_are_typed_and_silent"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "9fdfab0b757f83f92e5d14db5e9f26c6d40a18f6984c6c396bdbc0991f90ebcf"
+at = "2026-11-08T03:32:28Z"
+actor = "lognd"
+rev = 1

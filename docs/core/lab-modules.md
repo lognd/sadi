@@ -12,7 +12,8 @@ Python packages; the contract exists to keep the core shell and a lab apart.
 ## Ownership
 
 Core owns the device, session store, WAL, uncertainty engine, plotting contracts and the
-wizard state machine. A lab owns only its steps, its models, its analysis and its exports.
+wizard state machine ([wizard framework](wizard.md)). A lab owns only its steps, its models, its analysis
+and its exports.
 
 ## The `LabModule` protocol
 

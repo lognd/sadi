@@ -2,16 +2,17 @@
 id = "01M6W7R31CM6MP54RXV36JQFXT"
 title = "store/exports: derived exports with provenance, tmp + rename"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T03:15:48Z"
 idempotency_key = "sadi-ds7"
 labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/exports.py", "creates:python/tests/store/test_exports.py", "creates:docs/store/exports.md"]
-scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md"]
+scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md", "docs/store/events.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,11 +24,11 @@ target = "01M6W7R2F3KJWQCWEKZK6BT3MG"
 
 [[acceptance]]
 text = "write_export(session, name, bytes) writes under exports/ with versioned name, tmp + fsync + atomic rename, sidecar provenance (WAL seq range, snapshot hash, code version)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Exports never overwrite; deleting all exports loses no data (test regenerates them from WAL)"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

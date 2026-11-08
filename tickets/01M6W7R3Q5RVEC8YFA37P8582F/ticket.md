@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:41:22Z"
+updated = "2026-11-08T03:41:26Z"
 idempotency_key = "sadi-x1"
 labels = ["ws:py", "lctt", "oq:Q2", "model:sonnet", "creates:python/sadi/labs/lctt/export_csv.py", "creates:python/tests/labs/lctt/test_export_csv.py", "creates:docs/lctt/export-csv.md"]
 scope = ["python/sadi/labs/lctt/export_csv.py", "python/tests/labs/lctt/test_export_csv.py", "docs/lctt/export-csv.md", "docs/index.md"]
@@ -23,7 +23,7 @@ target = "01M6W7R3J00J2HQ7XPW19WDD6Q"
 
 [[acceptance]]
 text = "Writes title/metadata block and 32-column header exactly per docs/domain.md section 4 (target VI the reference VI, Q2), derived from session events via DS7 (never the source of truth)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Round-trip test: export of the the local short-run file inputs matches the original file field-by-field within float formatting; reader parses LabVIEW CSVs back to a session for post-processing (Q1)"

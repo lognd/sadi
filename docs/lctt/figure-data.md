@@ -15,5 +15,5 @@ Document (`sadi.labs.lctt.figure_data.FigureData`):
 - `stress_strain`: `point_ids`, `strain`, `stress_mpa`, `excluded` (excluded points are
   flagged, not dropped); empty until the specimen and tare are recorded.
 
-A session with no recorded inputs is refused with `TOO_FEW_POINTS`. The derivation mirrors
-`sadi.server.routes.plots`; the lab package does not import server code.
+A session with no recorded inputs is refused with `TOO_FEW_POINTS`. The derivation lives here and
+`sadi.server.routes.plots` adapts it; the lab package does not import server code.

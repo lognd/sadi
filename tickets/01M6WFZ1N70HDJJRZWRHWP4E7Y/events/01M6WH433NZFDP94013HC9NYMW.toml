@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T02:52:09Z"
+digest = "6d6cb8ecd179917c94e677f9c41f61dcb421782354ac0a5f60cea6048558a6b7"
+exit_code = 0
+head = "7ce0ec4b7713445ac170f21e6db30865eb220a62"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 9 items
+
+python/tests/plugins/test_boundary.py .........                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-203149-0.xml ---------------
+============================== 9 passed in 0.14s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/plugins/test_boundary.py"
+size = 521
+status = "measured"
+test_count = 9
+tests_digest = "768aed7b64e9e528b4ee71c185022e16c516a80b53af120b50498ea9bd3c0307"
+at = "2026-11-08T02:52:09Z"
+actor = "lognd"
+rev = 1

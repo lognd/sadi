@@ -898,8 +898,17 @@ Implementation status and deviations from this spec (~V3H5CGF):
   no unified `sadi` launcher yet, so `sadi doctor` is not registered.
 - Remedies are colocated with their checks in `checks/<layer>.py` (via
   `@remedy(id, mode)`) rather than a separate `remediations/` package.
-- The runner is sequential (no thread pool) and has no per-check or whole-run
-  timeout budget; probe timeouts live in the subprocess probes only.
+- The runner (`runner.py`, ~ZVJ1X4E) schedules checks on up to 4 daemon worker
+  threads, each only after its in-selection `depends_on` checks finished, and
+  returns results in catalog order. `--check-timeout` (default 30 s) and
+  `--timeout` (default 120 s, 900 s with `--deep`) are CLI/`Budget` values, not
+  `RunOptions` fields (so the report schema is unchanged). A check over its
+  budget, or unfinished when the run budget ends, is `skip/timeout` (mode
+  `timeout`, UNVERIFIED) with a "re-run this check" remedy, not `fail`; a
+  dependent of a timed-out check is `skip/prerequisite-failed`. A hung thread
+  cannot be killed: it is abandoned (daemon) and its late result dropped.
+  `RealProbes` caches are guarded by one lock each so parallel checks share a
+  single survey per run.
 - Implemented (68): DEV-010..050, SIM-010/020, WRK-010/020, SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040/050/060, EXT-010..050, WEB-010,
   NET-010/020/030/040, DATA-010/020/030/040/050/060/070/080/090, USB-010/020/030/040/050/060/070/080, CLK-010/020/030/040,
   RES-010/020/030/040, BRW-010, PLG-010. USB-020..050 run on all four OSes
@@ -958,6 +967,7 @@ Implementation status and deviations from this spec (~V3H5CGF):
   The spawned worker must not import `sadi.store`, so `sessions.py`, `plg.py`
   and `probes.py` import store and plugin modules lazily.
 - With `--check`, unselected `depends_on` checks are ignored rather than run.
+- Section 9.2's "small thread pool (4)" now applies to all checks, not only NET, CLK, RES, BRW.
 
 ### 9.2 Order, dependencies, skipping
 

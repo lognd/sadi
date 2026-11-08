@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Checks run in a thread pool but never before their in-selection depends_on prerequisites finish", "Independent checks overlap and concurrency is bounded by the worker limit", "A check exceeding its per-check timeout is reported skip/timeout (unverified) with a remedy and never hangs the run", "The whole-run budget aborts running and unstarted checks as skip/timeout", "Result order is the catalog order regardless of completion order, deterministic across runs", "A crashing worker and a dependency cycle are handled (reported / raised), not lost or hung"]
+moved = []
+at = "2026-11-08T04:32:38Z"
+actor = "lognd"
+rev = 1

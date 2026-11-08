@@ -1,18 +1,21 @@
 """sadi doctor: read-only environment checks with numbered, per-OS remediation steps."""
 
 # frob:ticket 01M6WA9WYE9D71BBA7AV3H5CGF
+# frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
 from __future__ import annotations
 
 import hashlib
 import platform
 import time
 import uuid
+from collections.abc import Mapping
 from datetime import UTC, datetime
 
 from typani import Err, Ok, Result
 
 from sadi.doctor.probes import Probes, RealProbes
 from sadi.doctor.registry import CheckFn, Ctx, Outcome, all_checks, get_remedy
+from sadi.doctor.runner import Abort, Budget, schedule
 from sadi.doctor.schema import (
     CheckResult,
     CheckSpec,
@@ -30,12 +33,12 @@ from sadi.doctor.schema import (
     Status,
     Summary,
 )
-from sadi.doctor.steps import verify
+from sadi.doctor.steps import manual, verify
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
 
-__all__ = ["resolve_data_root", "run", "exit_code"]
+__all__ = ["Budget", "resolve_data_root", "run", "exit_code"]
 
 
 def resolve_data_root(options: RunOptions, probes: Probes) -> str:
@@ -129,8 +132,6 @@ def _execute(spec: CheckSpec, fn: CheckFn, ctx: Ctx) -> CheckResult:
 
 def _probe_error_remediation(spec: CheckSpec, ctx: Ctx) -> Remediation:
     """Generic remedy when a check itself could not run to completion."""
-    from sadi.doctor.steps import manual
-
     return Remediation(
         check_id=spec.id,
         mode="probe-error",
@@ -158,6 +159,68 @@ def _skipped(spec: CheckSpec, reason: SkipReason, headline: str) -> CheckResult:
         headline=headline,
         skip_reason=reason,
         evidence=Evidence(),
+        duration_ms=0,
+    )
+
+
+def _gate(
+    spec: CheckSpec, options: RunOptions, os: Os, done: Mapping[str, CheckResult]
+) -> CheckResult | None:
+    """Return a SKIP for a check that must not run (wrong OS, opt-in, failed prerequisite)."""
+    if os not in spec.applies_to:
+        return _skipped(spec, SkipReason.NOT_APPLICABLE_OS, f"Not applicable on {os.value}")
+    if spec.opt_in_flag and not getattr(options, spec.opt_in_flag, False):
+        return _skipped(spec, SkipReason.OPT_IN, f"Needs --{spec.opt_in_flag.replace('_', '-')}")
+    blocker = next(
+        (
+            d
+            for d in spec.depends_on
+            if d in done
+            and (
+                done[d].status is Status.FAIL
+                or done[d].skip_reason in (SkipReason.PREREQUISITE_FAILED, SkipReason.TIMEOUT)
+            )
+        ),
+        None,
+    )
+    if blocker:
+        return _skipped(spec, SkipReason.PREREQUISITE_FAILED, f"Skipped because {blocker} failed")
+    return None
+
+
+def _timed_out(spec: CheckSpec, ctx: Ctx, why: Abort) -> CheckResult:
+    """Build the UNVERIFIED (skip/timeout) result, with a remedy, for a check that did not finish."""
+    headline = {
+        "check-timeout": "Check timed out, so this is unverified",
+        "run-timeout": "Run time budget ran out before this check finished, so it is unverified",
+        "crashed": "Check worker crashed, so this is unverified",
+    }[why]
+    remediation = Remediation(
+        check_id=spec.id,
+        mode="timeout",
+        os=ctx.os,
+        summary="The check did not finish in time",
+        steps=(
+            manual(
+                f"Re-run only this check: sadi-doctor --check {spec.id}",
+                "It finishes and reports pass, warn or fail.",
+                if_not="Look for a hung device, drive or antivirus scan, then retry.",
+            ),
+            verify(spec.id, ctx.os),
+        ),
+    )
+    _log.warning("%s unverified: %s", spec.id, why)
+    return CheckResult(
+        id=spec.id,
+        title=spec.title,
+        layer=spec.layer,
+        severity=spec.severity,
+        status=Status.SKIP,
+        headline=headline,
+        mode="timeout",
+        skip_reason=SkipReason.TIMEOUT,
+        evidence=Evidence(error=ProbeError(kind="timeout", detail=why)),
+        remediation=remediation,
         duration_ms=0,
     )
 
@@ -209,8 +272,10 @@ def _host(probes: Probes, os: Os, data_root: str) -> Host:
     )
 
 
-def run(options: RunOptions, probes: Probes | None = None) -> Result[DoctorReport, DoctorError]:
-    """Run the selected checks in layer order and return the report."""
+def run(
+    options: RunOptions, probes: Probes | None = None, budget: Budget | None = None
+) -> Result[DoctorReport, DoctorError]:
+    """Run the selected checks in parallel (deps first, time-boxed); report in catalog order."""
     probes = probes or RealProbes()
     selected = _select(options)
     if selected.is_err:
@@ -221,32 +286,26 @@ def run(options: RunOptions, probes: Probes | None = None) -> Result[DoctorRepor
     data_root = resolve_data_root(options, probes)
     ctx = Ctx(probes=probes, options=options, os=os, data_root=data_root)
     _log.info("doctor run: %d checks on %s, data root %s", len(chosen), os.value, data_root)
-    done: dict[str, CheckResult] = {}
-    for spec, fn in chosen:
-        if os not in spec.applies_to:
-            res = _skipped(spec, SkipReason.NOT_APPLICABLE_OS, f"Not applicable on {os.value}")
-        elif spec.opt_in_flag and not getattr(options, spec.opt_in_flag, False):
-            res = _skipped(spec, SkipReason.OPT_IN, f"Needs --{spec.opt_in_flag.replace('_', '-')}")
-        else:
-            blocker = next(
-                (
-                    d
-                    for d in spec.depends_on
-                    if d in done
-                    and (
-                        done[d].status is Status.FAIL
-                        or done[d].skip_reason is SkipReason.PREREQUISITE_FAILED
-                    )
-                ),
-                None,
-            )
-            if blocker:
-                res = _skipped(
-                    spec, SkipReason.PREREQUISITE_FAILED, f"Skipped because {blocker} failed"
-                )
-            else:
-                res = _execute(spec, fn, ctx)
-        done[spec.id] = res
+    specs = {spec.id: (spec, fn) for spec, fn in chosen}
+
+    def work(ident: str) -> CheckResult:
+        spec, fn = specs[ident]
+        return _execute(spec, fn, ctx)
+
+    def gate(ident: str, done: Mapping[str, CheckResult]) -> CheckResult | None:
+        return _gate(specs[ident][0], options, os, done)
+
+    def aborted(ident: str, why: Abort) -> CheckResult:
+        return _timed_out(specs[ident][0], ctx, why)
+
+    done = schedule(
+        [spec.id for spec, _ in chosen],
+        {spec.id: spec.depends_on for spec, _ in chosen},
+        work,
+        gate,
+        aborted,
+        budget or Budget.for_deep(options.deep),
+    )
     results = tuple(done[spec.id] for spec, _ in chosen)
     report = DoctorReport(
         run_id=uuid.uuid4(),

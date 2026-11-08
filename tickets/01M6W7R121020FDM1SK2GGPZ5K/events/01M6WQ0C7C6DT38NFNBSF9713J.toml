@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-08T04:34:59Z"
+digest = "4a63b19d38d6947bdbdd0e08147ec4b7313c0be2f3b0c0fa7ccc9076db0c864e"
+exit_code = 0
+head = "0c20c53c9b59ab5261c4799e505b0b4156242573"
+inline = """
+
+running 6 tests
+test crc_cases_match_vectors ... ok
+test device_packets_match_vectors ... ok
+test decode_never_panics ... ok
+test host_commands_match_vectors ... ok
+test rejects_bad_frames ... ok
+test predef_init_round_trips ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/vectors_v3.rs (target/debug/deps/vectors_v3-41f7bb0ce8d98229)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --features v3 --test vectors_v3"
+size = 483
+status = "measured"
+at = "2026-11-08T04:34:59Z"
+actor = "lognd"
+rev = 1

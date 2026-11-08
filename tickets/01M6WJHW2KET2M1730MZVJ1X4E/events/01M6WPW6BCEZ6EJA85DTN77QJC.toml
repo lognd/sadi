@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T04:32:42Z"
+digest = "69305a853297310306109a3c74550a81be2dbfffae3c04c74602f647b3884c9b"
+exit_code = 0
+head = "5b71f68fe90a473ebf743886fd2b97bf6cf95431"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_runner.py .                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-428336-0.xml ---------------
+============================== 1 passed in 0.39s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_runner.py::test_check_timeout_does_not_hang"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "79c366eb94e12e3d41d6cd7851cdca0ad614efd463329936c160e6b6bb9d8711"
+at = "2026-11-08T04:32:42Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6WVTVH19EXW341V5K8SM7Z4"
 title = "Export screen: render results provenance (point ids, sample span, algorithm)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

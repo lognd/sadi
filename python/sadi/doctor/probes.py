@@ -16,14 +16,18 @@ import sys
 import time
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Literal, Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
 
 from typani import Err, Ok, Result
 
+from sadi.doctor.devprobe import DeviceFacts, SimFacts, probe_device, probe_sim
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts, survey_sessions
+from sadi.doctor.workerprobe import WorkerFacts, probe_workers
 from sadi.logging_setup import get_logger
-from sadi.plugins.doctor import DoctorFinding
+
+if TYPE_CHECKING:
+    from sadi.plugins.doctor import DoctorFinding
 
 _log = get_logger(__name__)
 
@@ -170,6 +174,18 @@ class Probes(Protocol):
         """Return a read-only survey of every session under the data root."""
         ...
 
+    def device_facts(self, port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
+        """Return what one read-only session against the board observed (no board: no-device)."""
+        ...
+
+    def sim_facts(self) -> SimFacts:
+        """Return the simulator connect-sequence and scenario-sweep facts."""
+        ...
+
+    def worker_facts(self) -> WorkerFacts:
+        """Return what spawning a worker and orphaning a watchdog child observed."""
+        ...
+
     def browser_available(self) -> bool:
         """Return True when a browser controller can be resolved."""
         ...
@@ -185,6 +201,9 @@ class RealProbes:
     def __init__(self) -> None:
         """Start with an empty per-run session survey cache."""
         self._sessions: dict[tuple[str, bool], list[SessionFacts]] = {}
+        self._devices: dict[tuple[str | None, int, bool], DeviceFacts] = {}
+        self._sim: SimFacts | None = None
+        self._workers: WorkerFacts | None = None
 
     def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
         """Survey sessions read-only via the store APIs, once per (root, deep) per run."""
@@ -192,6 +211,25 @@ class RealProbes:
         if key not in self._sessions:
             self._sessions[key] = survey_sessions(data_root, deep)
         return self._sessions[key]
+
+    def device_facts(self, port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
+        """Probe the board once per (port, stream, reset) per run."""
+        key = (port, stream_seconds, with_reset)
+        if key not in self._devices:
+            self._devices[key] = probe_device(port, stream_seconds, with_reset)
+        return self._devices[key]
+
+    def sim_facts(self) -> SimFacts:
+        """Probe the simulator once per run."""
+        if self._sim is None:
+            self._sim = probe_sim()
+        return self._sim
+
+    def worker_facts(self) -> WorkerFacts:
+        """Spawn the worker probes once per run."""
+        if self._workers is None:
+            self._workers = probe_workers()
+        return self._workers
 
     def os_kind(self) -> Os:
         """Detect the OS; on Linux WSL_DISTRO_NAME or 'microsoft' in /proc/version means WSL."""

@@ -47,6 +47,19 @@ def _parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--data-root", help="data directory to inspect")
     p.add_argument("--api-port", type=int, default=8000)
+    p.add_argument("--port", help="serial port of the device to probe (default: first found)")
+    p.add_argument(
+        "--stream-seconds",
+        type=int,
+        default=0,
+        metavar="N",
+        help="stream from the device for N seconds (enables DEV-040)",
+    )
+    p.add_argument(
+        "--with-reset",
+        action="store_true",
+        help="reset the device and time the boot (enables DEV-050)",
+    )
     return p
 
 
@@ -123,6 +136,9 @@ def _main(argv: Sequence[str] | None) -> int:
         render_os=Os(args.render_os) if args.render_os else None,
         data_root=args.data_root,
         api_port=args.api_port,
+        port=args.port,
+        stream_seconds=args.stream_seconds,
+        with_reset=args.with_reset,
     )
     try:
         result = run(options)

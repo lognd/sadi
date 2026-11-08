@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:28:37Z"
-updated = "2026-11-08T03:29:18Z"
+updated = "2026-11-08T03:29:30Z"
 scope = ["python/tests/crash/harness.py", "python/tests/crash/test_crash.py", "docs/store/crash-testing.md"]
 
 [[acceptance]]

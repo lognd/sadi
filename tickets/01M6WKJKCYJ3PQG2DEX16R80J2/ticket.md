@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:35:02Z"
-updated = "2026-11-08T03:36:25Z"
+updated = "2026-11-08T03:36:33Z"
 scope = ["python/sadi/server/routes_doctor.py", "python/tests/server/test_routes_doctor.py", "python/pyproject.toml", "python/uv.lock", "docs/web/doctor-ui.md"]
 
 [[links]]

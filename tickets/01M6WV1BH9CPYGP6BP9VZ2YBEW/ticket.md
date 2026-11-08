@@ -13,6 +13,10 @@ scope = ["python/sadi/server/**"]
 [[acceptance]]
 text = "Launcher --sim passes the simulator DeviceService as AppSettings.device and closes it on shutdown"
 bound = false
+
+[[acceptance]]
+text = "Without a device the launcher injects none, so status stays honestly unattached"
+bound = false
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

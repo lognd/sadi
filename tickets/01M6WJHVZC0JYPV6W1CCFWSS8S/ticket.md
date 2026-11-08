@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:28:47Z"
+updated = "2026-11-08T04:28:48Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
 text = "PLAT-020 fails on an architecture mismatch or unsupported CPU and skips UNVERIFIED without a build target"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "PLAT-040 warns on Windows for long-paths-off, reserved names and trailing dot or space"

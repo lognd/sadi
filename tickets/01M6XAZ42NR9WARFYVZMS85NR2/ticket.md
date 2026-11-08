@@ -2,7 +2,8 @@
 id = "01M6XAZ42NR9WARFYVZMS85NR2"
 title = "Web: regenerate schema.ts and POST run-phase on wizard phase transitions"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

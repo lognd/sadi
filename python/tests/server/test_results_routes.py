@@ -128,6 +128,7 @@ def test_budgets_match_web_shape(budget_client: TestClient) -> None:
     assert row["total_std_unc"] == pytest.approx(0.2)
 
 
+# frob:tests python/sadi/server/routes/results.py::lab_budgets
 def test_budgets_empty_without_hook(tmp_path: Path) -> None:
     """A lab with no budgets hook and no injected source -> an empty list, not an error."""
 

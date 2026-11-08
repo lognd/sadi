@@ -15,9 +15,13 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
 - Results, budgets and guidance need an open session (409 `no_open_session` otherwise).
 - `phase` is `calibrate|elastic|plastic` (default `calibrate`); a bad `phase` or non-positive
   `target` is a 422 problem. Guidance never changes the phase; it only proposes.
-- Budgets come from an injected `AppSettings.budgets` callable; build entries with
-  `to_result_budget(result, label, Budget, latex)` from `Uncertain.budget` and `Uncertain.latex`.
-  Until a lab supplies one the list is empty (follow-up).
+- Budgets come from an injected `AppSettings.budgets` callable when set; otherwise from the
+  open session's lab if it implements the optional `sadi.core.lab.BudgetedLab` protocol
+  (`budgets() -> list[LabBudget]`, each a result id, label, `Budget` and LaTeX). The route
+  wraps them with `to_result_budget`. A lab without the hook yields an empty list.
+- The lctt lab supplies nominal `stress` and `E` (chord modulus) budgets built with the public
+  uncertainty engine (`sadi.labs.lctt.budgets.nominal_budgets`) at representative inputs, not
+  from live session data, until its `recompute` is real.
 - The lctt `recompute` is a stub, so `values` is empty today; captured points are passed with
   zeroed time fields because the point wire shape carries none.
 - Device status reads an injected `AppSettings.device` (a `DeviceService`); without one the

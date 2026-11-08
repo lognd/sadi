@@ -7,5 +7,6 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:48:10Z"
-updated = "2026-11-08T09:51:30Z"
+updated = "2026-11-08T09:51:35Z"
+scope = ["docs/img/ui/doctor.png"]
 +++

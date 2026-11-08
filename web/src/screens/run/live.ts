@@ -60,12 +60,14 @@ export function motionOf(st: SettleState | null): Motion {
   return st === "settled" ? "settled" : "creeping";
 }
 
-/** Combine the trace snapshot, connection and latest settle state into one view. */
-export function deriveLive(snap: Snapshot, conn: ConnState, settle: SettleState | null, simulated: boolean): LiveView {
+/** Combine the trace snapshot, connection and latest settle state into one view; server drift wins over the client estimate. */
+export function deriveLive(
+  snap: Snapshot, conn: ConnState, settle: SettleState | null, simulated: boolean, serverDriftVps: number | null = null,
+): LiveView {
   const n = snap.x.length;
   return {
     volts: n === 0 ? null : (snap.mid[n - 1] as number),
-    driftVps: driftOver(snap.x, snap.mid, snap.t1 - RECENT_S),
+    driftVps: serverDriftVps ?? driftOver(snap.x, snap.mid, snap.t1 - RECENT_S),
     signal: signalOf(snap),
     motion: motionOf(settle),
     source: sourceOf(conn, simulated),

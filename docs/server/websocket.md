@@ -16,6 +16,13 @@ durable in the WAL, so nothing here can lose raw data.
   `SessionService.info()`, `latest` messages by kind, `bus_dropped`), `state` (settle status),
   `result` (finalized point), `analysis_failed`, `stopped`, `guidance`, `stats`
   (`sent_frames`, `dropped_frames`, every 1 s).
+- `hello` also carries `simulated` (bool: the data source is the simulator). `state` carries
+  `drift_vps` (server drift rate of the open point in V/s, or null), `window`
+  (`first_raw_seq`, `last_raw_seq`: raw-seq span of the open point's capture window; the first
+  seq is the first state seen for that `point_index`) and `simulated`. These are JSON-only
+  additions: the binary frame layout and version (1) are unchanged, and clients that ignore
+  unknown keys keep working. `StreamHub(simulated=callable)` supplies the flag; `create_app`
+  derives it from `AppSettings.device.status == "simulated"`.
 
 ## Binary frame layout (little-endian)
 

@@ -77,3 +77,11 @@ To run: call `installBench()` once from a dev entry point (temporary, do not com
 browser, hardware and numbers here once measured.
 
 Dev proxy: `web/vite.config.ts` proxies `/api` with `ws: true` so `WS /api/stream` works under `vite dev`.
+
+## Server-streamed drift, capture window and simulated flag
+
+`state` messages carry `drift_vps`, `window` and `simulated`; `hello` carries `simulated`
+(see [../server/websocket.md](../server/websocket.md)). `parseMessage` exposes them as
+`driftVps`, `window` (`firstRawSeq`, `lastRawSeq`) and `simulated` (binary frames unchanged).
+`useRunLive` folds them into `SideState`; `deriveLive` prefers the server drift over the
+client-side estimate and the `simulated` prop falls back to the server flag.

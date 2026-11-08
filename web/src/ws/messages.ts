@@ -5,10 +5,16 @@ import { err, ok, type Result } from "../api/result";
 /** Settle states reported by the streaming detector. */
 export type SettleState = "loading" | "creeping" | "settled";
 
+/** Raw-seq span of the open point's capture window, as reported by the server. */
+export interface CaptureWindow {
+  readonly firstRawSeq: number;
+  readonly lastRawSeq: number;
+}
+
 /** Server text message, discriminated by `kind`; unknown kinds are kept as "other". */
 export type ServerMessage =
-  | { readonly kind: "hello"; readonly latest: Readonly<Record<string, unknown>> }
-  | { readonly kind: "state"; readonly rawSeq: number; readonly state: SettleState | null; readonly pointIndex: number | null; readonly timeSinceLoad: number | null }
+  | { readonly kind: "hello"; readonly latest: Readonly<Record<string, unknown>>; readonly simulated: boolean }
+  | { readonly kind: "state"; readonly rawSeq: number; readonly state: SettleState | null; readonly pointIndex: number | null; readonly timeSinceLoad: number | null; readonly driftVps?: number | null; readonly window?: CaptureWindow | null; readonly simulated?: boolean }
   | { readonly kind: "result"; readonly rawSeq: number; readonly pointIndex: number | null; readonly settled: boolean; readonly forcedEarly: boolean; readonly windowEnd: number | null }
   | { readonly kind: "analysis_failed"; readonly rawSeq: number; readonly reason: string }
   | { readonly kind: "stopped"; readonly reason: string; readonly hint: string }
@@ -38,12 +44,20 @@ export function parseMessage(text: string): Result<ServerMessage, MessageError> 
   const rawSeq = num(raw["raw_seq"]) ?? 0;
   switch (kind) {
     case "hello":
-      return ok({ kind, latest: isObj(raw["latest"]) ? raw["latest"] : {} });
+      return ok({ kind, latest: isObj(raw["latest"]) ? raw["latest"] : {}, simulated: raw["simulated"] === true });
     case "state": {
       const st = isObj(raw["status"]) ? raw["status"] : {};
       const s = st["state"];
       const state = s === "loading" || s === "creeping" || s === "settled" ? s : null;
-      return ok({ kind, rawSeq, state, pointIndex: num(st["point_index"]), timeSinceLoad: num(st["time_since_load"]) });
+      const w = raw["window"];
+      const first = isObj(w) ? num(w["first_raw_seq"]) : null;
+      const last = isObj(w) ? num(w["last_raw_seq"]) : null;
+      return ok({
+        kind, rawSeq, state, pointIndex: num(st["point_index"]), timeSinceLoad: num(st["time_since_load"]),
+        driftVps: num(raw["drift_vps"]),
+        window: first !== null && last !== null ? { firstRawSeq: first, lastRawSeq: last } : null,
+        simulated: raw["simulated"] === true,
+      });
     }
     case "result": {
       const rec = isObj(raw["record"]) ? raw["record"] : {};

@@ -8,6 +8,7 @@ the live stream (no replay of missed frames). Session info comes from `SessionSe
 """
 
 # frob:ticket 01M6W7R3ZPY606D3MHG4QRM2GS
+# frob:ticket 01M6WWN90MKGKGY4H7Y8PWYEQZ
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ import json
 import threading
 import time
 from collections import deque
+from collections.abc import Callable
 from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -48,11 +50,17 @@ STATS_PERIOD_S = 1.0
 
 
 def _json_of(event: BusEvent) -> dict[str, Any] | None:
-    """Map a non-trace bus event to its JSON side-channel message."""
+    """Map a non-trace bus event to its JSON side-channel message.
+
+    `state` also carries `drift_vps` (server drift rate, V/s, or null); the hub adds the
+    capture window and `simulated`.
+    """
     if isinstance(event, SettleUpdate):
+        drift = event.status.drift_rate
         return {
             "kind": "state",
             "raw_seq": event.raw_seq,
+            "drift_vps": drift.value if drift is not None else None,
             "status": event.status.model_dump(mode="json"),
         }
     if isinstance(event, ResultUpdate):
@@ -126,9 +134,17 @@ class StreamHub:
         bus: Bus,
         sessions: SessionService | None = None,
         results: ResultsStream | None = None,
+        simulated: Callable[[], bool] | None = None,
     ) -> None:
-        """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes."""
+        """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes.
+
+        `simulated` reports whether the data source is the simulator (stamped on `hello` and
+        `state` messages; absent means false).
+        """
         self.results = results
+        self._simulated = simulated
+        self._window_point: int | None = None
+        self._window_first = 0
         self._sub: Subscription = bus.subscribe("ws-hub")
         self._sessions = sessions
         self._lock = threading.Lock()
@@ -165,6 +181,20 @@ class StreamHub:
         """Push a guidance message (JSON side channel) to every client."""
         self._fanout_msg({"kind": "guidance", **message})
 
+    def is_simulated(self) -> bool:
+        """True when the data source is the simulator."""
+        return self._simulated is not None and self._simulated()
+
+    def _stamp_state(self, msg: dict[str, Any]) -> None:
+        """Add the capture window (first/last raw seq of the open point) and `simulated`."""
+        point = msg["status"].get("point_index")
+        if point != self._window_point:
+            self._window_point = point
+            self._window_first = msg["raw_seq"]
+            _log.info("capture window opened: point=%s first_raw_seq=%d", point, self._window_first)
+        msg["window"] = {"first_raw_seq": self._window_first, "last_raw_seq": msg["raw_seq"]}
+        msg["simulated"] = self.is_simulated()
+
     def poll(self) -> None:
         """Drain the bus subscription and distribute events to clients."""
         events = self._sub.drain()
@@ -181,6 +211,8 @@ class StreamHub:
                 if msg is None:
                     _log.error("unmapped bus event %s", type(ev).__name__)
                     continue
+                if msg["kind"] == "state":
+                    self._stamp_state(msg)
                 self._latest[msg["kind"]] = msg
                 for c in self._clients:
                     c.offer_msg(msg)
@@ -204,6 +236,7 @@ class StreamHub:
             "kind": "hello",
             "session": session,
             "latest": latest,
+            "simulated": self.is_simulated(),
             "bus_dropped": self._sub.dropped,
         }
 

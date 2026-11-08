@@ -4,7 +4,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTrace, type TraceView, type UseTraceOptions } from "../../hooks/useTrace";
 import { openStream, type StreamHandle, type StreamHandlers, type StreamOptions } from "../../ws/client";
-import type { ServerMessage, SettleState } from "../../ws/messages";
+import type { CaptureWindow, ServerMessage, SettleState } from "../../ws/messages";
 import { deriveLive, type LiveView } from "./live";
 
 /** Newest facts from the text side channel. */
@@ -12,11 +12,20 @@ export interface SideState {
   readonly settle: SettleState | null;
   readonly rawSeq: number;
   readonly pointIndex: number | null;
+  /** Server drift rate (V/s) of the open point, or null when unknown. */
+  readonly driftVps: number | null;
+  /** Capture window raw-seq span of the open point, or null before the first state. */
+  readonly window: CaptureWindow | null;
+  /** True when the server reports a simulated data source. */
+  readonly simulated: boolean;
 }
 
 /** Fold one message into the side state (pure; unrelated kinds return the same object). */
 export function foldSide(s: SideState, m: ServerMessage): SideState {
-  if (m.kind === "state") return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex };
+  if (m.kind === "hello") return { ...s, simulated: m.simulated };
+  if (m.kind === "state") {
+    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: m.simulated ?? false };
+  }
   if (m.kind === "result") return { ...s, rawSeq: Math.max(s.rawSeq, m.rawSeq) };
   return s;
 }
@@ -29,15 +38,15 @@ export interface RunLive extends TraceView {
 
 /** Subscribe once (via useTrace) and derive the LiveView; `simulated` selects the Source word. */
 export function useRunLive(o: UseTraceOptions & { readonly simulated?: boolean } = {}): RunLive {
-  const [side, setSide] = useState<SideState>({ settle: null, rawSeq: 0, pointIndex: null });
+  const [side, setSide] = useState<SideState>({ settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false });
   const base = useRef(o.open ?? openStream);
   base.current = o.open ?? openStream;
   const open = useCallback((so: StreamOptions, h: StreamHandlers): StreamHandle =>
     base.current(so, { ...h, onMessage: (m) => { setSide((s) => foldSide(s, m)); h.onMessage(m); } }), []);
   const trace = useTrace({ ...o, open });
   const view = useMemo(
-    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? false),
-    [trace.snapshot, trace.conn, side.settle, o.simulated],
+    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? side.simulated, side.driftVps),
+    [trace.snapshot, trace.conn, side.settle, o.simulated, side.simulated, side.driftVps],
   );
   return { ...trace, view, side };
 }

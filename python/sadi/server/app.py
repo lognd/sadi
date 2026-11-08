@@ -170,7 +170,13 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_plugins_router(cfg.registry))
     if cfg.bus is not None:
         app.state.results_stream = cfg.results or ResultsStream()
-        app.state.stream_hub = StreamHub(cfg.bus, app.state.sessions, app.state.results_stream)
+        device = cfg.device
+        app.state.stream_hub = StreamHub(
+            cfg.bus,
+            app.state.sessions,
+            app.state.results_stream,
+            simulated=(lambda: device.status == "simulated") if device is not None else None,
+        )
         app.include_router(make_ws_router(app.state.stream_hub))
     source = cfg.curve_source or make_curve_source(cfg.data_root)
     app.include_router(make_stress_strain_router(source))

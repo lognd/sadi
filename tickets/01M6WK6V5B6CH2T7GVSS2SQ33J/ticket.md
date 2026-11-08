@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:28:37Z"
-updated = "2026-11-08T03:28:50Z"
+updated = "2026-11-08T03:29:18Z"
 scope = ["python/tests/crash/harness.py", "python/tests/crash/test_crash.py", "docs/store/crash-testing.md"]
+
+[[acceptance]]
+text = "Crash harness runs replay-equivalence on rotated WALs with no skip and no frob:todo"
+bound = false
 +++

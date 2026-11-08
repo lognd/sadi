@@ -11,7 +11,7 @@ created = "2026-11-08T00:08:20Z"
 updated = "2026-11-08T05:16:12Z"
 idempotency_key = "sadi-ts1"
 labels = ["ws:py", "lctt", "oq:Q8", "model:sonnet", "creates:python/sadi/labs/lctt/lab.py", "creates:python/sadi/labs/lctt/specimens.py", "creates:python/tests/labs/lctt/test_lab.py", "creates:docs/lctt/lab-module.md"]
-scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/specimens.py", "python/tests/labs/lctt/test_lab.py", "docs/lctt/lab-module.md", "python/sadi/labs/lctt/plugin.py"]
+scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/specimens.py", "python/tests/labs/lctt/test_lab.py", "docs/lctt/lab-module.md", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py"]
 
 [[links]]
 kind = "blocked-by"

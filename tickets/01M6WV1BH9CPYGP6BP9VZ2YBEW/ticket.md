@@ -2,7 +2,8 @@
 id = "01M6WV1BH9CPYGP6BP9VZ2YBEW"
 title = "Wire a real DeviceService into launcher/app for /api/device/status"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

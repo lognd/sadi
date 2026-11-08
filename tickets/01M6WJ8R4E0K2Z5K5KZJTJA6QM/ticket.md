@@ -2,7 +2,8 @@
 id = "01M6WJ8R4E0K2Z5K5KZJTJA6QM"
 title = "Add Setup wizard step (Phase.SETUP) hosting clamp-slip sub-check"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

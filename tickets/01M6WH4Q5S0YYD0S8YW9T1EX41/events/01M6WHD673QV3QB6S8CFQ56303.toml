@@ -1,0 +1,7 @@
+kind = "transition"
+from = "in-progress"
+to = "todo"
+reason = "needs core contract decision (readings/phase on CapturedPoint); see comment"
+at = "2026-11-08T02:57:08Z"
+actor = "lognd"
+rev = 1

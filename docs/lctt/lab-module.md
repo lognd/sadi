@@ -37,7 +37,11 @@ calibration and experiment needs no re-entry in the lab.
 [live engine](live-results.md) (gauge length from its spec) after the shared calibration and
 tare inputs, then reports:
 
-- `E` and `r2` from the long (elastic) specimen,
+- `E` and `r2` from the long (elastic) specimen. With no explicit `SetWindow` the live engine
+  derives the linear window itself (`modulus.suggest_window`: the longest contiguous window of
+  at least 3 points meeting the r^2 threshold, logged), so a curved tail does not bias E; if
+  none qualifies all points are fitted. An explicit window overrides; stored events are never
+  rewritten,
 - `yield_stress` from the short (plastic) specimen.
 
 Each `SourcedValue` carries the `ResultValue`, the specimen role, its name and its L0, so the

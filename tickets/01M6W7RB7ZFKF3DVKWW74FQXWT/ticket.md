@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T06:14:27Z"
+updated = "2026-11-08T06:14:29Z"
 idempotency_key = "sadi-f11"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/run/**", "creates:docs/web/run-screens.md"]
 scope = ["web/src/screens/run/**", "docs/web/run-screens.md", "docs/index.md"]
@@ -51,7 +51,7 @@ bound = true
 
 [[acceptance]]
 text = "Saturation warning visible and in status bar; disconnect behaviour per design"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Works end-to-end in sim mode"

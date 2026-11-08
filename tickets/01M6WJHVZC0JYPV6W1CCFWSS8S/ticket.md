@@ -7,8 +7,32 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:24:58Z"
+updated = "2026-11-08T04:28:47Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
+
+[[acceptance]]
+text = "PLAT-020 fails on an architecture mismatch or unsupported CPU and skips UNVERIFIED without a build target"
+bound = false
+
+[[acceptance]]
+text = "PLAT-040 warns on Windows for long-paths-off, reserved names and trailing dot or space"
+bound = false
+
+[[acceptance]]
+text = "WEB-020 warns when the UI bundle version differs from the installed SADI"
+bound = false
+
+[[acceptance]]
+text = "BRW-020 warns on an old or unidentifiable browser"
+bound = false
+
+[[acceptance]]
+text = "BRW-030 is opt-in via --open-browser and warns when the browser never fetches the throwaway page"
+bound = false
+
+[[acceptance]]
+text = "DATA-020 probes the filesystem type on Windows and macOS"
+bound = false
 +++
 
 found while working ~V3H5CGF: deferred checks

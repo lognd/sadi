@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["PLAT-020 fails on an architecture mismatch or unsupported CPU and skips UNVERIFIED without a build target", "PLAT-040 warns on Windows for long-paths-off, reserved names and trailing dot or space", "WEB-020 warns when the UI bundle version differs from the installed SADI", "BRW-020 warns on an old or unidentifiable browser", "BRW-030 is opt-in via --open-browser and warns when the browser never fetches the throwaway page", "DATA-020 probes the filesystem type on Windows and macOS"]
+moved = []
+at = "2026-11-08T04:28:47Z"
+actor = "lognd"
+rev = 1

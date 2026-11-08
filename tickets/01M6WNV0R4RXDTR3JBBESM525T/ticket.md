@@ -2,7 +2,8 @@
 id = "01M6WNV0R4RXDTR3JBBESM525T"
 title = "COV001: store/events.py settings_record reached by no test"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

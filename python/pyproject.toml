@@ -18,6 +18,12 @@ dependencies = [
     "packaging",
 ]
 
+[project.optional-dependencies]
+# sadi_py is a maturin-built PyO3 extension (crates/sadi-py), not on PyPI:
+# build it with `maturin develop` (see docs/packaging.md). The extra is empty
+# so the pure-Python install never requires a Rust toolchain.
+device = []
+
 [dependency-groups]
 dev = [
     "pytest",

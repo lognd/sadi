@@ -1,0 +1,10 @@
+kind = "create"
+title = "Run screen: real-browser sim-mode run of capture phases"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/e2e/**"]
+body = "found while working ~74FQXWT"
+at = "2026-11-08T06:13:47Z"
+actor = "lognd"
+rev = 1

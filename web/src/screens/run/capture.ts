@@ -1,0 +1,67 @@
+// frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+/** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
+import type { ApiError } from "../../api/client";
+import { getLogger } from "../../api/log";
+import type { Result } from "../../api/result";
+import type { Committed } from "../review/types";
+import { postJson } from "../review/api";
+import type { LiveView } from "./live";
+import { PHASES, type RunPhase } from "./phases";
+
+const log = getLogger("screens.run.capture");
+
+/** What pressing an accept key should do right now. */
+export type Decision =
+  | { readonly kind: "capture"; readonly forcedEarly: false }
+  | { readonly kind: "confirm-early" }
+  | { readonly kind: "capture-early" }
+  | { readonly kind: "blocked"; readonly why: string };
+
+/** Pending forced-early confirmation state. */
+export type Confirm = "idle" | "asking";
+
+const WHY = {
+  disconnected: "The instrument stream is disconnected. Wait for it to reconnect; saved data is untouched.",
+  saturated: "The reading is at its limit (saturated). Lower the load, then try again.",
+  creeping: "The reading is still moving. Wait for Settled, or press Shift+Space to accept early.",
+  unknown: "Not enough data yet. Wait for the reading to appear.",
+} as const;
+
+/** Decide the outcome of an accept key; saturation and disconnect block even a forced capture. */
+export function decide(view: LiveView, early: boolean, confirm: Confirm): Decision {
+  if (view.source === "disconnected") return { kind: "blocked", why: WHY.disconnected };
+  if (view.signal === "saturated") return { kind: "blocked", why: WHY.saturated };
+  if (view.volts === null) return { kind: "blocked", why: WHY.unknown };
+  if (!early) {
+    return view.motion === "settled" ? { kind: "capture", forcedEarly: false } : { kind: "blocked", why: WHY.creeping };
+  }
+  if (view.motion === "settled") return { kind: "capture", forcedEarly: false };
+  return confirm === "asking" ? { kind: "capture-early" } : { kind: "confirm-early" };
+}
+
+/** Request body of POST /api/session/points (CaptureBody). */
+export interface CaptureBody {
+  readonly phase: string;
+  readonly inputs: Readonly<Record<string, unknown>>;
+  readonly window: { readonly first_raw_seq: number; readonly last_raw_seq: number };
+  readonly settled: boolean;
+  readonly forced_early: boolean;
+  readonly drift_rate: number | null;
+}
+
+/** Build the capture body. `rawSeq` is the newest raw seq seen on the stream (see docs gap G1). */
+export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean): CaptureBody {
+  return {
+    phase: PHASES[phase].apiPhase, inputs,
+    window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
+    settled: !early, forced_early: early, drift_rate: view.driftVps,
+  };
+}
+
+/** POST one capture; returns the committed state or the API error. */
+export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): Promise<Result<Committed, ApiError>> {
+  log.info("capture", { phase: body.phase, forced: body.forced_early });
+  const r = await postJson<Committed>("/api/session/points", body, f);
+  if (!r.ok) log.warn("capture refused", { kind: r.error.kind });
+  return r;
+}

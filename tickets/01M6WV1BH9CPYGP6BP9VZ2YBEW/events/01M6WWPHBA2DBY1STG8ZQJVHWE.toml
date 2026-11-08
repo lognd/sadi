@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+old = ["Without a device the launcher injects none, so status stays honestly unattached", "A failing simulator open exits EXIT_DEVICE without serving", "Launcher --sim passes the simulator DeviceService as AppSettings.device and closes it on shutdown"]
+moved = [0, 0, 0]
+at = "2026-11-08T06:14:28Z"
+actor = "lognd"
+rev = 1

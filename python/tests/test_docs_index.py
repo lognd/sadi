@@ -23,3 +23,15 @@ def test_index_links_doctor_ui() -> None:
     """The docs index links docs/web/doctor-ui.md."""
     # frob:ticket 01M6WA9WZW89EA826DSJCJ0197
     assert "(web/doctor-ui.md)" in (DOCS / "index.md").read_text(encoding="utf-8")
+
+
+def test_index_links_server_app() -> None:
+    """The docs index links docs/server/app.md."""
+    # frob:ticket 01M6WKWJ9BAHV3YM2PXJFZJFBF
+    assert "(server/app.md)" in (DOCS / "index.md").read_text(encoding="utf-8")
+
+
+def test_index_links_results_panel() -> None:
+    """The docs index links docs/web/results-panel.md."""
+    # frob:ticket 01M6WKWJ9BAHV3YM2PXJFZJFBF
+    assert "(web/results-panel.md)" in (DOCS / "index.md").read_text(encoding="utf-8")

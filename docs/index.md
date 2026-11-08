@@ -24,6 +24,7 @@ Status: current
 - [Doctor UI](web/doctor-ui.md)
 - [Results panel](web/results-panel.md)
 - [Plot renderer core](web/plots.md)
+- [Server app](server/app.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)
@@ -40,3 +41,4 @@ Status: current
 - [LCTT modulus, yield, saturation](lctt/modulus.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
 - [LCTT live results](lctt/live-results.md)
+- [LCTT CSV export](lctt/export-csv.md)

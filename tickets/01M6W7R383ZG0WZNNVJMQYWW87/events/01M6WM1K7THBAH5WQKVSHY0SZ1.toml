@@ -1,0 +1,148 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:43:12Z"
+digest = "e21de1d745ae0263f799abf37e8c6045fa0f0b8a6df14662c7bfe1f2524c9861"
+exit_code = 0
+head = "a0a8dc3f40e8b4c430f1e433bb6fd1206ef65231"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/core/plots.test.ts > layout > is deterministic and keeps the plot inside the canvas
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+
+stdout | web/src/plots/core/plots.test.ts > decimation > bounds 100k points and keeps extremes
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 50, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > svg > matches the snapshot
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > svg > escapes text
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'a<b & c',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > canvas draw calls > records a stable golden call sequence
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 1, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 640, h: 400, dpi: 96, bytes: 3 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 3.125, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 2000, h: 1250, dpi: 300, bytes: 3 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.export] svg exported { bytes: 5379, title: 'Calibration' }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)'
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+ \u{2713} web/src/plots/core/plots.test.ts (8 tests) 47ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  22:43:13
+   Duration  743ms (transform 174ms, setup 0ms, collect 183ms, tests 47ms, environment 0ms, prepare 195ms)
+
+JSON report written to /tmp/frob-vitest-294229-0.json
+stderr | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.export] rejected dpi { dpi: -1 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/core/plots.test.ts"
+size = 3787
+status = "measured"
+test_count = 8
+tests_digest = "d45a20954c1ac90c26455e3070946c69aa9bd888fc1b1cc57bb74fb8f7088134"
+at = "2026-11-08T03:43:12Z"
+actor = "lognd"
+rev = 1

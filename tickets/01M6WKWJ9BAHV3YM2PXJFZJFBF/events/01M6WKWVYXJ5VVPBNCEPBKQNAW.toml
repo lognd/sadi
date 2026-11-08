@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["docs/index.md"]
+at = "2026-11-08T03:40:39Z"
+actor = "lognd"
+rev = 1

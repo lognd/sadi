@@ -2,16 +2,16 @@
 id = "01M6W7R3D3KT3NM6JETDDAPA9P"
 title = "Calibration plot: fit with CI band, equation annotation and residuals"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T03:46:17Z"
 idempotency_key = "sadi-f5"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/calibration/**", "creates:docs/web/calibration-plot.md"]
-scope = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md"]
+scope = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md", "web/src/plots/core/**", "docs/index.md", "docs/web/plots.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -23,11 +23,11 @@ target = "01M6W7R383ZG0WZNNVJMQYWW87"
 
 [[acceptance]]
 text = "Height vs volts points with error bars, fit line, 95% CI band, annotation 'h = (m +/- U) V + (b +/- U), r^2 = ...' with class-rule sig figs, linked residuals panel"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Updates live after every captured point; golden-image test"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

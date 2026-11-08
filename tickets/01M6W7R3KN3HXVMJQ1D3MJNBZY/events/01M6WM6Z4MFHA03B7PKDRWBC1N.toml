@@ -1,0 +1,66 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T03:46:09Z"
+digest = "b9eb592063982a2019763822b23b35b23683260174a44338286a2d73d6e669eb"
+exit_code = 0
+head = "d927a31f8d759b6f3dd8821dfed29301964ca4a9"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/stressstrain/stressstrain.test.ts
+[plots.stressstrain.scene] scene built { points: 10, fits: 2, window: [ 1, 5 ] }
+
+stdout | web/src/plots/stressstrain/stressstrain.test.ts > window selection > keyboard steps and ignores other keys
+[plots.stressstrain.selection] key step {
+  key: 'ArrowRight',
+  edge: 'last',
+  from: 5,
+  window: { first: 1, last: 6 }
+}
+[plots.stressstrain.selection] key step {
+  key: 'ArrowRight',
+  edge: 'last',
+  from: 5,
+  window: { first: 1, last: 9 }
+}
+[plots.stressstrain.selection] key step { key: 'Home', edge: 'first', from: 1, window: { first: 0, last: 5 } }
+[plots.stressstrain.selection] key step { key: 'End', edge: 'last', from: 5, window: { first: 1, last: 9 } }
+
+stdout | web/src/plots/stressstrain/stressstrain.test.ts > scene mapping > is deterministic and renders to SVG (golden)
+[plots.stressstrain.scene] scene built { points: 10, fits: 2, window: [ 1, 5 ] }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain (mm/mm)'
+}
+[plots.drawlist] draw list built { ops: 79, series: 24 }
+
+stdout | web/src/plots/stressstrain/stressstrain.test.ts > scene mapping > omits fit artefacts without a fit
+[plots.stressstrain.scene] scene built { points: 10, fits: 0, window: null }
+
+ \u{2713} web/src/plots/stressstrain/stressstrain.test.ts (9 tests) 12ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  22:46:09
+   Duration  599ms (transform 156ms, setup 0ms, collect 179ms, tests 12ms, environment 0ms, prepare 127ms)
+
+JSON report written to /tmp/frob-vitest-302020-0.json
+stderr | web/src/plots/stressstrain/stressstrain.test.ts > window selection > clamps to bounds and minimum size
+[plots.stressstrain.selection] too few points for a window { n: 2 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/stressstrain/stressstrain.test.ts"
+size = 1830
+status = "measured"
+test_count = 9
+tests_digest = "499b5699bb6e3bcb930b2364a872b529beff1e8d9c3edd61cf434fded295b997"
+at = "2026-11-08T03:46:09Z"
+actor = "lognd"
+rev = 1

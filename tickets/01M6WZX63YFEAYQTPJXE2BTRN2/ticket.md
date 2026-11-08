@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:10:32Z"
-updated = "2026-11-08T07:16:48Z"
+updated = "2026-11-08T07:16:58Z"
 scope = ["web/e2e/**", ".gitignore", "web/src/screens/**", "docs/web/wizard.md", "docs/e2e.md"]
 
 [[acceptance]]

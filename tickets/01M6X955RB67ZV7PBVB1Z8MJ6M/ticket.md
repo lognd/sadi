@@ -4,7 +4,8 @@ title = "Doctor screenshot leaks host paths and shows failing checks; regenerate
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:52:11Z"
-updated = "2026-11-08T09:52:11Z"
+updated = "2026-11-08T09:52:14Z"
 +++

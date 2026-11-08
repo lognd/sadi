@@ -2,7 +2,8 @@
 id = "01M6XCCR9STNBNGX9N4K6N7VQC"
 title = "Drive StreamHandle.close and SocketLike.close through typed params"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

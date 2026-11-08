@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["styles.css colors meet WCAG AA contrast (4.5:1 text, 3:1 UI) verified by a test; fixes applied"]
+moved = []
+at = "2026-11-08T10:26:53Z"
+actor = "lognd"
+rev = 1

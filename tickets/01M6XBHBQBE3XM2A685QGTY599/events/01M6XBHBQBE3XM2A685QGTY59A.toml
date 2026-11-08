@@ -1,0 +1,10 @@
+kind = "create"
+title = "WorkerSlot.join races the pump thread's own proc.join"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/jobs/pool.py"]
+body = "found while working ~AKSBJQ6: after the pump reaps the child, join() can return False for a politely exited worker."
+at = "2026-11-08T10:33:47Z"
+actor = "lognd"
+rev = 1

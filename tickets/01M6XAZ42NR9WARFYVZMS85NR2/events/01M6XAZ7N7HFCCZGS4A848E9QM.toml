@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Wizard POSTs /api/session/run-phase on calibrate->elastic->plastic transitions; schema.ts regenerated; vitest covers it"]
+moved = []
+at = "2026-11-08T10:23:53Z"
+actor = "lognd"
+rev = 1

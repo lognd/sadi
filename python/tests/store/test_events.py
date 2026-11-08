@@ -124,6 +124,7 @@ def test_settings_record_builds_settings_wal_record() -> None:
 
 
 # frob:tests python/sadi/store/events.py::replay
+# frob:tests python/sadi/store/events.py::ReplayState.view
 def test_current_state_is_replay_with_full_history() -> None:
     """Points, edits, settings and markers are records; state is their fold; history is kept."""
     state = replay(as_records(BASIC)).danger_ok
@@ -279,6 +280,7 @@ def test_snapshot_with_unusable_state_falls_back_to_full_replay(tmp_path: Path) 
     assert recover_state(h.path).danger_ok == replay_wal(h.path / "wal").danger_ok
 
 
+# frob:tests python/sadi/store/failpoints.py::clear
 # frob:tests python/sadi/store/snapshot.py::write_snapshot
 @pytest.mark.parametrize(
     ("point", "published"),

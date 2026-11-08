@@ -146,6 +146,7 @@ def test_argument_errors_and_units() -> None:
     assert dimless.is_ok
 
 
+# frob:tests python/sadi/uncertainty/cache.py::KeyedCache.clear
 # frob:tests python/sadi/uncertainty/cache.py::KeyedCache
 # frob:tests python/sadi/uncertainty/symbolic.py::output_unit
 # frob:tests python/sadi/uncertainty/symbolic.py::latex_derivation

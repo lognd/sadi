@@ -10,7 +10,14 @@ from pathlib import Path
 import pytest
 from typani import Err, Ok
 
-from sadi.store.lock import LOCK_FILENAME, LockHeld, LockStale, acquire, pid_alive
+from sadi.store.lock import (
+    LOCK_FILENAME,
+    LockHeld,
+    LockStale,
+    acquire,
+    pid_alive,
+    read_holder_pid,
+)
 
 _HOLDER = (
     "import sys,time\nfrom pathlib import Path\nfrom sadi.store.lock import acquire\n"
@@ -19,6 +26,7 @@ _HOLDER = (
 )
 
 
+# frob:tests python/sadi/store/lock.py::DataRootLock.__init__
 # frob:tests python/sadi/store/lock.py::acquire
 # frob:tests python/sadi/store/lock.py::DataRootLock.held
 # frob:tests python/sadi/store/lock.py::DataRootLock.release
@@ -104,3 +112,19 @@ def test_acquire_and_release_are_logged(tmp_path: Path, caplog: pytest.LogCaptur
     text = " ".join(r.getMessage() for r in caplog.records)
     assert "acquired" in text
     assert "released" in text
+
+
+# frob:ticket 01M6XAY79MWPV07858YAKSBJQ6
+# frob:tests python/sadi/store/lock.py::read_holder_pid
+def test_read_holder_pid_reads_the_live_holder_and_tolerates_junk(tmp_path: Path) -> None:
+    """The recorded pid is readable without locking; missing or garbled files give None."""
+    path = tmp_path / LOCK_FILENAME
+    assert read_holder_pid(path) is None
+    with acquire(tmp_path).unwrap():
+        assert read_holder_pid(path) == os.getpid()
+    path.write_text("pid=notanumber clean", encoding="ascii")
+    assert read_holder_pid(path) is None
+    path.write_text("nothing useful here", encoding="ascii")
+    assert read_holder_pid(path) is None
+    path.write_text("host=x pid=4242 other", encoding="ascii")
+    assert read_holder_pid(path) == 4242

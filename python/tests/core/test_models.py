@@ -78,6 +78,7 @@ def test_specimen_area_and_validation() -> None:
         Specimen(id="x", l0=Quantity(value=1.0, unit="kg"), diameter=Quantity(value=1.0, unit="m"))
 
 
+# frob:tests python/sadi/core/models.py::RunState.advance
 # frob:ticket 01M6W7R13KW0FFYHZJ7FY28A3R
 # frob:tests python/sadi/core/models.py::CapturedPoint.settled
 # frob:tests python/sadi/core/models.py::CapturedPoint.forced_early

@@ -53,6 +53,16 @@ screen, PNG and SVG are identical up to a uniform scale. No dependency was added
 Added later: `Series.yErr` (error bars) and annotation anchor `"auto"` (collision avoidance), see
 [calibration-plot.md](calibration-plot.md).
 
+## Accessibility: palette and non-colour cues
+
+Owner ticket ~9NEG3KJ. Every `lightTheme.palette` colour is at least 3:1 against the plot
+background (WCAG ratio via `web/src/a11y/contrast.ts`); the amber and sky entries were darkened
+to meet it. Colour alone never identifies a series: `seriesCue(series, index)` in `core/scene.ts`
+gives each series a default marker glyph (filled, ring, cross, cycling) and odd-indexed line
+series a dashed stroke, unless the series sets `marker`/`dashed` itself. Drawing and the legend
+both use it, so all plots inherit the cues. `web/src/plots/a11y-palette.test.ts` checks contrast and
+simulates deuteranopia/protanopia (Machado matrices, CIE76 deltaE >= 10 or a differing cue).
+
 ## Label placement
 
 Primary annotation, extra annotations, then marker and point labels go through one greedy,

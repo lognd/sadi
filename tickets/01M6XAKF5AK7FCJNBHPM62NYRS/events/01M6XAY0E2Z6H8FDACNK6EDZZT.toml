@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/server/api.md", "docs/server/results.md"]
+new = ["docs/server/api.md", "docs/server/results.md", "python/sadi/server/routes/results.py"]
+at = "2026-11-08T10:23:13Z"
+actor = "lognd"
+rev = 1

@@ -5,7 +5,8 @@ import { getLogger } from "../../api/log";
 import { decimateWindow } from "./decimate";
 import { mapValue } from "./layout";
 import type { Layout } from "./layout";
-import { axisTitle, pickColor } from "./scene";
+// frob:ticket 01M6XB9EBAP0ZTTYAMG9NEG3KJ
+import { axisTitle, pickColor, seriesCue } from "./scene";
 import type { Column, Scene } from "./scene";
 
 const log = getLogger("plots.drawlist");
@@ -88,7 +89,7 @@ export function buildDrawList(scene: Scene, layout: Layout): DrawOp[] {
   scene.series.forEach((s, i) => {
     const color = pickColor(theme, i, s.color);
     if (s.style === "line") {
-      ops.push({ op: "polyline", points: curve(layout, s.x, s.y), stroke: color, strokeWidth: theme.lineWidth, dashed: s.dashed === true });
+      ops.push({ op: "polyline", points: curve(layout, s.x, s.y), stroke: color, strokeWidth: theme.lineWidth, dashed: seriesCue(s, i).dashed });
       return;
     }
     const idx = visibleIndices(layout, s.x, s.y);
@@ -108,7 +109,7 @@ export function buildDrawList(scene: Scene, layout: Layout): DrawOp[] {
       }
     }
     for (let k = 0; k < pts.length; k += 2) {
-      ops.push(...marker(s.marker ?? "filled", pts[k] as number, pts[k + 1] as number, theme.markerRadius, color));
+      ops.push(...marker(seriesCue(s, i).marker, pts[k] as number, pts[k + 1] as number, theme.markerRadius, color));
     }
   });
   for (const m of scene.markers ?? []) {
@@ -147,9 +148,9 @@ export function buildDrawList(scene: Scene, layout: Layout): DrawOp[] {
       if (row.kind === "band") {
         ops.push({ op: "rect", x: r2(sx), y: r2(row.y - 4), w: 18, h: 8, fill: row.color });
       } else if (row.kind === "points") {
-        ops.push(...marker("filled", r2(sx + 9), r2(row.y), theme.markerRadius, row.color));
+        ops.push(...marker(row.marker ?? "filled", r2(sx + 9), r2(row.y), theme.markerRadius, row.color));
       } else {
-        ops.push({ op: "polyline", points: [r2(sx), r2(row.y), r2(sx + 18), r2(row.y)], stroke: row.color, strokeWidth: row.kind === "fit" ? theme.fitWidth : theme.lineWidth, dashed: row.kind === "fit" });
+        ops.push({ op: "polyline", points: [r2(sx), r2(row.y), r2(sx + 18), r2(row.y)], stroke: row.color, strokeWidth: row.kind === "fit" ? theme.fitWidth : theme.lineWidth, dashed: row.kind === "fit" || row.dashed === true });
       }
       ops.push({ op: "text", x: r2(sx + 24), y: r2(row.y + fs.legend * 0.35), text: row.label, size: fs.legend, color: theme.text, anchor: "start" });
     }

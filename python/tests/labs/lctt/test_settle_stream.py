@@ -66,6 +66,7 @@ def _detector(cfg: StreamConfig = CFG) -> StreamingSettleDetector:
 
 # frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector
 # frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector.raw
+# frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector.close_point
 def test_clean_settles_within_dwell() -> None:
     det = _detector()
     states = _stream(det, _clean, 200)

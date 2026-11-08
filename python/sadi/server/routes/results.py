@@ -5,6 +5,7 @@
 # frob:ticket 01M6WVADCSP63DBMYH3RNCXWTM
 
 # frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+# frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
 
 from __future__ import annotations
 
@@ -242,7 +243,9 @@ def make_guidance_provider(
 ) -> Callable[[], GuidancePayload | None]:
     """Provider of the current WS guidance, or None when there is no open session or it fails.
 
-    The phase is inferred: calibrate until a load point exists, then elastic.
+    The phase is the one recorded in the session log (`SessionService.run_phase`); only sessions
+    without a recorded phase fall back to inference: calibrate until a load point exists, then
+    elastic.
     """
 
     def provide() -> GuidancePayload | None:
@@ -251,8 +254,12 @@ def make_guidance_provider(
         if pts.is_err:
             return None
         views = active_points(pts.danger_ok)
-        loaded = any(p.phase not in _NON_LOAD for p in views)
-        got = compute_guidance(svc, labs, Phase.ELASTIC if loaded else Phase.CALIBRATE)
+        recorded = svc.run_phase()
+        phase = recorded.danger_ok.phase if recorded.is_ok else None
+        if phase is None:
+            loaded = any(p.phase not in _NON_LOAD for p in views)
+            phase = Phase.ELASTIC if loaded else Phase.CALIBRATE
+        got = compute_guidance(svc, labs, phase)
         if got.is_err:
             _log.info("ws guidance unavailable: %s", got.danger_err)
             return None

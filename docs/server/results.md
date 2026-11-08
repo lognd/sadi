@@ -15,6 +15,15 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
 - Results, budgets and guidance need an open session (409 `no_open_session` otherwise).
 - `phase` is `calibrate|elastic|plastic` (default `calibrate`); a bad `phase` or non-positive
   `target` is a 422 problem. Guidance never changes the phase; it only proposes.
+- Run phase owner: `SessionService.run_phase()` / `enter_phase()` (`sadi.server.run_phase`) hold
+  the live run's phase. Entering a phase appends a `run.phase` MARKER (label = phase) to the
+  session WAL, so it is append-only, durable, survives resume and is copied by resume folding.
+  Only the next phase in order (calibrate, elastic, plastic) is legal; the fold ignores any
+  out-of-order marker. REST: `GET/POST /api/session/run-phase`.
+- The WS guidance provider (`make_guidance_provider`) reads the recorded phase, so plastic is
+  sent once entered. Only sessions with no recorded phase (old data) fall back to inference:
+  calibrate until a load point exists, then elastic. `GET /results/guidance` still honours its
+  explicit `phase` query parameter.
 - Budgets come from an injected `AppSettings.budgets` callable when set; otherwise from the
   open session's lab if it implements the optional `sadi.core.lab.BudgetedLab` protocol
   (`budgets() -> list[LabBudget]`, each a result id, label, `Budget` and LaTeX). The route

@@ -1944,6 +1944,51 @@
         "title": "RunOptions",
         "type": "object"
       },
+      "RunPhaseBody": {
+        "additionalProperties": false,
+        "description": "Request to enter a guided-run phase (must be the next one in order).",
+        "properties": {
+          "phase": {
+            "$ref": "#/components/schemas/Phase-Input"
+          }
+        },
+        "required": [
+          "phase"
+        ],
+        "title": "RunPhaseBody",
+        "type": "object"
+      },
+      "RunPhaseView": {
+        "description": "The recorded guided-run phase (None for sessions that never recorded one) and the next.",
+        "properties": {
+          "next_phase": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/sadi__labs__lctt__guidance__Phase"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/sadi__labs__lctt__guidance__Phase"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "phase",
+          "next_phase"
+        ],
+        "title": "RunPhaseView",
+        "type": "object"
+      },
       "SaveState": {
         "description": "The three header save states; NOT_SAVED only on a durable-write failure.",
         "enum": [
@@ -3304,6 +3349,62 @@
           }
         },
         "summary": "Redo"
+      }
+    },
+    "/api/session/run-phase": {
+      "get": {
+        "description": "The recorded guided-run phase and the next allowed one.",
+        "operationId": "run_phase_api_session_run_phase_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunPhaseView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Run Phase"
+      },
+      "post": {
+        "description": "Enter the next guided-run phase (409 when out of order); recorded durably.",
+        "operationId": "enter_run_phase_api_session_run_phase_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunPhaseBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunPhaseView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Enter Run Phase"
       }
     },
     "/api/session/undo": {

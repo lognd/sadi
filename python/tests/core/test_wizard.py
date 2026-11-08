@@ -58,12 +58,14 @@ def _point(pid: str, phase: str = "calibration") -> PointV1:
 
 
 # frob:tests python/sadi/core/wizard.py::Wizard.create
+# frob:tests python/sadi/core/wizard.py::Wizard.__init__
 def test_create_rejects_empty_and_duplicates() -> None:
     assert Wizard.create([]).danger_err is WizardError.NoSteps
     s = _specs()[0]
     assert Wizard.create([s, s]).danger_err is WizardError.DuplicateStep
 
 
+# frob:tests python/sadi/core/wizard.py::Wizard.skip
 # frob:tests python/sadi/core/wizard.py::Wizard.state
 def test_rail_and_gating() -> None:
     w, log = _wiz(), Log()
@@ -114,6 +116,7 @@ def test_capture_accepts_specimen_point_on_any_device_step() -> None:
     assert w.capture(log.state, _point("t", "specimen")).danger_err is WizardError.NoCapture
 
 
+# frob:tests python/sadi/core/wizard.py::Wizard.history
 # frob:tests python/sadi/core/wizard.py::Wizard.undo
 def test_undo_redo_point_capture_never_deletes() -> None:
     w, log = _wiz(), Log()

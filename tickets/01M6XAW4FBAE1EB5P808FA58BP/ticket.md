@@ -2,14 +2,15 @@
 id = "01M6XAW4FBAE1EB5P808FA58BP"
 title = "Re-run full Playwright suite after usability changes and fix regressions"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:22:12Z"
-updated = "2026-11-08T10:22:51Z"
+updated = "2026-11-08T10:35:00Z"
+scope = ["web/e2e/helpers.ts", "docs/e2e.md", "docs/e2e-results-8FA58BP.md"]
 
 [[acceptance]]
 text = "Full Playwright suite passes against the current main; any regression fixed"
-bound = false
+bound = true
 +++

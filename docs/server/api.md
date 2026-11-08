@@ -37,6 +37,7 @@ Related REST surfaces: [results.md](results.md), [export.md](export.md) and [plo
 | GET/POST `/session/points` | list; capture (typed inputs per phase) |
 | POST `/session/points/{id}/edit` | edit (original kept in log) |
 | POST `/session/undo`, `/redo`; GET `/session/history` | compensating edits |
+| GET/POST `/session/run-phase` | recorded guided-run phase; POST enters the next phase only (409 otherwise) |
 
 Writes return `Committed {seq, summary, wizard, history}`.
 

@@ -1,0 +1,10 @@
+kind = "create"
+title = "Link docs/server/results.md from docs/index.md and docs/server/api.md"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["docs/index.md,docs/server/api.md"]
+body = "found while working ~J73KJ11: those files were under another live lease"
+at = "2026-11-08T05:45:26Z"
+actor = "lognd"
+rev = 1

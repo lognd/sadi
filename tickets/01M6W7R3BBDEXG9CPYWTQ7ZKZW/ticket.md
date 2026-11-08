@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:15:09Z"
+updated = "2026-11-08T03:15:34Z"
 idempotency_key = "sadi-a3"
 labels = ["ws:py", "lctt", "oq:Q3", "model:sonnet", "creates:python/sadi/labs/lctt/modulus.py", "creates:python/sadi/labs/lctt/yield_.py", "creates:python/sadi/labs/lctt/saturation.py", "creates:python/tests/labs/lctt/test_modulus.py", "creates:docs/lctt/modulus.md"]
 scope = ["python/sadi/labs/lctt/modulus.py", "python/sadi/labs/lctt/yield_.py", "python/sadi/labs/lctt/saturation.py", "python/tests/labs/lctt/test_modulus.py", "docs/lctt/modulus.md", "docs/index.md"]
@@ -27,7 +27,7 @@ target = "01M6W7R2XY9DB0PFREY9TZ8D2S"
 
 [[acceptance]]
 text = "E fit over a selectable window of points (default manual first/last per Q3, optional auto-window suggestion as a hint only) returning E, standard error, U95, r^2, n; per-point secant E"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "0.2 % offset yield stress with uncertainty; ultimate stress; flags windows with r^2 below configurable threshold"

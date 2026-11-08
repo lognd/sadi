@@ -13,6 +13,7 @@ Status: current
 - [Hardware capture records](hardware/captures/README.md)
 - [sadi-proto scaffold](sadi-proto.md)
 - [sadi-proto codec](device/codec.md)
+- [sadi-proto v3.41 codec (optional)](device/v3.md)
 - [Python layout](python-layout.md)
 - [Packaging and the device extra](packaging.md)
 - [Uncertainty core: Measured](uncertainty/measured.md)

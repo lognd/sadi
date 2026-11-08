@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["A sim launcher serves WS /api/stream and live frames reach the browser readout; samples still flow through the session WAL"]
+moved = []
+at = "2026-11-08T07:38:34Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6W7R3XY1B0BF689RX3H80G2"
 title = "FastAPI app: REST endpoints (sessions, inventory, points, results, export)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

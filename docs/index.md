@@ -34,6 +34,7 @@ Status: current
 - [Server app](server/app.md)
 - [Server inventory API](server/inventory.md)
 - [Server export API](server/export.md)
+- [Server results API](server/results.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

@@ -55,5 +55,5 @@ The active session is the newest directory (names sort by UTC stamp) under
 events by `phase` (`calibration`: volts, height; `tare`: mean, sd, n; `specimen`: diameter,
 u_diameter, hanger_kg, u_hanger_kg; any other phase is a load point: volts, mass_kg and
 optional u_volts, u_mass_kg; defined once in `sadi.core.point_inputs`, which the recording
-path also uses to write them), derives the curve with `build_document` and returns the
+path also uses to write them; the POINT's settle meta - settled, forced_early, drift_rate, t_since_load_s - is read with `parse_meta`, defaults for older events, and forced-early points are logged), derives the curve with `build_document` and returns the
 non-excluded points. No session, replay failure or an unready session gives 409 `NoData`.

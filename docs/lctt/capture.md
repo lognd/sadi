@@ -38,14 +38,15 @@ in `sadi.store.events` recomputes the view from raw.
 
 ## Recording
 
-Each `Captured` carries `inputs`, a `LoadInputs` (see `sadi.core.point_inputs`): `volts`
+Each `Captured` carries `meta` (a `PointMeta`: `t_since_load_s`, `drift_rate`, `settled`, `forced_early`) and `inputs`, a `LoadInputs` (see `sadi.core.point_inputs`): `volts`
 is the mean raw LVDT volts over the averaging window, `u_volts` its standard error,
 `mass_kg`/`u_mass_kg` come from `start_point`, and `phase` is `CaptureConfig.phase`.
 `point` is built with `build_point`, so its `inputs` use the shared phase mapping. Write it
-with `AcquisitionDriver.record_point(captured.inputs, captured.point.window)` (labs may not
+with `AcquisitionDriver.record_point(captured.inputs, captured.point.window, captured.meta)` (labs may not
 import `sadi.api`; the caller does). `recover_state` and the server curve source then
-replay the point as a load point. Only phase, window and inputs are written by
-`record_point`; settle/forced-early flags stay on the in-memory `point`.
+replay the point as a load point. The POINT event persists phase, window, inputs and the
+`meta` fields, so settled/forced-early/drift survive crash recovery; events written without
+them read back as defaults.
 
 ## Errors
 

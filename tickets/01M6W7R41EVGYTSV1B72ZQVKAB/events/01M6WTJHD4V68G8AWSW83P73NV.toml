@@ -1,0 +1,44 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:37:19Z"
+digest = "4d19269d0ee5f80fd8305a0866e25d7906115ae80b28ced939c78d82dc29c91a"
+exit_code = 0
+head = "c9fcbe8c89eece060c367eff6e7f86efb65de0f1"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+ \u{2713} web/src/components/wizard/wizard.test.tsx (9 tests) 24ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  00:37:19
+   Duration  694ms (transform 178ms, setup 0ms, collect 240ms, tests 24ms, environment 0ms, prepare 126ms)
+
+JSON report written to /tmp/frob-vitest-475994-0.json
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/wizard/wizard.test.tsx"
+size = 1150
+status = "measured"
+test_count = 9
+tests_digest = "c89fb867ce348ef9b7beb7aae5f5ac29b9dab612acf61f883b7b51643b7f49db"
+at = "2026-11-08T05:37:19Z"
+actor = "lognd"
+rev = 1

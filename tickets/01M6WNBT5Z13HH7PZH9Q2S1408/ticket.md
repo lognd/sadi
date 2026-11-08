@@ -7,8 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:06:17Z"
-updated = "2026-11-08T04:09:08Z"
+updated = "2026-11-08T04:09:23Z"
 labels = ["rust"]
+scope = ["crates/sadi-py/**"]
 +++
 
 From ~JBD8YVD. Also run the Rust unit tests for sim.rs via goway (only compiled/clippy-checked locally).

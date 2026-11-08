@@ -12,7 +12,7 @@ scope = ["python/sadi/server/results_stream.py", "python/sadi/server/ws.py", "py
 
 [[acceptance]]
 text = "JobManager sink feeds ResultsStream: refining/final offered, stale ignored"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "WebSocket clients receive snapshot then live RESULTS_ENVELOPE frames with stale flag"

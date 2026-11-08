@@ -33,3 +33,30 @@ maturin develop
 virtual environment (for example the one created by `uv sync` in `python/`).
 Without it, the pure-Python parts of SADI still work; device features and the
 related doctor checks report the extension as missing.
+
+## Bundling the web UI
+
+Windows and macOS are UNVERIFIED. The build script uses only pathlib and
+subprocess, but it has been exercised on Linux alone.
+
+One command, from a clean checkout (needs Node.js with npm on PATH):
+
+```
+python packaging/build_ui.py
+```
+
+It runs `npm ci` and `npm run build` (tsc + vite build) in `web/`, then
+replaces the contents of `python/sadi/_ui/` with `web/dist`. Pass
+`--no-install` to skip `npm ci`. The copied files are gitignored; only
+`python/sadi/_ui/.gitkeep` is tracked. `python/pyproject.toml` lists
+`sadi/_ui/**` as hatch wheel `artifacts`, so a wheel built after the UI
+step contains the UI; the `sadi` console script (`sadi.launcher:main`) is
+declared in `[project.scripts]`.
+
+At runtime the launcher picks the UI directory in this order: `--web-dist`
+if given, then the packaged `sadi/_ui` (when it holds `index.html`), then
+`web/dist` relative to the working directory.
+
+Not yet verified: that a built wheel actually contains the UI (needs a wheel
+build, deferred to the release-workflow ticket) and any run on Windows or
+macOS.

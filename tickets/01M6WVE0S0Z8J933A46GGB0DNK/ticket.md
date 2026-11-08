@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:52:21Z"
-updated = "2026-11-08T06:03:36Z"
+updated = "2026-11-08T06:03:42Z"
 labels = ["python"]
 scope = ["python/tests/cli/test_launcher.py", "docs/server/launcher.md", "changelog.d"]
 

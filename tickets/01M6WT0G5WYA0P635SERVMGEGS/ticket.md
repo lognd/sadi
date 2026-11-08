@@ -12,7 +12,7 @@ scope = ["python/sadi/doctor/checks/sess.py", "python/tests/doctor/test_sess_nam
 
 [[acceptance]]
 text = "names has a covering test"
-bound = false
+bound = true
 +++
 
 found while working 01M6WSPW5XB6P5V3PR5SHEH6FP; pre-existing COV001 error on sess.py::names

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:42:07Z"
-updated = "2026-11-08T06:21:36Z"
+updated = "2026-11-08T06:21:52Z"
 scope = ["docs/lctt/export-csv.md"]
 
 [[acceptance]]
@@ -16,5 +16,5 @@ bound = true
 
 [[acceptance]]
 text = "Tracked docs/lctt/export-csv.md describes differences without reference names"
-bound = false
+bound = true
 +++

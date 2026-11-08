@@ -2,7 +2,8 @@
 id = "01M6WV6TDZXWA9JPZKPTSXXK8B"
 title = "Vite dev proxy lacks ws:true for /api (WS /api/stream)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

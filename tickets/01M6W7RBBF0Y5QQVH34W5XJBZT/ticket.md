@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:28Z"
-updated = "2026-11-08T09:50:42Z"
+updated = "2026-11-08T09:58:52Z"
 idempotency_key = "sadi-f14"
 labels = ["ws:web", "usability", "model:sonnet", "creates:docs/usability-report.md", "creates:web/src/screens/**/*.usability.md"]
-scope = ["docs/usability-report.md", "web/src/screens/**/*.usability.md"]
+scope = ["docs/usability-report.md", "web/src/screens/**/*.usability.md", "docs/index.md"]
 
 [[links]]
 kind = "blocked-by"

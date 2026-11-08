@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T09:50:14Z"
+digest = "2e3eaba255d14c068a8781f5bea1372ded274b33e38d83ad45980c66d5a10a7d"
+head = "c97e49eebadce92b46687e801e28ff0ea5565d3b"
+provider = "file"
+ref = "web/e2e/guided-run.spec.ts"
+size = 1837
+status = "measured"
+at = "2026-11-08T09:50:14Z"
+actor = "lognd"
+rev = 1

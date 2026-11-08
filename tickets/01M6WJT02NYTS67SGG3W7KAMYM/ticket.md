@@ -2,7 +2,7 @@
 id = "01M6WJT02NYTS67SGG3W7KAMYM"
 title = "Pipeline: write RAW_JUNK records for dropped_bytes"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

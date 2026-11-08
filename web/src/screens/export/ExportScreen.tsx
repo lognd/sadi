@@ -143,7 +143,7 @@ export function ProblemAlert({ p }: { p: Problem }) {
   );
 }
 
-/** List of formats: downloads are links, figure formats get PNG/SVG export buttons; empty list shows a message. */
+/** List of formats: download links first, then the DPI select and figure PNG/SVG buttons; empty list shows a message. */
 export function FormatList(props: {
   formats: ExportFormatView[];
   dpi: number;
@@ -154,30 +154,41 @@ export function FormatList(props: {
   if (formats.length === 0) {
     return <section aria-label="Export formats"><p data-testid="no-formats">This lab declares no export formats yet.</p></section>;
   }
+  // frob:ticket 01M6XAASK3B2CWRRHQZ995FN7K
+  // Downloads (the primary CSV deliverable) come first so they are first in Tab order (U-08).
+  const downloads = formats.filter((f) => f.download);
+  const figures = formats.filter((f) => !f.download);
   return (
     <section aria-label="Export formats">
       <h2>Export</h2>
-      <label>
-        {"PNG resolution "}
-        <select value={dpi} onChange={(e) => { onDpi?.(Number(e.target.value)); }}>
-          {DPI_CHOICES.map((d) => <option key={d} value={d}>{`${String(d)} dpi`}</option>)}
-        </select>
-      </label>
-      <ul>
-        {formats.map((f) => (
-          <li key={f.id} data-testid={`format-${f.id}`}>
-            {f.download ? (
+      {downloads.length > 0 ? (
+        <ul aria-label="Downloads">
+          {downloads.map((f) => (
+            <li key={f.id} data-testid={`format-${f.id}`}>
               <a href={exportUrl(f.id)} download>{`Download ${f.title}`}</a>
-            ) : (
-              <>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {figures.length > 0 ? (
+        <div role="group" aria-label="Figures">
+          <label>
+            {"PNG resolution "}
+            <select value={dpi} onChange={(e) => { onDpi?.(Number(e.target.value)); }}>
+              {DPI_CHOICES.map((d) => <option key={d} value={d}>{`${String(d)} dpi`}</option>)}
+            </select>
+          </label>
+          <ul>
+            {figures.map((f) => (
+              <li key={f.id} data-testid={`format-${f.id}`}>
                 <span>{f.title}</span>
                 <button type="button" onClick={() => { onFigure?.(f, "png"); }}>{`Export ${f.title} as PNG`}</button>
                 <button type="button" onClick={() => { onFigure?.(f, "svg"); }}>{`Export ${f.title} as SVG`}</button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
 }

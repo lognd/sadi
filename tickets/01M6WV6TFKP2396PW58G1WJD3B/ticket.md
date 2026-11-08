@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:59:33Z"
-scope = ["web/src/hooks/**"]
+updated = "2026-11-08T06:00:40Z"
+scope = ["web/src/hooks/**", "docs/web/live-trace.md"]
 +++
 
 found while working 7KWS2S7

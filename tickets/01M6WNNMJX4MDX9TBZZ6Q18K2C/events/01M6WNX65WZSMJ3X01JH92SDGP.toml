@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["POINT events persist settled, forced_early, drift_rate and t_since_load_s and recover_state returns them unchanged", "POINT events without the meta fields still parse (defaults)"]
+moved = []
+at = "2026-11-08T04:15:46Z"
+actor = "lognd"
+rev = 1

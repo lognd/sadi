@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:15:47Z"
+digest = "3795c1c18f83a9a98824dc3cdb1d4148e55255141d99f284e71d8b87d372fcfd"
+exit_code = 0
+head = "8548448de429006751cf1c397a301f2d88c80148"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_point_meta.py .                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-376579-0.xml ---------------
+============================== 1 passed in 0.30s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_point_meta.py::test_legacy_point_without_meta_parses"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "52e530cbb19a292d884338a1a0269d4bf77fe449d3340516e32bc4fb0c1f9df3"
+at = "2026-11-08T04:15:47Z"
+actor = "lognd"
+rev = 1

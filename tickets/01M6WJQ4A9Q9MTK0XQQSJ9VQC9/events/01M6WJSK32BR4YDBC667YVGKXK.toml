@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/SJ9VQC9; scope: python/sadi/uncertainty/numeric.py, python/tests/uncertainty/**; ttl 7200s"
+at = "2026-11-08T03:21:22Z"
+actor = "lognd"
+rev = 1

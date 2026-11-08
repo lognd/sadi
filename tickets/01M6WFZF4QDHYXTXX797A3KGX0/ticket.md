@@ -2,7 +2,8 @@
 id = "01M6WFZF4QDHYXTXX797A3KGX0"
 title = "Doctor checks for plugin state with step-by-step fixes"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

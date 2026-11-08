@@ -2,7 +2,8 @@
 id = "01M6WTCAA5WR1VD7H7ES7757MP"
 title = "Resume should fold parent state into the new WAL version"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

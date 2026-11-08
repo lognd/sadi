@@ -2,7 +2,8 @@
 id = "01M6W7R3EPVRGG4R93B7WJVKMW"
 title = "Creep plot: strain vs log-time per hold with fit and slip markers"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"

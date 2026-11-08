@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:23:31Z"
+updated = "2026-11-08T06:23:35Z"
 scope = ["web/src/screens/run/**", "docs/web/run-screens.md"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Export failures surface as a status message"
-bound = false
+bound = true
 +++
 
 found while working ~74FQXWT

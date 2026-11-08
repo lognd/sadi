@@ -45,3 +45,5 @@ and exports the current scene as 192 dpi PNG through `plots/core` `exportFigure`
 `live.test.tsx` benchmarks decode + window + snapshot per frame for 50 kS/s (50 frames/s, 256
 buckets, 2 channels) in node and asserts p95 under 8 ms, mean under 4 ms, well below the 16 ms
 frame budget. A real-browser 60 fps run is not automated here.
+
+Dev proxy: `web/vite.config.ts` proxies `/api` with `ws: true` so `WS /api/stream` works under `vite dev`.

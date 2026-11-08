@@ -19,6 +19,8 @@ export interface InputField {
   readonly min?: number;
   /** Blank means "use the live block-mean reading" (shown as the placeholder). */
   readonly live?: boolean;
+  /** Belongs to the separate `specimen` point (geometry), not to the phase's own point. */
+  readonly specimen?: boolean;
 }
 
 const LIVE_V: InputField = { key: "volts", label: "Volts", unit: "V", required: false, live: true };
@@ -30,6 +32,9 @@ export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
     { key: "mean", label: "Mean volts", unit: "V", required: false, live: true },
     { key: "n", label: "Sample count n", unit: "", required: true, integer: true, min: 1 },
     { key: "sd", label: "Volts sd", unit: "V", required: false, min: 0 },
+    { key: "diameter", label: "Specimen diameter", unit: "m", required: false, min: 0, specimen: true },
+    { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
+    { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true },
   ],
   elastic: [LIVE_V, { key: "mass_kg", label: "Total hanging mass", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
   plastic: [LIVE_V, { key: "mass_kg", label: "Total hanging mass", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
@@ -63,4 +68,15 @@ export function collectInputs(
     else if (r.value !== null) out[f.key] = r.value;
   }
   return errors.length > 0 ? err(errors) : ok(out);
+}
+
+/** Split validated values into the phase point's own inputs and the specimen point's (null when no diameter). */
+export function splitSpecimen(
+  phase: RunPhase, values: Readonly<Record<string, number>>,
+): { readonly own: Record<string, number>; readonly specimen: Record<string, number> | null } {
+  const keys = new Set(PHASE_FIELDS[phase].filter((f) => f.specimen === true).map((f) => f.key));
+  const own: Record<string, number> = {};
+  const specimen: Record<string, number> = {};
+  for (const [k, v] of Object.entries(values)) (keys.has(k) ? specimen : own)[k] = v;
+  return { own, specimen: "diameter" in specimen ? specimen : null };
 }

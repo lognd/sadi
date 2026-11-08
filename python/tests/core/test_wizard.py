@@ -104,6 +104,16 @@ def test_capture_checks_step_and_phase() -> None:
     assert w.capture(log.state, _point("q", "elastic")).danger_err is WizardError.NoCapture
 
 
+# frob:tests python/sadi/core/wizard.py::Wizard.capture
+# frob:ticket 01M6X6PW1F4HNNFMMY5YV3QKP9
+def test_capture_accepts_specimen_point_on_any_device_step() -> None:
+    w, log = _wiz(), Log()
+    log.apply(w.capture(log.state, _point("s", "specimen")))
+    assert len(log.state.points) == 1
+    log.apply(w.complete(log.state, StepId("calibrate")))
+    assert w.capture(log.state, _point("t", "specimen")).danger_err is WizardError.NoCapture
+
+
 # frob:tests python/sadi/core/wizard.py::Wizard.undo
 def test_undo_redo_point_capture_never_deletes() -> None:
     w, log = _wiz(), Log()

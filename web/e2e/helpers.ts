@@ -69,6 +69,6 @@ export async function skipSetup(page: Page): Promise<void> {
 export function inputsFor(phase: string, i: number): Record<string, string> {
   const p = phase.toLowerCase();
   if (p.includes("calibration")) return { height: String(0.01 + 0.005 * i) };
-  if (p.includes("tare")) return { n: "100" };
+  if (p.includes("tare")) return { n: "100", diameter: "0.006", hanger_kg: "0.05" };
   return { mass_kg: String(0.1 * (i + 1)) };
 }

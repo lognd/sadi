@@ -65,3 +65,12 @@ export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): P
   if (!r.ok) log.warn("capture refused", { kind: r.error.kind });
   return r;
 }
+
+/** Build the `specimen` point body (geometry entered alongside a phase); same window/settle as the phase point. */
+export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView): CaptureBody {
+  return {
+    phase: "specimen", inputs,
+    window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
+    settled: true, forced_early: false, drift_rate: view.driftVps,
+  };
+}

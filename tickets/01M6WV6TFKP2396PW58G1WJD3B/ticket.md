@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T06:00:42Z"
+updated = "2026-11-08T06:00:43Z"
 scope = ["web/src/hooks/**", "docs/web/live-trace.md"]
 
 [[acceptance]]
 text = "Stream clock vs record window_end/time_since_load relationship is pinned by a unit test and documented"
-bound = false
+bound = true
 +++
 
 found while working 7KWS2S7

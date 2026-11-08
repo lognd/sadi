@@ -23,6 +23,7 @@ Status: current
 - [Web layout](web-layout.md)
 - [Doctor UI](web/doctor-ui.md)
 - [Results panel](web/results-panel.md)
+- [Plot renderer core](web/plots.md)
 - [Server app](server/app.md)
 - [Data-safety design](data-safety.md)
 - [Store durability primitives](store/durable.md)

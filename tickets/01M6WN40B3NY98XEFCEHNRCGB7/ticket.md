@@ -13,7 +13,7 @@ scope = ["creates:python/sadi/core/point_inputs.py", "python/sadi/core/pipeline.
 
 [[acceptance]]
 text = "Points recorded by AcquisitionDriver.record_point replay via recover_state and feed a successful POST /api/stress-strain/fit; writer and reader share one mapping in sadi.core.point_inputs"
-bound = false
+bound = true
 +++
 
 From ~F3C3VYD: python/sadi/server/curve_source.py maps WAL POINT phase (calibration, tare, specimen, load) to analysis inputs; mapping documented in docs/server/app.md. Nothing yet records points that way. Make the acquisition/recording path write them, add a round-trip test (record -> recover_state -> fit), and share one mapping definition (no duplication).

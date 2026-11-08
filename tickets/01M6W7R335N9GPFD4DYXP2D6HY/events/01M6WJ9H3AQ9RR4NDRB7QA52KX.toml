@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:12:36Z"
+digest = "9d5ab40435960bb7e75103fe8dda73959a4709194d4f21d220af3bb85a6d11f7"
+exit_code = 0
+head = "3aa9326149130078b215325946612e5e85ca81bf"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_wizard.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-236437-0.xml ---------------
+============================== 1 passed in 0.32s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_wizard.py::test_undo_redo_edit_and_window_change"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "a5614ea85bd9b37d2df3137cd5391a2f224a72ceb024ffdfc2500a1189c8ce23"
+at = "2026-11-08T03:12:36Z"
+actor = "lognd"
+rev = 1

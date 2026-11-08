@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Run screen shows an accessible hint that hotkeys pause in text fields and Esc/Tab returns to them; Esc blurs the field; typing never captures"]
+moved = []
+at = "2026-11-08T10:14:52Z"
+actor = "lognd"
+rev = 1

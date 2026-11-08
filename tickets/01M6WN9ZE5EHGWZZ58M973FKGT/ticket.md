@@ -13,7 +13,7 @@ scope = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py"]
 
 [[acceptance]]
 text = "Doctor and server error families are typani ErrorSets; label/status enums stay StrEnum with unchanged wire values"
-bound = false
+bound = true
 +++
 
 From ~PYEFC79: core/store done; doctor and server were out of its lease. Convert error enums only; keep state/label enums; preserve wire values; record per-enum decision.

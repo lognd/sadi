@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T06:04:53Z"
+updated = "2026-11-08T06:19:25Z"
 idempotency_key = "sadi-j5"
 labels = ["ws:conc", "ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/concurrency/**", "creates:docs/concurrency-testing.md"]
 scope = ["python/tests/concurrency/**", "docs/concurrency-testing.md"]
@@ -35,7 +35,7 @@ target = "01M6W7RAK3KCB1G87VKETJKV0D"
 
 [[acceptance]]
 text = "Stress tests under seeded interleavings: capture during refinement, supersede storms, cancel during write, slow fsync with full queue, shutdown with live jobs; detect deadlock via timeouts and lock-order checks"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Kill (SIGKILL/TerminateProcess) the whole app mid-WAL-write while MC/GP jobs run: recovery keeps every acknowledged record, jobs restart from raw, no torn state"

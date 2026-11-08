@@ -7,12 +7,12 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T04:38:18Z"
-updated = "2026-11-08T05:06:22Z"
+updated = "2026-11-08T05:06:26Z"
 scope = ["python/tests/server/test_spill_isolation.py"]
 
 [[acceptance]]
 text = "A spill planted in the real-dir stand-in is not imported, and its bytes and mtime are unchanged after startup"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Negative controls: the same spill in the app's data root, or with HOME/XDG pointed at the stand-in, IS imported"

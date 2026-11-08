@@ -4,9 +4,10 @@ title = "Vite dev proxy lacks ws:true for /api (WS /api/stream)"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:48:25Z"
+updated = "2026-11-08T05:54:05Z"
 scope = ["web/vite.config.ts"]
 +++
 

@@ -2,13 +2,14 @@
 id = "01M6W7RAMTFXRP2FHAFAEZAQ6K"
 title = "Weights and setup screens: inventory entry, group weighing, specimen, calibration inputs"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "high"
 points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T02:27:18Z"
 idempotency_key = "sadi-f10"
 labels = ["ws:web", "oq:Q7", "model:sonnet", "creates:web/src/screens/setup/**", "creates:web/src/screens/weights/**", "creates:docs/web/weights-screen.md"]
 scope = ["web/src/screens/setup/**", "web/src/screens/weights/**", "docs/web/weights-screen.md"]

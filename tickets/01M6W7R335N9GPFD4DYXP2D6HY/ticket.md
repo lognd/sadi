@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Every action returns typani Result with an error hint for the UI"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

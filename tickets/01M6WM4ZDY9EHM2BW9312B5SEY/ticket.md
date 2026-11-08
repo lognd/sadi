@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T03:45:04Z"
-updated = "2026-11-08T03:52:45Z"
+updated = "2026-11-08T03:52:46Z"
 scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "A log axis yields decade ticks and log-mapped geometry, and non-positive data returns a PlotError instead of drawing"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A Figure stacks panels sharing one x range with aligned plot areas through the same draw path as a Scene"

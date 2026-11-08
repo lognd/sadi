@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:05:17Z"
-updated = "2026-11-08T04:08:47Z"
+updated = "2026-11-08T04:08:53Z"
 labels = ["python"]
 scope = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py", "python/tests/doctor/test_error_families.py"]
 

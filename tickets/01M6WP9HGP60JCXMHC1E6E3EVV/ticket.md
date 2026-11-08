@@ -2,12 +2,12 @@
 id = "01M6WP9HGP60JCXMHC1E6E3EVV"
 title = "packaging: declare sadi_py as an optional 'device' extra in python/pyproject.toml"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:22:31Z"
-updated = "2026-11-08T04:22:31Z"
+updated = "2026-11-08T04:22:33Z"
 labels = ["creates:docs/packaging.md"]
 +++
 

@@ -4,7 +4,8 @@ title = "LCTT: end-to-end test of auto E window through LcttLab.analyze and yiel
 type = "task"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T07:19:12Z"
-updated = "2026-11-08T07:19:12Z"
+updated = "2026-11-08T07:20:41Z"
 +++

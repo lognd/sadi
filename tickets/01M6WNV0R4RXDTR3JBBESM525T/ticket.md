@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T04:14:35Z"
-updated = "2026-11-08T04:17:25Z"
+updated = "2026-11-08T04:17:29Z"
 scope = ["python/sadi/store/**", "python/tests/store/test_events.py"]
 
 [[acceptance]]

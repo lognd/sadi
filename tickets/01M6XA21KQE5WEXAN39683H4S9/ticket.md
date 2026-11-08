@@ -2,7 +2,8 @@
 id = "01M6XA21KQE5WEXAN39683H4S9"
 title = "Setup: clamp-check capture UI"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

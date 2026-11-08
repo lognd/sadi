@@ -2,14 +2,14 @@
 id = "01M6X955RB67ZV7PBVB1Z8MJ6M"
 title = "Doctor screenshot leaks host paths and shows failing checks; regenerate with redacted paths"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:52:11Z"
-updated = "2026-11-08T09:52:14Z"
+updated = "2026-11-08T09:55:59Z"
 
 [[acceptance]]
 text = "doctor.png contains no host-specific absolute paths and shows no failing checks"
-bound = false
+bound = true
 +++

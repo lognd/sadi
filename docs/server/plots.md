@@ -7,6 +7,9 @@ Parent: [api.md](api.md)
 Router `sadi.server.routes.plots.make_plots_router(svc)` (mounted by `create_app`) serves
 per-phase plot data for the open session. Read-only: both payloads are derived on every
 call from the replayed session events (`curve_source.session_events`); nothing is written.
+Replay goes through the app-wide `SessionReplayCache` (one `IncrementalReplay` per session dir, shared with
+the stress-strain curve and export routes), so a request reads only newly appended WAL frames; any
+anomaly falls back to the full verified replay (`docs/store/incremental-replay.md`).
 
 | Endpoint | Returns |
 | --- | --- |

@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6WWN92GG11X653PP544SRDC
 # frob:ticket 01M6WXRTBQ3KWAB1JE0PBZRG82
+# frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
 
 from __future__ import annotations
 
@@ -18,7 +19,7 @@ from sadi.labs.lctt.figure_data import (
 )
 from sadi.labs.lctt.live import LiveEvent
 from sadi.logging_setup import get_logger
-from sadi.server.curve_source import session_events
+from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, from_sadi, unwrap
 from sadi.server.service import SessionService
 
@@ -50,28 +51,29 @@ def stress_strain_plot(events: list[LiveEvent]) -> StressStrainPlot:
 
 
 @propagate
-def _events(svc: SessionService) -> Result[list[LiveEvent], ApiProblem]:
+def _events(svc: SessionService, cache: SessionReplayCache) -> Result[list[LiveEvent], ApiProblem]:
     """Replay the open session into events, or the problem explaining why not."""
     path = svc.session_path().unwrap()
-    events = session_events(path)
+    events = cache.events(path)
     if events.is_err:
         _log.error("plots: session replay failed: %s", events.danger_err)
         return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))
     return Ok(events.danger_ok)
 
 
-def make_plots_router(svc: SessionService) -> APIRouter:
+def make_plots_router(svc: SessionService, cache: SessionReplayCache | None = None) -> APIRouter:
     """Build the plots router over `svc`; handlers are read-only projections of the event log."""
+    replays = cache if cache is not None else SessionReplayCache()
     r = APIRouter(prefix="/api/plots", tags=["plots"])
 
     @r.get("/calibration")
     def get_calibration() -> CalibrationPlot:
         """Calibration points with the fitted line and 95% band of the open session."""
-        return calibration_plot(unwrap(_events(svc)))
+        return calibration_plot(unwrap(_events(svc, replays)))
 
     @r.get("/stress-strain")
     def get_stress_strain() -> StressStrainPlot:
         """Stress-strain points (strain, MPa) of the open session, excluded ones flagged."""
-        return stress_strain_plot(unwrap(_events(svc)))
+        return stress_strain_plot(unwrap(_events(svc, replays)))
 
     return r

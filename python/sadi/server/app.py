@@ -27,7 +27,7 @@ from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
-from sadi.server.curve_source import make_curve_source
+from sadi.server.curve_source import SessionReplayCache, make_curve_source
 from sadi.server.live import LiveAcquisition
 from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.acquisition import make_acquisition_router
@@ -171,8 +171,9 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(
         make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)
     )
-    app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry()))
-    app.include_router(make_plots_router(app.state.sessions))
+    replays = SessionReplayCache()  # one incremental replayer per session, shared
+    app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry(), replays))
+    app.include_router(make_plots_router(app.state.sessions, replays))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
     app.include_router(make_doctor_router())
     # frob:ticket 01M6WZZEHBSPSCHA90KQG3RK1T
@@ -191,7 +192,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             simulated=(lambda: device.status == "simulated") if device is not None else None,
         )
         app.include_router(make_ws_router(app.state.stream_hub))
-    source = cfg.curve_source or make_curve_source(cfg.data_root)
+    source = cfg.curve_source or make_curve_source(cfg.data_root, replays)
     app.include_router(make_stress_strain_router(source))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

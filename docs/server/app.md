@@ -76,3 +76,5 @@ handlers; see [api.md](api.md). `AppSettings.labs` injects the `LabRegistry` (de
 Results, budgets, guidance and device status routes: [results.md](results.md). `AppSettings.device` and `AppSettings.budgets` inject their sources.
 
 Per-action state comes from `IncrementalReplay` (docs/store/incremental-replay.md), not a full WAL walk per request, so action latency stays flat as raw data accumulates.
+
+`create_app` builds one `SessionReplayCache` and hands it to the export, plots and curve-source wiring, so all three share one `IncrementalReplay` per session (bounded to a few sessions; eviction only costs a verified full replay).

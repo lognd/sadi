@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:35:05Z"
-updated = "2026-11-08T09:42:19Z"
+updated = "2026-11-08T09:42:36Z"
+scope = ["python/sadi/core/wizard.py"]
 
 [[acceptance]]
 text = "test_live_mark_load_change_without_run passes and ty reports no diagnostics in test_routes_acquisition.py"

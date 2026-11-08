@@ -1158,4 +1158,59 @@ mod tests {
         };
         assert_eq!(b.device_state(), Some(DeviceState::Running));
     }
+
+    // frob:ticket 01M6WBJVN07FZ917KP0RGND1S4
+    // frob:tests crates/sadi-proto/src/session.rs::CommandPolicy.max_attempts
+    #[test]
+    fn policy_reports_max_attempts() {
+        let cap = MaxAttempts::new(3).unwrap();
+        let p = CommandPolicy::new(
+            RetryInterval::from_millis(10).unwrap(),
+            CommandTimeout::from_millis(100).unwrap(),
+            cap,
+        )
+        .unwrap();
+        assert_eq!(p.max_attempts(), cap);
+        assert_eq!(p.max_attempts().get(), 3);
+    }
+
+    // frob:ticket 01M6WBJVN07FZ917KP0RGND1S4
+    // frob:tests crates/sadi-proto/src/session.rs::SessionConfig.read_timeout
+    #[test]
+    fn config_reports_read_timeout() {
+        let t = ReadTimeout::from_millis(750).unwrap();
+        let c = SessionConfig::default().with_read_timeout(t);
+        assert_eq!(c.read_timeout(), t);
+    }
+
+    // frob:ticket 01M6WBJVN07FZ917KP0RGND1S4
+    // frob:tests crates/sadi-proto/src/session.rs::SessionConfig.idempotence
+    #[test]
+    fn config_reports_idempotence() {
+        assert_eq!(
+            SessionConfig::default().idempotence(),
+            Idempotence::SkipIfAlready
+        );
+        let c = SessionConfig::default().with_idempotence(Idempotence::AlwaysSend);
+        assert_eq!(c.idempotence(), Idempotence::AlwaysSend);
+    }
+
+    // frob:ticket 01M6WBJVN07FZ917KP0RGND1S4
+    // frob:tests crates/sadi-proto/src/session.rs::RawTap.on_rx
+    #[test]
+    fn raw_tap_closure_receives_bytes_and_propagates_errors() {
+        let mut seen: Vec<u8> = Vec::new();
+        {
+            let mut tap = |b: &[u8]| -> Result<(), TapError> {
+                seen.extend_from_slice(b);
+                Ok(())
+            };
+            RawTap::on_rx(&mut tap, &[1, 2, 3]).unwrap();
+        }
+        assert_eq!(seen, vec![1, 2, 3]);
+
+        let mut failing = |_: &[u8]| -> Result<(), TapError> { Err(TapError::new("disk full")) };
+        let err = RawTap::on_rx(&mut failing, &[9]).unwrap_err();
+        assert_eq!(err.to_string(), "disk full");
+    }
 }

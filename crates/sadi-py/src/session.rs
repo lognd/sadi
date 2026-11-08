@@ -101,6 +101,42 @@ fn take_raw(raw: &Mutex<Vec<u8>>) -> Vec<u8> {
     std::mem::take(&mut *lock(raw))
 }
 
+/// A streaming session lifted out of its `Session` for the acquisition thread.
+// frob:ticket 01M6W7R2QFWW5VYSHCVA8Y67RG
+pub(crate) struct StreamParts {
+    stream: Streaming<DynTransport>,
+    mode: AdcMode,
+    raw: Arc<Mutex<Vec<u8>>>,
+}
+
+impl StreamParts {
+    /// Bundles a streaming handle with its ADC mode and raw-byte tap buffer.
+    pub(crate) fn new(
+        stream: Streaming<DynTransport>,
+        mode: AdcMode,
+        raw: Arc<Mutex<Vec<u8>>>,
+    ) -> Self {
+        Self { stream, mode, raw }
+    }
+
+    /// Reads one block and flattens it together with the raw bytes read since the last one.
+    pub(crate) fn read_data(&mut self) -> Result<(BlockData, BlockStats), BindError> {
+        let b = self.stream.read_block()?;
+        let stats = b.stats();
+        Ok((
+            BlockData::new(
+                b.packets(),
+                self.stream.ranges(),
+                self.mode,
+                stats,
+                b.device_state(),
+                take_raw(&self.raw),
+            ),
+            stats,
+        ))
+    }
+}
+
 /// Version packet contents returned by `query()` and `reset()`.
 #[pyclass(frozen, module = "sadi_py", name = "VersionInfo")]
 pub struct VersionInfo {
@@ -209,6 +245,40 @@ impl Session {
         let (next, result) = py.detach(move || f(stage));
         *lock(&self.slot) = next;
         result
+    }
+
+    /// Moves the streaming stage out for the acquisition thread; the session reads `busy` meanwhile.
+    // frob:ticket 01M6W7R2QFWW5VYSHCVA8Y67RG
+    pub(crate) fn take_streaming(&self) -> Result<StreamParts, BindError> {
+        let mut g = lock(&self.slot);
+        match std::mem::replace(&mut *g, Slot::Busy) {
+            Slot::Idle(Stage::Streaming(stream, mode)) => {
+                tracing::info!("streaming stage handed to acquisition thread");
+                Ok(StreamParts::new(stream, mode, Arc::clone(&self.raw)))
+            }
+            Slot::Idle(other) => {
+                let err = BindError::Phase {
+                    expected: "streaming",
+                    actual: other.phase().as_str(),
+                };
+                *g = Slot::Idle(other);
+                tracing::warn!(error = %err, "acquisition start rejected");
+                Err(err)
+            }
+            Slot::Busy => Err(BindError::Busy),
+            Slot::Consumed => {
+                *g = Slot::Consumed;
+                Err(BindError::Consumed)
+            }
+        }
+    }
+
+    /// Returns the streaming stage after the acquisition thread ended.
+    // frob:ticket 01M6W7R2QFWW5VYSHCVA8Y67RG
+    pub(crate) fn restore_streaming(&self, parts: StreamParts) {
+        let StreamParts { stream, mode, .. } = parts;
+        *lock(&self.slot) = Slot::Idle(Stage::Streaming(stream, mode));
+        tracing::info!("streaming stage returned to session");
     }
 
     /// Stops a streaming session and returns the trailing block (internal for `__exit__`).

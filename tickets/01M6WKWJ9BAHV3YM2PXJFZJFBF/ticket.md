@@ -8,5 +8,5 @@ points = 1
 reporter = "lognd"
 created = "2026-11-08T03:40:29Z"
 updated = "2026-11-08T03:40:39Z"
-scope = ["docs/index.md"]
+scope = ["docs/index.md", "python/tests/test_docs_index.py"]
 +++

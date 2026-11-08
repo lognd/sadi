@@ -1,0 +1,10 @@
+kind = "create"
+title = "Add POST /api/stress-strain/fit refit endpoint"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/**"]
+body = "found while working ~D754A8M: web client api/refit.ts expects POST /api/stress-strain/fit {first,last} -> ModulusFitView (first,last,modulusMpa,interceptMpa,eGpa,eU95Gpa,r2,lowR2). No such route exists."
+at = "2026-11-08T03:56:33Z"
+actor = "lognd"
+rev = 1

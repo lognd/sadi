@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Changing the fit window calls the refit client and re-renders E, r^2 and uncertainty", "A failed refit shows an error and keeps the previous fit and all data"]
+moved = []
+at = "2026-11-08T03:56:25Z"
+actor = "lognd"
+rev = 1

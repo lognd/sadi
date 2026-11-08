@@ -1,4 +1,4 @@
-// frob:ticket ~FHNEDX8
+// frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
@@ -10,7 +10,6 @@ import { describeProblem, editPoint, redo, undo } from "./api";
 import { loadReview, runAction, type ReviewData } from "./session";
 import type { PointView } from "./types";
 
-// frob:tests ReviewScreen
 const pt = (id: string, over: Partial<PointView> = {}): PointView => ({
   point_id: id, seq: 1, phase: "elastic", excluded: false, inputs: { weights: "3,5" },
   window: { first_raw_seq: 1, last_raw_seq: 9, first_sample: 2, last_sample: 8 }, history: [], settled: true, ...over,

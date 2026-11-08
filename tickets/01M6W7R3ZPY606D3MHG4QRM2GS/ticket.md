@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:38:31Z"
+updated = "2026-11-08T05:38:43Z"
 idempotency_key = "sadi-b5"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/ws.py", "creates:python/sadi/server/framing.py", "creates:python/tests/server/test_ws.py", "creates:docs/server/websocket.md"]
 scope = ["python/sadi/server/ws.py", "python/sadi/server/framing.py", "python/tests/server/test_ws.py", "docs/server/websocket.md", "python/sadi/server/app.py", "docs/server/app.md", "docs/server/api.md"]
@@ -23,7 +23,7 @@ target = "01M6W7R3XY1B0BF689RX3H80G2"
 
 [[acceptance]]
 text = "Binary frame spec (magic, type, seq, channel float32 min/max-decimated arrays, timestamp) documented byte-for-byte and mirrored by the TS decoder in F4; JSON side-channel for state/results/guidance"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Back-pressure: slow clients drop display frames (never WAL data) with a counter; reconnect resumes from latest frame"

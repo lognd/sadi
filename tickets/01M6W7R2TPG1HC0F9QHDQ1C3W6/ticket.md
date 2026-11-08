@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:12:21Z"
+updated = "2026-11-08T03:12:30Z"
 idempotency_key = "sadi-cr3"
 labels = ["ws:py", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/clamp_check.py", "creates:python/tests/labs/lctt/test_clamp_check.py", "creates:docs/lctt/clamp-check.md"]
 scope = ["python/sadi/labs/lctt/clamp_check.py", "python/tests/labs/lctt/test_clamp_check.py", "docs/lctt/clamp-check.md", "docs/index.md"]
@@ -23,7 +23,7 @@ bound = true
 
 [[acceptance]]
 text = "Exposed as a wizard step 'Setup' sub-check; tested on slipping vs clean simulator scenarios"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

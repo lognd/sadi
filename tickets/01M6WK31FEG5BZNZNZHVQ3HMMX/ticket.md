@@ -2,7 +2,8 @@
 id = "01M6WK31FEG5BZNZNZHVQ3HMMX"
 title = "Launcher startup must acquire data-root lock and surface RootLockFailed"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

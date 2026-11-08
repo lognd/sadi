@@ -4,9 +4,10 @@ title = "Wire AcquisitionPipeline to device and API layers (load chain, tick tim
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:21:36Z"
+updated = "2026-11-08T03:55:16Z"
 scope = ["python/sadi/api/**"]
 +++
 

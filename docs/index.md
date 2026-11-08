@@ -22,6 +22,7 @@ Status: current
 - [Device service and session phases](core/device.md)
 - [Wizard framework](core/wizard.md)
 - [Job system core](jobs/jobs.md)
+- [AD3 Digilent DWF binding](bench/ad3.md)
 - [Web layout](web-layout.md)
 - [Doctor UI](web/doctor-ui.md)
 - [Results panel](web/results-panel.md)

@@ -2,7 +2,8 @@
 id = "01M6WTCA1SET2XBYG05J73KJ11"
 title = "REST: results, guidance and device status endpoints"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

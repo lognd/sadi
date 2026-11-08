@@ -12,5 +12,5 @@ scope = ["creates:python/sadi/server/routes_health.py", "creates:python/tests/se
 
 [[acceptance]]
 text = "GET /api/health returns 200 {status, version} with no session"
-bound = false
+bound = true
 +++

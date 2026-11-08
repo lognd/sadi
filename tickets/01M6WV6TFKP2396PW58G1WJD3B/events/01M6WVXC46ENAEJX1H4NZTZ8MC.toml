@@ -1,0 +1,38 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:00:43Z"
+digest = "665d2c7a5eeb294385a341366ced91f7dd12deefada73a8e4e6791b4aa0a7c30"
+exit_code = 0
+head = "f3fff5a38ef4d1772e4e8cecc24979d256d835dc"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/hooks/markClock.test.ts > stream clock vs record fields > load mark is now minus time_since_load; result mark is window_end verbatim
+[hooks.markClock] load mark { now: 12, timeSinceLoad: 1.5, t: 10.5 }
+[hooks.markClock] load mark { now: 12, timeSinceLoad: null, t: 12 }
+
+stdout | web/src/hooks/markClock.test.ts > stream clock vs record fields > marks land on the trace-frame clock (t0_s)
+[hooks.markClock] load mark { now: 20.1, timeSinceLoad: 0.05, t: 20.05 }
+[plots.live.window] mark { t: 20.05, kind: 'load' }
+[plots.live.window] mark { t: 20.05, kind: 'settled' }
+
+ \u{2713} web/src/hooks/markClock.test.ts (2 tests) 7ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  01:00:43
+   Duration  836ms (transform 147ms, setup 0ms, collect 185ms, tests 7ms, environment 0ms, prepare 195ms)
+
+JSON report written to /tmp/frob-vitest-565186-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/hooks/markClock.test.ts"
+size = 905
+status = "measured"
+test_count = 2
+tests_digest = "ec53724cd4dcf589df5b7e546b11efb379cc023560ce5d81420e137e0f64366b"
+at = "2026-11-08T06:00:43Z"
+actor = "lognd"
+rev = 1

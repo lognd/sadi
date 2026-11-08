@@ -1,6 +1,5 @@
 import { getLogger } from "./log";
 import { err, ok, type Result } from "./result";
-import type { components } from "./schema";
 import type { CheckResult, DoctorReport } from "../doctor/types";
 
 const log = getLogger("api.client");
@@ -10,8 +9,11 @@ export type ApiError =
   | { kind: "network"; message: string }
   | { kind: "http"; status: number; body: string };
 
-/** Health payload as declared by the OpenAPI schema. */
-export type Health = components["schemas"]["Health"];
+/** Health payload; the backend publishes no /api/health route yet, so this is hand-declared. */
+export interface Health {
+  status: string;
+  version: string;
+}
 
 /** Fetch JSON from an API path, returning a Result instead of throwing. */
 export async function getJson<T>(

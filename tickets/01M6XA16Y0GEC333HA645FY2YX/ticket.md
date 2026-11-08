@@ -2,7 +2,8 @@
 id = "01M6XA16Y0GEC333HA645FY2YX"
 title = "Emit WS guidance from the live run: call publish_guidance on state changes"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

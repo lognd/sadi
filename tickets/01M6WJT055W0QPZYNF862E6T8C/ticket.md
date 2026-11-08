@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
 updated = "2026-11-08T03:56:16Z"
-scope = ["python/sadi/api/**", "python/tests/api/**"]
+scope = ["python/sadi/api/**", "python/tests/api/**", "docs/api/**"]
 +++
 
 found while working ~60ZNFTD

@@ -2,7 +2,7 @@
 id = "01M6X9GPXGZN1KWG5S40MZ866N"
 title = "Enter/Space on a focused button or link triggers the wizard hotkey instead of the control"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"

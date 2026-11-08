@@ -8,10 +8,10 @@ points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:52:58Z"
+updated = "2026-11-08T05:53:08Z"
 idempotency_key = "sadi-f15"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/export/**", "creates:docs/web/export-screen.md"]
-scope = ["web/src/screens/export/**", "docs/web/export-screen.md"]
+scope = ["web/src/screens/export/**", "docs/web/export-screen.md", "docs/web/guidance.md"]
 
 [[links]]
 kind = "blocked-by"

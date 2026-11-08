@@ -254,6 +254,32 @@ Reset reboots the board and must never be sent during a test).
 | BRW-020 | Browser is supported | I | Version of the default browser via registry (Windows), `defaults read` (macOS), `--version` of the resolved binary (Linux); minimum: Chromium 110, Firefox 115, Safari 16 | `old-browser` (W), `unknown-browser` (I) |
 | BRW-030 | Launch dry run (opt-in) | I | Only with `--open-browser`: open `http://127.0.0.1:<port>/doctor-ping` served by a throwaway listener; wait 10 s for the GET | `launch-no-hit` (W: a browser started but never fetched: proxy or wrong default) |
 
+### 3.16 PLG: plugins
+
+Implemented by `sadi.plugins.doctor.check_plugins` (see [Plugins](plugins.md)). These
+findings use string codes rather than numbered ids. Every finding carries numbered fix
+steps; the first usually points at `sadi plugins info <id>`.
+
+| Code | Sev | Meaning and main fix |
+|---|---|---|
+| `plugin.import_failed` | E | Plugin code raised on import; fix it or `sadi plugins disable <id>` |
+| `plugin.bad_contribution` | E | A contribution ref is missing or the wrong type; fix the entrypoint in the manifest |
+| `plugin.api_incompatible` | E | Manifest `api_version` excludes this SADI plugin API; upgrade the plugin or SADI |
+| `plugin.requires_missing` | E | A required plugin is absent; install or enable it |
+| `plugin.requires_version` | E | A required plugin has an unsupported version; update it |
+| `plugin.duplicate_id` | E | Two plugins use one id; remove or rename one |
+| `plugin.bad_candidate` | E | A source entry could not become a plugin; fix the entry in the note |
+| `plugin.bad_toml` | E | `sadi_plugin.toml` is not valid TOML; fix the syntax |
+| `plugin.bad_manifest` | E | A manifest field is missing or invalid; correct the named field |
+| `plugin.manifest_unreadable` | E | Manifest file cannot be read; check path and permissions |
+| `plugin.local_dir_unreadable` | E | A local plugin dir has no manifest or cannot be read; fix or remove it from `SADI_PLUGIN_PATH` / `plugins/` |
+| `plugin.source_unavailable` | E | A whole source could not be listed; check `SADI_PLUGIN_PATH` and `plugin_paths` |
+| `plugin.unhealthy` | E | A record is failed with no more specific cause; see `sadi plugins info` |
+| `plugin.unknown_error` | E | Unrecognised error kind; disable the plugin until fixed |
+| `plugin.disabled` | W | Plugin is disabled; `sadi plugins enable <id>` |
+| `session.plugin_missing` | W | A session used a plugin that is missing or disabled; install or enable it, data stays readable |
+| `session.plugin_version_changed` | I | A session used another plugin version; install that version to reproduce exactly |
+
 ## 4. Remediation format
 
 ### 4.1 Shape

@@ -27,4 +27,5 @@ Status: current
 - [Sessions](store/session.md)
 - [Event log and snapshots](store/events.md)
 - [Lab modules](core/lab-modules.md)
+- [Plugins](plugins.md)
 - [UX design](ux.md)

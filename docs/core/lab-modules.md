@@ -5,8 +5,9 @@ Status: current
 Owner: ~CYC6ZT7. Code: `python/sadi/core/lab.py`, `python/sadi/core/registry.py`.
 Tests: `python/tests/core/test_lab_registry.py`.
 
-This is NOT a general plugin system: no sandboxing, no hot reload. Labs are trusted,
-in-process Python packages; the contract exists to keep the core shell and a lab apart.
+A lab is one kind of contribution of a [plugin](../plugins.md) (manifest key
+`contributions.labs`). There is no sandboxing and no hot reload: labs are trusted, in-process
+Python packages; the contract exists to keep the core shell and a lab apart.
 
 ## Ownership
 
@@ -29,9 +30,14 @@ wizard state machine. A lab owns only its steps, its models, its analysis and it
 
 `LabRegistry.register(lab)` validates (non-empty id, at least one step, unique step ids,
 unique export ids, unique lab id) and returns `Result[None, InputError]`.
-`discover()` loads zero-arg factories from the `sadi.labs` entry-point group and returns the
-errors of entries that failed; good entries still register. Built-in labs are registered by
-the app at startup on the process-wide `REGISTRY`.
+`LabRegistry.from_plugins(plugin_registry)` builds a registry viewing the labs of every
+enabled plugin; `add_plugins(plugin_registry)` adds them to an existing one and returns the
+`InputError`s of labs that failed to register. A plugin that fails to load never reaches
+the lab registry; it is a `failed` record in the `PluginRegistry`.
+`discover()` is the deprecated path: it loads zero-arg factories from the legacy `sadi.labs`
+entry-point group (logging a warning; use `sadi.plugins` instead) and returns the errors of
+entries that failed; good entries still register. Built-in labs are registered by the app at
+startup on the process-wide `REGISTRY`.
 
 ## Boundary enforcement
 
@@ -41,7 +47,7 @@ and fails on any `sadi.*` import other than public modules of `sadi.core`, `sadi
 
 ## Worked example: LCTT
 
-The LCTT lab (`sadi/labs/lctt/`, future tickets) provides a `LabModule` whose steps are
+The LCTT lab (`sadi/labs/lctt/`) is a built-in plugin (`sadi_plugin.toml`, id `lctt`) providing a `LabModule` whose steps are
 calibration, elastic and plastic runs (`Phase`), whose `recompute` fits E from the captured
 points, and whose exports are CSV and a report. Nothing in core names LCTT.
 

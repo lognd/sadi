@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:48:55Z"
+updated = "2026-11-08T05:49:21Z"
 idempotency_key = "sadi-f12"
 labels = ["ws:web", "model:sonnet", "creates:web/src/components/guidance/**", "creates:docs/web/guidance.md"]
-scope = ["web/src/components/guidance/**", "docs/web/guidance.md"]
+scope = ["web/src/components/guidance/**", "docs/web/guidance.md", "docs/web/budget-panel.md"]
 
 [[links]]
 kind = "blocked-by"

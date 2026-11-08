@@ -57,21 +57,8 @@ test("capture user-guide screenshots against the simulator", async ({
       n.nodeValue = (n.nodeValue ?? "").replace(/(?:\/(?:home|tmp|mnt|var|Users|root)|[A-Za-z]:\\)[^\s"',;)]*/g, "/home/user/...");
     }
   });
-  // EXT-040 (udev) cannot pass in the sim environment; present it as the passing state a udev build shows.
-  await page.evaluate(() => {
-    for (const li of Array.from(document.querySelectorAll("li"))) {
-      if (!li.textContent?.includes("EXT-040")) continue;
-      li.querySelectorAll("button").forEach((b) => {
-        if (/Show fix steps/.test(b.textContent ?? "")) b.remove();
-      });
-      const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT);
-      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-        n.nodeValue = (n.nodeValue ?? "")
-          .replace("warn", "pass")
-          .replace(/sadi_py has no udev support;.*/, "sadi_py has udev support");
-      }
-    }
-  });
+  // frob:ticket 01M6X9EHYXYSA7QP4N7PDT1RZ6
+  // EXT-040 (udev) is left as the simulator really reports it (warn); see docs/user-guide-screens.md.
   await page.screenshot({ path: `${out}/doctor.png` });
   await page.getByRole("button", { name: "Close Doctor" }).click();
 

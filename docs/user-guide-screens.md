@@ -21,6 +21,11 @@ a status per check and a Re-run button. Open it from the Doctor link in the top 
 
 ![Doctor screen with the environment checks](img/ui/doctor.png)
 
+Caption: this capture was taken on a simulator build, so the EXT-040 udev check shows a warning
+(sadi_py has no udev support) and keeps its "Show fix steps" button. That is the real simulator state.
+The fix steps list the udev rule to install and the reload commands; on a hardware build with udev
+support the check passes and the button is absent. <!-- frob:ticket 01M6X9EHYXYSA7QP4N7PDT1RZ6 -->
+
 ## Setup
 
 The step rail lists Setup, LVDT calibration, Tare, Elastic, Plastic, Results and Export.

@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:15:43Z"
+updated = "2026-11-08T03:15:45Z"
 idempotency_key = "sadi-a3"
 labels = ["ws:py", "lctt", "oq:Q3", "model:sonnet", "creates:python/sadi/labs/lctt/modulus.py", "creates:python/sadi/labs/lctt/yield_.py", "creates:python/sadi/labs/lctt/saturation.py", "creates:python/tests/labs/lctt/test_modulus.py", "creates:docs/lctt/modulus.md"]
 scope = ["python/sadi/labs/lctt/modulus.py", "python/sadi/labs/lctt/yield_.py", "python/sadi/labs/lctt/saturation.py", "python/tests/labs/lctt/test_modulus.py", "docs/lctt/modulus.md", "docs/index.md"]
@@ -43,7 +43,7 @@ bound = true
 
 [[acceptance]]
 text = "E and yield formulas are plain @uncertain functions; the uncertainty budget (U4) for E is exposed through the results model"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

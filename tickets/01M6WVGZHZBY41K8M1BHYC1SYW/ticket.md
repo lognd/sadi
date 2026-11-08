@@ -2,7 +2,8 @@
 id = "01M6WVGZHZBY41K8M1BHYC1SYW"
 title = "Results API lacks provenance (which settle value fed E); export screen shows stand-in notes"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

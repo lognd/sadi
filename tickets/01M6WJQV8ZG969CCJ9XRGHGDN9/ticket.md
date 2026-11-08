@@ -12,7 +12,7 @@ scope = ["python/sadi/store/wal.py", "python/tests/store/test_wal.py", "docs/dat
 
 [[acceptance]]
 text = "A lone first segment with a short magic-prefix header scans Ok as empty with a torn-tail record, file untouched"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A full-length corrupt or non-magic first header still returns Err"

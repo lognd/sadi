@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/crash/harness.py", "python/tests/crash/test_crash.py"]
+new = ["python/tests/crash/harness.py", "python/tests/crash/test_crash.py", "docs/store/crash-testing.md"]
+at = "2026-11-08T03:28:50Z"
+actor = "lognd"
+rev = 1

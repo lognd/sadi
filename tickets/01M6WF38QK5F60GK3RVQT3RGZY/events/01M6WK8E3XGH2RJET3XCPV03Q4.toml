@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Test passes reliably in full suite"]
+new = ["Test passes reliably in full suite", "Property tests bound the estimated-SE error with the Student-t quantile (not a normal 6-sigma) and are derandomized"]
+moved = [1]
+at = "2026-11-08T03:29:29Z"
+actor = "lognd"
+rev = 1

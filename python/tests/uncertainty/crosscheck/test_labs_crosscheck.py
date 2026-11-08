@@ -145,3 +145,19 @@ def test_extreme_underflow_denominator_is_typed(method: str) -> None:
     assert isinstance(result, (Ok, Err))
     if isinstance(result, Err):
         assert isinstance(result.danger_err, _TYPED)
+
+
+# frob:tests python/sadi/uncertainty/montecarlo.py::McSampler.estimate
+def test_mc_overflowing_statistics_are_typed_and_silent() -> None:
+    """Finite samples near 1e300 give McNonFinite without emitting RuntimeWarnings."""
+    import warnings
+
+    fn = Uncertain(lambda a, b: a / b, method="mc")
+    a = Measured.create(1.0, 0.005).unwrap()
+    b = Measured.create(1e-300, 5e-303).unwrap()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        result = fn(a, b)
+    assert isinstance(result, (Ok, Err))
+    if isinstance(result, Err):
+        assert isinstance(result.danger_err, _TYPED)

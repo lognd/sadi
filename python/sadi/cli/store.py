@@ -6,6 +6,7 @@ docs/store/cli.md and exposed as the `Exit` constants below.
 """
 
 # frob:ticket 01M6WEFGAZYBDHQGEG6D2M701Q
+# frob:ticket 01M6WEYV1HZCER8M2NVRMF702S
 from __future__ import annotations
 
 import argparse
@@ -19,6 +20,7 @@ from typani import Err, Ok, Result
 
 from sadi.logging_setup import get_logger
 from sadi.store.csv_export import write_csv_exclusive
+from sadi.store.lock import LockHeld, LockIo, LockStale
 from sadi.store.records import FLAG_JSON, RecordType
 from sadi.store.session import (
     SESSIONS_DIRNAME,
@@ -26,6 +28,7 @@ from sadi.store.session import (
     NotASession,
     ParentCorrupt,
     ReadOnlySession,
+    RootLockFailed,
     SessionError,
     open_readonly,
     probe_lock,
@@ -174,8 +177,29 @@ def cmd_verify(session_dir: Path) -> Result[int, CliFailure]:
     return Ok(sev)
 
 
+def _root_lock_failure(err: RootLockFailed) -> CliFailure:
+    """Explain a data-root lock refusal (held, stale or I/O) in plain language."""
+    cause = err.error
+    if isinstance(cause, LockHeld):
+        who = f"pid {cause.pid}" if cause.pid is not None else "another process"
+        return _fail(
+            f"Refused: the data folder is in use by {who}. Close it and try again.", Exit.REFUSED
+        )
+    if isinstance(cause, LockStale):
+        return _fail(
+            f"Refused: a previous sadi process (pid {cause.pid}) exited uncleanly and left "
+            "the data folder locked. If it is not running, repeat with `--recover-stale`.",
+            Exit.REFUSED,
+        )
+    if isinstance(cause, LockIo):
+        return _fail(f"Could not lock the data folder: {cause.hint}", Exit.UNREADABLE)
+    return _fail("Could not lock the data folder.", Exit.UNREADABLE)
+
+
 def _recover_failure(err: SessionError) -> CliFailure:
     """Translate a resume error into a plain-language CliFailure."""
+    if isinstance(err, RootLockFailed):
+        return _root_lock_failure(err)
     if isinstance(err, Locked):
         return _fail("Refused: another process has this session open for writing.", Exit.REFUSED)
     if isinstance(err, ParentCorrupt):
@@ -189,9 +213,12 @@ def _recover_failure(err: SessionError) -> CliFailure:
     return _fail(f"Could not recover: {err.hint or type(err).__name__}", Exit.UNREADABLE)
 
 
-def cmd_recover(session_dir: Path) -> Result[int, CliFailure]:
-    """Open a NEW version continuing from the verified part of a session; never overwrites."""
-    resumed = resume_session(session_dir)
+def cmd_recover(session_dir: Path, *, recover_stale: bool = False) -> Result[int, CliFailure]:
+    """Open a NEW version continuing from a session's verified part; never overwrites.
+
+    `recover_stale` is the explicit user action that takes over a dead process's data-root lock.
+    """
+    resumed = resume_session(session_dir, recover_stale=recover_stale)
     if resumed.is_err:
         failure = _recover_failure(resumed.danger_err)
         _log.warning("recover %s refused: %s", session_dir, failure.message)
@@ -259,6 +286,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.add_argument("session", type=Path)
     p_rec = sub.add_parser("recover", help="open a NEW version from a session's verified part")
     p_rec.add_argument("session", type=Path)
+    p_rec.add_argument(
+        "--recover-stale",
+        action="store_true",
+        help="take over a data-root lock left by a process that exited uncleanly",
+    )
     p_exp = sub.add_parser("export", help="write a session's verified records to a NEW csv")
     p_exp.add_argument("session", type=Path)
     p_exp.add_argument("target", type=Path)
@@ -273,7 +305,7 @@ def run(args: argparse.Namespace) -> Result[int, CliFailure]:
     if args.command == "verify":
         return cmd_verify(args.session)
     if args.command == "recover":
-        return cmd_recover(args.session)
+        return cmd_recover(args.session, recover_stale=args.recover_stale)
     return cmd_export(args.session, args.target, excel_bom=args.excel_bom)
 
 

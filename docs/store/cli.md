@@ -12,7 +12,7 @@ Run with `python -m sadi.cli.store <command>` or the `sadi-store` script.
 |---|---|
 | `list ROOT` | One line per session under `ROOT/sessions`: status, record count, last seq. Read-only. |
 | `verify SESSION` | Checks every record CRC and every segment seal; prints one line per segment. Read-only. |
-| `recover SESSION` | Opens a NEW version (`.vNNN+1`) continuing from the verified part. The old directory is never modified. |
+| `recover SESSION [--recover-stale]` | Opens a NEW version (`.vNNN+1`) continuing from the verified part. The old directory is never modified. Takes the data-root lock; a lock held by a live process is refused (exit 5), and one left by a dead process is refused with a hint until `--recover-stale` is passed. |
 | `export SESSION OUT.csv [--excel-bom]` | Writes verified records (seq, wall_ns, type, payload) through `write_csv_exclusive`. An existing `OUT.csv` is refused. |
 
 Payloads of JSON records are written as text, binary payloads as hex.

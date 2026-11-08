@@ -42,6 +42,7 @@ class InputCode(StrEnum):
     BAD_UNIT = "bad_unit"
 
 
+# frob:ticket 01M6WBKXD1562WNR2FQS9RXHNM
 class StoreCode(StrEnum):
     """Failure codes for durable storage (WAL, events, snapshots)."""
 
@@ -49,6 +50,10 @@ class StoreCode(StrEnum):
     CORRUPT = "corrupt"
     LOCKED = "locked"
     VERSION = "version"
+    BACKPRESSURE = "backpressure"
+    DISK_FULL = "disk_full"
+    CLOSED = "closed"
+    STALLED = "stalled"
 
 
 class ComputeCode(StrEnum):
@@ -88,6 +93,10 @@ _HINTS: dict[StrEnum, str] = {
     StoreCode.CORRUPT: "The session file is damaged; reopen it to recover from the raw log.",
     StoreCode.LOCKED: "Another SADI window has this session open; close it first.",
     StoreCode.VERSION: "This session was made by a different SADI version; update the app.",
+    StoreCode.BACKPRESSURE: "The data disk is slow; acquisition must pause. Data already shown is safe.",
+    StoreCode.DISK_FULL: "The data disk is full. Data already shown is safe; free space, then retry.",
+    StoreCode.CLOSED: "The recording is closed; open or start a session to record again.",
+    StoreCode.STALLED: "The data disk is not responding; free space or change disk, then resume.",
     ComputeCode.TOO_FEW_POINTS: "Capture more points; at least 3 are needed for an uncertainty.",
     ComputeCode.DEGENERATE: "Points do not span enough range; capture points at distinct loads.",
     ComputeCode.NOT_FINITE: "A value is NaN or infinite; recheck the readings that feed it.",

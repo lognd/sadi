@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Crash harness runs replay-equivalence on rotated WALs with no skip and no frob:todo"]
+moved = []
+at = "2026-11-08T03:29:18Z"
+actor = "lognd"
+rev = 1

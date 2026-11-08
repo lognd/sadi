@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:28:18Z"
+digest = "d04386d1819e25bafc905810200ce6ba40821df5960f2509aa24bc346cca6d7c"
+exit_code = 0
+head = "fbf7088797e8ed9f13be68b7a15c06ed2da5a414"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_pipeline.py .                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-267395-0.xml ---------------
+============================== 1 passed in 1.96s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_pipeline.py::test_dropped_bytes_are_durably_recorded_as_raw_junk"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "483c89d2fec9f966450f7805a1e843caf2a04d59ae6578cf7f52a0700d5c607f"
+at = "2026-11-08T03:28:18Z"
+actor = "lognd"
+rev = 1

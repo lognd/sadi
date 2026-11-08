@@ -12,7 +12,7 @@ scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
 text = "Checks run in a thread pool but never before their in-selection depends_on prerequisites finish"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Independent checks overlap and concurrency is bounded by the worker limit"

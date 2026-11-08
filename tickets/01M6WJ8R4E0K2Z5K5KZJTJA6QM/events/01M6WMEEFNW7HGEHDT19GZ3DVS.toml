@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py", "docs/core/models.md"]
+new = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/plugin.py", "python/tests/plugins/test_lctt_plugin.py", "docs/core/models.md", "docs/lctt/clamp-check.md"]
+at = "2026-11-08T03:50:15Z"
+actor = "lognd"
+rev = 1

@@ -4,9 +4,10 @@ title = "Enter/Space on a focused button or link triggers the wizard hotkey inst
 type = "bug"
 category = "todo"
 priority = "high"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T09:58:29Z"
-updated = "2026-11-08T09:58:29Z"
+updated = "2026-11-08T09:59:29Z"
 scope = ["web/src/keys/**"]
 +++
 

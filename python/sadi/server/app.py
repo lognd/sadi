@@ -3,6 +3,7 @@
 # frob:ticket 01M6WKQCC4HJ5C8HXP946BRKXW
 # frob:ticket 01M6WK31FEG5BZNZNZHVQ3HMMX
 # frob:ticket 01M6WMJZPYNHZR0KHY2C6W07WH
+# frob:ticket 01M6WMSZKN488HTWG19V69GETD
 
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_plugins import make_plugins_router
+from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
 
@@ -35,6 +37,7 @@ class AppSettings(BaseModel):
     recover_stale: bool = False
     require_root_lock: bool = True
     writer: FailableSeqSource | None = None
+    curve_source: CurveSource | None = None
 
 
 class _NoWriter:
@@ -110,5 +113,6 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_save_indicator_router(indicator))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))
+    app.include_router(make_stress_strain_router(cfg.curve_source))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

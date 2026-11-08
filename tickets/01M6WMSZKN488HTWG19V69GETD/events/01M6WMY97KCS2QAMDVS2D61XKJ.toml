@@ -1,0 +1,82 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:58:51Z"
+digest = "6ae65c2cc42800b2d1e62be9a7b954c68b3016dc569542141f3a110eea558b03"
+exit_code = 0
+head = "cfd0e9d0c61d4a49ef37492301c770d7f478507c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/server/test_routes_stress_strain.py .....                   [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-339358-0.xml ---------------
+========================= 5 passed, 1 warning in 2.06s =========================
+forgot af32f983a7e64d1f878a7ca5aedfb9df
+forgot 5ad627cb65ed4949970eb4c870dc6a2f
+forgot 5a6ea8686f6e4fd48d8d88235563068f
+forgot 542a53d0669146739196a01d942e605f
+forgot 6237ee047168414aadba85f4b26997dc
+forgot 996bd38cde85419ca0810a8dbcea4012
+forgot 27512fb29e55494191b3280ad8e4f841
+forgot 2003853e1eac47239b58f1d14a8f90c4
+forgot 3fe618082ba542b2b25fd17e4be74a2a
+forgot a8ce9467cd2d4999b9f76cc73fc04feb
+forgot e0e47ee980b44f33b023960c3f72b4e8
+forgot ef7fb8acff97489f84b8229d0ef3e76f
+forgot a57e43ffba744d68b1b77d2a6f42e6fe
+forgot d65da61d5ddc4ab58dfc9bcc711fedb2
+forgot aa846de896cb441a993a215ed1707397
+forgot 47d19f99862b4e63b5605af6ace87b53
+forgot 2139df04a468498bae2ca5e9b6ac6933
+forgot 9fe7f26e25174c8da99affff4eb85877
+forgot b04d877f87214f6c9107498be61bb0a3
+forgot 965c7cbd6aad4124b714c20f744dd8d3
+forgot 2de2b6f3ced14a96ab951d28e07873bd
+forgot f9892db30175431eb8969687443284c8
+forgot 1e6f96a372a44d40968592edfcba36e2
+forgot 9d1d7c8fcdb34225a7aaa10479278eb5
+forgot 7d92602eb3ca455085908af775132d0a
+forgot cb8419e9b36d44389e4f5e6b41827191
+forgot 443ee045843b477bbbc829dbcbd990b8
+forgot edbb61eb1a224bf0984e2d271f4705ac
+forgot 7c5fea36fe6f492d962dee560a728417
+forgot 69824f60498c48849a310c48503d1fc8
+forgot 8a504c2f66274f85bc66255a955478e1
+forgot 6f791037376145e2a7e139383e9cbedf
+forgot cf71d1a77dfe40f6add9050545433823
+forgot cc5c7b917eb24dfeab218ff2dce4e21c
+forgot 9ff34ac15b824a58828884383412c034
+forgot e0c4c98c7138449c89c3a678a881c2a2
+forgot 9d581324854440b3abe5fb3a4e6c5391
+forgot d664d4c78c03447bb45f79ab75084f5e
+forgot 923c137513cc4358825837814638ee3b
+forgot 0ef5c2457bd54e7088b05c5375ae8aae
+forgot 02fe7abc25da4ae6b207c36582529b93
+forgot 0b5ade2423b24c2b8a7c0cd66ffc24a5
+forgot 373a02342c994aa897fce27ccf99deab
+forgot 3af480c631874f64ad7cb3cd99d44ab8
+forgot 3fd6ea1aedb348ed90648f9d740548aa
+forgot b33a4ce3215642d3b8da37b723f973f2
+forgot 958c2d5918a34fae82177e085a2a6739
+forgot 2e950e71018a48b19f158f6f4024a43c
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_routes_stress_strain.py"
+size = 2923
+status = "measured"
+test_count = 5
+tests_digest = "708650f0f35f53850eb47c51741ed68a21b09cd4034ba449414915115aaee72a"
+at = "2026-11-08T03:58:51Z"
+actor = "lognd"
+rev = 1

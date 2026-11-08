@@ -30,7 +30,10 @@ avoidance, incremental live redraw) are filed as a follow-up ticket against `web
 Pure logic in `selection.ts` (`clampWindow`, `setEdge`, `keyStep`, `dragWindow`; minimum 3 points).
 `StressStrainPlot` adds pointer drag (nearest edge), arrow/Home/End keys on the focused group
 (`[` and `]` switch edge, Shift steps by 5) and two range inputs. Each committed change calls
-`onWindowChange`, which the host wires to the API refit; the results panel updates from the reply.
+`onWindowChange`. `screens/StressStrainScreen.tsx` wires it to `api/refit.ts` (`refitModulus`, POST
+`/api/stress-strain/fit` with `{first, last}`, returning a `ModulusFitView`) and re-renders E, r^2 and
+uncertainty. On failure the previous fit and all points are kept and the error is shown; a newer
+window supersedes an in-flight reply. The server endpoint is tracked in a separate ticket.
 
 ## Tests
 

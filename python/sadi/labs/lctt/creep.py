@@ -35,6 +35,18 @@ class CreepConfig(BaseModel):
 
     min_points: int = Field(default=5, ge=3, le=1000000, description="Fewest samples per hold")
     min_decades: float = Field(default=0.5, ge=0, le=20, description="Min log10 span of t-t_load")
+    settle_threshold: float | None = Field(
+        default=None, gt=0, le=1, description="Settle half-width in strain; None omits settle_band"
+    )
+
+
+class SettleBand(BaseModel):
+    """Strain band around the settled value that counts as settled (plot field settle_band)."""
+
+    model_config = {"frozen": True}
+
+    lower: float
+    upper: float
 
 
 class CreepFit(BaseModel):
@@ -48,6 +60,7 @@ class CreepFit(BaseModel):
     n_points: int
     t_ref: float
     strain_at_ref: Measured
+    settle_band: SettleBand | None = None  # frob:ticket 01M6WMQVSEMD3FGD21ZS7V3W3P
 
 
 def _validate(
@@ -120,6 +133,12 @@ def fit_creep(
     for p in parts:
         if isinstance(p, Err):
             return Err(p.danger_err)
+    band = None
+    if cfg.settle_threshold is not None:
+        settled = a + b * x[-1]
+        band = SettleBand(
+            lower=settled - cfg.settle_threshold, upper=settled + cfg.settle_threshold
+        )
     _log.info("creep fit n=%d b=%g a=%g r2=%.4f ref=%g", n, b, a, r2, a + b * xr)
     return Ok(
         CreepFit(
@@ -129,5 +148,6 @@ def fit_creep(
             n_points=n,
             t_ref=t_ref,
             strain_at_ref=parts[2].danger_ok,
+            settle_band=band,
         )
     )

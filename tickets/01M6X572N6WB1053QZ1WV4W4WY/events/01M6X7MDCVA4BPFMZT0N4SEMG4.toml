@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given sadi --sim, when two load-changes separate calibration captures, then the points have distinct volts and E is computed"]
+moved = []
+at = "2026-11-08T09:25:33Z"
+actor = "lognd"
+rev = 1

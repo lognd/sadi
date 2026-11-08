@@ -1,5 +1,9 @@
 # Acquisition driver
 
+Status: current
+
+Owner: ~62E6T8C. Code: `python/sadi/api/acquisition.py`.
+
 `sadi.api.acquisition.AcquisitionDriver` connects a block source (the `DeviceService`, or any
 object with `next_block` / `stop_streaming`) to `AcquisitionPipeline`.
 

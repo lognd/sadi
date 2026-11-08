@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:34:10Z"
+digest = "d93dcc59430008cc7232d013b6765894971413fae9006ffbdf483394edb6ceaa"
+exit_code = 0
+head = "a94ab3fbe2ca36e8fe1c116886698c01d73858d3"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_wizard.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1033464-0.xml --------------
+============================== 1 passed in 1.61s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_wizard.py::test_capture_accepts_specimen_point_on_any_device_step"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "2fc731b5743a9f2ed90045c535320ea889352129ff0490d45d7cee84842714c4"
+at = "2026-11-08T09:34:10Z"
+actor = "lognd"
+rev = 1

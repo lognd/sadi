@@ -7,5 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:57:27Z"
-updated = "2026-11-08T09:26:08Z"
+updated = "2026-11-08T09:31:37Z"
+labels = ["creates:web/docs-shots/**"]
+scope = ["docs/img/ui/**", "docs/user-guide-screens.md", "web/docs-shots/**"]
 +++

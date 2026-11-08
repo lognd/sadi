@@ -1,0 +1,10 @@
+kind = "create"
+title = "Add docs/index.md entry for user-guide-screens.md"
+type = "chore"
+category = "todo"
+priority = "medium"
+scope = ["docs/index.md"]
+body = "found while working ~921XDAW: index.md was leased by ~YV3QKP9; add '- [User guide: screenshots](user-guide-screens.md)' to docs/index.md and remove the frob:waive DOC007 line from docs/user-guide-screens.md"
+at = "2026-11-08T09:31:54Z"
+actor = "lognd"
+rev = 1

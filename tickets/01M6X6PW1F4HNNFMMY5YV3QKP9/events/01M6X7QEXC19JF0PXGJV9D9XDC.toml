@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md", "docs/api", "docs/architecture.md", "docs/bench", "docs/ci.md", "docs/concurrency-testing.md", "docs/concurrency.md", "docs/core"]
+new = ["web/src/**", "python/sadi/server/**", "python/sadi/core/wizard.py", "python/tests/core/test_wizard.py", "web/e2e/**", "docs/README.md", "docs/api", "docs/architecture.md", "docs/bench", "docs/ci.md", "docs/concurrency-testing.md", "docs/concurrency.md", "docs/core", "docs/data-safety.md"]
+at = "2026-11-08T09:27:13Z"
+actor = "lognd"
+rev = 1

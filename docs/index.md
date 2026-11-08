@@ -44,6 +44,7 @@ Status: current
 - [Browser e2e (Playwright)](e2e.md)
 - [Release process](release.md)
 - [Store durability primitives](store/durable.md)
+- [Incremental replay](store/incremental-replay.md)
 - [Data-root lock](store/lock.md)
 - [Write-ahead log](store/wal.md)
 - [WAL writer thread](store/writer-thread.md)

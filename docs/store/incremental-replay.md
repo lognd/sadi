@@ -1,5 +1,9 @@
 # Incremental replay
 
+Status: current
+
+Owner: ~2RWJ137. Code: `python/sadi/store/incremental.py`.
+
 `sadi.store.incremental.IncrementalReplay` serves the server's per-action
 state (`SessionService._replay`) without re-walking the whole WAL.
 

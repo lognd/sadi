@@ -35,6 +35,7 @@ from sadi.store.records import (
     NewRecord,
     RecordType,
     encode_raw_block,
+    encode_raw_junk,
     json_record,
 )
 from sadi.store.writer_thread import WriterError, WriterMetrics
@@ -42,6 +43,9 @@ from sadi.store.writer_thread import WriterError, WriterMetrics
 _log = get_logger(__name__)
 
 Seq = int
+
+#: RAW_JUNK reason code 1: resync discarded bytes (docs/data-safety.md section 3.5).
+JUNK_REASON_RESYNC = 1
 
 #: Default decimated points per trace frame sent to the display.
 DEFAULT_MAX_FRAME_POINTS = 256
@@ -67,6 +71,7 @@ class BlockLike(Protocol):
     volts: Any
     n_samples: int
     msg_count: Any
+    dropped_bytes: int
 
 
 class WalSink(Protocol):
@@ -314,16 +319,30 @@ class AcquisitionPipeline:
             return Err(PipelineError.Halted)
         n = int(block.n_samples)
         plen = self._cfg.packet_len
-        if n <= 0 or not block.raw or len(block.raw) % plen or block.volts.shape[0] != n:
+        # frob:ticket 01M6WJT02NYTS67SGG3W7KAMYM
+        dropped = int(block.dropped_bytes)
+        # With dropped bytes the raw length is not packet aligned, so alignment is not checked.
+        misaligned = len(block.raw) % plen and not dropped
+        if n <= 0 or not block.raw or misaligned or block.volts.shape[0] != n:
             _log.error("bad block: n_samples=%d raw_len=%d", n, len(block.raw))
             return Err(PipelineError.BadBlock)
         count = len(block.raw) // plen
         mono = self._clock_ns()
-        first_msg = int(block.msg_count[0]) if len(block.msg_count) else 0
-        payload = encode_raw_block(
-            bytes(block.raw), self._cfg.packet_len, mono, time.time_ns(), first_msg
-        )
-        record = NewRecord(type=int(RecordType.RAW_BLOCK), payload=payload)
+        if dropped:
+            # Junk positions are unknown, so every received byte is kept verbatim as RAW_JUNK.
+            _log.warning(
+                "block dropped %d bytes; storing %d raw bytes as RAW_JUNK", dropped, len(block.raw)
+            )
+            record = NewRecord(
+                type=int(RecordType.RAW_JUNK),
+                payload=encode_raw_junk(mono, JUNK_REASON_RESYNC, bytes(block.raw)),
+            )
+        else:
+            first_msg = int(block.msg_count[0]) if len(block.msg_count) else 0
+            payload = encode_raw_block(
+                bytes(block.raw), self._cfg.packet_len, mono, time.time_ns(), first_msg
+            )
+            record = NewRecord(type=int(RecordType.RAW_BLOCK), payload=payload)
         with self._producer_lock:
             res = self._wal.submit(record)
             if res.is_err:

@@ -26,7 +26,7 @@ from sadi.core.pipeline import (
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import SettleState, StreamConfig
 from sadi.store import durable, failpoints
-from sadi.store.records import RecordType
+from sadi.store.records import RecordType, decode_raw_junk
 from sadi.store.wal import WalConfig, WalReader
 from sadi.store.writer_thread import Backpressure, WriterError, WriterHandle
 
@@ -56,6 +56,7 @@ class _Block:
         self.n_samples = n
         self.raw = bytes(range(256))[:PACKET] * n
         self.msg_count = np.arange(n, dtype=np.uint32)
+        self.dropped_bytes = 0
 
 
 class _Clock:
@@ -368,6 +369,29 @@ def test_bad_block_is_refused_without_halting(tmp_path: Path) -> None:
     assert res.danger_err == PipelineError.BadBlock
     assert not pipe.halted
     assert h.enqueued_seq == 0
+    h.close()
+
+
+# frob:ticket 01M6WJT02NYTS67SGG3W7KAMYM
+# frob:tests python/sadi/core/pipeline.py::AcquisitionPipeline.ingest
+def test_dropped_bytes_are_durably_recorded_as_raw_junk(tmp_path: Path) -> None:
+    """A block with dropped bytes keeps every received byte as a durable RAW_JUNK record."""
+    h = _open(tmp_path)
+    pipe = AcquisitionPipeline(h, _config())
+    blk = _Block()
+    blk.raw = blk.raw + b"\xde\xad\xbe"  # junk makes the length unaligned
+    blk.dropped_bytes = 3
+    res = pipe.ingest(blk)
+    assert res.is_ok
+    assert h.wait_durable(res.danger_ok, WAIT_S).is_ok
+    recs = [r.danger_ok for r in WalReader(tmp_path / "wal").records() if r.is_ok]
+    junk = [r for r in recs if r.type == int(RecordType.RAW_JUNK)]
+    assert len(junk) == 1
+    dec = decode_raw_junk(junk[0].payload)
+    assert dec.is_ok
+    assert dec.danger_ok.data == blk.raw
+    assert dec.danger_ok.reason == 1
+    assert not pipe.halted
     h.close()
 
 

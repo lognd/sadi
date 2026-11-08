@@ -1,0 +1,10 @@
+kind = "create"
+title = "Endpoint for per-phase plot data (calibration, stress-strain)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["src/sadi/server/**"]
+body = "found while working ~74FQXWT"
+at = "2026-11-08T06:13:47Z"
+actor = "lognd"
+rev = 1

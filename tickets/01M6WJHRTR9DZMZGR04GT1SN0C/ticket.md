@@ -12,7 +12,7 @@ scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "d
 
 [[acceptance]]
 text = "Every SESS-* and WAL-* catalog check reports each declared mode read-only, with a remediation for all four OSes, and the survey never modifies a session"
-bound = false
+bound = true
 +++
 
 found while working ~V3H5CGF: spec layers not implemented

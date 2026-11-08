@@ -177,8 +177,12 @@ class Measured(BaseModel):
             return Err(UncertaintyError.DomainError)
         if self.value < 0 and exponent != int(exponent):
             return Err(UncertaintyError.DomainError)
-        value = self.value**exponent
-        partial = exponent * self.value ** (exponent - 1) if self.value != 0 else 0.0
+        try:  # frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
+            value = self.value**exponent
+            partial = exponent * self.value ** (exponent - 1) if self.value != 0 else 0.0
+        except (OverflowError, ZeroDivisionError):
+            _log.warning("pow(%g) overflow on %g", exponent, self.value)
+            return Err(UncertaintyError.DomainError)
         unit = units.power_unit(self.unit, exponent)
         if isinstance(unit, Err):
             return Err(unit.danger_err)
@@ -276,7 +280,7 @@ def _multiplicative(
             _log.warning("div by zero")
             return Err(UncertaintyError.DomainError)
         value = a.value / bm.value
-        partials = [1.0 / bm.value, -a.value / bm.value**2]
+        partials = [1.0 / bm.value, -(a.value / bm.value) / bm.value]  # no ** : 1e-200**2 underflows to 0
     return _derive([a, bm], partials, value, unit.danger_ok, name)
 
 
@@ -291,6 +295,10 @@ def _derive(
     """Build the derived Measured: RSS with full covariance, Welch-Satterthwaite dof, provenance."""
     if not (math.isfinite(value) and all(math.isfinite(p) for p in partials)):
         return Err(UncertaintyError.DomainError)
+    contribs = [(abs(p) * m.std_unc, m.dof) for m, p in zip(inputs, partials, strict=True)]
+    if not all(math.isfinite(u) for u, _ in contribs):  # frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
+        _log.warning("%s: contribution overflow (tiny divisor?)", name)
+        return Err(UncertaintyError.InvalidUncertainty)
     ident = uuid.uuid4().hex
     for m in inputs:
         if not registry.known(m.id):
@@ -298,7 +306,9 @@ def _derive(
     var = registry.register_derived(
         ident, [(m.id, p) for m, p in zip(inputs, partials, strict=True)]
     )
-    contribs = [(abs(p) * m.std_unc, m.dof) for m, p in zip(inputs, partials, strict=True)]
+    if not math.isfinite(var):  # frob:ticket 01M6WJQ4CCMWZCF8NK30FYTGN8
+        _log.warning("%s: variance overflow", name)
+        return Err(UncertaintyError.InvalidUncertainty)
     dof = coverage.effective_dof(contribs).unwrap_or(math.inf)
     out = Measured(
         id=ident,

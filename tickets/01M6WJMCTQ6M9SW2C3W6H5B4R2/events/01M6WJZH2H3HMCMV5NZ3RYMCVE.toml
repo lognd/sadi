@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:24:36Z"
+digest = "c4524b839498d7508151d82e6a70f2aded3a7d05fa222b942f6d29c2e8a89003"
+exit_code = 0
+head = "54fbe1050233a4356472fb55f4287fc72399c86b"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/store/test_events.py .                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-260151-0.xml ---------------
+============================== 1 passed in 0.71s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_events.py::test_replay_wal_across_rotations"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "3d0ff9912605b6d94a2a5ddaefb0607e066f6f02d93828920142fa58374a74f9"
+at = "2026-11-08T03:24:36Z"
+actor = "lognd"
+rev = 1

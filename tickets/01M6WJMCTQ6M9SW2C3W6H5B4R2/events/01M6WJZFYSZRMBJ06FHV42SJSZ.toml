@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Rotated multi-segment WALs replay (also snapshot-assisted across a seal); only exact seal seqs are tolerated, other gaps stay EventsGap"]
+moved = []
+at = "2026-11-08T03:24:36Z"
+actor = "lognd"
+rev = 1

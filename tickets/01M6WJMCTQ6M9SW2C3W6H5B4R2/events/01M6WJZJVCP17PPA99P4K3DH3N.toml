@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:24:38Z"
+digest = "b2a88f60b771ac805421001215d901647edaa5fb20c04668007c80a53c1d60a0"
+exit_code = 0
+head = "54fbe1050233a4356472fb55f4287fc72399c86b"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/store/test_events.py .                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-260230-0.xml ---------------
+============================== 1 passed in 0.26s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_events.py::test_only_seal_seqs_are_tolerated_as_jumps"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "6a9467be5212fcbe8b3e9383f293321b3e83a22d81806042657a40b91ef45e4a"
+at = "2026-11-08T03:24:38Z"
+actor = "lognd"
+rev = 1

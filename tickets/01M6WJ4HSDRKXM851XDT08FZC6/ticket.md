@@ -2,12 +2,18 @@
 id = "01M6WJ4HSDRKXM851XDT08FZC6"
 title = "Link docs/jobs/tasks.md from docs index"
 type = "bug"
-category = "todo"
+category = "done"
+outcome = "done"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T03:09:53Z"
-updated = "2026-11-08T03:09:53Z"
-scope = ["docs/README.md"]
+updated = "2026-11-08T03:24:47Z"
+scope = ["docs/README.md", "python/tests/test_docs_index.py"]
+
+[[acceptance]]
+text = "docs/README.md links docs/jobs/tasks.md"
+bound = true
 +++
 
 found while working ~PX6X3ZQ

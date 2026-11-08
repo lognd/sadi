@@ -4,6 +4,7 @@ Status: current
 
 Owner: ~X8YD1SA. Code: `python/sadi/store/lock.py`. Tests: `python/tests/store/test_lock.py`.
 Design: [data-safety.md](../data-safety.md); sessions: [session.md](session.md).
+Crash tests: [crash-testing.md](crash-testing.md).
 
 `acquire(root)` returns `Result[DataRootLock, LockError]`. It takes a non-blocking exclusive
 OS lock (`fcntl.flock` on POSIX, `msvcrt.locking` on Windows) on `<root>/.sadi-data.lock` and

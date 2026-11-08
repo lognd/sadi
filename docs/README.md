@@ -57,7 +57,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/hardware/**` | ~CTSXSRE | Run hardware session and fold findings back (needs the physical board) |
 | `docs/img/ui/**` | ~JS6PJJY | User guide: running a test with the app (procedure, two specimens, creep) |
 | [`docs/jobs/jobs.md`](jobs/jobs.md) | ~V9NMTHC | Job system core: lifecycle state machine, process pool, cancel and supersede (latest wins) |
-| `docs/jobs/tasks.md` | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement |
+| [`docs/jobs/tasks.md`](jobs/tasks.md) | ~PX6X3ZQ | Progressive background jobs: Monte Carlo interval refinement |
 | `docs/jobs/testing.md` | ~VAX9DG6 | Deterministic job test harness: fake clock, controllable scheduler, inline executor |
 | `docs/launcher.md` | ~0VYJVFZ | `sadi` launcher: serve UI + API, pick port, open browser, flags |
 | `docs/lctt/calibration.md` | ~NQKWT3Y | LCTT calibration: LINEST-equivalent fit with standard errors and t95 |

@@ -4,10 +4,11 @@ title = "Mount make_plugins_router in the server app factory"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 parent = "01M6WFZ1N70HDJJRZWRHWP4E7Y"
 reporter = "lognd"
 created = "2026-11-08T02:56:14Z"
-updated = "2026-11-08T02:56:14Z"
+updated = "2026-11-08T02:56:33Z"
 
 [[links]]
 kind = "blocked-by"

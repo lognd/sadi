@@ -7,12 +7,12 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T07:38:34Z"
-updated = "2026-11-08T07:51:19Z"
+updated = "2026-11-08T07:51:29Z"
 scope = ["python/sadi/server/**", "python/tests/server/**", "python/tests/cli/**", "web/src/**", "web/e2e/**", "docs/**", "sim/**"]
 
 [[acceptance]]
 text = "POST /api/session/load-change records a WAL marker and 409s with no live session; Run screen has a Mark load change button; guided-run e2e passes"
-bound = false
+bound = true
 +++
 
 found while working ~F4YK7XN: the stream now flows, but nothing calls AcquisitionPipeline.mark_load_change (no server route, no web call), so the settle detector stays at loading and the readout never shows [Settled]. web/e2e/guided-run.spec.ts fails at acceptWhenSettled; run-capture specs skip.

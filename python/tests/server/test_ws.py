@@ -34,7 +34,7 @@ def _client(bus: Bus) -> TestClient:
     return TestClient(create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False)))
 
 
-# frob:tests sadi.server.framing.encode_trace
+# frob:tests python/sadi/server/framing.py::encode_trace
 def test_trace_roundtrip_and_layout() -> None:
     """Header is 24 bytes with magic; values survive as float32 min/max."""
     data = framing.encode_trace(7, 1.5, 2e-5, {0: [1.0, 2.0, 3.0], 2: [4.0, 5.0, 6.0]}, 9, 8, 10)
@@ -46,7 +46,7 @@ def test_trace_roundtrip_and_layout() -> None:
     assert list(got.trace.mins[2]) == [4.0, 5.0, 6.0]
 
 
-# frob:tests sadi.server.framing.minmax_decimate
+# frob:tests python/sadi/server/framing.py::minmax_decimate
 def test_decimation_keeps_peaks() -> None:
     """A single spike survives min/max decimation."""
     v = np.zeros(10_000)
@@ -55,7 +55,7 @@ def test_decimation_keeps_peaks() -> None:
     assert mn.shape[0] == 100 and mx.max() == 5.0 and mn.min() == 0.0
 
 
-# frob:tests sadi.server.framing.decode
+# frob:tests python/sadi/server/framing.py::decode
 def test_decode_rejects_bad_frames() -> None:
     """Short, wrong-magic, wrong-version and unknown-type frames are typed errors."""
     good = framing.encode_trace(1, 0.0, 1.0, {0: [1.0]}, 1, 1, 1)
@@ -66,14 +66,14 @@ def test_decode_rejects_bad_frames() -> None:
     assert framing.decode(good[:-1]).is_err
 
 
-# frob:tests sadi.server.framing.encode_envelope
+# frob:tests python/sadi/server/framing.py::encode_envelope
 def test_envelope_type_reserved_with_stale_flag() -> None:
     """The results-envelope frame type carries opaque JSON and the stale flag."""
     got = framing.decode(framing.encode_envelope(3, 0.0, b'{"v":1}', stale=True)).danger_ok
     assert got.type is framing.FrameType.RESULTS_ENVELOPE and got.stale and got.body == b'{"v":1}'
 
 
-# frob:tests sadi.server.ws.make_ws_router
+# frob:tests python/sadi/server/ws.py::make_ws_router
 def test_hello_state_and_stop_pushed_as_json() -> None:
     """A client gets hello, then JSON for pipeline events, then a binary trace frame."""
     bus = Bus()
@@ -87,7 +87,7 @@ def test_hello_state_and_stop_pushed_as_json() -> None:
         assert fr.trace is not None and fr.trace.raw_seq == 1
 
 
-# frob:tests sadi.server.ws.StreamHub
+# frob:tests python/sadi/server/ws.py::StreamHub
 def test_slow_client_drops_display_frames_with_counter() -> None:
     """Frames queued beyond the depth are dropped and counted, newest kept."""
     from sadi.server.ws import StreamHub
@@ -103,7 +103,8 @@ def test_slow_client_drops_display_frames_with_counter() -> None:
     assert c.frames[-1][1].raw_seq == CLIENT_FRAME_DEPTH + 4
 
 
-# frob:tests sadi.server.ws.StreamHub.hello
+# frob:tests python/sadi/server/ws.py::StreamHub.hello
+# frob:tests python/sadi/server/ws.py::StreamHub.publish_guidance
 def test_reconnect_resumes_from_latest() -> None:
     """A new connection gets the latest state in hello and no old frames."""
     bus = Bus()
@@ -117,7 +118,19 @@ def test_reconnect_resumes_from_latest() -> None:
         assert [m["kind"] for m in hello["latest"]] == ["stopped"]
 
 
-# frob:tests sadi.server.ws.make_ws_router
+# frob:tests python/sadi/server/ws.py::StreamHub.publish_guidance
+def test_guidance_pushed_to_clients() -> None:
+    """Guidance published on the hub reaches the client as JSON."""
+    bus = Bus()
+    app = create_app(AppSettings(data_root=Path("x"), bus=bus, require_root_lock=False))
+    with TestClient(app).websocket_connect("/api/stream") as ws:
+        ws.receive_text()
+        app.state.stream_hub.publish_guidance({"text": "wait"})
+        msg = json.loads(ws.receive_text())
+        assert msg == {"kind": "guidance", "text": "wait"}
+
+
+# frob:tests python/sadi/server/ws.py::make_ws_router
 def test_50ksps_real_time_budget() -> None:
     """50 kS/s as 1000-sample blocks every 20 ms for 2 s: >=95% delivered, p95 latency < 100 ms."""
     bus = Bus()

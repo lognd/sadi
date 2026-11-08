@@ -294,3 +294,17 @@ mod tests {
         assert_eq!(Command::decode(&bad), Err(CodecError::UnknownOpcode(9)));
     }
 }
+
+#[cfg(test)]
+mod opcode_tests {
+    use super::*;
+
+    // frob:tests crates/sadi-proto/src/codec/command.rs::Command.opcode
+    #[test]
+    fn command_opcode_bytes() {
+        assert_eq!(Command::Stop.opcode(), 2);
+        assert_eq!(Command::Reset.opcode(), 3);
+        assert_eq!(Command::Query.opcode(), 4);
+        assert_eq!(Command::start_from_codes([0, 5, 11, 15]).unwrap().opcode(), 1);
+    }
+}

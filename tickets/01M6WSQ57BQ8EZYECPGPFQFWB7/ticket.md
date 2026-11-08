@@ -7,8 +7,9 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T05:22:23Z"
-updated = "2026-11-08T05:28:11Z"
+updated = "2026-11-08T05:29:29Z"
 labels = ["ws:py", "ad3", "model:sonnet", "creates:python/sadi/bench/ad3/fake.py", "creates:python/sadi/bench/inject.py", "creates:python/tests/bench/test_ad3_fake.py", "creates:docs/bench/injection.md"]
+scope = ["python/sadi/bench/ad3/fake.py"]
 
 [[acceptance]]
 text = "FakeDwf satisfies the DwfBackend Protocol and generates and samples waveforms deterministically with no hardware"

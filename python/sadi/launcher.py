@@ -4,9 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import logging
+import os
+import socket
 import sys
+import threading
+import time
+import webbrowser
 from collections.abc import Callable, Sequence
+from importlib import metadata
 from pathlib import Path
 
 import uvicorn
@@ -29,6 +36,10 @@ EXIT_LOCK = 3
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
 DEFAULT_WEB_DIST = Path("web") / "dist"
+EXIT_SELFTEST = 4
+EXIT_PORT = 5
+APP_NAME = "sadi"
+BROWSER_WAIT_S = 15.0
 
 Serve = Callable[[FastAPI, str, int], None]
 
@@ -41,6 +52,118 @@ def _out(text: str) -> None:
 def _err(text: str) -> None:
     """Write to stderr."""
     sys.stderr.write(text)
+
+
+def default_data_dir() -> Path:
+    """Per-OS default data directory (platformdirs when installed, else XDG/APPDATA/macOS)."""
+    try:
+        from platformdirs import user_data_dir
+    except ImportError:
+        _log.info("platformdirs not installed; using built-in per-OS fallback")
+        home = Path.home()
+        if sys.platform == "win32":
+            base = Path(os.environ.get("LOCALAPPDATA", home / "AppData" / "Local"))
+        elif sys.platform == "darwin":
+            base = home / "Library" / "Application Support"
+        else:
+            base = Path(os.environ.get("XDG_DATA_HOME", home / ".local" / "share"))
+        return base / APP_NAME
+    return Path(user_data_dir(APP_NAME, appauthor=False))
+
+
+def is_loopback(host: str) -> bool:
+    """Return whether `host` is `localhost` or a loopback IP literal."""
+    if host == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+def _port_free(host: str, port: int) -> bool:
+    """Return whether `host:port` can be bound right now (port 0 always can)."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind((host, port))
+        except OSError:
+            return False
+    return True
+
+
+def pick_port(host: str, preferred: int, *, strict: bool) -> Result[int, str]:
+    """Return `preferred` if free; else (unless `strict`) an ephemeral free port."""
+    if _port_free(host, preferred):
+        return Ok(preferred)
+    if strict:
+        _log.error("requested port %d is busy", preferred)
+        return Err(f"port {preferred} is already in use")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind((host, 0))
+        except OSError as exc:
+            _log.error("no free ephemeral port on %s: %s", host, exc)
+            return Err(f"no free port available: {exc}")
+        port = int(s.getsockname()[1])
+    _log.warning("port %d busy; falling back to %d", preferred, port)
+    return Ok(port)
+
+
+def open_browser(url: str) -> Result[None, str]:
+    """Open `url` in the default browser; Err (never raises) when that is impossible."""
+    try:
+        opened = webbrowser.open(url)
+    except (webbrowser.Error, OSError) as exc:
+        _log.warning("could not open browser: %s", exc)
+        return Err(str(exc))
+    if not opened:
+        _log.warning("no browser available for %s", url)
+        return Err("no browser available")
+    return Ok(None)
+
+
+def _browser_when_up(host: str, port: int, url: str) -> None:
+    """Wait until the server accepts connections, then open the browser (thread body)."""
+    deadline = time.monotonic() + BROWSER_WAIT_S
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection((host, port), timeout=0.5):
+                break
+        except OSError:
+            time.sleep(0.2)
+    else:
+        _log.warning("server did not come up; not opening browser")
+        return
+    if open_browser(url).is_err:
+        _log.info("browser not opened; open %s manually", url)
+
+
+def schedule_browser(host: str, port: int) -> threading.Thread:
+    """Start a daemon thread that opens the UI once the server is listening."""
+    url = f"http://{host}:{port}/"
+    t = threading.Thread(target=_browser_when_up, args=(host, port, url), daemon=True)
+    t.start()
+    return t
+
+
+def selftest() -> Result[int, str]:
+    """Run a short simulator acquisition; Ok carries the packet count."""
+    from sadi.doctor.devprobe import probe_sim
+
+    facts = probe_sim()
+    if not facts.binding_ok:
+        return Err(f"simulator unavailable: {facts.detail}")
+    if facts.timed_out or not facts.connect_ok or not facts.data_ok or facts.failed_scenarios:
+        return Err(f"simulator acquisition failed: {facts.detail or facts.failed_scenarios}")
+    return Ok(facts.packets)
+
+
+def package_version() -> str:
+    """Installed `sadi` version, or `unknown` when not installed."""
+    try:
+        return metadata.version("sadi")
+    except metadata.PackageNotFoundError:
+        return "unknown"
 
 
 def mount_web(app: FastAPI, dist: Path) -> bool:
@@ -79,9 +202,23 @@ def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="sadi", description="Run SADI locally.")
     sub = p.add_subparsers(dest="command")
     serve = sub.add_parser("serve", help="preflight, then start the server (default)")
-    serve.add_argument("--host", default=DEFAULT_HOST)
-    serve.add_argument("--port", type=int, default=DEFAULT_PORT)
-    serve.add_argument("--data-root", type=Path, default=Path("data"))
+    serve.add_argument("--host", default=DEFAULT_HOST, help="loopback only unless overridden")
+    serve.add_argument(
+        "--allow-non-loopback", action="store_true", help="UNSAFE: permit a non-loopback --host"
+    )
+    serve.add_argument("--port", type=int, default=None, help=f"default {DEFAULT_PORT}, else free")
+    serve.add_argument(
+        "--data-root",
+        "--data-dir",
+        dest="data_root",
+        type=Path,
+        default=None,
+        help="data directory (default: per-OS user data dir)",
+    )
+    serve.add_argument("--no-browser", action="store_true", help="do not open the browser")
+    serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
+    serve.add_argument("--selftest", action="store_true", help="run a simulator acquisition, exit")
+    serve.add_argument("--version", action="store_true", help="print the version and exit")
     serve.add_argument("--web-dist", type=Path, default=DEFAULT_WEB_DIST)
     serve.add_argument("--skip-preflight", action="store_true", help="do not run the doctor")
     sub.add_parser("doctor", help="run sadi-doctor; remaining arguments are passed through")
@@ -90,21 +227,54 @@ def _parser() -> argparse.ArgumentParser:
 
 def _serve(args: argparse.Namespace, serve: Serve) -> int:
     """Preflight, build the app, mount the web and serve; return the exit code."""
+    if args.version:
+        _out(f"sadi {package_version()}\n")
+        return 0
+    if args.selftest:
+        got = selftest()
+        if got.is_err:
+            _err(f"sadi: selftest FAILED: {got.danger_err}\n")
+            return EXIT_SELFTEST
+        _out(f"sadi: selftest ok ({got.danger_ok} simulator packets)\n")
+        return 0
+    if not is_loopback(args.host) and not args.allow_non_loopback:
+        _log.error("refusing non-loopback host %s", args.host)
+        _err(
+            f"sadi: refusing to bind {args.host}; only loopback is allowed "
+            "(pass --allow-non-loopback to override, UNSAFE)\n"
+        )
+        return EXIT_USAGE
+    port_got = pick_port(args.host, args.port or DEFAULT_PORT, strict=args.port is not None)
+    if port_got.is_err:
+        _err(f"sadi: {port_got.danger_err}\n")
+        return EXIT_PORT
+    port = port_got.danger_ok
+    data_root = args.data_root if args.data_root is not None else default_data_dir()
+    _out(f"sadi: data directory: {data_root}\n")
+    if args.sim:
+        os.environ["SADI_SIM"] = "1"
+        _log.info("simulator mode requested (SADI_SIM=1)")
     if not args.skip_preflight:
-        pre = preflight(args.data_root, args.port)
+        pre = preflight(data_root, port)
         if pre.is_err:
             _err(pre.danger_err)
             _err("sadi: doctor preflight failed; follow the steps above, then retry.\n")
             return EXIT_PREFLIGHT
-    app = create_app(AppSettings(data_root=args.data_root))
+    app = create_app(AppSettings(data_root=data_root))
     mount_web(app, args.web_dist)
-    _log.info("starting server on %s:%d", args.host, args.port)
+    _out(f"sadi: serving at http://{args.host}:{port}/\n")
+    if not args.no_browser:
+        schedule_browser(args.host, port)
+    _log.info("starting server on %s:%d", args.host, port)
     try:
-        serve(app, args.host, args.port)
+        serve(app, args.host, port)
     except RootLockStartupError as exc:
         _log.error("data-root lock refused: %s", exc)
         _err(f"sadi: {exc}\n")
         return EXIT_LOCK
+    except KeyboardInterrupt:
+        _log.info("interrupted; server shut down gracefully")
+        _out("sadi: stopped\n")
     return 0
 
 

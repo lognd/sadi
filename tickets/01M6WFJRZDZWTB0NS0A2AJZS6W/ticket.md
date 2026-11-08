@@ -7,6 +7,6 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T02:25:14Z"
-updated = "2026-11-08T02:28:01Z"
-scope = ["python/**", "docs/**", "tickets/**", ".gitignore/**", ".gitignore"]
+updated = "2026-11-08T02:28:16Z"
+scope = ["python/**", "docs/**", "tickets/**", ".gitignore/**", ".gitignore", "changelog.d/01M6W7R1PV3YSB3EKX6K80WDK8.added.md"]
 +++

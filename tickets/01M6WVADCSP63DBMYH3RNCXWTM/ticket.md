@@ -13,7 +13,7 @@ scope = ["python/sadi/server/session_points.py", "python/sadi/server/routes/resu
 
 [[acceptance]]
 text = "Helpers live in public sadi.server.session_points and routes/export no longer imports private names from routes/results"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Behaviour unchanged: tests/server passes"

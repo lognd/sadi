@@ -45,4 +45,5 @@ Status: current
 - [LCTT lab module and two-specimen workflow](lctt/lab-module.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
 - [LCTT live results](lctt/live-results.md)
+- [LCTT guided run](lctt/guidance.md)
 - [LCTT CSV export](lctt/export-csv.md)

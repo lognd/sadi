@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:10:33Z"
+updated = "2026-11-08T03:10:44Z"
 idempotency_key = "sadi-a2"
 labels = ["ws:py", "lctt", "oq:Q5", "oq:Q10", "oq:Q8", "model:sonnet", "creates:python/sadi/labs/lctt/loading.py", "creates:python/tests/labs/lctt/test_loading.py", "creates:docs/lctt/loading.md"]
 scope = ["python/sadi/labs/lctt/loading.py", "python/tests/labs/lctt/test_loading.py", "docs/lctt/loading.md", "docs/index.md"]
@@ -27,7 +27,7 @@ target = "01M6W7R28HX7237GMXSNQKWT3Y"
 
 [[acceptance]]
 text = "Tare pooling (voltage + uncertainty), load = sum of inventory masses * g (+ hanger) with U, area from diameter with U, stress, strain = slope*dV/L0 with U, all through U1"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Options with documented defaults: U_V = 2 s of block (Q5; alt 2 s/sqrt(N)), LVDT sign handling warn-or-flip (Q10 default warn plus one-click flip), L0 default per specimen (Q8: short 0.08313 m, long 0.5 m, always editable)"

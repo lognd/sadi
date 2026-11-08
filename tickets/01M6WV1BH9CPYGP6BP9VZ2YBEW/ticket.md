@@ -4,9 +4,10 @@ title = "Wire a real DeviceService into launcher/app for /api/device/status"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T05:45:26Z"
+updated = "2026-11-08T06:13:33Z"
 scope = ["python/sadi/server/**"]
 +++
 

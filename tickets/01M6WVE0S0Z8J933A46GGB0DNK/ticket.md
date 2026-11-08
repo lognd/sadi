@@ -13,7 +13,7 @@ scope = ["python/tests/cli/test_launcher.py", "docs/server/launcher.md", "change
 
 [[acceptance]]
 text = "open_sim_device opens against a real built sadi_py and streams samples (test skipped when sadi_py is not importable)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/server/launcher.md records the verification status"

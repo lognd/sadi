@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:42:07Z"
-updated = "2026-11-08T06:19:28Z"
+updated = "2026-11-08T06:21:36Z"
 scope = ["docs/lctt/export-csv.md"]
 
 [[acceptance]]
 text = "Private mapping doc and test cover all 32 reference columns and metadata keys"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Tracked docs/lctt/export-csv.md describes differences without reference names"

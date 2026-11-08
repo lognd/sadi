@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Endpoints: session create/open/resume, wizard state, inventory CRUD + group weighing, capture/accept/undo/redo/edit point, results, guidance, export (CSV + figure data), device status; OpenAPI published, TypeScript client generated into web/src/api", "All handlers map typani errors to problem+json with a 'what to do' message; no business logic in handlers", "Tested with httpx against the simulator", "No CPU-heavy work on the asyncio loop (loop does I/O only); a loop-lag test proves handlers stay under a latency budget while jobs run"]
+new = ["Session create/open/resume, wizard state and transitions, capture/undo/redo/edit point and history endpoints, writes via the WAL", "Handlers map typani errors to problem+json with a what-to-do hint; no business logic in handlers", "Tested with httpx (TestClient) against the real WAL and the lctt lab"]
+moved = [0, 0, 0, 0]
+at = "2026-11-08T05:32:56Z"
+actor = "lognd"
+rev = 1

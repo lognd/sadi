@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:28:12Z"
+updated = "2026-11-08T05:32:56Z"
 idempotency_key = "sadi-b4"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/app.py", "creates:python/sadi/server/routes/**", "creates:python/sadi/server/schemas.py", "creates:python/tests/server/test_routes.py", "creates:docs/server/api.md"]
 scope = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py", "python/tests/server/test_routes_problem.py", "python/tests/store/test_session_held_root.py", "docs/server/app.md"]
@@ -42,19 +42,15 @@ kind = "blocked-by"
 target = "01M6W7R3W8RJPVS0VVDG2YNMJB"
 
 [[acceptance]]
-text = "Endpoints: session create/open/resume, wizard state, inventory CRUD + group weighing, capture/accept/undo/redo/edit point, results, guidance, export (CSV + figure data), device status; OpenAPI published, TypeScript client generated into web/src/api"
+text = "Session create/open/resume, wizard state and transitions, capture/undo/redo/edit point and history endpoints, writes via the WAL"
 bound = false
 
 [[acceptance]]
-text = "All handlers map typani errors to problem+json with a 'what to do' message; no business logic in handlers"
+text = "Handlers map typani errors to problem+json with a what-to-do hint; no business logic in handlers"
 bound = false
 
 [[acceptance]]
-text = "Tested with httpx against the simulator"
-bound = false
-
-[[acceptance]]
-text = "No CPU-heavy work on the asyncio loop (loop does I/O only); a loop-lag test proves handlers stay under a latency budget while jobs run"
+text = "Tested with httpx (TestClient) against the real WAL and the lctt lab"
 bound = false
 +++
 

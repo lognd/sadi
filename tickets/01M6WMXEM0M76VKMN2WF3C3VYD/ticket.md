@@ -2,12 +2,12 @@
 id = "01M6WMXEM0M76VKMN2WF3C3VYD"
 title = "Wire a real CurveSource (active session events) into create_app for stress-strain fit"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:58:26Z"
-updated = "2026-11-08T03:59:35Z"
+updated = "2026-11-08T03:59:37Z"
 scope = ["python/sadi/server/**"]
 +++
 

@@ -4,9 +4,10 @@ title = "Capture and wizard complete latency grows with WAL size; e2e guided run
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-08T08:10:26Z"
-updated = "2026-11-08T08:10:26Z"
+updated = "2026-11-08T08:12:59Z"
 scope = ["python/sadi/server/**"]
 +++
 

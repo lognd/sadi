@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:53:20Z"
+updated = "2026-11-08T02:53:21Z"
 labels = ["plugins", "creates:python/tests/store/test_session_plugin_provenance.py"]
 scope = ["python/sadi/store/manifest.py", "python/sadi/store/session.py", "python/tests/store/test_session_plugin_provenance.py"]
 
@@ -30,7 +30,7 @@ bound = true
 
 [[acceptance]]
 text = "Existing store tests pass"
-bound = false
+bound = true
 +++
 
 Add optional plugins: list[SessionPluginRef(id, version)] to the session manifest (schema version bump or backward-compatible optional field; old sessions without it must still open). Core records provenance via an API argument, plugin code never touches the manifest. On reopen/recovery compare to PluginRegistry and return a warning list (missing plugin, version differs) as part of a Result, never a hard failure: data stays readable without the plugin. Data-safety: do not alter WAL record format.

@@ -7,7 +7,7 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:20Z"
-updated = "2026-11-08T10:34:15Z"
+updated = "2026-11-08T10:34:22Z"
 scope = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/doctor/**", "python/tests/jobs/**", "python/tests/labs/lctt/**", "python/tests/plugins/**", "python/tests/store/**", "python/tests/uncertainty/**"]
 
 [[acceptance]]

@@ -12,7 +12,7 @@ scope = ["python/sadi/labs/lctt/lab.py"]
 
 [[acceptance]]
 text = "The lctt-csv export format title reads LCTT CSV with no column count, and the lctt lab tests pass"
-bound = false
+bound = true
 +++
 
 found while working ~Y079XVA: CSV_FORMAT title in python/sadi/labs/lctt/lab.py reads "LCTT CSV (32 columns)" but the schema is 42 columns

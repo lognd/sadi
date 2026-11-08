@@ -1,10 +1,11 @@
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
+// frob:ticket 01M6X9Y0CWQ6YRMDT8QF5JD036
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
 import {
   HistoryList, PointEditor, PointList, ReviewScreen, SAFETY_NOTE, historyLabel, nudgeEdit,
-  parseCount, parseInputValue, pointFlags,
+  parseCount, parseInputValue, pointFlags, rowActionAfterKey,
 } from "./ReviewScreen";
 import { describeProblem, editPoint, redo, undo } from "./api";
 import { loadReview, runAction, type ReviewData } from "./session";
@@ -61,6 +62,23 @@ describe("pure helpers", () => {
     expect(m).toContain("Hint: Move the start earlier.");
     expect(describeProblem({ kind: "http", status: 500, body: "boom" })).toContain("HTTP 500");
     expect(describeProblem({ kind: "network", message: "down" })).toContain("down");
+  });
+});
+
+describe("roving tabindex", () => {
+  it("moves between Edit and Exclude with arrows and ignores other keys", () => {
+    expect(rowActionAfterKey(0, "ArrowRight")).toBe(1);
+    expect(rowActionAfterKey(1, "ArrowRight")).toBe(1);
+    expect(rowActionAfterKey(1, "ArrowLeft")).toBe(0);
+    expect(rowActionAfterKey(0, "ArrowLeft")).toBe(0);
+    expect(rowActionAfterKey(0, "Enter")).toBeNull();
+  });
+
+  it("renders exactly one tabbable button per point row", () => {
+    const html = renderToString(<PointList points={data.points} selected={null} busy={false} onSelect={() => undefined} onEdit={() => undefined} />);
+    expect(html.match(/tabindex="0"/g) ?? []).toHaveLength(2);
+    expect(html.match(/tabindex="-1"/g) ?? []).toHaveLength(2);
+    expect(html).toContain("Skip to Finish");
   });
 });
 

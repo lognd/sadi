@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/tests/server/test_curve_notes_latency.py"]
+at = "2026-11-08T10:10:31Z"
+actor = "lognd"
+rev = 1

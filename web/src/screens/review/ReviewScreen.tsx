@@ -1,6 +1,8 @@
 // frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
+// frob:ticket 01M6X9Y0CWQ6YRMDT8QF5JD036
 // frob:accept COV001 because="covered by ReviewScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import type * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { ResultsPanel } from "../../components/results/ResultsPanel";
@@ -156,7 +158,14 @@ export function PointEditor(props: {
   );
 }
 
-/** Point table with settled/forced flags, exclude/include and select buttons; props only. */
+/** Index of the row action (0 = Edit, 1 = Exclude/Include) after an arrow key, or null for other keys; clamps at the ends. */
+export function rowActionAfterKey(current: number, key: string): number | null {
+  if (key === "ArrowRight") return Math.min(current + 1, 1);
+  if (key === "ArrowLeft") return Math.max(current - 1, 0);
+  return null;
+}
+
+/** Point table with flags and one roving Tab stop per row (Left/Right switch Edit and Exclude); props only. */
 export function PointList(props: {
   points: readonly PointView[];
   selected: string | null;
@@ -165,6 +174,17 @@ export function PointList(props: {
   onEdit: (id: string, req: EditRequest) => void;
 }) {
   const { points, selected, busy, onSelect, onEdit } = props;
+  // Roving tabindex: one Tab stop per row; the remembered action per row holds tabIndex 0.
+  const [active, setActive] = useState<Record<string, number>>({});
+  const onRowKey = (id: string, e: React.KeyboardEvent<HTMLElement>): void => {
+    const next = rowActionAfterKey(active[id] ?? 0, e.key);
+    if (next === null) return;
+    e.preventDefault();
+    setActive((m) => ({ ...m, [id]: next }));
+    const buttons = e.currentTarget.querySelectorAll("button");
+    buttons[next]?.focus();
+  };
+  const tab = (id: string, i: number): number => ((active[id] ?? 0) === i ? 0 : -1);
   if (points.length === 0) return <p>No points captured yet.</p>;
   return (
     <>
@@ -183,14 +203,17 @@ export function PointList(props: {
             <td>{Object.entries(p.inputs).map(([k, v]) => `${k}=${inputText(v)}`).join("; ")}</td>
             <td>{String(p.history.length)}</td>
             <td>
-              <button type="button" aria-pressed={p.point_id === selected}
+             <div role="group" aria-label={`Actions for point ${String(p.seq)}`}
+                  onKeyDown={(e) => { onRowKey(p.point_id, e); }}>
+              <button type="button" tabIndex={tab(p.point_id, 0)} aria-pressed={p.point_id === selected}
                       onClick={() => { onSelect(p.point_id); }}>
                 {`Edit point ${String(p.seq)}`}
               </button>
-              <button type="button" disabled={busy}
+              <button type="button" tabIndex={tab(p.point_id, 1)} disabled={busy}
                       onClick={() => { onEdit(p.point_id, { op: p.excluded ? "include" : "exclude", args: {} }); }}>
                 {`${p.excluded ? "Include" : "Exclude"} point ${String(p.seq)}`}
               </button>
+             </div>
             </td>
           </tr>
         ))}

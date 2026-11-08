@@ -1,4 +1,5 @@
 // frob:ticket 01M6X9NXRHXGBXA9YPKJAZDW9B
+// frob:ticket 01M6X9Y0CWQ6YRMDT8QF5JD036
 // creates:web/e2e/keyboard-only.spec.ts
 // Keyboard-only walkthrough: Tab to a control, then Enter/Space to activate it (docs/usability-report.md, ~0MZ866N).
 // Selectors use role + name patterns so label tweaks on the screens do not break them.
@@ -19,6 +20,23 @@ async function tabTo(page: Page, target: Locator, maxTabs = 120): Promise<void> 
 /** Tab to `target` and activate it with `key` ("Enter" or "Space"). */
 async function activate(page: Page, target: Locator, key: "Enter" | "Space"): Promise<void> {
   await tabTo(page, target);
+  await page.keyboard.press(key);
+}
+
+/** Reach a row action: Tab to the row's single tab stop, then Left/Right arrows until `target` holds focus. */
+async function reachInRow(page: Page, target: Locator): Promise<void> {
+  const row = target.first().locator("xpath=ancestor::*[@role='group'][1]");
+  await tabTo(page, row.locator('button[tabindex="0"]'));
+  for (const key of ["ArrowRight", "ArrowLeft", "ArrowRight"]) {
+    if (await target.first().evaluate((el) => el === document.activeElement)) return;
+    await page.keyboard.press(key);
+  }
+  await expect(target.first()).toBeFocused();
+}
+
+/** Reach a row action via the roving stop and activate it with `key`. */
+async function activateInRow(page: Page, target: Locator, key: "Enter" | "Space"): Promise<void> {
+  await reachInRow(page, target);
   await page.keyboard.press(key);
 }
 
@@ -59,13 +77,13 @@ test("guided run Setup -> Export using only Tab and Enter/Space", async ({ page 
   const review = page.getByRole("region", { name: "Review" });
   const exclude = review.getByRole("button", { name: /^exclude /i }).first();
   const excludeName = (await exclude.innerText()).replace(/^exclude /i, "");
-  await activate(page, exclude, "Enter");
+  await activateInRow(page, exclude, "Enter");
   const include = review.getByRole("button", { name: new RegExp(`^include ${excludeName}$`, "i") });
   await expect(include).toBeVisible();
-  await activate(page, include, "Space"); // put the point back
+  await activateInRow(page, include, "Space"); // put the point back
   await expect(review.getByRole("button", { name: new RegExp(`^exclude ${excludeName}$`, "i") })).toBeVisible();
   const edit = review.getByRole("button", { name: new RegExp(`^edit ${excludeName}$`, "i") });
-  await activate(page, edit, "Enter");
+  await activateInRow(page, edit, "Enter");
   await expect(edit).toHaveAttribute("aria-pressed", "true");
   await activate(page, page.getByRole("button", { name: /^finish/i }), "Space"); // advance to Export
 

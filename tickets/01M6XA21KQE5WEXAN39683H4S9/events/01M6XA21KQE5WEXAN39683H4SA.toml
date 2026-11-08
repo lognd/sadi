@@ -1,0 +1,9 @@
+kind = "create"
+title = "Setup: clamp-check capture UI"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+at = "2026-11-08T10:07:57Z"
+actor = "lognd"
+rev = 1

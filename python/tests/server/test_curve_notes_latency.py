@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 from sadi.core.registry import LabRegistry
 from sadi.labs.lctt.plugin import register
 from sadi.server.app import AppSettings, create_app
-from sadi.server.curve_source import make_curve_source, session_events
+from sadi.server.curve_source import SessionReplayCache, make_curve_source, session_events
 from sadi.server.service import SessionService
 from sadi.store.records import NewRecord, RecordType, encode_raw_block
 
@@ -32,6 +32,7 @@ def client(tmp_path: Path) -> Iterator[TestClient]:
         yield c
 
 
+# frob:ticket 01M6X9SWXACR2GWBFWEX17ZGK5
 # frob:tests python/sadi/server/service.py::SessionService.notes
 # frob:tests python/sadi/server/curve_source.py::make_curve_source
 def test_notes_and_curve_do_not_scale_with_raw_records(client: TestClient, tmp_path: Path) -> None:
@@ -47,7 +48,8 @@ def test_notes_and_curve_do_not_scale_with_raw_records(client: TestClient, tmp_p
         last = writer.submit(raw).danger_ok
     assert writer.wait_durable(last, 120.0).is_ok
 
-    source = make_curve_source(tmp_path)
+    # Disable the periodic full re-verify so a rebuild cannot land inside the timing loop.
+    source = make_curve_source(tmp_path, SessionReplayCache(reverify_interval_s=float("inf")))
     assert svc.notes().danger_ok == []
     source()
     times: list[float] = []

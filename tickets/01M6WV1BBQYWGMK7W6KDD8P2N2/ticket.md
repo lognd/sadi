@@ -2,7 +2,8 @@
 id = "01M6WV1BBQYWGMK7W6KDD8P2N2"
 title = "Lab budget hook so /api/results/budgets is non-empty"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

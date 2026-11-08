@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:54:35Z"
+updated = "2026-11-08T05:54:47Z"
 idempotency_key = "sadi-f13"
 labels = ["ws:web", "model:sonnet", "creates:web/src/screens/review/**", "creates:docs/web/review-screen.md"]
 scope = ["web/src/screens/review/**", "docs/web/review-screen.md", "docs/web/plots.md"]
@@ -27,15 +27,15 @@ target = "01M6W7R41EVGYTSV1B72ZQVKAB"
 
 [[acceptance]]
 text = "List/plot of captured points with settled/forced flags; edit averaging window, exclude/include, relabel weights; undo/redo history visible"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Edits go through API as compensating events; plots and results update from raw recompute"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Review screen unit tests (vitest) cover edits, undo/redo, recompute refresh and problem hints"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

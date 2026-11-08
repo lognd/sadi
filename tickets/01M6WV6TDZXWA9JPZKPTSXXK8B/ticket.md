@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:54:18Z"
+updated = "2026-11-08T05:54:53Z"
 scope = ["web/vite.config.ts", "web/src/viteProxy.test.ts", "docs/web/live-trace.md"]
 
 [[acceptance]]

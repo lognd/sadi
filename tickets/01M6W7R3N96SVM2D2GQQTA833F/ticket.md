@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0EPXRHEMNEAB9QWVY57"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:20:51Z"
+updated = "2026-11-08T03:20:54Z"
 idempotency_key = "sadi-u5"
 labels = ["ws:unc", "qa", "model:sonnet", "creates:python/tests/uncertainty/crosscheck/**", "creates:docs/uncertainty/crosscheck.md"]
 scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md", "docs/uncertainty/fallbacks.md", "python/sadi/doctor/cli.py"]
@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Hypothesis-generated inputs including near-zero denominators produce typed errors, not exceptions"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

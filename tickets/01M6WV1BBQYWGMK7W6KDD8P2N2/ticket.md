@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:04:02Z"
+updated = "2026-11-08T06:04:06Z"
 scope = ["python/sadi/server/**", "python/sadi/labs/**", "python/sadi/core/lab.py", "python/tests/**", "docs/server/results.md", "web/src/api/openapi.json"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "A lab without the budgets hook yields an empty list"
-bound = false
+bound = true
 +++
 
 found while working ~J73KJ11: budgets are an injectable BudgetSource; no lab supplies one yet

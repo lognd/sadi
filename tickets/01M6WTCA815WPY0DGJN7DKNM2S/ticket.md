@@ -2,12 +2,13 @@
 id = "01M6WTCA815WPY0DGJN7DKNM2S"
 title = "Loop-lag test: handlers stay under latency budget while jobs run"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
+points = 2
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:33:56Z"
+updated = "2026-11-08T05:37:21Z"
 scope = ["python/tests/server/test_loop_lag.py"]
 
 [[links]]

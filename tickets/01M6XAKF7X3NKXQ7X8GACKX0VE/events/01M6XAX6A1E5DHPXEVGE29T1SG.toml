@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["COV001 count under python/sadi reduced from 128 to 40, no test weakened"]
+moved = []
+at = "2026-11-08T10:22:47Z"
+actor = "lognd"
+rev = 1

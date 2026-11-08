@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T10:22:00Z"
+digest = "37dce63f35e95557211114efc803bdd0f331128bd90cad7a9b9176b48d66341a"
+exit_code = 0
+head = "ce66d190285aefea8db1cc0e6dd3a770aad9a878"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/screens/setup/ClampCheckPanel.test.tsx (8 tests) 16ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  05:22:01
+   Duration  958ms (transform 201ms, setup 0ms, collect 258ms, tests 16ms, environment 0ms, prepare 179ms)
+
+JSON report written to /tmp/frob-vitest-1188657-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/setup/ClampCheckPanel.test.tsx"
+size = 336
+status = "measured"
+test_count = 8
+tests_digest = "f741e81f25f7d057597c797a7e0e654ee2dc876c5788abab11c7d05d7b0f6397"
+at = "2026-11-08T10:22:00Z"
+actor = "lognd"
+rev = 1

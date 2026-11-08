@@ -1,4 +1,5 @@
 // frob:ticket 01M6WZCNF9F9XSPWCKB34JHSD9
+// frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 // frob:accept COV001 because="covered by WizardHost.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../api/log";
@@ -12,6 +13,7 @@ import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./run/expor
 import type { RunPhase } from "./run/phases";
 import { RunScreen } from "./run/RunScreen";
 import { ReviewScreen } from "./review/ReviewScreen";
+import { ClampCheckPanel } from "./setup/ClampCheckPanel";
 import { SessionSetup } from "./setup/SessionSetup";
 
 const log = getLogger("screens.host");
@@ -29,16 +31,6 @@ export function screenFor(rail: readonly RailItem[]): ScreenKind {
   const cur = rail.find((s) => s.status === "current");
   if (cur === undefined) return "export";
   return BY_PHASE[cur.phase] ?? "setup";
-}
-
-/** Setup step body: points the operator at the next action; the shell's panel carries Enter and Skip. */
-function SetupBody(): React.JSX.Element {
-  return (
-    <section aria-label="Setup">
-      <h2>Setup</h2>
-      <p>Check the rig and the specimen. Press Enter when ready, or use Skip this step to continue without the setup check.</p>
-    </section>
-  );
 }
 
 /** Key handler for the export step: F3 downloads the CSV export, other keys are ignored. */
@@ -63,7 +55,7 @@ function StaticStep({ kind, onWizard }: { kind: "setup" | "results" | "export"; 
       onKeyAction={kind === "export" ? onKey : undefined}
       delegateUndo={kind === "results"}
     >
-      {kind === "setup" ? <SetupBody /> : kind === "results" ? <ReviewScreen /> : <ExportScreen />}
+      {kind === "setup" ? <ClampCheckPanel /> : kind === "results" ? <ReviewScreen /> : <ExportScreen />}
     </WizardShell>
   );
 }

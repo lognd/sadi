@@ -29,3 +29,20 @@ with operator guidance built from the config. `LcttLab.steps()` starts with that
 (`plugin.setup_step`, `Phase.SETUP`, device-point capture), ahead of Calibrate on the step rail.
 Its completion criterion is `min_points = config.cycles`: `complete` is refused with `NeedPoints`
 until one point per cycle is captured; `skip` is never blocked (ticket ~JTJA6QM).
+
+## Setup capture UI (ticket 01M6XA21KQE5WEXAN39683H4S9)
+
+The Setup step body is `web/src/screens/setup/ClampCheckPanel.tsx`. It explains the check, shows the
+loading guidance and "cycle N of M", and takes one form per cycle: zero strain before loading, zero
+strain after unloading, and the number of slips seen during the hold. Each cycle is appended as a
+POINT with phase `setup` (`ClampInputs`: `zero_before`, `zero_after`, `slip_events`) through
+`POST /api/session/points`; earlier cycles are never overwritten.
+
+`GET /api/session/clamp-check` (`routes/clamp.py`) returns `ClampStatus` from `clamp_status()`: the
+guidance, required cycle count, return tolerance, per-cycle results and, once all cycles are in, the
+verdict (`passed`) with the same advice text as `check_clamp_slip`. The verdict is `null` until the
+last cycle is captured. Excluded points are ignored.
+
+Setup points are not load points: `results` leaves them out of `n_points`, `analyze` drops them and
+the live curve source skips them. Limitation: the UI records operator-entered zeros and an observed
+slip count, not raw hold strain, so the slip detector is not run on live data.

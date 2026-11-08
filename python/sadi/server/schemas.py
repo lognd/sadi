@@ -9,6 +9,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from sadi.core.wizard import History, WizardState
+from sadi.labs.lctt.guidance import Phase
 from sadi.store.events import CurrentPoint, EditOp, PointWindow
 
 
@@ -132,3 +133,18 @@ class Committed(BaseModel):
     summary: str
     wizard: WizardState
     history: History
+
+
+class RunPhaseBody(_Body):
+    """Request to enter a guided-run phase (must be the next one in order)."""
+
+    # frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
+    phase: Phase
+
+
+class RunPhaseView(BaseModel):
+    """The recorded guided-run phase (None for sessions that never recorded one) and the next."""
+
+    # frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
+    phase: Phase | None
+    next_phase: Phase | None

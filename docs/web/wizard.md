@@ -47,3 +47,9 @@ saves a new version and create allocates a new id, so nothing is overwritten or 
 screen has no delete action. After either succeeds the host reloads the wizard and the rail appears.
 The form is plain labelled controls, so Tab/Enter drive it. With no labs registered the form is
 disabled and says so.
+
+## Setup step panel
+
+The Setup step renders `ClampCheckPanel` (`screens/setup/`), which reads `GET /api/session/clamp-check`
+and captures each cycle as a `setup` phase point. See [clamp check](../lctt/clamp-check.md). Skip
+stays available and is never blocked.

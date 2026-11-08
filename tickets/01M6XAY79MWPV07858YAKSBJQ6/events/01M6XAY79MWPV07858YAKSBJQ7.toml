@@ -1,0 +1,10 @@
+kind = "create"
+title = "Reduce remaining COV001 findings in python/sadi (about 40 left)"
+type = "task"
+category = "todo"
+priority = "low"
+points = 3
+body = "Follow-up to ACKX0VE (128 -> 40). Remaining: pool.py send_run/send_cancel/join, live.py and guidance.py symbols, wizard/probes/lock/writer_thread. frob:accept cannot park Unresolved findings; bind with real tests."
+at = "2026-11-08T10:23:20Z"
+actor = "lognd"
+rev = 1

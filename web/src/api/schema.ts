@@ -344,6 +344,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/session/clamp-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Clamp Check
+         * @description Procedure, recorded cycles and the clamp-check verdict.
+         */
+        get: operations["clamp_check_api_session_clamp_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/session/close": {
         parameters: {
             query?: never;
@@ -841,6 +861,24 @@ export interface components {
             status: components["schemas"]["Status"];
             /** Title */
             title: string;
+        };
+        /**
+         * ClampStatus
+         * @description Wizard Setup panel state: procedure, progress and verdict (`passed` None until complete).
+         */
+        ClampStatus: {
+            /** Advice */
+            advice: string;
+            /** Cycles */
+            cycles: components["schemas"]["RecordedCycle"][];
+            /** Guidance */
+            guidance: string;
+            /** Passed */
+            passed: boolean | null;
+            /** Required */
+            required: number;
+            /** Return Tol */
+            return_tol: number;
         };
         /**
          * ComboBody
@@ -1393,6 +1431,22 @@ export interface components {
             status: components["schemas"]["StepStatus"];
             /** Title */
             title: string;
+        };
+        /**
+         * RecordedCycle
+         * @description One operator-recorded cycle (zeros plus slips seen during the hold) and its verdict.
+         */
+        RecordedCycle: {
+            /** Index */
+            index: number;
+            /** Passed */
+            passed: boolean;
+            /** Returned */
+            returned: boolean;
+            /** Slip Events */
+            slip_events: number;
+            /** Zero Shift */
+            zero_shift: number;
         };
         /**
          * Remediation
@@ -2193,6 +2247,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SessionInfo"];
+                };
+            };
+        };
+    };
+    clamp_check_api_session_clamp_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClampStatus"];
                 };
             };
         };

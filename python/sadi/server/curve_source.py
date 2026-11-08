@@ -17,6 +17,7 @@ from typani import Err, Ok, Result
 
 from sadi.core.point_inputs import (
     CalibrationInputs,
+    ClampInputs,
     SpecimenInputs,
     TareInputs,
     parse_inputs,
@@ -72,6 +73,8 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
             hanger_kg=p.hanger_kg,
             u_hanger_kg=p.u_hanger_kg,
         )
+    if isinstance(p, ClampInputs):  # clamp cycles are not curve events
+        return None  # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
     meta = parse_meta(cp.point)
     return LoadPoint(

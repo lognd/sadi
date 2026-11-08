@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/server/curve_source.py"]
+at = "2026-11-08T10:21:42Z"
+actor = "lognd"
+rev = 1

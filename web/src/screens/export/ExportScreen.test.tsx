@@ -1,3 +1,4 @@
+// frob:ticket 01M6WVTVH19EXW341V5K8SM7Z4
 // frob:ticket 01M6W7RATGKGPEYSMC5H8WGMBV
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it, vi } from "vitest";
@@ -11,6 +12,8 @@ const rs: ResultSet = {
   values: [{ name: "E", value: 70, std_unc: 1, u95: 2, low95: 68, high95: 72, unit: "GPa", dof: 4,
     display: "70.0 +/- 2.0 GPa", confidence: "Confident to 3 %", mc: { status: "agrees", mc_std_unc: 1 } }],
   pending: ["sigma_y"], notes: ["settle value 1.2 mm fed E"], refinement: [],
+  provenance: [{ name: "E", point_ids: ["p1", "p2"], first_sample: 10, last_sample: 45, algorithm: "lctt.recompute" },
+    { name: "G", point_ids: [], first_sample: null, last_sample: null, algorithm: "lctt.recompute" }],
 };
 const json = (b: unknown, status = 200) => Promise.resolve(new Response(JSON.stringify(b), { status }));
 
@@ -22,6 +25,15 @@ describe("export screen", () => {
     expect(h).toContain("settle value 1.2 mm fed E");
     expect(h).toContain("Pending: sigma_y");
     expect(renderToString(<ReportView results={null} />)).toContain("No results yet");
+  });
+
+  it("renders provenance: point ids, sample span, algorithm", () => {
+    const h = renderToString(<ReportView results={rs} />);
+    expect(h).toContain("p1, p2");
+    expect(h).toContain("10 to 45");
+    expect(h).toContain("lctt.recompute");
+    const none = renderToString(<ReportView results={{ ...rs, provenance: [] }} />);
+    expect(none).not.toContain('data-testid="provenance"');
   });
 
   it("shows a clear message for an empty format list", () => {

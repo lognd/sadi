@@ -1,6 +1,7 @@
 """REST routes for exporting the open session through its lab's export formats (read-only)."""
 
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
+# frob:ticket 01M6WVADCSP63DBMYH3RNCXWTM
 
 from __future__ import annotations
 
@@ -14,8 +15,8 @@ from sadi.core.models import RunState
 from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
-from sadi.server.routes.results import _captured, _points_for
 from sadi.server.service import SessionService
+from sadi.server.session_points import active_points, to_captured
 
 _log = get_logger(__name__)
 
@@ -80,7 +81,7 @@ def render_export(
     pts = svc.points()
     if pts.is_err:
         return Err(pts.danger_err)
-    captured = _captured(_points_for(pts.danger_ok))
+    captured = to_captured(active_points(pts.danger_ok))
     analysis = lab.recompute(captured)
     if analysis.is_err:
         _log.warning("export %s: recompute failed: %s", format_id, analysis.danger_err)

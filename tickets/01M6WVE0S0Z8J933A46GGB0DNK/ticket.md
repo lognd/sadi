@@ -2,13 +2,14 @@
 id = "01M6WVE0S0Z8J933A46GGB0DNK"
 title = "Verify --sim against a real built sadi_py simulator (launcher tests inject fake)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:52:21Z"
-updated = "2026-11-08T05:52:21Z"
+updated = "2026-11-08T06:02:31Z"
 labels = ["python"]
+scope = ["python/tests/cli/test_launcher.py", "docs/server/launcher.md", "changelog.d"]
 +++
 
 NXB07G0 tests inject a fake device; run open_sim_device against a built sadi_py once maturin develop is available.

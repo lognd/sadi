@@ -1,10 +1,11 @@
+// frob:ticket 01M6WVTVH19EXW341V5K8SM7Z4
 // frob:ticket 01M6W7RATGKGPEYSMC5H8WGMBV
 // frob:accept COV001 because="covered by ExportScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
 import { exportFigure, lightTheme, validateDrawable, type Drawable, type ExportOptions } from "../../plots/core";
 import { exportUrl, getExportFormats, getFigureData, getResults, toProblem } from "./api";
-import type { ExportFormatView, Problem, ResultSet, ResultValue } from "./types";
+import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
 
 const log = getLogger("screens.export");
 
@@ -65,7 +66,33 @@ export function ReportRow({ v }: { v: ResultValue }) {
   );
 }
 
-/** Report of final values with 95 % intervals, plus pending items and provenance notes. */
+/** Sample span text for one quantity; a dash when the server has no span. */
+export function sampleSpan(p: QuantityProvenance): string {
+  return p.first_sample === null || p.last_sample === null ? "-" : `${String(p.first_sample)} to ${String(p.last_sample)}`;
+}
+
+/** Per-quantity provenance table: point ids, sample span and algorithm; nothing when empty. */
+export function ProvenanceTable({ provenance }: { provenance: QuantityProvenance[] }) {
+  if (provenance.length === 0) return null;
+  return (
+    <table aria-label="Provenance" data-testid="provenance">
+      <caption>Provenance</caption>
+      <thead><tr><th scope="col">Quantity</th><th scope="col">Point ids</th><th scope="col">Sample span</th><th scope="col">Algorithm</th></tr></thead>
+      <tbody>
+        {provenance.map((p) => (
+          <tr key={p.name} data-testid={`provenance-${p.name}`}>
+            <th scope="row">{p.name}</th>
+            <td>{p.point_ids.length === 0 ? "-" : p.point_ids.join(", ")}</td>
+            <td>{sampleSpan(p)}</td>
+            <td>{p.algorithm}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/** Report of final values with 95 % intervals, plus pending items, provenance and notes. */
 export function ReportView({ results }: { results: ResultSet | null }) {
   if (results === null) return <section aria-label="Report"><p>No results yet.</p></section>;
   return (
@@ -80,8 +107,9 @@ export function ReportView({ results }: { results: ResultSet | null }) {
         </table>
       )}
       {results.pending.length > 0 ? <p data-testid="pending">{`Pending: ${results.pending.join(", ")}`}</p> : null}
+      <ProvenanceTable provenance={results.provenance} />
       {results.notes.length + results.refinement.length > 0 ? (
-        <ul aria-label="Provenance notes" data-testid="notes">
+        <ul aria-label="Notes" data-testid="notes">
           {[...results.notes, ...results.refinement].map((n) => <li key={n}>{n}</li>)}
         </ul>
       ) : null}

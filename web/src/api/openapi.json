@@ -1243,6 +1243,57 @@
         "title": "ProbeError",
         "type": "object"
       },
+      "QuantityProvenance": {
+        "description": "Where one reported quantity came from: its inputs, sample span and algorithm.",
+        "properties": {
+          "algorithm": {
+            "title": "Algorithm",
+            "type": "string"
+          },
+          "first_sample": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Sample"
+          },
+          "last_sample": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sample"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "point_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Point Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "point_ids",
+          "first_sample",
+          "last_sample",
+          "algorithm"
+        ],
+        "title": "QuantityProvenance",
+        "type": "object"
+      },
       "RailItem": {
         "description": "One entry of the step rail: what the UI draws and whether it can be acted on.",
         "properties": {
@@ -1385,50 +1436,6 @@
         "title": "ResultBudget",
         "type": "object"
       },
-      "ResultSet": {
-        "description": "Everything the live panel shows after one recompute; analytic RSS only (instant).",
-        "properties": {
-          "n_points": {
-            "default": 0,
-            "title": "N Points",
-            "type": "integer"
-          },
-          "notes": {
-            "default": [],
-            "items": {
-              "type": "string"
-            },
-            "title": "Notes",
-            "type": "array"
-          },
-          "pending": {
-            "default": [],
-            "items": {
-              "type": "string"
-            },
-            "title": "Pending",
-            "type": "array"
-          },
-          "refinement": {
-            "default": [],
-            "items": {
-              "type": "string"
-            },
-            "title": "Refinement",
-            "type": "array"
-          },
-          "values": {
-            "default": [],
-            "items": {
-              "$ref": "#/components/schemas/ResultValue"
-            },
-            "title": "Values",
-            "type": "array"
-          }
-        },
-        "title": "ResultSet",
-        "type": "object"
-      },
       "ResultValue": {
         "description": "One reported quantity: value, standard and 95 % uncertainty, interval, readouts.",
         "properties": {
@@ -1498,6 +1505,58 @@
           "confidence"
         ],
         "title": "ResultValue",
+        "type": "object"
+      },
+      "ResultsView": {
+        "description": "`ResultSet` plus per-quantity provenance (which settle windows fed each value).",
+        "properties": {
+          "n_points": {
+            "default": 0,
+            "title": "N Points",
+            "type": "integer"
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "pending": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Pending",
+            "type": "array"
+          },
+          "provenance": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/QuantityProvenance"
+            },
+            "title": "Provenance",
+            "type": "array"
+          },
+          "refinement": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Refinement",
+            "type": "array"
+          },
+          "values": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ResultValue"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "title": "ResultsView",
         "type": "object"
       },
       "RevertBody": {
@@ -2388,7 +2447,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResultSet"
+                  "$ref": "#/components/schemas/ResultsView"
                 }
               }
             },
@@ -2400,7 +2459,7 @@
     },
     "/api/results/budgets": {
       "get": {
-        "description": "Per-result uncertainty budgets; empty until the lab supplies a budget source.",
+        "description": "Per-result uncertainty budgets from the injected source, else the lab's own hook.",
         "operationId": "result_budgets_api_results_budgets_get",
         "responses": {
           "200": {

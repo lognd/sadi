@@ -2,13 +2,13 @@
 id = "01M6W7RAY4KTF866Q0Y7B4SZGG"
 title = "Race/deadlock suite incl. kill-mid-write while jobs are running"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "critical"
 points = 8
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T00:08:27Z"
+updated = "2026-11-08T06:04:53Z"
 idempotency_key = "sadi-j5"
 labels = ["ws:conc", "ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/concurrency/**", "creates:docs/concurrency-testing.md"]
 scope = ["python/tests/concurrency/**", "docs/concurrency-testing.md"]

@@ -1,6 +1,9 @@
+// frob:ticket 01M6WW4VK0V8K8W70AQ20AFPZP
 // frob:ticket 01M6WVTVH19EXW341V5K8SM7Z4
 // frob:ticket 01M6W7RATGKGPEYSMC5H8WGMBV
 /** TypeScript mirror of the export and results wire shapes (python/sadi/server/routes/export.py, core/results.py). */
+
+import type { components } from "../../api/schema";
 
 /** One export format as listed by GET /api/export. */
 export interface ExportFormatView {
@@ -31,14 +34,8 @@ export interface ResultValue {
   mc: McCrossCheck;
 }
 
-/** Where one reported quantity came from: point ids, sample span and algorithm. */
-export interface QuantityProvenance {
-  name: string;
-  point_ids: string[];
-  first_sample: number | null;
-  last_sample: number | null;
-  algorithm: string;
-}
+/** Where one reported quantity came from (generated from the backend OpenAPI schema). */
+export type QuantityProvenance = components["schemas"]["QuantityProvenance"];
 
 /** Full report served by GET /api/results. */
 export interface ResultSet {

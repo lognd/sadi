@@ -193,7 +193,7 @@ export interface paths {
         };
         /**
          * Result Budgets
-         * @description Per-result uncertainty budgets; empty until the lab supplies a budget source.
+         * @description Per-result uncertainty budgets from the injected source, else the lab's own hook.
          */
         get: operations["result_budgets_api_results_budgets_get"];
         put?: never;
@@ -1211,6 +1211,22 @@ export interface components {
             kind: "exception" | "timeout" | "tool-missing";
         };
         /**
+         * QuantityProvenance
+         * @description Where one reported quantity came from: its inputs, sample span and algorithm.
+         */
+        QuantityProvenance: {
+            /** Algorithm */
+            algorithm: string;
+            /** First Sample */
+            first_sample: number | null;
+            /** Last Sample */
+            last_sample: number | null;
+            /** Name */
+            name: string;
+            /** Point Ids */
+            point_ids: string[];
+        };
+        /**
          * RailItem
          * @description One entry of the step rail: what the UI draws and whether it can be acted on.
          */
@@ -1270,37 +1286,6 @@ export interface components {
             total_variance: number;
         };
         /**
-         * ResultSet
-         * @description Everything the live panel shows after one recompute; analytic RSS only (instant).
-         */
-        ResultSet: {
-            /**
-             * N Points
-             * @default 0
-             */
-            n_points: number;
-            /**
-             * Notes
-             * @default []
-             */
-            notes: string[];
-            /**
-             * Pending
-             * @default []
-             */
-            pending: string[];
-            /**
-             * Refinement
-             * @default []
-             */
-            refinement: string[];
-            /**
-             * Values
-             * @default []
-             */
-            values: components["schemas"]["ResultValue"][];
-        };
-        /**
          * ResultValue
          * @description One reported quantity: value, standard and 95 % uncertainty, interval, readouts.
          */
@@ -1331,6 +1316,42 @@ export interface components {
             unit: string;
             /** Value */
             value: number;
+        };
+        /**
+         * ResultsView
+         * @description `ResultSet` plus per-quantity provenance (which settle windows fed each value).
+         */
+        ResultsView: {
+            /**
+             * N Points
+             * @default 0
+             */
+            n_points: number;
+            /**
+             * Notes
+             * @default []
+             */
+            notes: string[];
+            /**
+             * Pending
+             * @default []
+             */
+            pending: string[];
+            /**
+             * Provenance
+             * @default []
+             */
+            provenance: components["schemas"]["QuantityProvenance"][];
+            /**
+             * Refinement
+             * @default []
+             */
+            refinement: string[];
+            /**
+             * Values
+             * @default []
+             */
+            values: components["schemas"]["ResultValue"][];
         };
         /**
          * RevertBody
@@ -1834,7 +1855,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResultSet"];
+                    "application/json": components["schemas"]["ResultsView"];
                 };
             };
         };

@@ -2,12 +2,12 @@
 id = "01M6WNEEBBBZVDZ6700RJDN26D"
 title = "lctt capture: record averaged-volts POINTs via AcquisitionDriver.record_point"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:07:43Z"
-updated = "2026-11-08T04:07:43Z"
+updated = "2026-11-08T04:09:19Z"
 labels = ["python"]
 +++
 

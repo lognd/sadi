@@ -21,7 +21,7 @@ from sadi.core.lab import (
     StepId,
     StepSpec,
 )
-from sadi.core.models import CapturedPoint, Phase, RunState
+from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
 from sadi.core.point_inputs import (
     CalibrationInputs,
     LoadInputs,
@@ -46,8 +46,11 @@ from sadi.labs.lctt.live import (
     TareBlock,
     recompute,
 )
+from sadi.labs.lctt.loading import SHORT_L0_M, STANDARD_G, cross_area, load_force, strain, stress
+from sadi.labs.lctt.modulus import secant_modulus
 from sadi.labs.lctt.specimens import SpecimenRole, SpecimenSpec
 from sadi.logging_setup import get_logger
+from sadi.uncertainty import Measured
 
 _log = get_logger(__name__)
 
@@ -55,6 +58,8 @@ _log = get_logger(__name__)
 ELASTIC_RESULTS = ("E", "r2")
 #: Results taken from the short (plastic) specimen.
 PLASTIC_RESULTS = ("yield_stress",)
+#: Nominal wire diameter (m) used for stress until the specimen geometry is supplied.
+NOMINAL_DIAMETER_M = 0.006
 
 
 class LabError(ErrorSet):
@@ -316,6 +321,33 @@ FIGURE_FORMAT = ExportFormat(
 )
 
 
+class LoadingContext(BaseModel):
+    """Geometry and calibration the core points do not carry; absent slope/tare omit strain."""
+
+    model_config = ConfigDict(frozen=True)
+
+    diameter_m: float = NOMINAL_DIAMETER_M
+    u_diameter_m: float = 0.0
+    hanger_kg: float = 0.0
+    l0_m: float = SHORT_L0_M
+    slope_m_per_v: float | None = None
+    tare_v: float | None = None
+
+
+def _meas(value: float, unc: float, unit: str) -> Measured | None:
+    """Build a Measured or None (logged) when the value is not a valid measurement."""
+    made = Measured.create(value, unc, unit)
+    if isinstance(made, Err):
+        _log.warning("lctt recompute: bad %s measurement %g: %s", unit, value, made.danger_err)
+        return None
+    return made.danger_ok
+
+
+def _quantity(m: Measured, unit: str) -> Quantity:
+    """Project a Measured onto the core Quantity (value and standard uncertainty)."""
+    return Quantity(value=m.value, standard_uncertainty=m.std_unc, unit=unit)
+
+
 class LcttLab:
     """The LCTT lab: calibration, then an elastic (long) and a plastic (short) specimen run."""
 
@@ -324,14 +356,62 @@ class LcttLab:
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
     export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT, FIGURE_FORMAT)
 
+    def __init__(self, context: LoadingContext | None = None) -> None:
+        """Hold the loading context (nominal geometry, no calibration unless given)."""
+        self.context = context or LoadingContext()
+
     def steps(self) -> list[StepSpec]:
         """Return the ordered wizard steps, bound to calibration, elastic and plastic phases."""
         return lctt_steps()
 
     def recompute(self, points: tuple[CapturedPoint, ...]) -> Result[AnalysisResult, ComputeError]:
-        """Recompute core analysis from captured points; two-specimen results use combine_runs."""
-        _log.debug("lctt recompute over %d points", len(points))
-        return Ok(AnalysisResult(values={}))
+        """Pure: stress, strain and secant modulus of the last usable point; skips are logged."""
+        usable = [p for p in points if p.volts is not None and p.load_kg is not None]
+        _log.debug("lctt recompute: %d of %d points usable", len(usable), len(points))
+        for p in points:
+            if p not in usable:
+                _log.info("lctt recompute: point %d skipped (volts/load_kg missing)", p.index)
+        if not usable:
+            return Err(
+                ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail="no point has volts and load")
+            )
+        ctx, last = self.context, usable[-1]
+        dia = _meas(ctx.diameter_m, ctx.u_diameter_m, "m")
+        mass = _meas(last.load_kg or 0.0, 0.0, "kg")
+        hang = _meas(ctx.hanger_kg, 0.0, "kg")
+        g = _meas(STANDARD_G, 0.0, "m/s^2")
+        if dia is None or mass is None or hang is None or g is None:
+            return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid load inputs"))
+        force, area = load_force(mass, hang, g), cross_area(dia)
+        if isinstance(force, Err) or isinstance(area, Err):
+            return Err(ComputeError(code=ComputeCode.DEGENERATE, detail="load propagation failed"))
+        sig = stress(force.danger_ok, area.danger_ok)
+        if isinstance(sig, Err):
+            return Err(
+                ComputeError(code=ComputeCode.DEGENERATE, detail="stress propagation failed")
+            )
+        values = {"stress": _quantity(sig.danger_ok, "Pa")}
+        if ctx.slope_m_per_v is None or ctx.tare_v is None:
+            _log.info("lctt recompute: no slope/tare in context; strain and modulus omitted")
+            return Ok(AnalysisResult(values=values))
+        slope = _meas(ctx.slope_m_per_v, 0.0, "m/V")
+        volts = _meas(last.volts or 0.0, last.volts_sd or 0.0, "V")
+        tare = _meas(ctx.tare_v, 0.0, "V")
+        l0 = _meas(ctx.l0_m, 0.0, "m")
+        if slope is None or volts is None or tare is None or l0 is None:
+            return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid strain inputs"))
+        eps = strain(slope, volts, tare, l0)
+        if isinstance(eps, Err):
+            return Err(
+                ComputeError(code=ComputeCode.DEGENERATE, detail="strain propagation failed")
+            )
+        values["strain"] = _quantity(eps.danger_ok, "1")
+        if eps.danger_ok.value != 0.0:
+            sec = secant_modulus(sig.danger_ok, eps.danger_ok)
+            if isinstance(sec, Ok):
+                values["secant_modulus"] = _quantity(sec.danger_ok, "Pa")
+        _log.info("lctt recompute: %d values from point %d", len(values), last.index)
+        return Ok(AnalysisResult(values=values))
 
     def budgets(self) -> list[LabBudget]:
         """Return nominal stress and modulus budgets from the public uncertainty engine."""

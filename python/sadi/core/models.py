@@ -129,6 +129,10 @@ class CapturedPoint(_Frozen):
     drift_rate: Finite
     status: SettleStatus
     edits: tuple[PointEdit, ...] = ()
+    # frob:ticket 01M6WH4Q5S0YYD0S8YW9T1EX41
+    volts: Finite | None = None  # block-mean raw volts of the window; None for old data
+    volts_sd: NonNeg | None = None  # per-sample sd of the raw volts; None when not recorded
+    load_kg: NonNeg | None = None  # total hanging mass in kg; None for old data
 
     @property
     def settled(self) -> bool:

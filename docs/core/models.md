@@ -20,7 +20,7 @@ only at display time, in the formatter (~M27Y4NY) and the UI.
 | `Specimen` | `id`, `l0`, `diameter` (m), `description`; `area` property (pi d^2 / 4) |
 | `TimeWindow` | `start`, `end` (s since run start) |
 | `PointEdit` | `field`, `old`, `new`, `at` |
-| `CapturedPoint` | `index`, `window`, `t_since_load`, `drift_rate`, `status` (`settled` / `forced_early`), `edits` |
+| `CapturedPoint` | `index`, `window`, `t_since_load`, `drift_rate`, `status` (`settled` / `forced_early`), `edits`, optional `volts`, `volts_sd`, `load_kg` (default `None`; old data loads unchanged) |
 | `Phase` | `setup`, `calibration`, `tare`, `elastic`, `plastic`, `results`, `export` |
 | `RunState` | `session_id`, `phase`, `specimen`, `tare`, `points`, `events` (opaque raw lab events for export writers); `advance`, `with_point` return copies |
 

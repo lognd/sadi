@@ -44,8 +44,16 @@ Each `SourcedValue` carries the `ResultValue`, the specimen role, its name and i
 report states which specimen supplied each number. Results not yet computable are listed in
 `pending`. Wrong roles give `LabError.WrongRole`.
 
+## Core recompute
+
+`LcttLab.recompute(points)` is pure. It uses the `volts`, `volts_sd` and `load_kg` carried on each
+`CapturedPoint`; points missing volts or load are skipped and logged (never dropped from the
+input), and no usable point gives `Err(ComputeError(TOO_FEW_POINTS))`. For the last usable point
+it returns `stress` (always, from `LoadingContext` geometry, nominal 6 mm diameter by default),
+and `strain` plus `secant_modulus` when the context supplies the calibration `slope_m_per_v` and
+`tare_v`. All maths goes through the public uncertainty engine (`loading`, `modulus`).
+
 ## Known gaps
 
-`LcttLab.recompute` (core contract over `CapturedPoint`) is still a stub, and `export_formats`
-is empty; the combined results are exposed through `combine_runs`. Short-specimen
-`short-data.csv` is slip-affected and is not used to validate E.
+Short-specimen `short-data.csv` is slip-affected and is not used to validate E. Geometry and
+calibration are not yet carried on `CapturedPoint`, so `LcttLab()` defaults to nominal geometry.

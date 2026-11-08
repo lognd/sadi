@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:51:26Z"
-updated = "2026-11-08T03:53:22Z"
+updated = "2026-11-08T03:53:24Z"
 labels = ["bug"]
 scope = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/core/export_api.py", "docs/core/lab-modules.md"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "Export publish semantics (atomic, no-replace) unchanged"
-bound = false
+bound = true
 +++
 
 tests/plugins/test_boundary.py::test_plugin_imports_within_boundary (lctt) and tests/core/test_lab_registry.py::test_labs_import_only_core_public_api fail: python/sadi/labs/lctt/export_csv.py imports sadi.store.csv_export and sadi.store.exports. Route through the core public API or an allowed seam.

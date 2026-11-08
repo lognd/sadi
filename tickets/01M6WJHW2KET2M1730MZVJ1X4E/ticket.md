@@ -7,8 +7,32 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:30:15Z"
+updated = "2026-11-08T04:32:38Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
+
+[[acceptance]]
+text = "Checks run in a thread pool but never before their in-selection depends_on prerequisites finish"
+bound = false
+
+[[acceptance]]
+text = "Independent checks overlap and concurrency is bounded by the worker limit"
+bound = false
+
+[[acceptance]]
+text = "A check exceeding its per-check timeout is reported skip/timeout (unverified) with a remedy and never hangs the run"
+bound = false
+
+[[acceptance]]
+text = "The whole-run budget aborts running and unstarted checks as skip/timeout"
+bound = false
+
+[[acceptance]]
+text = "Result order is the catalog order regardless of completion order, deterministic across runs"
+bound = false
+
+[[acceptance]]
+text = "A crashing worker and a dependency cycle are handled (reported / raised), not lost or hung"
+bound = false
 +++
 
 found while working ~V3H5CGF: runner is sequential, no budget

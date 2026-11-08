@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:19:56Z"
+updated = "2026-11-08T03:19:59Z"
 idempotency_key = "sadi-b3"
 labels = ["ws:srv", "data-safety", "model:sonnet", "creates:python/sadi/core/pipeline.py", "creates:python/tests/core/test_pipeline.py", "creates:docs/core/pipeline.md"]
 scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py", "docs/core/pipeline.md", "docs/index.md"]
@@ -51,7 +51,7 @@ bound = true
 
 [[acceptance]]
 text = "Hands durable-write to the dedicated WAL writer thread (DS8); acquisition never waits on fsync"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

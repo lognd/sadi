@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
+# frob:ticket ~NQZXN6Q
 
 from __future__ import annotations
 
@@ -149,17 +150,43 @@ def load_curve(
     return Ok(out)
 
 
-def make_curve_source(data_root: Path) -> CurveSource:
+_MAX_CACHED = 4  # sessions kept warm; evicting one only costs a verified full replay later
+
+
+class SessionReplayCache:
+    """One IncrementalReplay per session dir, shared by curve, plots and export (thread-safe)."""
+
+    def __init__(self) -> None:
+        """Start empty; replayers are created on first use of a session dir."""
+        self._cache: dict[Path, IncrementalReplay] = {}
+        self._lock = threading.Lock()
+
+    def _evict(self) -> None:
+        """Drop the oldest-inserted entries beyond the bound (caller holds the lock)."""
+        while len(self._cache) > _MAX_CACHED:
+            self._cache.pop(next(iter(self._cache)))
+
+    def events(self, sdir: Path) -> Result[list[LiveEvent], str]:
+        """Return `session_events(sdir)` via the cached replayer (full-replay fallback inside)."""
+        with self._lock:
+            replayer = self._cache.setdefault(sdir, IncrementalReplay(sdir))
+            self._evict()
+            return session_events(sdir, replayer)
+
+    def curve(self, data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
+        """Return the active-session curve, reading only newly appended WAL frames."""
+        with self._lock:
+            res = load_curve(data_root, self._cache)
+            self._evict()
+            return res
+
+
+def make_curve_source(data_root: Path, cache: SessionReplayCache | None = None) -> CurveSource:
     """Return a CurveSource over the active session under `data_root` (incremental WAL tail)."""
-    cache: dict[Path, IncrementalReplay] = {}
-    lock = threading.Lock()
+    shared = cache if cache is not None else SessionReplayCache()
 
     def source() -> Result[Sequence[CurvePoint], RefitError]:
-        """Serialise calls (cache is not thread-safe); keep only the newest session cached."""
-        with lock:
-            res = load_curve(data_root, cache)
-            for stale in [k for k in cache if k != active_session(data_root)]:
-                del cache[stale]
-            return res
+        """Delegate to the shared, lock-guarded cache."""
+        return shared.curve(data_root)
 
     return source

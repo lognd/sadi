@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:37:56Z"
+digest = "246630dcaab30920d047f2d702d56d25b6be90f85a68fe4fb79f0a84cf1e99d8"
+exit_code = 0
+head = "5837421b2e5d3e3b3f195160010acbdd7fe7ff89"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_sessions_survey.py .                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-283354-0.xml ---------------
+============================== 1 passed in 0.87s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sessions_survey.py::test_torn_tail_is_reported_and_untouched"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "8ac1c6dd3bd2222431e8f26265aadd3d7456c9788a9c915ccc679507a0a2bd99"
+at = "2026-11-08T03:37:56Z"
+actor = "lognd"
+rev = 1

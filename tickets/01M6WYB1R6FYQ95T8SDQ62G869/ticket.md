@@ -2,7 +2,8 @@
 id = "01M6WYB1R6FYQ95T8SDQ62G869"
 title = "LCTT CSV export format title says 32 columns (schema is 42)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

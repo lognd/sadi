@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:16:41Z"
+digest = "92b59500853adde8dd4bbca500397f262d60a3437ba2bce0aa0fbbbc7044ef94"
+exit_code = 0
+head = "f7b90b05f160518c382ce50bcfc72522f8be83ac"
+inline = """
+
+running 6 tests
+test acq::tests::gaps_and_timeouts_are_counted ... ok
+test acq::tests::full_channel_is_counted_and_lossless ... ok
+test acq::tests::recv_times_out_then_ends ... ok
+test acq::tests::stop_while_full_counts_lost_and_joins ... ok
+test acq::tests::zero_capacity_rejected ... ok
+test acq::tests::realtime_sim_with_slow_consumer_loses_nothing ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1.50s
+
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.35s
+     Running unittests src/lib.rs (target/debug/deps/_native-1b27dcc5628b4af0)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-py acq::"
+size = 665
+status = "measured"
+at = "2026-11-08T04:16:41Z"
+actor = "lognd"
+rev = 1

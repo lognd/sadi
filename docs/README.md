@@ -33,7 +33,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | Doc | Owner | Ticket title |
 |---|---|---|
 | `docs/ci.md` | ~M7BT5SB | CI matrix: Windows, Linux, macOS (Rust, Python, web) |
-| `docs/concurrency-testing.md` | ~7B4SZGG | Race/deadlock suite incl. kill-mid-write while jobs are running |
+| [`docs/concurrency-testing.md`](concurrency-testing.md) | ~7B4SZGG | Race/deadlock suite incl. kill-mid-write while jobs are running |
 | [`docs/concurrency.md`](concurrency.md) | ~DK06Q2F | Concurrency model design: threads, GIL, queues, job lifecycle, versioned results |
 | `docs/core/device.md` | ~GX511CP | Device service: sadi_py wrapper returning typani Results, reconnect, sim/real select |
 | `docs/core/formatting.md` | ~M27Y4NY | Significant-figure and confidence-readout formatter (class rule) |

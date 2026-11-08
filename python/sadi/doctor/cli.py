@@ -9,7 +9,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
-from sadi.doctor import exit_code, run
+from sadi.doctor import Budget, exit_code, run
 from sadi.doctor.bundle import capture_log, write_bundle
 from sadi.doctor.fix import fix
 from sadi.doctor.probes import RealProbes
@@ -76,6 +76,18 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="open a browser at a throwaway local page (enables BRW-030)",
     )  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
+    p.add_argument(
+        "--timeout",
+        type=float,
+        metavar="SECONDS",
+        help="whole-run budget (default 120, 900 with --deep); unfinished checks are unverified",
+    )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
+    p.add_argument(
+        "--check-timeout",
+        type=float,
+        metavar="SECONDS",
+        help="per-check budget (default 30); a slower check is unverified",
+    )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
     p.add_argument("--bundle", metavar="PATH", help="also write a redacted diagnostics zip to PATH")
     p.add_argument(
         "--apply", action="store_true", help="`fix`: run fixable commands (default: dry run)"
@@ -174,6 +186,16 @@ def _options(args: argparse.Namespace) -> RunOptions:
     )
 
 
+def _budget(args: argparse.Namespace, options: RunOptions) -> Budget:
+    """Build the run Budget from --timeout/--check-timeout over the defaults."""
+    base = Budget.for_deep(options.deep)
+    return Budget(
+        check_timeout_s=args.check_timeout or base.check_timeout_s,
+        run_timeout_s=args.timeout or base.run_timeout_s,
+        workers=base.workers,
+    )
+
+
 def _fix(args: argparse.Namespace, options: RunOptions) -> int:
     """Dispatch `fix`: dry run unless --apply."""
     if not args.target:
@@ -203,7 +225,9 @@ def _run(args: argparse.Namespace, options: RunOptions) -> int:
     """Run the checks, print the report and optionally write the bundle."""
     try:
         with capture_log() as captured:
-            result = run(options)
+            result = run(
+                options, budget=_budget(args, options)
+            )  # frob:ticket 01M6WJHW2KET2M1730MZVJ1X4E
     except Exception:  # noqa: BLE001 - last resort: tell the user, exit 70
         _log.exception("doctor crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")

@@ -15,6 +15,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import threading
 import time
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -289,32 +290,41 @@ class RealProbes:
         self._devices: dict[tuple[str | None, int, bool], DeviceFacts] = {}
         self._sim: SimFacts | None = None
         self._workers: WorkerFacts | None = None
+        # one lock per cache: checks run in parallel, each survey must run once per run
+        self._lock_sessions = threading.Lock()
+        self._lock_devices = threading.Lock()
+        self._lock_sim = threading.Lock()
+        self._lock_workers = threading.Lock()
 
     def session_facts(self, data_root: str, deep: bool) -> list[SessionFacts]:
         """Survey sessions read-only via the store APIs, once per (root, deep) per run."""
         key = (data_root, deep)
-        if key not in self._sessions:
-            self._sessions[key] = survey_sessions(data_root, deep)
-        return self._sessions[key]
+        with self._lock_sessions:
+            if key not in self._sessions:
+                self._sessions[key] = survey_sessions(data_root, deep)
+            return self._sessions[key]
 
     def device_facts(self, port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
         """Probe the board once per (port, stream, reset) per run."""
         key = (port, stream_seconds, with_reset)
-        if key not in self._devices:
-            self._devices[key] = probe_device(port, stream_seconds, with_reset)
-        return self._devices[key]
+        with self._lock_devices:
+            if key not in self._devices:
+                self._devices[key] = probe_device(port, stream_seconds, with_reset)
+            return self._devices[key]
 
     def sim_facts(self) -> SimFacts:
         """Probe the simulator once per run."""
-        if self._sim is None:
-            self._sim = probe_sim()
-        return self._sim
+        with self._lock_sim:
+            if self._sim is None:
+                self._sim = probe_sim()
+            return self._sim
 
     def worker_facts(self) -> WorkerFacts:
         """Spawn the worker probes once per run."""
-        if self._workers is None:
-            self._workers = probe_workers()
-        return self._workers
+        with self._lock_workers:
+            if self._workers is None:
+                self._workers = probe_workers()
+            return self._workers
 
     def os_kind(self) -> Os:
         """Detect the OS; on Linux WSL_DISTRO_NAME or 'microsoft' in /proc/version means WSL."""

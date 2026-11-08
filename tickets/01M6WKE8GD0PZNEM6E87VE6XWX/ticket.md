@@ -4,9 +4,10 @@ title = "Covariance registry grows without bound; register_derived is O(registry
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:32:40Z"
-updated = "2026-11-08T03:32:40Z"
+updated = "2026-11-08T03:34:42Z"
 scope = ["python/sadi/uncertainty/covariance.py", "python/sadi/uncertainty/measured.py"]
 +++
 

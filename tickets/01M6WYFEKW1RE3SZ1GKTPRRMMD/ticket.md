@@ -7,8 +7,16 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T06:45:33Z"
-updated = "2026-11-08T06:50:21Z"
+updated = "2026-11-08T06:50:28Z"
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_settle_incremental.py", "docs/testing.md"]
+
+[[acceptance]]
+text = "Incremental settle scan gives the same verdict as a full refit on random and drifting data"
+bound = false
+
+[[acceptance]]
+text = "Streaming push of 50k samples at device rate completes within a generous time bound"
+bound = false
 +++
 
 found while working ~WKK27QJ

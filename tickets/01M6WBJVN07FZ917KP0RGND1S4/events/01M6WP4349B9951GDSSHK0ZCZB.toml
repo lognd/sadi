@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["The four accessors have unit tests bound via frob:tests and passing"]
+moved = []
+at = "2026-11-08T04:19:33Z"
+actor = "lognd"
+rev = 1

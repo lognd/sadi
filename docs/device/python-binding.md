@@ -45,6 +45,11 @@ CodecFailure, ScenarioFailure, PhaseError, ConsumedError, BusyError. Foreign
 `open_serial(port, cfg=None)`, `open_sim(scenario, seed=None, cfg=None)`
 (scenario is JSON text or a builtin name), `ports()`, and codec helpers
 `encode_command`, `decode_packet`, `decode_data_packet`, `adc_to_volts`.
+Build metadata for the doctor (EXT-020/040/050): `__version__` (crate
+version), `PROTOCOL_VERSION` (int), `serial_features()` (names such as
+`serial`, `udev`; `udev` needs the cargo feature of the same name) and
+`selftest()` (codec round-trips plus the builtin scenario; raises
+`CodecFailure` on mismatch).
 Rust enums are mirrored by exhaustive matches without wildcard arms.
 `acq.rs` is a placeholder for R8.
 

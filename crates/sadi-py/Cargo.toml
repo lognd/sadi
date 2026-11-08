@@ -11,8 +11,13 @@ name = "_native"
 crate-type = ["cdylib", "rlib"]
 
 [features]
+default = ["serial"]
 # Set by maturin (pyproject.toml): do not link libpython into the extension.
 extension-module = ["pyo3/extension-module"]
+# Linux port enumeration via libudev (needs libudev-dev); reported by serial_features().
+udev = ["sadi-proto/udev"]
+# Real serial backend; on by default in sadi-proto.
+serial = ["sadi-proto/serial"]
 
 [dependencies]
 sadi-proto = { path = "../sadi-proto" }

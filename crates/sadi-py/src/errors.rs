@@ -130,6 +130,9 @@ pub enum BindError {
     /// Another thread is inside a blocking call on this session.
     #[error("session is busy in another call")]
     Busy,
+    /// The built-in self-test found a disagreement.
+    #[error("self-test failed: {0}")]
+    SelfTest(String),
 }
 
 /// Stable machine-readable kind strings (also listed in `__init__.pyi`).
@@ -198,7 +201,7 @@ impl BindError {
                 SessionError::UnexpectedState { .. } => kind::UNEXPECTED_STATE,
                 SessionError::Tap(_) => kind::TAP,
             },
-            BindError::Codec(_) => kind::CODEC,
+            BindError::Codec(_) | BindError::SelfTest(_) => kind::CODEC,
             BindError::Sim(SimError::ZeroSampleRate) => kind::CONFIG,
             BindError::Sim(SimError::Scenario(_)) | BindError::Scenario(_) => kind::SCENARIO,
             BindError::Phase { .. } => kind::PHASE,
@@ -225,7 +228,7 @@ impl BindError {
                 }
                 SessionError::Tap(_) => TapError::new_err(detail.clone()),
             },
-            BindError::Codec(_) => CodecFailure::new_err(detail.clone()),
+            BindError::Codec(_) | BindError::SelfTest(_) => CodecFailure::new_err(detail.clone()),
             BindError::Sim(SimError::ZeroSampleRate) => ConfigurationError::new_err(detail.clone()),
             BindError::Sim(SimError::Scenario(_)) | BindError::Scenario(_) => {
                 ScenarioFailure::new_err(detail.clone())

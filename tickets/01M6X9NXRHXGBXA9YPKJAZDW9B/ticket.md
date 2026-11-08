@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:05:26Z"
+updated = "2026-11-08T10:05:27Z"
 scope = ["web/e2e/keyboard-only.spec.ts", "docs/e2e.md"]
 
 [[acceptance]]

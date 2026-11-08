@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T01:15:22Z"
-updated = "2026-11-08T04:18:38Z"
+updated = "2026-11-08T04:19:33Z"
 scope = ["crates/sadi-proto/src/session.rs"]
+
+[[acceptance]]
+text = "The four accessors have unit tests bound via frob:tests and passing"
+bound = false
 +++

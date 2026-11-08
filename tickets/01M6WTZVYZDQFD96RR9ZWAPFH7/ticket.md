@@ -10,6 +10,10 @@ created = "2026-11-08T05:44:37Z"
 updated = "2026-11-08T05:44:53Z"
 labels = ["ws:srv"]
 scope = ["python/pyproject.toml", "python/uv.lock"]
+
+[[acceptance]]
+text = "platformdirs is declared in python/pyproject.toml"
+bound = false
 +++
 
 found in ~0VYJVFZ: launcher.default_data_dir uses platformdirs, only transitively installed.

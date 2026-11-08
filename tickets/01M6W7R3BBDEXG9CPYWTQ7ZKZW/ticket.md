@@ -2,7 +2,8 @@
 id = "01M6W7R3BBDEXG9CPYWTQ7ZKZW"
 title = "LCTT E fit (selectable window), r^2, secant E, yield, saturation warning"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

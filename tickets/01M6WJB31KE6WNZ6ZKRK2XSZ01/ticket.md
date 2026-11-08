@@ -7,7 +7,11 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T03:13:28Z"
-updated = "2026-11-08T03:24:07Z"
+updated = "2026-11-08T03:25:04Z"
+
+[[acceptance]]
+text = "docs/index.md links docs/core/wizard.md"
+bound = false
 +++
 
 XP2D6HY could not widen onto docs/index.md (leased elsewhere). Add the link.

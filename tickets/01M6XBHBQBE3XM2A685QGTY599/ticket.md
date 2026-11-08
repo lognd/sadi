@@ -2,7 +2,8 @@
 id = "01M6XBHBQBE3XM2A685QGTY599"
 title = "WorkerSlot.join races the pump thread's own proc.join"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

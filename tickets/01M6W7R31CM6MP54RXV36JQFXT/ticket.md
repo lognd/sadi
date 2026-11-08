@@ -8,10 +8,10 @@ points = 3
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:15:00Z"
+updated = "2026-11-08T03:15:48Z"
 idempotency_key = "sadi-ds7"
 labels = ["ws:store", "model:sonnet", "creates:python/sadi/store/exports.py", "creates:python/tests/store/test_exports.py", "creates:docs/store/exports.md"]
-scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md"]
+scope = ["python/sadi/store/exports.py", "python/tests/store/test_exports.py", "docs/store/exports.md", "docs/store/events.md"]
 
 [[links]]
 kind = "blocked-by"

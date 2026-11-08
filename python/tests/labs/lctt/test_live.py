@@ -134,11 +134,13 @@ def test_incremental_latency_200_points(monkeypatch: pytest.MonkeyPatch) -> None
         assert not isinstance(eng.add(ev), Err)
         if i >= 20:  # the first updates pay one-off tracing/JIT costs of the uncertainty engine
             times.append(time.perf_counter() - t0)
-    # median, not max/p95: the global covariance registry grows per Measured (see filed ticket) and
-    # a GC pause or scheduler hiccup on a shared CI box can spike a single update.
+    # the registry no longer grows per Measured, so late updates must stay in budget too; the
+    # median guards against one GC pause or scheduler hiccup, the late-window median against drift.
+    late = sorted(times[-50:])[25]
     times.sort()
     med = times[len(times) // 2]
     assert med < 0.05, f"median update {med * 1000:.1f} ms"
+    assert late < 0.05, f"late median update {late * 1000:.1f} ms"
 
 
 # frob:tests python/sadi/labs/lctt/live.py::LiveEngine

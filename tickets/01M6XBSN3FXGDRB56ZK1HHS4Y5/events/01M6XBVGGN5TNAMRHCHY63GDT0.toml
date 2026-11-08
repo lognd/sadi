@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-py/tests/test_acq.py", "crates/sadi-py/tests/test_sim.py", "python/sadi/server/service.py"]
+new = ["crates/sadi-py/tests/test_acq.py", "crates/sadi-py/tests/test_sim.py", "python/sadi/server/service.py", "python/tests/packaging/test_build_ui.py"]
+at = "2026-11-08T10:39:20Z"
+actor = "lognd"
+rev = 1

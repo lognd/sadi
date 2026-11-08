@@ -2,7 +2,8 @@
 id = "01M6WPXNFEN434JNFVR8J8CP6W"
 title = "Clear ty diagnostics in python/sadi/doctor and python/tests/doctor"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 3
 reporter = "lognd"

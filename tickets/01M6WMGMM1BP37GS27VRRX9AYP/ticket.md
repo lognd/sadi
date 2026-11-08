@@ -7,9 +7,9 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:51:27Z"
-updated = "2026-11-08T03:56:01Z"
+updated = "2026-11-08T03:56:16Z"
 labels = ["feature", "creates:python/sadi/launcher.py", "creates:python/tests/cli/test_launcher.py", "creates:docs/server/launcher.md"]
-scope = ["python/sadi/launcher.py", "python/pyproject.toml", "python/tests/cli/test_launcher.py", "docs/server/launcher.md"]
+scope = ["python/sadi/launcher.py", "python/pyproject.toml", "python/tests/cli/test_launcher.py", "docs/server/launcher.md", "docs/server/app.md"]
 
 [[acceptance]]
 text = "sadi serve runs doctor preflight, takes the data-root lock (refused lock exits non-zero), serves web/dist, defaults host 127.0.0.1"

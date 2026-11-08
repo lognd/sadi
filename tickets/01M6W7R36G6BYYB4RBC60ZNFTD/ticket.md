@@ -2,7 +2,8 @@
 id = "01M6W7R36G6BYYB4RBC60ZNFTD"
 title = "Acquisition pipeline: raw -> WAL (durable) -> analysis -> display"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "critical"
 points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

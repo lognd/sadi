@@ -2,7 +2,8 @@
 id = "01M6WV9BYS6W33YQ58E291T9ZE"
 title = "Link docs/release.md from docs/index.md"
 type = "docs"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

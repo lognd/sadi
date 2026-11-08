@@ -7,16 +7,16 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:23:07Z"
+updated = "2026-11-08T04:23:11Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
 text = "USB-010, USB-060, USB-070 and USB-080 exist with a remedy per mode for all four OSes"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "USB-020..050 run (not skip) on Windows and macOS"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/doctor.md and docs/doctor-checks.md are current"

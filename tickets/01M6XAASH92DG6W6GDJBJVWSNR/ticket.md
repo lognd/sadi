@@ -2,7 +2,8 @@
 id = "01M6XAASH92DG6W6GDJBJVWSNR"
 title = "Run: clearer message when a step stops with device_fault and zero points (U-06)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

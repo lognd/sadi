@@ -1,7 +1,7 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M6WV6TC9NXXA0GCFGJNV4CSJ
 import { describe, expect, it } from "vitest";
-import { isTextTarget, resolveKey, SHORTCUTS, type KeyLike } from "./keymap";
+import { isControlTarget, isTextTarget, resolveKey, SHORTCUTS, type KeyLike } from "./keymap";
 
 const ev = (key: string, o: Partial<KeyLike> = {}): KeyLike =>
   ({ key, ctrlKey: false, metaKey: false, altKey: false, shiftKey: false, ...o });
@@ -20,6 +20,22 @@ describe("keymap", () => {
   });
   it("maps Enter to the primary button", () => {
     expect(resolveKey(ev("Enter"), ctx)).toBe("primary");
+  });
+  // frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
+  it("leaves Enter and Space to a focused control", () => {
+    const c = { ...ctx, controlFocus: true };
+    expect(resolveKey(ev("Enter"), c)).toBeNull();
+    expect(resolveKey(ev(" "), c)).toBeNull();
+    expect(resolveKey(ev(" ", { shiftKey: true }), c)).toBeNull();
+    expect(resolveKey(ev("Escape"), c)).toBe("cancel");
+    expect(resolveKey(ev("f"), c)).toBe("finish-phase");
+  });
+  it("detects button, link, summary and role targets via closest", () => {
+    const sel = (m: boolean) => ({ closest: () => (m ? {} : null) });
+    expect(isControlTarget(sel(true))).toBe(true);
+    expect(isControlTarget(sel(false))).toBe(false);
+    expect(isControlTarget(null)).toBe(false);
+    expect(isControlTarget({})).toBe(false);
   });
   it("maps undo and redo keys", () => {
     expect(resolveKey(ev("z", { ctrlKey: true }), ctx)).toBe("undo");

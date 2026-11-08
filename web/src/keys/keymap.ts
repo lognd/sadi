@@ -36,6 +36,8 @@ export interface KeyContext {
   textFocus: boolean;
   /** True when a window editor is active, so arrows nudge the window instead of changing step. */
   nudgeActive: boolean;
+  /** True when a button, link, summary or role=button/link has focus: Enter/Space activate it. Optional, default false. */
+  controlFocus?: boolean;
 }
 
 /** One row of the on-screen shortcut list. */
@@ -62,6 +64,8 @@ export const SHORTCUTS: readonly Shortcut[] = [
 /** Map a key event to a wizard action, or null when the key means nothing here. */
 export function resolveKey(e: KeyLike, ctx: KeyContext): KeyAction | null {
   if (ctx.textFocus || e.altKey) return null;
+  // frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
+  if (ctx.controlFocus === true && (e.key === "Enter" || e.key === " ")) return null;
   const mod = e.ctrlKey || e.metaKey;
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (mod) {
@@ -105,4 +109,11 @@ export function isTextTarget(t: { tagName?: string; isContentEditable?: boolean 
   if (t === null) return false;
   const tag = (t.tagName ?? "").toUpperCase();
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t.isContentEditable === true;
+}
+
+/** True when the target is (inside) a button, link, summary or role=button/link, which Enter/Space must activate. */
+// frob:ticket 01M6X9GPXGZN1KWG5S40MZ866N
+export function isControlTarget(t: { closest?: (sel: string) => unknown } | null): boolean {
+  if (t === null || typeof t.closest !== "function") return false;
+  return t.closest('button, a[href], summary, [role="button"], [role="link"]') !== null;
 }

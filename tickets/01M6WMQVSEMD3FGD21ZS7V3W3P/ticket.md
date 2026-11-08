@@ -7,8 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:55:23Z"
-updated = "2026-11-08T03:57:32Z"
+updated = "2026-11-08T03:57:50Z"
 labels = ["feature"]
+scope = ["python/sadi/labs/lctt/creep.py"]
 +++
 
 buildCreepScene (web/src/plots/creep) expects settle_band (strain band for the settle threshold span); the creep analysis payload does not produce it today. Add to the creep analysis output and the API schema, with tests.

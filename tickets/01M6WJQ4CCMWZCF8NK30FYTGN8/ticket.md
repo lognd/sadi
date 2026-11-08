@@ -2,7 +2,8 @@
 id = "01M6WJQ4CCMWZCF8NK30FYTGN8"
 title = "Overflow in propagation leaks exceptions: pydantic ValidationError (analytic) and OverflowError (numeric) from _derive/effective_dof"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

@@ -12,7 +12,7 @@ scope = ["python/sadi/server/**", "python/tests/server/test_curve_source.py", "d
 
 [[acceptance]]
 text = "With no injected curve_source, create_app serves POST /api/stress-strain/fit from the newest session under data_root, and returns 409 NoData when none exists"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Reading the active session never writes or modifies any file in it"

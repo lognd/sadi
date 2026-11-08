@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:43:53Z"
+updated = "2026-11-08T05:43:56Z"
 idempotency_key = "sadi-l1"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/cli.py", "creates:python/sadi/__main__.py", "creates:python/tests/test_cli.py", "creates:docs/launcher.md"]
 scope = ["python/sadi/cli.py", "python/sadi/__main__.py", "python/tests/test_cli.py", "docs/launcher.md", "python/sadi/launcher.py", "docs/server/launcher.md", "python/tests/test_launcher.py"]
@@ -27,7 +27,7 @@ bound = true
 
 [[acceptance]]
 text = "Binds to 127.0.0.1 only; data dir default per-OS (platformdirs) and printed"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "--selftest runs a short simulator acquisition and exits non-zero on failure (used by C2)"

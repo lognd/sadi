@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T01:22:08Z"
-updated = "2026-11-08T03:03:57Z"
+updated = "2026-11-08T03:04:02Z"
 scope = ["python/sadi/jobs/*.py", "python/tests/jobs/*.py"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "testing.py uses the seams, no module patching; all python/tests/jobs pass"
-bound = false
+bound = true
 +++
 
 Follow-up from ~VAX9DG6: python/sadi/jobs/testing.py swaps the manager's time module and overrides _spawn. Add constructor-injected Clock and executor seams to JobManager so the harness stops patching globals (the time swap is process-global while a harness is open).

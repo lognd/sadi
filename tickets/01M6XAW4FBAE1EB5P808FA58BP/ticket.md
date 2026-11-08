@@ -7,5 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:22:12Z"
-updated = "2026-11-08T10:22:12Z"
+updated = "2026-11-08T10:22:51Z"
+
+[[acceptance]]
+text = "Full Playwright suite passes against the current main; any regression fixed"
+bound = false
 +++

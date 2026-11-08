@@ -7,5 +7,21 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:03:09Z"
+updated = "2026-11-08T10:04:21Z"
+
+[[acceptance]]
+text = "Review Edit/Exclude labels use point numbers (U-02)"
+bound = false
+
+[[acceptance]]
+text = "Review has a Skip to Finish link (U-03)"
+bound = false
+
+[[acceptance]]
+text = "Run screen says to press Mark load change before Settled (U-05)"
+bound = false
+
+[[acceptance]]
+text = "Bare 422 on wizard writes shows a rebuild web/dist hint (U-09)"
+bound = false
 +++

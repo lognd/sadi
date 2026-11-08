@@ -11,5 +11,5 @@ updated = "2026-11-08T10:11:59Z"
 
 [[acceptance]]
 text = "Hub publishes guidance after result/settle-state changes, de-duplicated, via an end-to-end WS test"
-bound = false
+bound = true
 +++

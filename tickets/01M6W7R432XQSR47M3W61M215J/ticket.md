@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:38:11Z"
+updated = "2026-11-08T05:39:30Z"
 idempotency_key = "sadi-f17"
 labels = ["ws:web", "uncertainty", "model:sonnet", "creates:web/src/components/budget/**", "creates:docs/web/budget-panel.md"]
 scope = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json", "web/package-lock.json"]
@@ -31,6 +31,10 @@ bound = false
 
 [[acceptance]]
 text = "KaTeX (or equivalent) dependency added via a package.json lease widen; component tests with fixture budgets"
+bound = false
+
+[[acceptance]]
+text = "Backend gap: getBudgets() targets GET /api/results/budgets (~J73KJ11); panel is props/fixture driven until it exists"
 bound = false
 +++
 

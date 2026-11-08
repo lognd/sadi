@@ -2,13 +2,14 @@
 id = "01M6W7R2WARAR5FD127S5YPBEJ"
 title = "Weight-sequence generator: combinations, binary-search-like, filtering"
 type = "task"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "high"
 points = 8
 parent = "01M6W7R081S67XNGBH79ACCBZZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T02:27:18Z"
 idempotency_key = "sadi-ws1"
 labels = ["ws:plan", "oq:Q7", "oq:Q8", "model:sonnet", "creates:python/sadi/core/planning/sequence.py", "creates:python/tests/core/planning/test_sequence.py", "creates:docs/core/sequence.md"]
 scope = ["python/sadi/core/planning/sequence.py", "python/tests/core/planning/test_sequence.py", "docs/core/sequence.md"]

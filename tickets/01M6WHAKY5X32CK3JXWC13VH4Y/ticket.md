@@ -2,7 +2,8 @@
 id = "01M6WHAKY5X32CK3JXWC13VH4Y"
 title = "Deduplicate SessionPluginRef (store.manifest vs plugins.doctor)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sadi doctor fix CHECK-ID is a dry run by default and runs only confirmed fixable system/process commands, never data, data-dir or data-root ones", "sadi doctor --bundle PATH writes a redacted zip to a new path with no-replace semantics and refuses existing or data-root paths"]
+moved = []
+at = "2026-11-08T03:58:38Z"
+actor = "lognd"
+rev = 1

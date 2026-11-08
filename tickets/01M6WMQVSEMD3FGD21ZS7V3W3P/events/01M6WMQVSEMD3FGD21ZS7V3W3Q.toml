@@ -1,0 +1,11 @@
+kind = "create"
+title = "Backend: supply settle_band in creep payload"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+labels = ["feature"]
+body = "buildCreepScene (web/src/plots/creep) expects settle_band (strain band for the settle threshold span); the creep analysis payload does not produce it today. Add to the creep analysis output and the API schema, with tests."
+at = "2026-11-08T03:55:23Z"
+actor = "lognd"
+rev = 1

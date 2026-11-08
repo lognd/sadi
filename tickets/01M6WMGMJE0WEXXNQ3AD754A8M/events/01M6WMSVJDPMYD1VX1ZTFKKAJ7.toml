@@ -1,0 +1,56 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:56:27Z"
+digest = "222bbf4ebe5952bc2a71cc51362ba75327a1c822191db3234315aa4c09691e5d"
+exit_code = 0
+head = "1aedd1a731624c50d5d7357f3bd7aab08cb9203b"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/StressStrainScreen.test.tsx > applyRefit > swaps in the refit E, r^2 and uncertainty and keeps all points
+[api.refit] request { path: '/api/stress-strain/fit', window: { first: 1, last: 5 } }
+
+stdout | web/src/screens/StressStrainScreen.test.tsx > applyRefit > swaps in the refit E, r^2 and uncertainty and keeps all points
+[screens.stressstrain] refit applied { window: { first: 1, last: 5 }, eGpa: 69, r2: 0.9995 }
+
+stdout | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[api.refit] request { path: '/api/stress-strain/fit', window: { first: 1, last: 5 } }
+
+stdout | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[api.refit] request { path: '/api/stress-strain/fit', window: { first: 1, last: 5 } }
+
+stdout | web/src/screens/StressStrainScreen.test.tsx > StressStrainScreen > renders the plot and the current fit summary
+[plots.stressstrain.scene] scene built { points: 6, fits: 1, window: [ 0, 4 ] }
+
+ \u{2713} web/src/screens/StressStrainScreen.test.tsx (3 tests) 20ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  22:56:28
+   Duration  824ms (transform 234ms, setup 0ms, collect 311ms, tests 20ms, environment 0ms, prepare 175ms)
+
+JSON report written to /tmp/frob-vitest-332469-0.json
+stderr | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[api.refit] http error { path: '/api/stress-strain/fit', status: 500 }
+
+stderr | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[screens.stressstrain] refit failed; keeping previous fit { window: { first: 1, last: 5 }, kind: 'http' }
+
+stderr | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[api.refit] network failure { path: '/api/stress-strain/fit', message: 'down' }
+
+stderr | web/src/screens/StressStrainScreen.test.tsx > applyRefit > keeps the previous fit and reports the error on failure
+[screens.stressstrain] refit failed; keeping previous fit { window: { first: 1, last: 5 }, kind: 'network' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/StressStrainScreen.test.tsx"
+size = 2265
+status = "measured"
+test_count = 3
+tests_digest = "44c0c64c13bdc302b0f6dbf8caee4c1732b019c4daa2ac9f6e7ebea79cbd2526"
+at = "2026-11-08T03:56:27Z"
+actor = "lognd"
+rev = 1

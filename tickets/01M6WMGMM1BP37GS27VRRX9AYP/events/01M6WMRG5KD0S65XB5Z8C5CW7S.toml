@@ -1,0 +1,7 @@
+kind = "field"
+field = "labels"
+old = ["feature"]
+new = ["feature", "creates:python/sadi/launcher.py", "creates:python/tests/cli/test_launcher.py", "creates:docs/server/launcher.md"]
+at = "2026-11-08T03:55:44Z"
+actor = "lognd"
+rev = 1

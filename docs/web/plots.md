@@ -99,3 +99,4 @@ exports issue identical calls apart from the scale factor. Update snapshots deli
 ## Plot modules
 
 - [Stress-strain plot](stress-strain-plot.md)
+- [Creep plot](creep-plot.md)

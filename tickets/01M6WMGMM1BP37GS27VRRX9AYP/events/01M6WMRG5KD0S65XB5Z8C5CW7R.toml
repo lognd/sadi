@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sadi serve runs doctor preflight, takes the data-root lock (refused lock exits non-zero), serves web/dist, defaults host 127.0.0.1"]
+moved = []
+at = "2026-11-08T03:55:44Z"
+actor = "lognd"
+rev = 1

@@ -599,6 +599,61 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:37:08.324229147Z"
 
 [[symbol]]
+identity = "web/src/plots/live/bench.ts"
+symref = "web/src/plots/live/bench.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "2a22b8534458939eac3e3f5b8552b53adfe21f833603589201d991baa8ca9ac5"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:58:53.337608957Z"
+
+[[symbol]]
+identity = "web/src/plots/live/bench.ts::BenchEnv"
+symref = "web/src/plots/live/bench.ts::BenchEnv"
+sig = "4c23b77cf8f69f7d1fbdc4edc1664013c52179eac359452cc97dce930d33f6a4"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "a9e415dc1710aab8894c3c0b5371238b33c0f8f1fe68210416d3ede3719503cb"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "1dabdf103e8e93cc7b7b5f1228c96366be3734680397b6a6cf2cccfdcf78a831"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:58:53.337608957Z"
+
+[[symbol]]
+identity = "web/src/plots/live/bench.ts::installBench"
+symref = "web/src/plots/live/bench.ts::installBench"
+sig = "9876176b18ee2eba907c67be5b72dc4ef549ca389a65eddac18aaf7041bc0e65"
+body = "3c285422de0938601ca78710a923c3020012dc21b41ae499879873e63b221b35"
+doc = "c53939f5bb089c313f3637947db89d2ed4705766d651d64d1508cb679591f6e1"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "8d6579f2864fad07e03b36a988f94f9f653fb4ca8ab93a51fbea27936d9ea125"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:58:53.337608957Z"
+
+[[symbol]]
+identity = "web/src/plots/live/bench.ts::log"
+symref = "web/src/plots/live/bench.ts::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "d68dc7537282521787a88547215c3749a5e4df7b053363d8423a81e10f9b1c50"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:58:53.337608957Z"
+
+[[symbol]]
+identity = "web/src/plots/live/bench.ts::runFrameBench"
+symref = "web/src/plots/live/bench.ts::runFrameBench"
+sig = "13267b438966e3e4b9f9bc396b0f5685cd823027aa3f0754f0452a8daf18ee7b"
+body = "c7779719b7eff7b6694da8a674ed16b6a81f717c03d237597438d11d890e5d97"
+doc = "268c5ec9e66c5b2584da7225b7b110a5b0a6dc398c1d95961ad0dcf6f3a00f81"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "ce49943e6d40899c96a69006d339ab79d6b540189b1ade89810d4595fd40b69b"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T05:58:53.337608957Z"
+
+[[symbol]]
 identity = "web/src/plots/live/framestats.test.ts"
 symref = "web/src/plots/live/framestats.test.ts"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

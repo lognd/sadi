@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/cli/plugins.py", "python/sadi/core/phases.py", "python/sadi/core/device.py", "python/sadi/jobs/tasks/_drive.py", "python/sadi/jobs/tasks/gp.py", "python/sadi/jobs/tasks/mc.py", "python/sadi/labs/lctt/calibration.py", "python/sadi/labs/lctt/clamp_check.py", "python/sadi/labs/lctt/loading.py", "python/sadi/plugins/builtin.py", "python/sadi/plugins/local.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/registry.py"]
+new = ["python/sadi/cli/plugins.py", "python/sadi/core/phases.py", "python/sadi/core/device.py", "python/sadi/jobs/tasks/_drive.py", "python/sadi/jobs/tasks/gp.py", "python/sadi/jobs/tasks/mc.py", "python/sadi/labs/lctt/calibration.py", "python/sadi/labs/lctt/clamp_check.py", "python/sadi/labs/lctt/loading.py", "python/sadi/plugins/builtin.py", "python/sadi/plugins/local.py", "python/sadi/plugins/manifest.py", "python/sadi/plugins/registry.py", "python/sadi/plugins/settings.py"]
+at = "2026-11-08T04:29:15Z"
+actor = "lognd"
+rev = 1

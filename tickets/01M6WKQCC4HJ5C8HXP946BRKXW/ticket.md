@@ -8,5 +8,5 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:37:39Z"
 updated = "2026-11-08T03:39:29Z"
-scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md"]
+scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md", "python/tests/test_docs_index.py"]
 +++

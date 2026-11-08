@@ -2,12 +2,12 @@
 id = "01M6WMQVSEMD3FGD21ZS7V3W3P"
 title = "Backend: supply settle_band in creep payload"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:55:23Z"
-updated = "2026-11-08T03:55:23Z"
+updated = "2026-11-08T03:57:32Z"
 labels = ["feature"]
 +++
 

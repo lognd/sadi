@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T03:45:04Z"
-updated = "2026-11-08T03:52:46Z"
+updated = "2026-11-08T03:52:47Z"
 scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "A Figure stacks panels sharing one x range with aligned plot areas through the same draw path as a Scene"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "decimateWindow and zoomScene re-derive min/max decimation for a window and width from the full data"

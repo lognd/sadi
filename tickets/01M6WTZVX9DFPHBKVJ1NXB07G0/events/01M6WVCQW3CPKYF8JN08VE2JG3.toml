@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["The sim flag or SADI_SIM makes the launcher pass a simulator device in AppSettings so /api/device/status reports simulated"]
+moved = []
+at = "2026-11-08T05:51:39Z"
+actor = "lognd"
+rev = 1

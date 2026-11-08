@@ -66,7 +66,6 @@ describe("pure helpers", () => {
 });
 
 describe("roving tabindex", () => {
-  // frob:tests ReviewScreen.rowActionAfterKey
   it("moves between Edit and Exclude with arrows and ignores other keys", () => {
     expect(rowActionAfterKey(0, "ArrowRight")).toBe(1);
     expect(rowActionAfterKey(1, "ArrowRight")).toBe(1);
@@ -75,7 +74,6 @@ describe("roving tabindex", () => {
     expect(rowActionAfterKey(0, "Enter")).toBeNull();
   });
 
-  // frob:tests ReviewScreen.PointList
   it("renders exactly one tabbable button per point row", () => {
     const html = renderToString(<PointList points={data.points} selected={null} busy={false} onSelect={() => undefined} onEdit={() => undefined} />);
     expect(html.match(/tabindex="0"/g) ?? []).toHaveLength(2);

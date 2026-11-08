@@ -1,0 +1,13 @@
++++
+id = "01M6WJ6VJWVRFJ3XH92GKD2D6Y"
+title = "Validate LCTT loading against docs oracle (oracle moved to private)"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-08T03:11:09Z"
+updated = "2026-11-08T03:11:09Z"
+scope = ["python/tests/labs/lctt/test_loading.py"]
++++
+
+found while working ~9TZ8D2S: expected_values.py and weight inventory are no longer tracked, so acceptance 3 (1e-9 vs short-run file) is validated only against closed forms

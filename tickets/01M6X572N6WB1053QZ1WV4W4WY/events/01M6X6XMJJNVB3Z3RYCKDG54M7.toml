@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-py/src/**", "python/sadi/launcher.py", "python/sadi/core/device.py", "python/sadi/server/routes/acquisition.py", "web/e2e/**", "python/sadi/core/phases.py", "python/sadi/server/live.py", "python/tests/**"]
+new = ["crates/sadi-py/src/**", "python/sadi/launcher.py", "python/sadi/core/device.py", "python/sadi/server/routes/acquisition.py", "web/e2e/**", "python/sadi/core/phases.py", "python/sadi/server/live.py", "python/tests/**", "docs/**"]
+at = "2026-11-08T09:13:07Z"
+actor = "lognd"
+rev = 1

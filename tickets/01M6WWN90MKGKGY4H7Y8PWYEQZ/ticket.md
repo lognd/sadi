@@ -4,9 +4,10 @@ title = "Stream live drift rate, capture-window raw seq and simulated flag"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:13:47Z"
+updated = "2026-11-08T06:29:21Z"
 scope = ["src/sadi/server/**"]
 +++
 

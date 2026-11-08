@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml"]
+new = ["creates:crates/sadi-py/src/meta.rs", "crates/sadi-py/src/lib.rs", "crates/sadi-py/src/errors.rs", "crates/sadi-py/Cargo.toml", "crates/sadi-py/python/sadi_py/__init__.py"]
+at = "2026-11-08T04:06:57Z"
+actor = "lognd"
+rev = 1

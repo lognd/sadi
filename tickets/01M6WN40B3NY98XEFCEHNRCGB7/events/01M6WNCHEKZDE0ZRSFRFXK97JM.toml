@@ -1,0 +1,7 @@
+kind = "field"
+field = "labels"
+old = ["server"]
+new = ["server", "creates:python/sadi/core/point_inputs.py", "creates:python/tests/api/test_point_roundtrip.py"]
+at = "2026-11-08T04:06:41Z"
+actor = "lognd"
+rev = 1

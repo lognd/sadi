@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["creates:python/sadi/core/point_inputs.py"]
+at = "2026-11-08T04:05:28Z"
+actor = "lognd"
+rev = 1

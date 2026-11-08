@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:06:26Z"
+digest = "a49a0c085303cc4140563ba8cf9e6f03bf2de11bf5930c7e94942c717b324ba4"
+exit_code = 0
+head = "b2b9fec5c4a853b0b1c02ab4ea82427388a768b5"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_fixable_catalog.py .                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-354861-0.xml ---------------
+============================== 1 passed in 0.32s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_fixable_catalog.py::test_fixable_commands_are_only_safe_classes_and_avoid_data_root"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "1351d5d18dadfed41c853cfec0ce0f63db3a0d866dc3702087d2817f5d6a9319"
+at = "2026-11-08T04:06:26Z"
+actor = "lognd"
+rev = 1

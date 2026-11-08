@@ -45,8 +45,21 @@ CodecFailure, ScenarioFailure, PhaseError, ConsumedError, BusyError. Foreign
 `open_serial(port, cfg=None)`, `open_sim(scenario, seed=None, cfg=None)`
 (scenario is JSON text or a builtin name), `ports()`, and codec helpers
 `encode_command`, `decode_packet`, `decode_data_packet`, `adc_to_volts`.
-Rust enums are mirrored by exhaustive matches without wildcard arms. The
-`sim` submodule is an empty stub for R7B; `acq.rs` is a placeholder for R8.
+Rust enums are mirrored by exhaustive matches without wildcard arms.
+`acq.rs` is a placeholder for R8.
+
+## Simulator control (`sadi_py.sim`)
+
+`sim.open(scenario, seed=None)` returns `(Session, SimControl)`; `scenario`
+is a builtin name, JSON text or a dict. `SimControl` shares the scenario with
+the device behind a mutex, so any thread may call `set_scenario`,
+`set_fault_plan`, `set_load_program([(t_s, mass_kg), ...])`, `add_weight(kg)`,
+`remove_weight(kg)`, `inject_slip(strain)` and `set_seed(seed)` while the
+session streams. "Now" is the latest simulated time the device sampled.
+Everything is validated before it replaces state; an invalid plan raises
+`ScenarioFailure` (kind `scenario`) and leaves the running scenario unchanged.
+`sim.validate_scenario` and `sim.validate_fault_plan` check without opening.
+Tests live in `crates/sadi-py/tests/test_sim.py` (run `pytest tests`).
 
 ## Build and test
 

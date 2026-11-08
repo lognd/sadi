@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:52:43Z"
-updated = "2026-11-08T03:54:16Z"
+updated = "2026-11-08T03:54:30Z"
 labels = ["feature"]
 scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md", "python/sadi/api/save_indicator.py"]
 

@@ -2,7 +2,8 @@
 id = "01M6W7RB9Q00GBJ5CJ0GW7ER11"
 title = "Browser e2e (Playwright) on 3 OS: full guided run against the simulator"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"

@@ -30,3 +30,4 @@ Status: current
 - [Plugins](plugins.md)
 - [UX design](ux.md)
 - [LCTT capture modes](lctt/capture.md)
+- [LCTT loading: tare, load, stress, strain](lctt/loading.md)

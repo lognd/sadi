@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T09:24:36Z"
 updated = "2026-11-08T09:49:37Z"
-scope = ["web/src/screens/export/**", "web/e2e/guided-run.spec.ts"]
+scope = ["web/src/screens/export/**", "web/e2e/guided-run.spec.ts", "docs/e2e.md"]
 +++
 
 found while working ~WV4W4WY: after a full guided run under --sim, pressing 'Export ... as PNG' produces no download and no /api/export request in the server log; guided-run.spec.ts only asserts the button is visible.

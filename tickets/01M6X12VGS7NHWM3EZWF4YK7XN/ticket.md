@@ -8,7 +8,7 @@ points = 5
 reporter = "lognd"
 created = "2026-11-08T07:31:06Z"
 updated = "2026-11-08T07:38:36Z"
-scope = ["python/sadi/server/live.py"]
+scope = ["python/sadi/server/live.py", "python/sadi/server/service.py"]
 
 [[acceptance]]
 text = "A sim launcher serves WS /api/stream and live frames reach the browser readout; samples still flow through the session WAL"

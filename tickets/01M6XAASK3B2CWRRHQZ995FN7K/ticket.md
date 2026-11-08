@@ -7,9 +7,9 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:14:44Z"
+updated = "2026-11-08T10:15:16Z"
 
 [[acceptance]]
 text = "On the Export screen the CSV download link precedes the PNG-resolution select and figure buttons in DOM/Tab order"
-bound = false
+bound = true
 +++

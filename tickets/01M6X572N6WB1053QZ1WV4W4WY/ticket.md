@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T08:43:19Z"
-updated = "2026-11-08T09:25:33Z"
+updated = "2026-11-08T09:25:34Z"
 scope = ["crates/sadi-py/src/**", "python/sadi/launcher.py", "python/sadi/core/device.py", "python/sadi/server/routes/acquisition.py", "web/e2e/**", "python/sadi/core/phases.py", "python/sadi/server/live.py", "python/tests/**", "docs/**"]
 
 [[acceptance]]

@@ -2,7 +2,8 @@
 id = "01M6W7R121020FDM1SK2GGPZ5K"
 title = "Optional: v3.41 codec (CRC-16/CCITT-FALSE framing)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 5
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"

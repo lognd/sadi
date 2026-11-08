@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:58:42Z"
+updated = "2026-11-08T05:58:43Z"
 scope = ["web/src/plots/live/**"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Opt-in frame benchmark harness exists, is tested with a fake clock, and docs state the 60 fps result is UNVERIFIED"
-bound = false
+bound = true
 +++
 
 found while working 7KWS2S7

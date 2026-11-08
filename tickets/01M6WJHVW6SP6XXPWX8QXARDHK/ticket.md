@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:13:36Z"
+updated = "2026-11-08T04:13:38Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
 text = "Every declared mode of DATA-040..080, RES-040 and CLK-020..040 is reproduced by fault injection with a verified remediation for all four OSes"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "DATA-040 writes only with --allow-probe-write and leaves no probe file behind"

@@ -7,7 +7,7 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:29:28Z"
-updated = "2026-11-08T10:32:50Z"
+updated = "2026-11-08T10:33:02Z"
 scope = ["docs/web/plots.md", "web/src/plots/a11y-palette.test.ts", "web/src/plots/core/*.ts", "web/src/plots/theme.ts", "web/src/plots/stressstrain/__snapshots__/*.snap"]
 
 [[acceptance]]

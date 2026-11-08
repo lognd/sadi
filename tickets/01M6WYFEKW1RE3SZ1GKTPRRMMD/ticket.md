@@ -12,7 +12,7 @@ scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_settle_increme
 
 [[acceptance]]
 text = "Incremental settle scan gives the same verdict as a full refit on random and drifting data"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Streaming push of 50k samples at device rate completes within a generous time bound"

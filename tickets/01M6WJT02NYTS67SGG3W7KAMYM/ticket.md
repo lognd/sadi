@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:21:36Z"
-updated = "2026-11-08T03:27:10Z"
-scope = ["python/sadi/core/pipeline.py"]
+updated = "2026-11-08T03:27:50Z"
+scope = ["python/sadi/core/pipeline.py", "python/tests/core/test_pipeline.py"]
 +++
 
 found while working ~60ZNFTD

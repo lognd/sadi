@@ -2,7 +2,8 @@
 id = "01M6WZZEHBSPSCHA90KQG3RK1T"
 title = "Backend: add GET /api/health route the web client calls"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

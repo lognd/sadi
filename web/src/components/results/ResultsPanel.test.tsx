@@ -15,7 +15,6 @@ const rs: ResultSet = {
   pending: ["yield_stress"], notes: ["low r^2"], refinement: ["E"],
 };
 
-// frob:tests web/src/components/results/ResultsPanel.test.tsx
 describe("results panel", () => {
   it("renders pre-formatted sig-fig strings verbatim with interval and confidence", () => {
     const html = renderToString(<ResultsPanel results={rs} />);

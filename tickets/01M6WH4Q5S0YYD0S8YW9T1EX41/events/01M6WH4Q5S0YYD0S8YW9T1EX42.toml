@@ -1,0 +1,8 @@
+kind = "create"
+title = "lctt plugin: wire real per-phase analysis into LcttLab.recompute (currently a stub)"
+type = "task"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T02:52:30Z"
+actor = "lognd"
+rev = 1

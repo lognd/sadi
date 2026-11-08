@@ -2,13 +2,13 @@
 id = "01M6WFZF4QDHYXTXX797A3KGX0"
 title = "Doctor checks for plugin state with step-by-step fixes"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:32:10Z"
+updated = "2026-11-08T02:52:47Z"
 labels = ["plugins", "creates:python/sadi/plugins/doctor.py", "creates:python/tests/plugins/test_doctor.py"]
 scope = ["python/sadi/plugins/doctor.py", "python/tests/plugins/test_doctor.py"]
 

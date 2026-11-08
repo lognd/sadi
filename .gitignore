@@ -24,3 +24,4 @@ FROBLEMS.md
 node_modules/
 python/tests/fixtures/real_fp/
 private/
+/plugins/

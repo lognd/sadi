@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:52:47Z"
+updated = "2026-11-08T02:55:17Z"
 labels = ["plugins", "creates:python/sadi/plugins/doctor.py", "creates:python/tests/plugins/test_doctor.py"]
 scope = ["python/sadi/plugins/doctor.py", "python/tests/plugins/test_doctor.py"]
 
@@ -22,7 +22,7 @@ target = "01M6WFZ1R6ATYWRVW3315G6CCX"
 
 [[acceptance]]
 text = "Each failure state in PluginRecord maps to a finding with >=2 fix steps"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Healthy registry yields zero findings"

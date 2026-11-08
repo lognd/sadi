@@ -1,0 +1,10 @@
+kind = "create"
+title = "Wizard: step completion criteria (e.g. >=1 captured point before complete)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+body = "Wizard.complete has no per-step criterion. Add a StepSpec criterion checked in complete(), returning a WizardError hint."
+at = "2026-11-08T03:13:28Z"
+actor = "lognd"
+rev = 1

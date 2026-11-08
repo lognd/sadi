@@ -1,16 +1,21 @@
-"""Lab registry: built-in labs plus `sadi.labs` entry-point discovery, validated on register."""
+"""Lab registry: a validated view over plugin labs plus legacy `sadi.labs` entry points."""
 
 # frob:ticket 01M6W7R1G903HZ7V7JRCYC6ZT7
+# frob:ticket 01M6WFYN8C6YH5D79CPEKSP69P
 
 from __future__ import annotations
 
 from importlib.metadata import entry_points
+from typing import TYPE_CHECKING
 
 from typani import Err, Ok, Result
 
 from sadi.core.errors import InputCode, InputError
 from sadi.core.lab import ENTRY_POINT_GROUP, LabId, LabModule
 from sadi.logging_setup import get_logger
+
+if TYPE_CHECKING:
+    from sadi.plugins.registry import PluginRegistry
 
 _log = get_logger(__name__)
 
@@ -66,13 +71,37 @@ class LabRegistry:
         """Return registered lab ids in registration order."""
         return list(self._labs)
 
+    def add_plugins(self, plugins: PluginRegistry) -> list[InputError]:
+        """Register the labs of every enabled plugin (view over a PluginRegistry); return errors."""
+        errors: list[InputError] = []
+        for lab in plugins.labs():
+            result = self.register(lab)
+            if isinstance(result, Err):
+                errors.append(result.error)
+        _log.info("added plugin labs: %d labs, %d errors", len(self._labs), len(errors))
+        return errors
+
+    @classmethod
+    def from_plugins(cls, plugins: PluginRegistry) -> LabRegistry:
+        """Build a LabRegistry viewing the labs of a PluginRegistry."""
+        reg = cls()
+        reg.add_plugins(plugins)
+        return reg
+
     def discover(self) -> list[InputError]:
-        """Load every `sadi.labs` entry point (a zero-arg factory returning a LabModule).
+        """Load every legacy `sadi.labs` entry point (a zero-arg factory returning a LabModule).
+
+        The `sadi.labs` group is deprecated in favour of `sadi.plugins`; it is still read.
 
         Returns the errors of entries that failed to load or register; others still register.
         """
         errors: list[InputError] = []
         for ep in entry_points(group=ENTRY_POINT_GROUP):
+            _log.warning(
+                "entry point %s uses deprecated group %s; migrate to sadi.plugins",
+                ep.name,
+                ENTRY_POINT_GROUP,
+            )
             try:
                 lab = ep.load()()
             except Exception:  # noqa: BLE001 - third-party factory; report, keep going

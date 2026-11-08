@@ -22,3 +22,36 @@ class PluginApiVersionError(ErrorSet):
     Incompatible = (
         "Plugin does not support this SADI plugin API; update the plugin or SADI to match"
     )
+
+
+class PluginImportError(ErrorSet):
+    """Failure modes of importing a plugin and building its contributions."""
+
+    ImportFailed = (
+        "Plugin code raised while importing or registering; see the note and fix or disable it"
+    )
+    BadContribution = (
+        "Plugin contribution is missing or has the wrong type; fix the entrypoint named in the note"
+    )
+
+
+class PluginRequiresError(ErrorSet):
+    """Failure modes of resolving the plugins a plugin depends on."""
+
+    Missing = "A required plugin is not installed or enabled; install or enable the one in the note"
+    VersionMismatch = (
+        "A required plugin is present at an unsupported version; update it as the note says"
+    )
+
+
+class PluginDuplicateIdError(ErrorSet):
+    """Failure mode of two plugins claiming the same id."""
+
+    Duplicate = "Another plugin already uses this id; remove or rename one of them"
+
+
+class PluginSourceError(ErrorSet):
+    """Failure modes of a plugin source while listing candidates."""
+
+    Unavailable = "Source could not be listed; check the source configuration named in the note"
+    BadCandidate = "Source entry could not be turned into a plugin; fix the entry named in the note"

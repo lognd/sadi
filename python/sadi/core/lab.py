@@ -2,8 +2,9 @@
 
 Core owns the device, session store, WAL, uncertainty engine, plotting contracts and wizard
 state machine. A lab declares steps, analysis and export formats through this protocol and may
-import only the core public API (enforced by tests/core/test_lab_boundary.py). This is NOT a
-general plugin system: no sandboxing, no hot reload; labs are trusted in-process code.
+import only the core public API (enforced by tests/core/test_lab_boundary.py). Labs are
+delivered by plugins (see sadi.plugins); discovery isolates import failures per plugin, but
+there is no sandboxing and no hot reload, so enabled plugins are trusted in-process code.
 """
 
 # frob:ticket 01M6W7R1G903HZ7V7JRCYC6ZT7
@@ -27,7 +28,8 @@ LabId = NewType("LabId", str)
 StepId = NewType("StepId", str)
 ExportFormatId = NewType("ExportFormatId", str)
 
-#: Entry-point group third-party-free lab packages register under.
+#: Deprecated entry-point group for bare lab packages; prefer the sadi.plugins group.
+# frob:ticket 01M6WFYN8C6YH5D79CPEKSP69P
 ENTRY_POINT_GROUP = "sadi.labs"
 
 

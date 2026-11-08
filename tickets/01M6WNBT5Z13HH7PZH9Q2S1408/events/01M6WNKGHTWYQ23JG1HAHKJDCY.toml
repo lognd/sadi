@@ -1,0 +1,28 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:10:29Z"
+digest = "cfa6e0a230cb7fa986260047ef443944b82f3ab3262b600fc7198ab64a587cfa"
+exit_code = 0
+head = "a6fb313c10de298bb6ba2a7fc8ab3fe5e7132b3b"
+inline = """
+
+running 5 tests
+test sim::tests::bad_plan_is_typed_error ... ok
+test sim::tests::unordered_load_is_rejected_and_state_kept ... ok
+test sim::tests::slip_changes_voltage_after_now ... ok
+test sim::tests::weight_changes_at_sim_now ... ok
+test sim::tests::concurrent_control_is_safe ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.01s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/_native-1b27dcc5628b4af0)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-py sim::"
+size = 535
+status = "measured"
+at = "2026-11-08T04:10:29Z"
+actor = "lognd"
+rev = 1

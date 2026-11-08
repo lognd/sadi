@@ -45,3 +45,14 @@ Response 200 (`ModulusFitView`): `first`, `last`, `modulusMpa` (slope, MPa), `in
 Errors are `{"error": <code>, "detail": <hint>}`: 422 `BadWindow` / `Fit` / `NoWindow`
 (fix the window), 409 `NoData` (no `curve_source` or no stored data), 500 `Propagation` /
 `Intercept`. A body missing `first` or `last` gets FastAPI's standard 422 validation body.
+
+### Active session curve source
+
+When `settings.curve_source` is None, `create_app` injects `sadi.server.curve_source.make_curve_source(data_root)`.
+The active session is the newest directory (names sort by UTC stamp) under
+`<data_root>/sessions` that has a `wal/`. Each call recovers its state read-only
+(`sadi.store.events.recover_state`: snapshot plus WAL tail, no repair, no writes), maps POINT
+events by `phase` (`calibration`: volts, height; `tare`: mean, sd, n; `specimen`: diameter,
+u_diameter, hanger_kg, u_hanger_kg; any other phase is a load point: volts, mass_kg and
+optional u_volts, u_mass_kg), derives the curve with `build_document` and returns the
+non-excluded points. No session, replay failure or an unready session gives 409 `NoData`.

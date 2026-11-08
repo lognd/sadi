@@ -1,0 +1,9 @@
+kind = "create"
+title = "Results-stream Subscribe adapter over WS /api/stream (RESULTS_ENVELOPE frames)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+at = "2026-11-08T06:06:05Z"
+actor = "lognd"
+rev = 1

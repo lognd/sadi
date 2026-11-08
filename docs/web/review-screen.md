@@ -36,4 +36,4 @@ Network errors and non-JSON bodies get a plain message.
 ## Structure
 
 `api.ts` (injectable-fetch calls), `session.ts` (`loadReview`, `runAction`), `types.ts`
-(mirrors of `PointView`, `History`, `Committed`, problem body). No plot code was added.
+(mirrors of `PointView`, including the server-sent `settled` and `forced_early` flags, `History`, `Committed`, problem body). No plot code was added.

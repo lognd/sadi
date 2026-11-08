@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["GET /api/session/points returns settled and forced_early per point from the captured PointV1"]
+moved = []
+at = "2026-11-08T06:11:02Z"
+actor = "lognd"
+rev = 1

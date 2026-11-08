@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["JobManager sink feeds ResultsStream: refining/final offered, stale ignored", "WebSocket clients receive snapshot then live RESULTS_ENVELOPE frames with stale flag", "Disconnect releases the stream connection"]
+moved = []
+at = "2026-11-08T06:06:36Z"
+actor = "lognd"
+rev = 1

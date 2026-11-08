@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["LivePlot export is driven by the keymap export KeyAction, not a hard-coded F3 key"]
+moved = []
+at = "2026-11-08T06:16:39Z"
+actor = "lognd"
+rev = 1

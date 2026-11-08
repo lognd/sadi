@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Without a device the launcher injects none, so status stays honestly unattached"]
+new = ["Without a device the launcher injects none, so status stays honestly unattached", "A failing simulator open exits EXIT_DEVICE without serving"]
+moved = [1]
+at = "2026-11-08T06:14:09Z"
+actor = "lognd"
+rev = 1

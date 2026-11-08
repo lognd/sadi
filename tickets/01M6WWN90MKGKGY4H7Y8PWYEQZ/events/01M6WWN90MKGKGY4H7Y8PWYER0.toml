@@ -1,0 +1,10 @@
+kind = "create"
+title = "Stream live drift rate, capture-window raw seq and simulated flag"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["src/sadi/server/**"]
+body = "found while working ~74FQXWT"
+at = "2026-11-08T06:13:47Z"
+actor = "lognd"
+rev = 1

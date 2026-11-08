@@ -1,0 +1,140 @@
+// frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
+import { renderToString as rts } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import { applyMessage } from "../../hooks/useTrace";
+import { TraceWindow } from "../../plots/live";
+import type { ConnState } from "../../ws/client";
+import { decodeFrame } from "../../ws/frame";
+import { parseMessage, type ServerMessage } from "../../ws/messages";
+import { encodeTrace } from "../../ws/testframes";
+import { buildBody, decide, postCapture } from "./capture";
+import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
+import { RunView, settleText, type RunViewProps } from "./RunView";
+import { foldSide, type SideState } from "./useRunLive";
+
+const html = (el: React.JSX.Element): string => rts(el).replaceAll("<!-- -->", "");
+const OPEN: ConnState = { status: "open" };
+
+/** Mocked sim-like stream: a trace frame per 50 ms around `level` volts, plus JSON side-channel texts. */
+function simStream(levels: number[], texts: string[]): { w: TraceWindow; side: SideState } {
+  const w = new TraceWindow(5, 0);
+  const lastPoint: { v: number | null } = { v: null };
+  let side: SideState = { settle: null, rawSeq: 0, pointIndex: null };
+  levels.forEach((lv, i) => {
+    const n = 64;
+    const mn = Array.from({ length: n }, () => lv - 0.001);
+    const mx = mn.map((v) => v + 0.002);
+    const f = decodeFrame(encodeTrace(i, i * 0.05, 0.05 / n, { 0: [mn, mx] }));
+    if (f.ok && f.value.type === "trace") w.push(f.value);
+  });
+  for (const t of texts) {
+    const m = parseMessage(t);
+    if (m.ok) { applyMessage(w, m.value, lastPoint); side = foldSide(side, m.value); }
+  }
+  return { w, side };
+}
+const state = (st: string, seq = 7): string => JSON.stringify({ kind: "state", raw_seq: seq, status: { state: st, point_index: 1, time_since_load: 3 } });
+const flat = (n: number, v: number): number[] => Array.from({ length: n }, () => v);
+
+const view = (o: Partial<LiveView> = {}): LiveView =>
+  ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
+const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
+  phase: "calibrate", view: view(), trace: <canvas data-testid="live-canvas" />, plot: null, blockedWhy: null,
+  confirming: false, message: null, onAccept: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
+});
+
+describe("live derivation from a mocked sim stream", () => {
+  it("settled stream: readout, motion and signal", () => {
+    const { w, side } = simStream(flat(40, 1.2345), [state("settled")]);
+    const v = deriveLive(w.snapshot(100), OPEN, side.settle, true);
+    expect(v.volts).toBeCloseTo(1.2345, 3);
+    expect(v.motion).toBe("settled");
+    expect(v.signal).toBe("ok");
+    expect(v.source).toBe("simulated");
+    expect(side.rawSeq).toBe(7);
+  });
+  it("creeping stream reports a drift rate", () => {
+    const { w, side } = simStream(Array.from({ length: 40 }, (_, i) => 1 + i * 0.002), [state("creeping")]);
+    const v = deriveLive(w.snapshot(100), OPEN, side.settle, true);
+    expect(v.motion).toBe("creeping");
+    expect(v.driftVps).toBeCloseTo(0.04, 2);
+    expect(settleText(v)).toMatch(/^\[Creeping (39|40)\.\d mV\/s\]$/);
+  });
+  it("saturation shows in the status bar signal and the warning", () => {
+    const { w } = simStream(flat(40, 4.95), [state("settled")]);
+    const v = deriveLive(w.snapshot(100), OPEN, "settled", false);
+    expect(v.signal).toBe("saturated");
+    expect(signalOf(simStream(flat(40, 4.5), []).w.snapshot(100))).toBe("near-limit");
+    expect(html(<RunView {...props({ view: v })} />)).toContain("saturated");
+  });
+  it("disconnect marks Disconnected, stale and pauses capture", () => {
+    const { w } = simStream(flat(10, 1), []);
+    const v = deriveLive(w.snapshot(50), { status: "reconnecting", attempt: 2, delayMs: 500 }, "settled", false);
+    expect(v.source).toBe("disconnected");
+    expect(v.stale).toBe(true);
+    const d = decide(v, false, "idle");
+    expect(d.kind).toBe("blocked");
+    const out = html(<RunView {...props({ view: v, blockedWhy: d.kind === "blocked" ? d.why : null })} />);
+    expect(out).toContain("disconnect-notice");
+    expect(out).toContain("(stale)");
+    expect(out).toContain("disabled");
+  });
+  it("driftOver needs three columns", () => {
+    expect(driftOver(new Float64Array([0, 1]), new Float64Array([0, 1]), 0)).toBeNull();
+  });
+  it("foldSide ignores unrelated kinds", () => {
+    const s: SideState = { settle: null, rawSeq: 1, pointIndex: null };
+    const m: ServerMessage = { kind: "guidance" };
+    expect(foldSide(s, m)).toBe(s);
+  });
+});
+
+describe("capture decisions", () => {
+  it("settled accepts, creeping blocks, early asks then captures", () => {
+    expect(decide(view(), false, "idle").kind).toBe("capture");
+    const creeping = view({ motion: "creeping" });
+    expect(decide(creeping, false, "idle").kind).toBe("blocked");
+    expect(decide(creeping, true, "idle").kind).toBe("confirm-early");
+    expect(decide(creeping, true, "asking").kind).toBe("capture-early");
+  });
+  it("saturation blocks even a forced capture", () => {
+    expect(decide(view({ signal: "saturated", motion: "creeping" }), true, "asking").kind).toBe("blocked");
+    expect(decide(view({ volts: null }), false, "idle").kind).toBe("blocked");
+  });
+  it("body marks forced-early captures as unsettled", () => {
+    const b = buildBody("elastic", { mass_kg: 0.2 }, 9, view({ motion: "creeping", driftVps: 0.01 }), true);
+    expect(b).toMatchObject({ phase: "elastic", settled: false, forced_early: true, drift_rate: 0.01 });
+    expect(buildBody("tare", {}, 9, view(), false)).toMatchObject({ phase: "tare", settled: true, forced_early: false });
+  });
+  it("postCapture posts JSON and surfaces refusals", async () => {
+    const calls: string[] = [];
+    const ok: typeof fetch = (i, init) => { calls.push(`${init?.method ?? "GET"} ${typeof i === "string" ? i : i instanceof URL ? i.href : i.url}`); return Promise.resolve(new Response(JSON.stringify({ seq: 3, summary: "p1" }), { status: 201 })); };
+    const r = await postCapture(buildBody("calibrate", {}, 1, view(), false), ok);
+    expect(r.ok).toBe(true);
+    expect(calls).toEqual(["POST /api/session/points"]);
+    const bad: typeof fetch = () => Promise.resolve(new Response("nope", { status: 409 }));
+    const r2 = await postCapture(buildBody("calibrate", {}, 1, view(), false), bad);
+    expect(r2.ok).toBe(false);
+  });
+});
+
+describe("RunView", () => {
+  it("shows big readout, trace, accept button and phase wording", () => {
+    const out = html(<RunView {...props()} />);
+    expect(out).toContain("Live V: 1.2345 V [Settled]");
+    expect(out).toContain("live-canvas");
+    expect(out).toContain("Accept point (Space)");
+    expect(out).not.toContain("saturation-warning");
+  });
+  it("forced-early confirmation replaces the accept button", () => {
+    const out = html(<RunView {...props({ confirming: true, view: view({ motion: "creeping" }) })} />);
+    expect(out).toContain("confirm-early");
+    expect(out).toContain("recorded as unsettled");
+  });
+  it("per-phase plot: stress-strain for elastic, none for tare", () => {
+    const data = { points: [], fit: null, yield: null };
+    expect(html(<RunView {...props({ phase: "elastic", plot: { kind: "stress-strain", data } })} />)).toContain("Stress-strain");
+    expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Record tare");
+  });
+});

@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["LcttLab.export_formats lists lctt-csv (text/csv) and /api/export shows it", "lctt-csv renders the 32-column CSV in memory from raw session events passed via RunState.events", "An unready session yields a problem response, not an empty file"]
+moved = []
+at = "2026-11-08T06:20:34Z"
+actor = "lognd"
+rev = 1

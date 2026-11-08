@@ -26,3 +26,15 @@ Transport-agnostic publisher of versioned results. Each message is a `ResultEnve
   and never reach clients; non-refinement states give `BAD_STATE`.
 - `connect(cb)` replays the latest envelope per key, then live pushes (no history replay).
   A callback that raises is logged and dropped.
+
+## Wiring
+
+- `ResultsStream.job_sink()` returns the callable to pass as `JobManager(sink=...)`:
+  `refining`/`final` envelopes are offered via `offer_refinement`; the manager's own `stale`
+  envelopes are ignored (staleness comes from `push_analytic`); rejected offers are logged.
+- `StreamHub(bus, sessions, results)` connects each WebSocket client to the stream. The client
+  gets the snapshot then live envelopes as binary RESULTS_ENVELOPE frames
+  (`sadi.server.ws.encode_result`: JSON body, flags bit 0 = stale, `t0_s` = `emitted_ns`/1e9).
+  Disconnect releases the stream connection.
+- `AppSettings.results` injects the stream; with a bus and none given, `create_app` makes one
+  (`app.state.results_stream`).

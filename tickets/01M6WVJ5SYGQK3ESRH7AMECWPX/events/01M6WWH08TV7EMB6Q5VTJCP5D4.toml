@@ -1,0 +1,8 @@
+kind = "land"
+base_ref = "refs/heads/main"
+commit = "2e5923784cbfe2f7cfe8cc14873e1a6042d743f6"
+branch = "ticket/AMECWPX"
+pushed = false
+at = "2026-11-08T06:11:17Z"
+actor = "lognd"
+rev = 1

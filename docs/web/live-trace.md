@@ -49,7 +49,8 @@ Python change is needed. Pure helpers: `web/src/hooks/markClock.ts` (`loadMarkTi
 
 ## Export
 
-`LivePlot` listens for F3 (ignored while typing in a text field, via `keys/keymap` `isTextTarget`)
+`LivePlot` listens for keydown and acts when `keys/keymap` `resolveKey` returns the `export` action
+(F3; inert while typing in a text field, so the key binding lives only in the keymap)
 and exports the current scene as 192 dpi PNG through `plots/core` `exportFigure`.
 
 ## Performance

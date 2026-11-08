@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T06:19:25Z"
+digest = "b965ee1531e4aabf7ef92711cc53d1da54c8e49e12eb38da87f05d355c6f38ee"
+exit_code = 0
+head = "e90e0e8e11e2e807157ab1f33f2809907c0d7c72"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 50 items
+
+python/tests/concurrency/test_interleavings.py ......................... [ 50%]
+.........................                                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-609428-0.xml ---------------
+============================== 50 passed in 0.51s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/concurrency/test_interleavings.py::test_capture_during_refinement"
+size = 602
+status = "measured"
+test_count = 50
+tests_digest = "8fc48837a526c953a68cef126416742a1e3de6d0fab01d597ce012210d2583f5"
+at = "2026-11-08T06:19:25Z"
+actor = "lognd"
+rev = 1

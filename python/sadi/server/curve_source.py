@@ -66,7 +66,13 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
             hanger_kg=p.hanger_kg,
             u_hanger_kg=p.u_hanger_kg,
         )
+    # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
+    meta = parse_meta(cp.point)
     return LoadPoint(
+        settled=meta.settled,
+        forced_early=meta.forced_early,
+        drift_rate=meta.drift_rate,
+        t_since_load_s=meta.t_since_load_s,
         point_id=cp.point.point_id,
         volts=p.volts,
         u_volts=p.u_volts,
@@ -75,28 +81,37 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
     )
 
 
-def load_curve(data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded) stress-strain curve from the active session's events."""
-    sdir = active_session(data_root)
-    if sdir is None:
-        _log.info("curve source: no session under %s", data_root)
-        return Err(RefitError.NoData)
+# frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
+def session_events(sdir: Path) -> Result[list[LiveEvent], str]:
+    """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags."""
     state = recover_state(sdir)
     if state.is_err:
-        _log.error("curve source: replay of %s failed: %s", sdir.name, state.danger_err)
-        return Err(RefitError.NoData)
+        return Err(str(state.danger_err))
     events: list[LiveEvent] = []
     for cp in state.danger_ok.view().points:
         ev = _event(cp)
         if ev is None:
             _log.warning("curve source: point %s has unusable inputs", cp.point.point_id)
             continue
-        meta = parse_meta(cp.point)
-        if meta.forced_early:
+        if isinstance(ev, LoadPoint) and ev.forced_early:
             _log.warning("curve source: point %s was forced early", cp.point.point_id)
         events.append(ev)
         if cp.excluded and isinstance(ev, LoadPoint):
             events.append(ExcludePoint(point_id=ev.point_id))
+    return Ok(events)
+
+
+def load_curve(data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
+    """Build the active (non-excluded) stress-strain curve from the active session's events."""
+    sdir = active_session(data_root)
+    if sdir is None:
+        _log.info("curve source: no session under %s", data_root)
+        return Err(RefitError.NoData)
+    res = session_events(sdir)
+    if res.is_err:
+        _log.error("curve source: replay of %s failed: %s", sdir.name, res.danger_err)
+        return Err(RefitError.NoData)
+    events = res.danger_ok
     doc = build_document(events, date=_EPOCH)
     if doc.is_err:
         _log.info("curve source: %s not ready: %s", sdir.name, doc.danger_err.name)

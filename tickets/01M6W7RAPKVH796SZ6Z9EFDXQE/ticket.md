@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T05:50:50Z"
+updated = "2026-11-08T05:50:51Z"
 idempotency_key = "sadi-f12"
 labels = ["ws:web", "model:sonnet", "creates:web/src/components/guidance/**", "creates:docs/web/guidance.md"]
 scope = ["web/src/components/guidance/**", "docs/web/guidance.md", "docs/web/budget-panel.md"]
@@ -31,7 +31,7 @@ bound = true
 
 [[acceptance]]
 text = "Stop-early recommendation banner with one-key 'move to next phase' that the user may ignore; never auto-advances"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Component tests with mocked guidance payloads"

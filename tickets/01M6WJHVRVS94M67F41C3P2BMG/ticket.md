@@ -2,7 +2,8 @@
 id = "01M6WJHVRVS94M67F41C3P2BMG"
 title = "doctor: DEV, SIM, WRK layers"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

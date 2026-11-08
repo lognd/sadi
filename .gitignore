@@ -27,3 +27,5 @@ private/
 /plugins/
 python/sadi/_ui/*
 !python/sadi/_ui/.gitkeep
+test-results/
+playwright-report/

@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: {
     command: "node e2e/serve.mjs",
     cwd: "..",
-    url: `http://127.0.0.1:${port}/api/health`,
+    url: `http://127.0.0.1:${port}/openapi.json`,
     reuseExistingServer: false,
     timeout: 120_000,
   },

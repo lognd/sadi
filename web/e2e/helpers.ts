@@ -6,6 +6,18 @@ import { expect, type Page } from "@playwright/test";
 export async function openWizard(page: Page): Promise<boolean> {
   await page.goto("/");
   await expect(page.locator("main, nav").first()).toBeVisible();
+  // The backend has no /api/health route yet, so the app opens Doctor on load; close it to reach the wizard.
+  const closeDoctor = page.getByRole("button", { name: "Close Doctor" });
+  if (await closeDoctor.waitFor({ state: "visible", timeout: 5_000 }).then(() => true, () => false)) await closeDoctor.click();
+  // With no open session the Setup screen offers a form; create a fresh session (never resume or discard one).
+  const setup = page.getByRole("region", { name: "Session setup" });
+  if (await setup.waitFor({ state: "visible", timeout: 5_000 }).then(() => true, () => false)) {
+    const create = setup.getByRole("button", { name: "Create session" });
+    // No labs registered (launcher does not wire the plugin labs yet): the form cannot submit; skip.
+    if (!(await create.isEnabled({ timeout: 5_000 }).catch(() => false))) return false;
+    await setup.getByLabel("Specimen name").fill("e2e specimen");
+    await create.press("Enter");
+  }
   try {
     await page.getByRole("navigation", { name: "Steps" }).waitFor({ state: "visible", timeout: 10_000 });
     return true;

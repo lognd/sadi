@@ -2,7 +2,8 @@
 id = "01M6WA9WYE9D71BBA7AV3H5CGF"
 title = "Implement sadi doctor: check runner, checks, step-by-step remediation (CLI)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

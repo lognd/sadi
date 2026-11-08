@@ -2,7 +2,8 @@
 id = "01M6WJB330TVRVWW639E6GGFJZ"
 title = "Wizard: step completion criteria (e.g. >=1 captured point before complete)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

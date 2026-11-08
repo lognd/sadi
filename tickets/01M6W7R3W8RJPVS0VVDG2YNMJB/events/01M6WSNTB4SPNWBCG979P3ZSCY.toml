@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T05:21:36Z"
+digest = "63a5bc2d625a448b6300898aba21b868765c2560f2b08fc2e20bac83d108e406"
+exit_code = 0
+head = "12c3a8b3eb32047c6d00a120b6758deb3df0b498"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/labs/lctt/test_guidance.py ..                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-456098-0.xml ---------------
+============================== 2 passed in 2.00s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_guidance.py::test_full_three_phase_run_is_bounded_and_safe"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "ae9b41c2f79e4aa4eb6fe0f3c554d62cf663f54cc6136e1e935158022d632a4f"
+at = "2026-11-08T05:21:36Z"
+actor = "lognd"
+rev = 1

@@ -8,7 +8,7 @@ points = 5
 parent = "01M6W7R081S67XNGBH79ACCBZZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:21:34Z"
+updated = "2026-11-08T05:21:36Z"
 idempotency_key = "sadi-ph1"
 labels = ["ws:plan", "lctt", "model:sonnet", "creates:python/sadi/labs/lctt/guidance.py", "creates:python/tests/labs/lctt/test_guidance.py", "creates:docs/lctt/guidance.md"]
 scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "docs/lctt/guidance.md", "docs/index.md"]
@@ -35,7 +35,7 @@ bound = true
 
 [[acceptance]]
 text = "Simulator end-to-end: a full three-phase run completes in a bounded number of points (documented), guidance never suggests unsafe/out-of-range load"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

@@ -1,10 +1,12 @@
 """Session manifest cache (data-safety 8.4): frozen pydantic model and atomic-replace writer."""
 
 # frob:ticket 01M6W7R1VQHABR51SH64668M06
+# frob:ticket 01M6WFZFBK0KYAGBM1CD5GGH60
 from __future__ import annotations
 
 import os
 import secrets
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -22,6 +24,46 @@ MANIFEST_NAME = "manifest.json"
 MANIFEST_VERSION = 1
 
 SessionState = Literal["open", "closed", "crashed", "corrupt"]
+
+
+class SessionPluginRef(BaseModel):
+    """Provenance: id and version of a plugin that was active when a session version was made."""
+
+    model_config = ConfigDict(frozen=True)
+    id: str
+    version: str
+
+
+class PluginWarning(BaseModel):
+    """Non-fatal reopen finding: a recorded plugin is missing or at a different version."""
+
+    model_config = ConfigDict(frozen=True)
+    plugin_id: str
+    recorded_version: str
+    found_version: str | None
+    message: str
+
+
+def plugin_warnings(
+    recorded: Sequence[SessionPluginRef], available: Mapping[str, str]
+) -> tuple[PluginWarning, ...]:
+    """Warn for recorded refs missing from, or differing in, `available` (id -> version)."""
+    out: list[PluginWarning] = []
+    for ref in recorded:
+        found = available.get(ref.id)
+        if found is None:
+            msg = f"plugin '{ref.id}' {ref.version} used by this session is not available"
+        elif found != ref.version:
+            msg = f"plugin '{ref.id}' version differs: session used {ref.version}, found {found}"
+        else:
+            continue
+        _log.warning("session provenance: %s", msg)
+        out.append(
+            PluginWarning(
+                plugin_id=ref.id, recorded_version=ref.version, found_version=found, message=msg
+            )
+        )
+    return tuple(out)
 
 
 class Manifest(BaseModel):
@@ -42,6 +84,8 @@ class Manifest(BaseModel):
     state: SessionState = "open"
     closed: datetime | None = None
     last_seq: int | None = None
+    # Optional, backward compatible: absent in old manifests (defaults to empty).
+    plugins: tuple[SessionPluginRef, ...] = ()
 
 
 class ManifestInvalid(BaseModel):

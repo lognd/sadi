@@ -2,13 +2,13 @@
 id = "01M6WFZF9FD9QNXP62MCETRNEA"
 title = "Server API: plugins list endpoint and response models"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:32:10Z"
+updated = "2026-11-08T02:53:51Z"
 labels = ["plugins", "creates:python/sadi/plugins/api.py", "creates:python/sadi/server/routes_plugins.py", "creates:python/tests/plugins/test_api.py", "creates:python/tests/server/test_routes_plugins.py"]
 scope = ["python/sadi/plugins/api.py", "python/sadi/server/routes_plugins.py", "python/tests/plugins/test_api.py", "python/tests/server/test_routes_plugins.py"]
 

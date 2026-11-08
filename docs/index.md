@@ -38,3 +38,4 @@ Status: current
 - [LCTT modulus, yield, saturation](lctt/modulus.md)
 - [LCTT pre-test clamp-slip check](lctt/clamp-check.md)
 - [LCTT live results](lctt/live-results.md)
+- [LCTT CSV export](lctt/export-csv.md)

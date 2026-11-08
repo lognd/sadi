@@ -2,7 +2,8 @@
 id = "01M6X465ZVYG4B9Y79QAZ8KDXT"
 title = "curve_source and notes() still walk the whole WAL per request"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

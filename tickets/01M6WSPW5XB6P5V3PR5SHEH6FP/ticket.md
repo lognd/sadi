@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Device handle is move-only (typestate): using a closed handle is a type error and a runtime Err"
-bound = false
+bound = true
 +++
 
 Library to operate a Digilent Analog Discovery 3 programmatically so SADI can be tested end to end. Package sadi.bench.ad3. Constants/enums transcribed from the WaveForms SDK header (read-only reference: /mnt/c/Program Files (x86)/Digilent/WaveFormsSDK/inc/dwf.h; do not vendor the header or DLL). DwfBackend Protocol covering the subset needed: enumerate/open/close, analog out (FDwfAnalogOut*: node/function/frequency/amplitude/offset/configure), analog in scope (FDwfAnalogIn*: channel enable/range/frequency/buffer/configure/status/get data), analog IO (supplies), digital IO basics. Real backend: ctypes over libdwf (Linux libdwf.so, Windows dwf.dll, macOS dwf.framework) loaded lazily; library-missing and device-missing are typed Err (ErrorSet), never import-time failures. Typestate handles: Closed -> Open device consumed by close. Hardware is NOT available: tests must use a fake ctypes library object injected into dll.py to verify argument marshalling and error mapping (FDwfGetLastErrorMsg). Standards: ASCII only, no emojis; module logger (never print) logging every state change, boundary, branch and error path; one-line WHY/WHAT docstring on every public symbol; docs page with Status: header linked from docs/index.md; tests in the same change; stay in scope. Python only (no cargo): typani Result[T, E] with ErrorSet error families (isinstance(x, Ok) + unwrap_err idiom), pydantic, no unsafe tricks beyond ctypes at one edge module; run ruff, ty, python -m typani.lint. NEVER add Co-Authored-By.

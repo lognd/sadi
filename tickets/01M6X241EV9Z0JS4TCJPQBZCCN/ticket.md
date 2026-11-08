@@ -8,7 +8,7 @@ points = 5
 reporter = "lognd"
 created = "2026-11-08T07:49:14Z"
 updated = "2026-11-08T08:11:36Z"
-scope = ["web/e2e/**", "web/src/screens/run/**", "docs/e2e.md"]
+scope = ["web/e2e/**", "web/src/screens/run/**", "docs/e2e.md", "docs/web/run-screens.md"]
 
 [[acceptance]]
 text = "Run screen shows per-phase input fields and sends them; vitest covers validation"

@@ -6,6 +6,7 @@ from enum import StrEnum
 from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict
+from typani import ErrorSet
 
 from sadi.logging_setup import get_logger
 
@@ -22,28 +23,28 @@ class ErrorFamily(StrEnum):
     JOB = "job"
 
 
-class DeviceCode(StrEnum):
+class DeviceCode(ErrorSet):
     """Failure codes for the SADI board and its transport."""
 
-    NOT_FOUND = "not_found"
+    NOT_FOUND = "not found"
     DISCONNECTED = "disconnected"
     TIMEOUT = "timeout"
     PROTOCOL = "protocol"
     SATURATED = "saturated"
 
 
-class InputCode(StrEnum):
+class InputCode(ErrorSet):
     """Failure codes for user-supplied or model-level input."""
 
-    OUT_OF_RANGE = "out_of_range"
+    OUT_OF_RANGE = "out of range"
     MISSING = "missing"
     DUPLICATE = "duplicate"
-    UNKNOWN_ID = "unknown_id"
-    BAD_UNIT = "bad_unit"
+    UNKNOWN_ID = "unknown id"
+    BAD_UNIT = "bad unit"
 
 
 # frob:ticket 01M6WBKXD1562WNR2FQS9RXHNM
-class StoreCode(StrEnum):
+class StoreCode(ErrorSet):
     """Failure codes for durable storage (WAL, events, snapshots)."""
 
     IO = "io"
@@ -51,34 +52,36 @@ class StoreCode(StrEnum):
     LOCKED = "locked"
     VERSION = "version"
     BACKPRESSURE = "backpressure"
-    DISK_FULL = "disk_full"
+    DISK_FULL = "disk full"
     CLOSED = "closed"
     STALLED = "stalled"
+    INVALID_RECORD = "invalid record"
+    INTERNAL = "internal"
 
 
-class ComputeCode(StrEnum):
+class ComputeCode(ErrorSet):
     """Failure codes for numeric analysis."""
 
-    TOO_FEW_POINTS = "too_few_points"
+    TOO_FEW_POINTS = "too few points"
     DEGENERATE = "degenerate"
-    NOT_FINITE = "not_finite"
+    NOT_FINITE = "not finite"
 
 
-class JobCode(StrEnum):
+class JobCode(ErrorSet):
     """Failure codes for background jobs."""
 
     CANCELLED = "cancelled"
     SUPERSEDED = "superseded"
     FAILED = "failed"
     UNKNOWN = "unknown"
-    WORKER_CRASHED = "worker_crashed"
-    TASK_FAILED = "task_failed"
-    SLOT_BUSY = "slot_busy"
-    SHUTTING_DOWN = "shutting_down"
+    WORKER_CRASHED = "worker crashed"
+    TASK_FAILED = "task failed"
+    SLOT_BUSY = "slot busy"
+    SHUTTING_DOWN = "shutting down"
 
 
 # Every code maps to a "what to do" hint; tests assert the tables are complete.
-_HINTS: dict[StrEnum, str] = {
+_HINTS: dict[ErrorSet, str] = {
     DeviceCode.NOT_FOUND: "Plug in the SADI board by USB and press Reconnect.",
     DeviceCode.DISCONNECTED: "Check the USB cable, then press Reconnect; recorded data is safe.",
     DeviceCode.TIMEOUT: "The board stopped answering; unplug it, plug it back in and retry.",
@@ -93,10 +96,12 @@ _HINTS: dict[StrEnum, str] = {
     StoreCode.CORRUPT: "The session file is damaged; reopen it to recover from the raw log.",
     StoreCode.LOCKED: "Another SADI window has this session open; close it first.",
     StoreCode.VERSION: "This session was made by a different SADI version; update the app.",
-    StoreCode.BACKPRESSURE: "The data disk is slow; acquisition must pause. Data already shown is safe.",
-    StoreCode.DISK_FULL: "The data disk is full. Data already shown is safe; free space, then retry.",
+    StoreCode.BACKPRESSURE: "The data disk is slow; acquisition must pause. Data shown is safe.",
+    StoreCode.DISK_FULL: "The data disk is full. Data shown is safe; free space, then retry.",
     StoreCode.CLOSED: "The recording is closed; open or start a session to record again.",
-    StoreCode.STALLED: "The data disk is not responding; free space or change disk, then resume.",
+    StoreCode.STALLED: "The data disk is not responding; free space or change disk.",
+    StoreCode.INVALID_RECORD: "The log refused a record; this is a bug, please report it.",
+    StoreCode.INTERNAL: "An internal error stopped saving; see the log.",
     ComputeCode.TOO_FEW_POINTS: "Capture more points; at least 3 are needed for an uncertainty.",
     ComputeCode.DEGENERATE: "Points do not span enough range; capture points at distinct loads.",
     ComputeCode.NOT_FINITE: "A value is NaN or infinite; recheck the readings that feed it.",
@@ -119,7 +124,17 @@ _STATUS: dict[ErrorFamily, int] = {
 }
 
 
-def hint_for(code: StrEnum) -> str:
+def wire(code: ErrorSet) -> str:
+    """Return the stable serialized (wire) value of a code: its lowercase member name."""
+    return code.name.lower()
+
+
+def code_from_wire(family: type[ErrorSet], value: str) -> ErrorSet:
+    """Look up a code of `family` by its wire value; raises KeyError when unknown."""
+    return family[value.upper()]
+
+
+def hint_for(code: ErrorSet) -> str:
     """Return the user-facing 'what to do' hint for an error code."""
     return _HINTS[code]
 
@@ -130,7 +145,7 @@ class SadiError(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     family: ClassVar[ErrorFamily]
-    code: StrEnum
+    code: ErrorSet
     detail: str = ""
 
     @property
@@ -145,10 +160,10 @@ class SadiError(BaseModel):
 
     def problem(self) -> dict[str, str | int]:
         """Return the RFC 7807 problem-JSON body (type, title, status, detail, hint)."""
-        _log.debug("problem json for %s/%s", self.family, self.code)
+        _log.debug("problem json for %s/%s", self.family, wire(self.code))
         return {
-            "type": f"urn:sadi:error:{self.family}:{self.code}",
-            "title": self.code.replace("_", " "),
+            "type": f"urn:sadi:error:{self.family}:{wire(self.code)}",
+            "title": wire(self.code).replace("_", " "),
             "status": self.status,
             "detail": self.detail,
             "hint": self.hint,

@@ -239,3 +239,139 @@ def _py_040_missing(ctx: Ctx, out: Outcome) -> Fix:
             ),
         ),
     )
+
+
+def _norm(path: str, os: Os) -> str:
+    """Normalise a path for comparison: forward slashes, no trailing slash, folded on Windows."""
+    text = path.replace("\\", "/").rstrip("/")
+    return text.casefold() if os is Os.WINDOWS else text
+
+
+@check(
+    "PY-050",
+    Layer.PY,
+    "Virtual environment is the one SADI was installed into",
+    Severity.WARNING,
+    {
+        "wrong-venv": "A different virtual environment is active than the running interpreter's",
+        "system-python": "SADI runs in the system interpreter, not a virtual environment",
+    },
+    "interpreter location and pyvenv.cfg vs the VIRTUAL_ENV environment variable",
+    depends_on=("PY-020",),
+)
+def py_050(ctx: Ctx) -> Outcome:
+    """Compare the interpreter's environment with the one the shell has activated."""
+    exe = _norm(ctx.probes.python_exe(), ctx.os)
+    prefix = exe.rsplit("/", 2)[0] if exe.count("/") >= 2 else ""
+    active = ctx.probes.env().get("VIRTUAL_ENV")
+    if active and _norm(active, ctx.os) != prefix:
+        return warn(
+            "wrong-venv",
+            f"VIRTUAL_ENV is {active} but SADI runs from {prefix or exe}",
+            active=active,
+            interpreter=exe,
+        )
+    if not prefix or not ctx.probes.exists(f"{prefix}/pyvenv.cfg"):
+        return warn("system-python", f"SADI runs in the system interpreter {exe}", interpreter=exe)
+    return ok(f"SADI runs in the virtual environment {prefix}", venv=prefix)
+
+
+@remedy("PY-050", "wrong-venv")
+def _py_050_wrong(ctx: Ctx, out: Outcome) -> Fix:
+    """Deactivate the stray environment."""
+    leave = "deactivate"
+    return Fix(
+        "Use the environment SADI lives in",
+        (
+            action(
+                "Leave the active environment.",
+                "Your prompt no longer shows an environment name.",
+                cmd(ctx.os, leave),
+                if_not="Open a new terminal.",
+            ),
+            action(
+                "Start SADI through uv, which picks the project environment.",
+                "uv starts SADI without a mismatch warning.",
+                cmd(ctx.os, "uv run sadi-doctor"),
+            ),
+        ),
+    )
+
+
+@remedy("PY-050", "system-python")
+def _py_050_system(ctx: Ctx, out: Outcome) -> Fix:
+    """Move into a project environment."""
+    return Fix(
+        "Install SADI into a virtual environment",
+        (
+            action(
+                "From the python/ directory, create the project environment.",
+                "uv finishes syncing without errors.",
+                cmd(ctx.os, "uv sync"),
+                mutates=Mutates.INSTALL,
+                changes="Creates python/.venv with SADI and its dependencies.",
+            ),
+            action(
+                "Run the doctor through it.",
+                "The doctor starts without errors.",
+                cmd(ctx.os, "uv run sadi-doctor"),
+            ),
+        ),
+    )
+
+
+MAX_LISTED = 10
+
+
+@check(
+    "PY-060",
+    Layer.PY,
+    "Package integrity",
+    Severity.WARNING,
+    {
+        "modified-files": "Installed files differ from the hashes recorded at install time",
+        "missing-files": "Files recorded at install time are gone",
+    },
+    "sha256 of sampled RECORD entries: sadi/doctor, sadi/store and sadi/web/dist/index.html",
+    depends_on=("PY-020",),
+)
+def py_060(ctx: Ctx) -> Outcome:
+    """Compare sampled installed files with their recorded hashes (read-only)."""
+    modified, missing = ctx.probes.package_integrity()
+    if missing:
+        return fail(
+            "missing-files",
+            f"{len(missing)} installed file(s) are missing, e.g. {missing[0]}",
+            missing=missing[:MAX_LISTED],
+        )
+    if modified:
+        return warn(
+            "modified-files",
+            f"{len(modified)} installed file(s) were modified, e.g. {modified[0]}",
+            modified=modified[:MAX_LISTED],
+        )
+    return ok("Sampled package files match their recorded hashes")
+
+
+@remedy("PY-060", "modified-files")
+def _py_060_modified(ctx: Ctx, out: Outcome) -> Fix:
+    """Reinstall the package to restore pristine files."""
+    return Fix(
+        "Restore the modified files",
+        (
+            action(
+                "Reinstall SADI so the files match the release.",
+                "uv finishes without errors.",
+                cmd(ctx.os, "uv sync --reinstall-package sadi"),
+                mutates=Mutates.INSTALL,
+                changes="Replaces the installed SADI files, discarding local edits to them.",
+                if_not="If you edit SADI on purpose, ignore this warning.",
+            ),
+        ),
+    )
+
+
+@remedy("PY-060", "missing-files")
+def _py_060_missing(ctx: Ctx, out: Outcome) -> Fix:
+    """Reinstall to restore deleted files."""
+    return _py_060_modified(ctx, out)

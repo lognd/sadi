@@ -2,16 +2,16 @@
 id = "01M6W7R2M88JFNKRESHJBD8YVD"
 title = "sadi-py: simulator and fault-plan bindings"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T00:08:19Z"
+updated = "2026-11-08T04:05:17Z"
 idempotency_key = "sadi-r7b"
 labels = ["ws:rust", "fault-injection", "model:sonnet", "creates:crates/sadi-py/src/sim.rs", "creates:crates/sadi-py/python/sadi_py/sim.pyi", "creates:crates/sadi-py/tests/**"]
-scope = ["crates/sadi-py/src/sim.rs", "crates/sadi-py/python/sadi_py/sim.pyi", "crates/sadi-py/tests/**"]
+scope = ["crates/sadi-py/src/sim.rs", "crates/sadi-py/python/sadi_py/sim.pyi", "crates/sadi-py/tests/**", "docs/device/python-binding.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -27,11 +27,11 @@ target = "01M6W7R226VMAMHYPDBQTAS277"
 
 [[acceptance]]
 text = "Python can load/validate scenario + FaultPlan JSON (pydantic-friendly dict), set load program at runtime (weight added/removed), inject a slip step now, change seed"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Runtime control is thread-safe and tested; invalid plans return a typed error"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

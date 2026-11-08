@@ -281,6 +281,7 @@ class RunOptions(BaseModel):
     render_os: Os | None = None
     port: str | None = None
     api_port: int = 8000
+    running: bool = False
     data_root: str | None = None
 
 

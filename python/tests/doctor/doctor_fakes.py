@@ -3,11 +3,13 @@
 # frob:ticket 01M6WA9WYE9D71BBA7AV3H5CGF
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 
 from typani import Err, Ok, Result
 
+from sadi.doctor.checks import ext, net
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
@@ -62,6 +64,7 @@ class FakeProbes:
     loopback: bool = True
     localhost: list[str] = field(default_factory=lambda: ["127.0.0.1", "::1"])
     bundle: tuple[bool, int] = (True, 2048)
+    integrity: tuple[list[str], list[str]] = field(default_factory=lambda: ([], []))
     clock: float = 1_800_000_000.0
     cpus: int = 8
     mem: int | None = 8 * GIB
@@ -176,6 +179,10 @@ class FakeProbes:
         """Return the fake localhost addresses."""
         return self.localhost
 
+    def package_integrity(self) -> tuple[list[str], list[str]]:
+        """Return the fake (modified, missing) integrity findings."""
+        return self.integrity
+
     def web_bundle(self) -> tuple[bool, int]:
         """Return the fake bundle state."""
         return self.bundle
@@ -247,7 +254,23 @@ def healthy() -> FakeProbes:
     p.links["/sys/bus/usb/devices/1-1/1-1:1.0/driver"] = "../../../bus/usb/drivers/ftdi_sio"
     p.dirs["/dev"] = ["ttyUSB0", "null"]
     p.device = HEALTHY_DEVICE
+    p.files["/venv/pyvenv.cfg"] = "home = /usr/bin\n"
+    p.commands.update(
+        {
+            "-c " + ext.INFO_SCRIPT: _json(
+                {"version": "0.1.0", "protocol": 1, "expected_protocol": 1}
+            ),
+            "-c " + ext.VCRUNTIME_SCRIPT: _json([]),
+            "-c " + ext.FEATURES_SCRIPT: _json(["udev"]),
+            "-c " + net.health_script(8000): _json({"status": 200, "version": "0.1.0"}),
+        }
+    )
     return p
+
+
+def _json(value: object) -> Result[CommandRun, ProbeError]:
+    """Build a canned child run whose stdout is the JSON value."""
+    return Ok(CommandRun(argv=("py",), exit_code=0, stdout_tail=json.dumps(value)))
 
 
 _ = Err  # kept for tests that inject probe errors

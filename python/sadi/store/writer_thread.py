@@ -18,10 +18,12 @@ from collections import deque
 from collections.abc import Callable
 from enum import StrEnum
 from pathlib import Path
+from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result
 
+from sadi.core.errors import StoreCode, StoreError
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableIo
 from sadi.store.records import NewRecord
@@ -53,11 +55,18 @@ class WriterError(BaseModel):
     """Base of all writer-facade failures; `hint` is shown in the UI."""
 
     model_config = ConfigDict(frozen=True)
+    code: ClassVar[StoreCode]
     hint: str = ""
+
+    def to_store_error(self, detail: str = "") -> StoreError:
+        """Return the taxonomy `StoreError` for this failure (same code, shared hint table)."""
+        return StoreError(code=self.code, detail=detail)
 
 
 class Backpressure(WriterError):
     """The bounded queue stayed full for `waited_s`; nothing was enqueued, nothing was lost."""
+
+    code: ClassVar[StoreCode] = StoreCode.BACKPRESSURE
 
     waited_s: float
     queue_depth_items: int
@@ -68,11 +77,15 @@ class Backpressure(WriterError):
 class Closed(WriterError):
     """The writer is draining or closed and accepts no new records."""
 
+    code: ClassVar[StoreCode] = StoreCode.CLOSED
+
     hint: str = "The recording is closed."
 
 
 class DiskFull(WriterError):
     """The disk is full (ENOSPC); undurable records are kept in memory."""
+
+    code: ClassVar[StoreCode] = StoreCode.DISK_FULL
 
     reason: str
     hint: str = "The data disk is full. Data already shown is safe; free space, then retry."
@@ -81,6 +94,8 @@ class DiskFull(WriterError):
 class IoError(WriterError):
     """A write, fsync or file operation failed; undurable records are kept in memory."""
 
+    code: ClassVar[StoreCode] = StoreCode.IO
+
     reason: str
     errno: int | None = None
     hint: str = "Saving failed. Data already shown is safe; check the disk, then retry."
@@ -88,6 +103,8 @@ class IoError(WriterError):
 
 class Stalled(WriterError):
     """Durability made no progress for `waited_s` while records were queued."""
+
+    code: ClassVar[StoreCode] = StoreCode.STALLED
 
     waited_s: float
     durable_seq: int
@@ -101,11 +118,15 @@ class Stalled(WriterError):
 class InvalidRecord(WriterError):
     """The caller supplied a record the WAL refuses to write (a bug upstream)."""
 
+    code: ClassVar[StoreCode] = StoreCode.INVALID_RECORD
+
     reason: str
 
 
 class Internal(WriterError):
     """An unexpected exception in the writer thread (a bug)."""
+
+    code: ClassVar[StoreCode] = StoreCode.INTERNAL
 
     detail: str
     hint: str = "An internal error stopped saving; see the log."

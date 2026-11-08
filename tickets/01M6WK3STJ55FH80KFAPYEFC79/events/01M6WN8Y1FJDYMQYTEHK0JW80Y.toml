@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:04:41Z"
+digest = "eadeffa052313fe88567b5f8cb88a647c93caa5883c741afc9fa5c3f39159d5a"
+exit_code = 0
+head = "6aabf1ecd77178ba320994c8228df8914397f45b"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/core/test_models.py ..                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-350153-0.xml ---------------
+============================== 2 passed in 0.26s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_models.py::test_error_codes_are_error_sets_with_stable_wire_values python/tests/core/test_models.py::test_writer_errors_map_to_store_codes"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "32ba155e298157af1a771e7de856d923392a238941d11a13f435cbda181d7abc"
+at = "2026-11-08T04:04:41Z"
+actor = "lognd"
+rev = 1

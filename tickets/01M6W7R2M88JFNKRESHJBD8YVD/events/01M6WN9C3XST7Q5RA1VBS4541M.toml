@@ -1,0 +1,33 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:04:50Z"
+digest = "1832b93e5f02613ca729a2c5763e3deaaf5b75dc8f57a97c397db411563c5e7a"
+exit_code = 0
+head = "193e4840eed464f1cd73d0efe1ba98ba00d269d3"
+inline = '''
+   Compiling pyo3-ffi v0.30.1
+   Compiling pyo3 v0.30.1
+   Compiling numpy v0.30.0
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.14s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 9f3716d6-4053-48d8-bc96-2fa43b80af71 with nextest profile: default
+    Starting 5 tests across 1 binary (3 tests skipped)
+        PASS [   0.009s] sadi-py sim::tests::weight_changes_at_sim_now
+        PASS [   0.009s] sadi-py sim::tests::unordered_load_is_rejected_and_state_kept
+        PASS [   0.011s] sadi-py sim::tests::bad_plan_is_typed_error
+        PASS [   0.012s] sadi-py sim::tests::slip_changes_voltage_after_now
+        PASS [   0.014s] sadi-py sim::tests::concurrent_control_is_safe
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.019s] 5 tests run: 5 passed, 3 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-py sim::"
+size = 977
+status = "measured"
+test_count = 5
+tests_digest = "cecb21604e168ec533db5687403075b253d224cceeb93fa71ef75564eb1698af"
+at = "2026-11-08T04:04:50Z"
+actor = "lognd"
+rev = 1

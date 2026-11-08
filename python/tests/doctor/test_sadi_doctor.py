@@ -14,6 +14,7 @@ from typani import Err, Ok
 
 import sadi.doctor as doctor
 from sadi.doctor import cli
+from sadi.doctor.checks import ext, net
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.registry import all_checks, get_remedy
 from sadi.doctor.render_text import render
@@ -45,6 +46,32 @@ def _import_fail(stderr: str, code: int = 1) -> Mut:
         p.commands["-c import sadi_py"] = Ok(
             CommandRun(argv=("py",), exit_code=code, stderr_tail=stderr)
         )
+
+    return f
+
+
+def _child(script: str, value: object) -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.commands["-c " + script] = Ok(
+            CommandRun(argv=("py",), exit_code=0, stdout_tail=json.dumps(value))
+        )
+
+    return f
+
+
+def _child_run(script: str, code: int, stderr: str = "") -> Mut:
+    def f(p: FakeProbes) -> None:
+        p.commands["-c " + script] = Ok(
+            CommandRun(argv=("py",), exit_code=code, stderr_tail=stderr)
+        )
+
+    return f
+
+
+def _both(*muts: Mut) -> Mut:
+    def f(p: FakeProbes) -> None:
+        for m in muts:
+            m(p)
 
     return f
 
@@ -194,6 +221,48 @@ CASES: list[tuple[str, str, Os, Mut]] = [
             {"-c import sadi_py": Err(ProbeError(kind="timeout", detail="20s"))}
         ),
     ),
+    (
+        "EXT-020",
+        "version-mismatch",
+        Os.LINUX,
+        _child(ext.INFO_SCRIPT, {"version": "0.0.9", "protocol": 1, "expected_protocol": 1}),
+    ),
+    (
+        "EXT-020",
+        "protocol-mismatch",
+        Os.MACOS,
+        _child(ext.INFO_SCRIPT, {"version": "0.1.0", "protocol": 1, "expected_protocol": 2}),
+    ),
+    ("EXT-030", "missing-vcruntime", Os.WINDOWS, _child(ext.VCRUNTIME_SCRIPT, ["vcruntime140"])),
+    ("EXT-040", "no-udev-feature", Os.LINUX, _child(ext.FEATURES_SCRIPT, [])),
+    ("EXT-040", "no-udev-feature", Os.WSL, _child(ext.FEATURES_SCRIPT, ["serial"])),
+    ("EXT-050", "vectors-fail", Os.LINUX, _child_run(ext.SELFTEST_SCRIPT, 1, "AssertionError")),
+    (
+        "EXT-050",
+        "timeout",
+        Os.WINDOWS,
+        lambda p: p.commands.update(
+            {"-c " + ext.SELFTEST_SCRIPT: Err(ProbeError(kind="timeout", detail="10s"))}
+        ),
+    ),
+    (
+        "NET-030",
+        "proxy-intercepts-localhost",
+        Os.LINUX,
+        _set(environ={"HTTPS_PROXY": "http://p:3128"}),
+    ),
+    ("NET-040", "health-timeout", Os.LINUX, _child(net.health_script(8000), {"status": None})),
+    ("NET-040", "health-500", Os.MACOS, _child(net.health_script(8000), {"status": 503})),
+    (
+        "NET-040",
+        "health-version-mismatch",
+        Os.WINDOWS,
+        _child(net.health_script(8000), {"status": 200, "version": "9.9.9"}),
+    ),
+    ("PY-050", "wrong-venv", Os.LINUX, _set(environ={"VIRTUAL_ENV": "/other/venv"})),
+    ("PY-050", "system-python", Os.MACOS, _set(files={})),
+    ("PY-060", "modified-files", Os.LINUX, _set(integrity=(["sadi/doctor/cli.py"], []))),
+    ("PY-060", "missing-files", Os.WINDOWS, _set(integrity=([], ["sadi/store/x.py"]))),
     ("WEB-010", "missing-bundle", Os.LINUX, _set(bundle=(False, 0))),
     ("NET-010", "no-loopback", Os.LINUX, _set(loopback=False)),
     ("NET-010", "localhost-not-loopback", Os.WINDOWS, _set(localhost=["10.0.0.5"])),
@@ -363,6 +432,16 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/__init__.py::summarize
 # frob:tests python/sadi/doctor/checks/brw.py::brw_010
 # frob:tests python/sadi/doctor/checks/clk.py::clk_010
+# frob:tests python/sadi/doctor/checks/ext.py::ext_020
+# frob:tests python/sadi/doctor/checks/ext.py::ext_030
+# frob:tests python/sadi/doctor/checks/ext.py::ext_040
+# frob:tests python/sadi/doctor/checks/ext.py::ext_050
+# frob:tests python/sadi/doctor/checks/ext.py::child_json
+# frob:tests python/sadi/doctor/checks/net.py::net_030
+# frob:tests python/sadi/doctor/checks/net.py::net_040
+# frob:tests python/sadi/doctor/checks/net.py::health_script
+# frob:tests python/sadi/doctor/checks/py.py::py_050
+# frob:tests python/sadi/doctor/checks/py.py::py_060
 # frob:tests python/sadi/doctor/checks/sess.py::sess_010
 # frob:tests python/sadi/doctor/checks/sess.py::sess_020
 # frob:tests python/sadi/doctor/checks/sess.py::sess_030
@@ -441,6 +520,7 @@ def test_fault_injection_yields_mode_and_remedy(
         deep=check_id == "WAL-020",
         stream_seconds=5 if check_id == "DEV-040" else 0,
         with_reset=check_id == "DEV-050",
+        running=check_id == "NET-040",
     )
     result = next(r for r in report.results if r.id == check_id)
     assert result.mode == mode, result.headline
@@ -766,3 +846,13 @@ def test_dev_sim_wrk_modes_yield_remedies_on_their_os() -> None:
         rem = result.remediation
         assert rem is not None and rem.steps[-1].kind is StepKind.VERIFY
         assert render(report).isascii()
+
+
+# frob:tests python/sadi/doctor/probes.py::Probes.package_integrity
+# frob:tests python/sadi/doctor/probes.py::RealProbes.package_integrity
+def test_real_package_integrity_returns_two_lists() -> None:
+    """The real integrity probe is read-only and yields (modified, missing) lists."""
+    from sadi.doctor.probes import RealProbes
+
+    modified, missing = RealProbes().package_integrity()
+    assert isinstance(modified, list) and isinstance(missing, list)

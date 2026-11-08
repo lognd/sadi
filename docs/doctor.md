@@ -739,6 +739,7 @@ sadi doctor --skip WAL-020
 sadi doctor --deep                       WAL-020 full scan (bounded by --deep-timeout)
 sadi doctor --with-reset                 DEV-050 (reboots the board; refused if port busy)
 sadi doctor --stream-seconds 5           DEV-040
+sadi doctor --running                    NET-040 (health request to a running SADI)
 sadi doctor --allow-probe-write          DATA-040 (creates and deletes one probe file under <root>/doctor/)
 sadi doctor --allow-network-fs           downgrade DATA-020 network-fs from blocker to warning
 sadi doctor --data-root PATH  --port NAME  --api-port N
@@ -886,14 +887,21 @@ Implementation status and deviations from this spec (~V3H5CGF):
   `@remedy(id, mode)`) rather than a separate `remediations/` package.
 - The runner is sequential (no thread pool) and has no per-check or whole-run
   timeout budget; probe timeouts live in the subprocess probes only.
-- Implemented (43): DEV-010..050, SIM-010/020, WRK-010/020, SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040, EXT-010, WEB-010,
-  NET-010/020, DATA-010/020/030/090, USB-020/030/040/050, CLK-010,
+- Implemented (52): DEV-010..050, SIM-010/020, WRK-010/020, SESS-010..050, WAL-010..040, PLAT-010/030/050, PY-010/020/030/040/050/060, EXT-010..050, WEB-010,
+  NET-010/020/030/040, DATA-010/020/030/090, USB-020/030/040/050, CLK-010,
   RES-010/020/030, BRW-010, PLG-010. USB-020 skips as unverified on Windows
   and macOS. The Channel A/B probe is reported as unverified (decision D3).
-- Deferred: EXT-020..050; NET-030/040;
-  PY-050/060; DATA-040..080; USB-010, USB-060..080; CLK-020..040; RES-040;
+- Deferred: DATA-040..080; USB-010, USB-060..080; CLK-020..040; RES-040;
   BRW-020/030; PLAT-020/040; WEB-020; the `fix` subcommand; `--bundle`.
   Each is tracked as a ticket.
+- EXT-020..050, NET-030/040 and PY-050/060 probe in a child `python -c` (a native
+  crash cannot kill the doctor) and parse its JSON. NET-040 needs `--running`.
+  Deviations: `sadi_py.__version__`, `PROTOCOL_VERSION` and `serial_features()`
+  are read with `getattr` and the comparison is skipped when absent (EXT-050
+  skips as unverified without `selftest()`); EXT-030 depends on PY-020, not
+  EXT-010, so it still runs when the import fails; PY-050 `system-python` is a
+  warning (there is no info status); PY-060 hashes only `sadi/doctor`,
+  `sadi/store` and the web `index.html` from the installed RECORD.
 - SESS and WAL use `sadi.doctor.sessions.survey_sessions`, one read-only pass
   per run (cached on the probes) over the store's `read_lock_holder`,
   `read_manifest`, `WalReader.scan`/`records` and snapshot listing; nothing is

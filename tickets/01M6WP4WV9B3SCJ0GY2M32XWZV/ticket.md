@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:19:59Z"
-updated = "2026-11-08T04:21:14Z"
+updated = "2026-11-08T04:21:17Z"
 labels = ["creates:python/tests/cli/test_launcher_spill.py"]
 scope = ["python/sadi/server/app.py", "python/tests/cli/test_launcher_spill.py", "docs/store/spill.md"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "No spill file is a no-op"
-bound = false
+bound = true
 +++
 
 Emergency spill files are only imported if import_all_spills runs; nothing calls it at startup, so spilled points would sit unseen (data-safety mandate). Wire it into the sadi launcher/create_app startup after the data-root lock is held, log each imported spill, surface failures without deleting spill files (never auto-overwrite). Scope: python/sadi/cli/**, python/sadi/store/spill.py (read), python/tests/cli/**, docs/.

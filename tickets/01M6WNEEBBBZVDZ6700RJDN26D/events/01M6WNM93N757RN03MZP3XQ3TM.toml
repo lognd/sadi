@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Captured points carry LoadInputs with window-averaged volts and the start_point mass", "A capture run recorded via record_point replays through recover_state and the curve source"]
+moved = []
+at = "2026-11-08T04:10:54Z"
+actor = "lognd"
+rev = 1

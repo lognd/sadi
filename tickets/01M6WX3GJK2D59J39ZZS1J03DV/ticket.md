@@ -2,7 +2,8 @@
 id = "01M6WX3GJK2D59J39ZZS1J03DV"
 title = "CSV export: add per-quantity uncertainty columns missing from PointRow"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

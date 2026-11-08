@@ -2,13 +2,13 @@
 id = "01M6W7R3N96SVM2D2GQQTA833F"
 title = "Uncertainty cross-check suite on every lab formula (analytic vs MC vs finite difference)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R0EPXRHEMNEAB9QWVY57"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T03:18:34Z"
 idempotency_key = "sadi-u5"
 labels = ["ws:unc", "qa", "model:sonnet", "creates:python/tests/uncertainty/crosscheck/**", "creates:docs/uncertainty/crosscheck.md"]
 scope = ["python/tests/uncertainty/crosscheck/**", "docs/uncertainty/crosscheck.md"]

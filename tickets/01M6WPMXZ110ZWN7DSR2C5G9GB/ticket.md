@@ -7,12 +7,12 @@ priority = "low"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:28:44Z"
-updated = "2026-11-08T04:32:52Z"
+updated = "2026-11-08T04:32:58Z"
 scope = ["python/tests/api/**", "python/tests/cli/**", "python/tests/core/**", "python/tests/jobs/**", "python/tests/labs/**", "python/tests/plugins/**", "python/tests/server/**", "python/tests/store/**", "python/tests/uncertainty/**"]
 
 [[acceptance]]
 text = "ty check reports zero diagnostics for python/tests excluding tests/doctor"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "python/tests suite still passes"

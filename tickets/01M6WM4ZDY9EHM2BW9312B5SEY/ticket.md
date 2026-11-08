@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-08T03:45:04Z"
-updated = "2026-11-08T03:52:50Z"
+updated = "2026-11-08T03:53:04Z"
 scope = ["web/src/plots/core/**", "docs/web/plots.md"]
 
 [[acceptance]]

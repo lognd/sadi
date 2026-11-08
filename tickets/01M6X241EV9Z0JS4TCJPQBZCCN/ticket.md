@@ -2,7 +2,8 @@
 id = "01M6X241EV9Z0JS4TCJPQBZCCN"
 title = "Run screen has no capture input entry (volts/height, mean/n, diameter, mass)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

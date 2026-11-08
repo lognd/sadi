@@ -2,7 +2,8 @@
 id = "01M6WMZHNS2E0QNW7KFZ1GAYMZ"
 title = "doctor: mark catalog commands fixable (udev, usbipd attach, browser open) so fix --apply has work"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

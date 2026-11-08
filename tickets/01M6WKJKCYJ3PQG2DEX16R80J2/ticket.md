@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:35:02Z"
-updated = "2026-11-08T03:36:03Z"
+updated = "2026-11-08T03:36:25Z"
 scope = ["python/sadi/server/routes_doctor.py", "python/tests/server/test_routes_doctor.py", "python/pyproject.toml", "python/uv.lock", "docs/web/doctor-ui.md"]
 
 [[links]]
@@ -16,11 +16,11 @@ target = "01M6WA9WZW89EA826DSJCJ0197"
 
 [[acceptance]]
 text = "GET /api/doctor returns a DoctorReport"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "POST /api/doctor/{check_id}/run re-runs one check and returns its CheckResult"
-bound = false
+bound = true
 +++
 
 Follow-up from JCJ0197: implement the endpoints the web doctor client expects (DoctorReport / CheckResult from python/sadi/doctor/schema.py); see docs/web/doctor-ui.md.

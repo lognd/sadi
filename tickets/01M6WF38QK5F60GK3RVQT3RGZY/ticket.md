@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T02:16:46Z"
-updated = "2026-11-08T03:29:48Z"
+updated = "2026-11-08T03:29:51Z"
 scope = ["python/tests/labs/lctt/test_calibration.py"]
 
 [[acceptance]]

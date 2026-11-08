@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:12:44Z"
-updated = "2026-11-08T10:17:27Z"
-scope = ["web/src/styles.css", "web/src/main.tsx", "web/src/components/wizard/NextActionPanel.tsx"]
+updated = "2026-11-08T10:17:28Z"
+scope = ["web/src/styles.css", "web/src/main.tsx", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx"]
 
 [[acceptance]]
 text = "A shared stylesheet gives the primary button a distinct, larger style than Skip, with visible focus rings"

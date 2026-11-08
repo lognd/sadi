@@ -2,7 +2,8 @@
 id = "01M6WWN92GG11X653PP544SRDC"
 title = "Endpoint for per-phase plot data (calibration, stress-strain)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

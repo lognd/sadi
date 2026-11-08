@@ -2,7 +2,8 @@
 id = "01M6WM4ZDY9EHM2BW9312B5SEY"
 title = "Plot core: label collision avoidance, log axes, sub-panels and zoom-aware decimation (shared by all plots)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:31:56Z"
-updated = "2026-11-08T02:52:07Z"
+updated = "2026-11-08T02:52:13Z"
 labels = ["plugins", "creates:python/sadi/plugins/local.py", "creates:python/sadi/plugins/settings.py", "creates:python/tests/plugins/test_local_source.py"]
 scope = [".gitignore", "python/sadi/plugins/local.py", "python/sadi/plugins/settings.py", "python/tests/plugins/test_local_source.py"]
 
@@ -18,7 +18,7 @@ target = "01M6WFYN8C6YH5D79CPEKSP69P"
 
 [[acceptance]]
 text = "Plugin in a tmp dir loads with no pip install"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Absent default dirs yield Ok with zero plugins"

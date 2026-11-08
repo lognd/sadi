@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:43:12Z"
+updated = "2026-11-08T03:43:14Z"
 idempotency_key = "sadi-f3"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/core/**", "creates:web/src/plots/theme.ts", "creates:docs/web/plots.md"]
 scope = ["web/src/plots/core/**", "web/src/plots/theme.ts", "docs/web/plots.md", "docs/index.md"]
@@ -27,7 +27,7 @@ bound = true
 
 [[acceptance]]
 text = "exportFigure(format: png|svg, dpi) renders from the SAME scene description at high DPI (e.g. 300) with identical layout; golden-image tests (png) and SVG snapshot tests"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Scene API documented so F4-F7 only supply data and annotations"

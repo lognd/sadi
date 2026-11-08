@@ -7,5 +7,6 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T06:06:05Z"
-updated = "2026-11-08T06:07:46Z"
+updated = "2026-11-08T06:08:10Z"
+scope = ["web/src/results-stream/wsSubscribe.ts"]
 +++

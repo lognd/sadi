@@ -12,11 +12,12 @@ import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./run/expor
 import type { RunPhase } from "./run/phases";
 import { RunScreen } from "./run/RunScreen";
 import { ReviewScreen } from "./review/ReviewScreen";
+import { SessionSetup } from "./setup/SessionSetup";
 
 const log = getLogger("screens.host");
 
 /** Which screen a wizard step shows. */
-export type ScreenKind = RunPhase | "setup" | "results" | "export";
+export type ScreenKind = RunPhase | "setup" | "results" | "export" | "session";
 
 const BY_PHASE: Readonly<Record<string, ScreenKind>> = {
   setup: "setup", calibration: "calibrate", tare: "tare", elastic: "elastic", plastic: "plastic",
@@ -78,14 +79,20 @@ export function WizardHost(): React.JSX.Element {
     });
   }, []);
 
-  useEffect(() => {
+  const load = useCallback((): void => {
     void getWizard().then((r) => {
       if (r.ok) onWizard(r.value);
-      else { log.warn("initial wizard load failed; showing setup"); setScreen("setup"); }
+      else if (r.error.kind === "problem" && r.error.problem.status === 409) {
+        log.info("no open session; showing session setup");
+        setScreen("session");
+      } else { log.warn("initial wizard load failed; showing setup"); setScreen("setup"); }
     });
   }, [onWizard]);
 
+  useEffect(() => { load(); }, [load]);
+
   if (screen === null) return <p>Loading steps...</p>;
+  if (screen === "session") return <SessionSetup onOpened={load} />;
   if (screen === "setup" || screen === "results" || screen === "export") {
     return <StaticStep key={screen} kind={screen} onWizard={onWizard} />;
   }

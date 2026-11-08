@@ -8,13 +8,14 @@ import { join, resolve } from "node:path";
 
 const port = process.env.SADI_E2E_PORT ?? "8765";
 const dataDir = mkdtempSync(join(tmpdir(), "sadi-e2e-"));
+const dist = resolve(import.meta.dirname, "..", "dist");
 const py = resolve(import.meta.dirname, "..", "..", "python");
 const log = (msg) => process.stderr.write(`[e2e-serve] ${msg}\n`);
 log(`temp data dir ${dataDir} (never a real data dir)`);
 
 const child = spawn(
   "uv",
-  ["run", "--project", py, "sadi", "--sim", "--no-browser", "--skip-preflight", "--port", port, "--data-dir", dataDir],
+  ["run", "--project", py, "sadi", "--sim", "--no-browser", "--skip-preflight", "--port", port, "--data-dir", dataDir, "--web-dist", dist],
   { stdio: "inherit" },
 );
 child.on("exit", (code) => {

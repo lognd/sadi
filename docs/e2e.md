@@ -38,3 +38,13 @@ the CSV). The step rail is visible on every step. The specs wait up to 10 s for 
 navigation and skip only if it never appears (backend down). Selectors follow the components: the
 calibration step title is "LVDT calibration", so the specs match `calibration`/`LVDT calibration`
 rather than "Calibrate" (the run heading still says "Calibrate").
+
+## Session setup and known gaps
+
+`openWizard` closes the Doctor panel if it opened (the backend has no `/api/health` route, so the
+app treats the probe as a connection error; filed as a bug) and, when the Setup screen is shown,
+creates a fresh session through its form (never resumes or discards one). If no lab is registered
+(the launcher does not wire plugin labs yet; filed as a bug) the form cannot submit and the specs
+skip. `serve.mjs` passes `--web-dist web/dist` (run `npm run build` first); the readiness URL is
+`/openapi.json`. Run with `PYTHONPATH=crates/sadi-py/python` when `sadi_py` is not installed in the
+python venv. Playwright output dirs `test-results/` and `playwright-report/` are gitignored.

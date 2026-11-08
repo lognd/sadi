@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T03:22:06Z"
+digest = "76928d83507b77921c4af328b53a1d2486c821b0d49af041da8d35d986760b12"
+exit_code = 0
+head = "6c50213f95338e59616e5818ab61296771e0ed3a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/crash/test_crash.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-253849-0.xml ---------------
+============================== 1 passed in 0.46s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/crash/test_crash.py::test_stale_lock_is_never_broken_silently"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "f2ad39cfe000103941eeb82480ab996757721535bf22bbf44d8227b1746e3a98"
+at = "2026-11-08T03:22:06Z"
+actor = "lognd"
+rev = 1

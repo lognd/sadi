@@ -11,7 +11,7 @@ created = "2026-11-08T00:08:20Z"
 updated = "2026-11-08T05:38:11Z"
 idempotency_key = "sadi-f17"
 labels = ["ws:web", "uncertainty", "model:sonnet", "creates:web/src/components/budget/**", "creates:docs/web/budget-panel.md"]
-scope = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json"]
+scope = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json", "web/package-lock.json"]
 
 [[links]]
 kind = "blocked-by"

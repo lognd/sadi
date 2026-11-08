@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/api/schema.ts"]
+new = ["web/src/api/schema.ts", "web/src/api/openapi.json"]
+at = "2026-11-08T06:06:17Z"
+actor = "lognd"
+rev = 1

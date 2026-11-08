@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:27:29Z"
-updated = "2026-11-08T05:30:58Z"
+updated = "2026-11-08T05:31:07Z"
 scope = ["python/sadi/doctor/checks/sess.py", "python/tests/doctor/test_sess_names.py"]
 
 [[acceptance]]

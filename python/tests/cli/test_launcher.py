@@ -42,13 +42,14 @@ def test_serve_default_host_and_lock_released(
 ) -> None:
     """frob:tests sadi.launcher.main - bare `sadi` serves on 127.0.0.1 and exits 0."""
     monkeypatch.setattr(launcher, "preflight", _ok)
+    monkeypatch.setattr(launcher, "_port_free", lambda *_a: True)
     seen: list[tuple[str, int]] = []
 
     def serve(app: FastAPI, host: str, port: int) -> None:
         seen.append((host, port))
         _enter(app, host, port)
 
-    assert launcher.main(["--data-root", str(tmp_path)], serve) == 0
+    assert launcher.main(["--data-root", str(tmp_path), "--no-browser"], serve) == 0
     assert seen == [("127.0.0.1", 8000)]
 
 
@@ -60,7 +61,7 @@ def test_refused_lock_exits_nonzero(
     held = acquire(tmp_path, recover_stale=False)
     assert held.is_ok
     try:
-        code = launcher.main(["serve", "--data-root", str(tmp_path)], _enter)
+        code = launcher.main(["serve", "--data-root", str(tmp_path), "--no-browser"], _enter)
     finally:
         held.danger_ok.release()
     assert code == launcher.EXIT_LOCK
@@ -77,7 +78,7 @@ def test_preflight_failure_blocks_start(
     def serve(_a: FastAPI, _h: str, _p: int) -> None:
         called.append(1)
 
-    code = launcher.main(["serve", "--data-root", str(tmp_path)], serve)
+    code = launcher.main(["serve", "--data-root", str(tmp_path), "--no-browser"], serve)
     assert code == launcher.EXIT_PREFLIGHT
     assert not called
     assert "STEP 1: fix it" in capsys.readouterr().err
@@ -104,3 +105,121 @@ def test_preflight_blocker_is_err(monkeypatch: pytest.MonkeyPatch, tmp_path: Pat
     got = launcher.preflight(tmp_path, 8000)
     assert got.is_err
     assert got.danger_err == "REPORT"
+
+
+def test_pick_port_prefers_then_falls_back() -> None:
+    """frob:tests sadi.launcher.pick_port - busy preferred port falls back unless strict."""
+    import socket
+
+    with socket.socket() as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        port = busy.getsockname()[1]
+        got = launcher.pick_port("127.0.0.1", port, strict=False)
+        assert got.is_ok
+        assert got.danger_ok != port
+        assert launcher.pick_port("127.0.0.1", port, strict=True).is_err
+    assert launcher.pick_port("127.0.0.1", port, strict=True).is_ok
+
+
+def test_non_loopback_host_rejected(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """frob:tests sadi.launcher.is_loopback - non-loopback host is refused without the override."""
+    assert launcher.is_loopback("127.0.0.1")
+    assert launcher.is_loopback("localhost")
+    assert not launcher.is_loopback("0.0.0.0")
+    called: list[int] = []
+    code = launcher.main(
+        ["--host", "0.0.0.0", "--data-root", str(tmp_path), "--no-browser"],
+        lambda *_a: called.append(1),
+    )
+    assert code == launcher.EXIT_USAGE
+    assert not called
+    assert "loopback" in capsys.readouterr().err
+
+
+def test_data_dir_alias_and_printed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """frob:tests sadi.launcher.default_data_dir - --data-dir works and the dir is printed."""
+    monkeypatch.setattr(launcher, "preflight", _ok)
+    assert launcher.main(["--data-dir", str(tmp_path), "--no-browser"], _enter) == 0
+    assert str(tmp_path) in capsys.readouterr().out
+    assert launcher.default_data_dir().name.lower() == "sadi"
+
+
+def test_default_data_dir_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The built-in fallback is used when platformdirs is missing."""
+    import sys
+
+    monkeypatch.setitem(sys.modules, "platformdirs", None)
+    assert launcher.default_data_dir().name == "sadi"
+
+
+def test_ctrl_c_is_graceful_and_releases_lock(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """frob:tests sadi.launcher.main - KeyboardInterrupt after shutdown exits 0, lock free."""
+    monkeypatch.setattr(launcher, "preflight", _ok)
+
+    def serve(app: FastAPI, host: str, port: int) -> None:
+        _enter(app, host, port)
+        raise KeyboardInterrupt
+
+    assert launcher.main(["--data-root", str(tmp_path), "--no-browser"], serve) == 0
+    again = acquire(tmp_path, recover_stale=False)
+    assert again.is_ok
+    again.danger_ok.release()
+
+
+def test_open_browser_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    """frob:tests sadi.launcher.open_browser - failures become Err."""
+
+    def boom(_u: str) -> bool:
+        raise OSError("no display")
+
+    monkeypatch.setattr(launcher.webbrowser, "open", boom)
+    assert launcher.open_browser("http://x/").is_err
+    monkeypatch.setattr(launcher.webbrowser, "open", lambda _u: False)
+    assert launcher.open_browser("http://x/").is_err
+    monkeypatch.setattr(launcher.webbrowser, "open", lambda _u: True)
+    assert launcher.open_browser("http://x/").is_ok
+
+
+def test_browser_opened_unless_suppressed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """frob:tests sadi.launcher.schedule_browser - the URL is opened once the port listens."""
+    import socket
+
+    opened: list[str] = []
+    monkeypatch.setattr(launcher, "open_browser", lambda u: opened.append(u) or Ok(None))
+    with socket.socket() as srv:
+        srv.bind(("127.0.0.1", 0))
+        srv.listen()
+        port = srv.getsockname()[1]
+        launcher.schedule_browser("127.0.0.1", port).join(5)
+    assert opened == [f"http://127.0.0.1:{port}/"]
+
+
+def test_selftest_exit_codes(monkeypatch: pytest.MonkeyPatch) -> None:
+    """frob:tests sadi.launcher.selftest - success exits 0, failure exits non-zero."""
+    monkeypatch.setattr(launcher, "selftest", lambda: Ok(10))
+    assert launcher.main(["--selftest"]) == 0
+    monkeypatch.setattr(launcher, "selftest", lambda: Err("boom"))
+    assert launcher.main(["--selftest"]) == launcher.EXIT_SELFTEST
+
+
+def test_selftest_reports_missing_binding(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A missing or broken simulator is an Err."""
+    from sadi.doctor import devprobe
+
+    monkeypatch.setattr(
+        devprobe, "probe_sim", lambda: devprobe.SimFacts(binding_ok=False, detail="x")
+    )
+    assert launcher.selftest().is_err
+    monkeypatch.setattr(devprobe, "probe_sim", lambda: devprobe.SimFacts(packets=5))
+    assert launcher.selftest().danger_ok == 5
+
+
+def test_version_flag(capsys: pytest.CaptureFixture[str]) -> None:
+    """frob:tests sadi.launcher.package_version - --version prints and exits 0."""
+    assert launcher.main(["--version"]) == 0
+    assert capsys.readouterr().out.startswith("sadi ")

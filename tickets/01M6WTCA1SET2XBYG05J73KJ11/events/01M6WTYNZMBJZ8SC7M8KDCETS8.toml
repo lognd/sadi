@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["REST: results, guidance and device status endpoints"]
+new = ["REST: results, guidance and device status endpoints", "GET /api/results, /api/results/budgets, /api/results/guidance and /api/device/status return typed bodies or problem+json with a hint"]
+moved = [1]
+at = "2026-11-08T05:43:58Z"
+actor = "lognd"
+rev = 1

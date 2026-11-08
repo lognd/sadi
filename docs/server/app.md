@@ -64,3 +64,5 @@ non-excluded points. No session, replay failure or an unready session gives 409 
 
 `create_app` also mounts the session/wizard/point router and installs the problem+json
 handlers; see [api.md](api.md). `AppSettings.labs` injects the `LabRegistry` (default empty).
+
+Results, budgets, guidance and device status routes: [results.md](results.md). `AppSettings.device` and `AppSettings.budgets` inject their sources.

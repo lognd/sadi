@@ -1,0 +1,1 @@
+pyproject: declare platformdirs dependency.

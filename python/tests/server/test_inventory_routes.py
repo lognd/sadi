@@ -17,7 +17,7 @@ from typani import Err, Ok, Result
 from sadi.core.registry import LabRegistry
 from sadi.labs.lctt.plugin import register
 from sadi.server.app import AppSettings, create_app
-from sadi.server.routes.inventory import EventKind, make_inventory_router
+from sadi.server.routes.inventory import EventKind
 from sadi.server.service import SessionService
 
 
@@ -47,10 +47,8 @@ class _Stub:
 def _app(root: Path, provider: _Stub | None) -> tuple[FastAPI, SessionService]:
     labs = LabRegistry()
     assert labs.register(register()).is_ok
-    app = create_app(AppSettings(data_root=root, labs=labs))
-    svc = cast(SessionService, app.state.sessions)
-    app.include_router(make_inventory_router(svc, provider))
-    return app, svc
+    app = create_app(AppSettings(data_root=root, labs=labs, inventory=provider))
+    return app, cast(SessionService, app.state.sessions)
 
 
 @pytest.fixture

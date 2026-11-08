@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/_ui/.gitkeep", "packaging/build_ui.py", "docs/packaging.md", "python/sadi/launcher.py"]
+new = ["python/sadi/_ui/.gitkeep", "packaging/build_ui.py", "docs/packaging.md", "python/sadi/launcher.py", "python/tests/cli/test_launcher_ui.py"]
+at = "2026-11-08T05:45:56Z"
+actor = "lognd"
+rev = 1

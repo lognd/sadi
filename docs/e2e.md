@@ -19,6 +19,11 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
   change, Accept, Finish, Review Exclude/Include/Edit, Download link); never clicks. Relies on Enter/Space
   activating a focused control (~0MZ866N, [usability report](usability-report.md)); selectors are role+name (~JAZDW9B).
 - `web/e2e/run-capture.spec.ts`: calibrate/tare/elastic/plastic capture phases (~A7JNFGT).
+- `web/e2e/live-fps.spec.ts`: opt-in (`SADI_E2E_BENCH=1`, window `SADI_E2E_BENCH_SECONDS`, default 8) frame-rate
+  benchmark of the live trace on the sim stream. Samples `requestAnimationFrame` intervals in the page, requires the
+  canvas content to change, and applies `meets60fps` from `web/src/plots/live/framestats.ts` (mean >= 58 fps, p95
+  interval <= 1.25 budgets). Reference run (headless chromium, WSL2): 477 frames, 59.6 fps, p95 16.8 ms, max 33.4 ms,
+  3 dropped (~81HNB2N). See also [live trace](web/live-trace.md).
 - `web/docs-shots/screenshots.spec.ts`: opt-in (`SADI_SCREENSHOTS=1`) capture of `docs/img/ui/*.png` for the
   [screenshots page](user-guide-screens.md); own config, reuses the fixtures above (~921XDAW).
 - `.github/workflows/e2e.yml`: ubuntu, windows and macos matrix.

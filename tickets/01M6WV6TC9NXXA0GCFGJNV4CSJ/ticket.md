@@ -7,8 +7,8 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:55:52Z"
-scope = ["web/src/keys/**"]
+updated = "2026-11-08T05:56:40Z"
+scope = ["web/src/keys/**", "docs/web/wizard.md"]
 +++
 
 found while working 7KWS2S7

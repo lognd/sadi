@@ -2,7 +2,8 @@
 id = "01M6WFZQ9Y6EBA9WT6VHFMSYPK"
 title = "Final-project plugin skeleton (untracked) plus tracked absent-plugin test"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

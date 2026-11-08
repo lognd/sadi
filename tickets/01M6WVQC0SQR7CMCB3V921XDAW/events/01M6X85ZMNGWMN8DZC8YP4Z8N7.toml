@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:35:09Z"
+digest = "94b579040789ebb53f750b6df87bcede0a366c4fa93c8673e04350e8106b2efc"
+head = "e9f0d23c96a2c25164b09a69105d03179c8584d6"
+provider = "file"
+ref = "docs/user-guide-screens.md"
+size = 1171
+status = "measured"
+at = "2026-11-08T09:35:09Z"
+actor = "lognd"
+rev = 1

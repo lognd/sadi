@@ -7,7 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:52:11Z"
-updated = "2026-11-08T09:55:59Z"
+updated = "2026-11-08T09:56:35Z"
+scope = ["docs/img/ui/doctor.png"]
 
 [[acceptance]]
 text = "doctor.png contains no host-specific absolute paths and shows no failing checks"

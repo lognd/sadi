@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Clear COV001 for packaging/build_ui.py main and tools/check_typani_collisions.py main; fix 3 ruff errors in crates/sadi-py/tests and E501 at python/sadi/server/service.py:393"]
+moved = []
+at = "2026-11-08T10:38:19Z"
+actor = "lognd"
+rev = 1

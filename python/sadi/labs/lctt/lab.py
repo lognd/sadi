@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import UTC, datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result
@@ -31,6 +32,7 @@ from sadi.core.point_inputs import (
 )
 from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
+from sadi.labs.lctt.calibration import MIN_POINTS, fit_calibration
 from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
 from sadi.labs.lctt.export_csv import build_document, render_document
 from sadi.labs.lctt.figure_data import figure_data
@@ -46,7 +48,15 @@ from sadi.labs.lctt.live import (
     TareBlock,
     recompute,
 )
-from sadi.labs.lctt.loading import SHORT_L0_M, STANDARD_G, cross_area, load_force, strain, stress
+from sadi.labs.lctt.loading import (
+    LONG_L0_M,
+    SHORT_L0_M,
+    STANDARD_G,
+    cross_area,
+    load_force,
+    strain,
+    stress,
+)
 from sadi.labs.lctt.modulus import secant_modulus
 from sadi.labs.lctt.specimens import SpecimenRole, SpecimenSpec
 from sadi.logging_setup import get_logger
@@ -334,6 +344,38 @@ class LoadingContext(BaseModel):
     tare_v: float | None = None
 
 
+def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
+    """Derive geometry, tare and calibration slope from a session's typed inputs (pure).
+
+    The last specimen entry gives diameter and hanger mass, the last tare block the tare volts,
+    three or more calibration points a fitted slope, and the last load point's phase the gauge
+    length (elastic = long). Anything missing keeps the nominal default or omits strain.
+    """
+    ctx: dict[str, Any] = {}
+    cal_v: list[float] = []
+    cal_h: list[float] = []
+    for item in inputs:
+        if isinstance(item, SpecimenInputs):
+            ctx.update(
+                diameter_m=item.diameter, u_diameter_m=item.u_diameter, hanger_kg=item.hanger_kg
+            )
+        elif isinstance(item, TareInputs):
+            ctx["tare_v"] = item.mean
+        elif isinstance(item, CalibrationInputs):
+            cal_v.append(item.volts)
+            cal_h.append(item.height)
+        else:  # LoadInputs
+            ctx["l0_m"] = LONG_L0_M if item.phase == SpecimenRole.ELASTIC.value else SHORT_L0_M
+    if len(cal_v) >= MIN_POINTS:
+        fit = fit_calibration(cal_v, cal_h)
+        if isinstance(fit, Ok):
+            ctx["slope_m_per_v"] = fit.danger_ok.slope.value
+        else:
+            _log.info("lctt context: calibration fit unavailable: %s", fit.danger_err.name)
+    _log.debug("lctt context from %d inputs: keys=%s", len(inputs), sorted(ctx))
+    return LoadingContext(**ctx)
+
+
 def _meas(value: float, unc: float, unit: str) -> Measured | None:
     """Build a Measured or None (logged) when the value is not a valid measurement."""
     made = Measured.create(value, unc, unit)
@@ -411,6 +453,42 @@ class LcttLab:
             if isinstance(sec, Ok):
                 values["secant_modulus"] = _quantity(sec.danger_ok, "Pa")
         _log.info("lctt recompute: %d values from point %d", len(values), last.index)
+        return Ok(AnalysisResult(values=values))
+
+    def analyze(
+        self, points: tuple[CapturedPoint, ...], inputs: Sequence[PointInputs]
+    ) -> Result[AnalysisResult, ComputeError]:
+        """Pure: `recompute` under the context derived from `inputs`, plus E/yield for two runs.
+
+        When both an elastic and a plastic run were captured, `combine_runs` adds `E`, `r2` and
+        `yield_stress`; a combine failure is logged and the single-point values still return.
+        """
+        # frob:ticket 01M6WSH43VHA5WGRPQ20X1NQA9
+        base = LcttLab(context_from_inputs(inputs)).recompute(points)
+        if isinstance(base, Err):
+            return base
+        loads = [i for i in inputs if isinstance(i, LoadInputs)]
+        by_role = {role: tuple(i for i in loads if i.phase == role.value) for role in SpecimenRole}
+        if not all(by_role.values()):
+            return base
+        shared = tuple(i for i in inputs if not isinstance(i, LoadInputs))
+        combined = combine_runs(
+            SpecimenRun(
+                spec=SpecimenSpec(role=SpecimenRole.ELASTIC), inputs=by_role[SpecimenRole.ELASTIC]
+            ),
+            SpecimenRun(
+                spec=SpecimenSpec(role=SpecimenRole.PLASTIC), inputs=by_role[SpecimenRole.PLASTIC]
+            ),
+            shared,
+        )
+        if isinstance(combined, Err):
+            _log.warning("lctt analyze: combine_runs failed: %s", combined.danger_err)
+            return base
+        values = dict(base.danger_ok.values)
+        for sv in combined.danger_ok.values:
+            r = sv.result
+            values[r.name] = Quantity(value=r.value, standard_uncertainty=r.std_unc, unit=r.unit)
+        _log.info("lctt analyze: %d values incl. two-specimen results", len(values))
         return Ok(AnalysisResult(values=values))
 
     def budgets(self) -> list[LabBudget]:

@@ -75,3 +75,37 @@ def test_to_captured_carries_raw_volts_and_load() -> None:
     out = to_captured([load, tare])
     assert (out[0].volts, out[0].volts_sd, out[0].load_kg) == (2.5, 0.01, 1.5)
     assert (out[1].volts, out[1].volts_sd, out[1].load_kg) == (0.5, 0.02, None)
+
+
+# frob:tests python/sadi/server/session_points.py::analyze
+# frob:tests python/sadi/server/session_points.py::typed_inputs
+# frob:tests python/sadi/core/lab.py::InputsAwareLab.analyze
+def test_analyze_uses_inputs_aware_lab() -> None:
+    """analyze routes through the lab's input-aware hook, so strain needs session inputs."""
+    from sadi.labs.lctt.lab import LcttLab
+    from sadi.server.session_points import analyze
+
+    def pv(phase: str, inputs: dict[str, float], n: int) -> PointView:
+        return PointView.model_construct(
+            excluded=False,
+            phase=phase,
+            inputs=inputs,
+            point_id=f"p{n}",
+            window=SimpleNamespace(first_sample=n, last_sample=n + 1),
+            t_since_load_s=1.0,
+            drift_rate=0.0,
+            forced_early=False,
+        )
+
+    cal = [
+        pv("calibration", {"volts": v, "height": v * 0.01}, i) for i, v in enumerate((0, 1, 2, 3))
+    ]
+    views = [
+        *cal,
+        pv("tare", {"mean": 0.5, "n": 10}, 5),
+        pv("specimen", {"diameter": 0.006}, 6),
+        pv("load", {"volts": 1.5, "mass_kg": 2.0}, 7),
+    ]
+    got = analyze(LcttLab(), views).danger_ok
+    assert {"stress", "strain", "secant_modulus"} <= set(got.values)
+    assert set(analyze(LcttLab(), views[-1:]).danger_ok.values) == {"stress"}

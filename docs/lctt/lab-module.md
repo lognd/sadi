@@ -53,7 +53,15 @@ it returns `stress` (always, from `LoadingContext` geometry, nominal 6 mm diamet
 and `strain` plus `secant_modulus` when the context supplies the calibration `slope_m_per_v` and
 `tare_v`. All maths goes through the public uncertainty engine (`loading`, `modulus`).
 
+## Session wiring
+
+`LcttLab.analyze(points, inputs)` implements `sadi.core.lab.InputsAwareLab`. It derives a
+`LoadingContext` with `context_from_inputs` (last specimen diameter and hanger, last tare, slope
+fitted from three or more calibration points, gauge length from the last load phase), runs
+`recompute` under it, and when both `elastic` and `plastic` load runs exist adds `E`, `r2` and
+`yield_stress` from `combine_runs`. The server calls it through `session_points.analyze` for both
+results and export. It is pure; raw events are never rewritten.
+
 ## Known gaps
 
-Short-specimen `short-data.csv` is slip-affected and is not used to validate E. Geometry and
-calibration are not yet carried on `CapturedPoint`, so `LcttLab()` defaults to nominal geometry.
+Short-specimen `short-data.csv` is slip-affected and is not used to validate E. A bare `LcttLab()` still uses nominal geometry; the server supplies the real context via `analyze`.

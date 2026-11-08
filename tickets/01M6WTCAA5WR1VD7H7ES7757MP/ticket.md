@@ -2,13 +2,13 @@
 id = "01M6WTCAA5WR1VD7H7ES7757MP"
 title = "Resume should fold parent state into the new WAL version"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:34:30Z"
+updated = "2026-11-08T05:34:32Z"
 scope = ["python/sadi/server/service.py"]
 
 [[links]]

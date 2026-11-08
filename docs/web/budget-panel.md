@@ -2,8 +2,6 @@
 
 Status: current
 
-<!-- frob:waive DOC007 listed in docs/README.md table only, as with sibling docs/web pages -->
-
 Live data pending ~J73KJ11 (props and fixtures only for now).
 
 Parent: [web layout](../web-layout.md). Data model: [uncertainty budget](../uncertainty/budget.md)

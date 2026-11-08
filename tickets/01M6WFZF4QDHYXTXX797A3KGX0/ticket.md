@@ -8,7 +8,7 @@ points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"
 reporter = "lognd"
 created = "2026-11-08T02:32:10Z"
-updated = "2026-11-08T02:55:17Z"
+updated = "2026-11-08T02:55:18Z"
 labels = ["plugins", "creates:python/sadi/plugins/doctor.py", "creates:python/tests/plugins/test_doctor.py"]
 scope = ["python/sadi/plugins/doctor.py", "python/tests/plugins/test_doctor.py"]
 
@@ -26,7 +26,7 @@ bound = true
 
 [[acceptance]]
 text = "Healthy registry yields zero findings"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Function never raises on a failed record"

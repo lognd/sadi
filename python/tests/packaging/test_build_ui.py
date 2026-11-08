@@ -98,3 +98,21 @@ def test_run_command_success_and_failure(tmp_path: Path, monkeypatch: pytest.Mon
     py = Path(sys.executable).name
     assert build_ui_mod.run_command([py, "-c", "pass"], tmp_path).is_ok
     assert build_ui_mod.run_command([py, "-c", "raise SystemExit(3)"], tmp_path).is_err
+
+
+# frob:ticket 01M6XBSN3FXGDRB56ZK1HHS4Y5
+# frob:tests packaging/build_ui.py::main
+def test_main_reports_failure_exit_code(monkeypatch: pytest.MonkeyPatch) -> None:
+    """main returns 1 when the build fails and 0 when it succeeds."""
+    seen: list[bool] = []
+
+    def fake_fail(install: bool = True) -> Result[Path, str]:
+        seen.append(install)
+        return Err("boom")
+
+    monkeypatch.setattr(build_ui_mod, "build_ui", fake_fail)
+    assert build_ui_mod.main(["--no-install"]) == 1
+    assert seen == [False]
+
+    monkeypatch.setattr(build_ui_mod, "build_ui", lambda install=True: Ok(Path("x")))
+    assert build_ui_mod.main([]) == 0

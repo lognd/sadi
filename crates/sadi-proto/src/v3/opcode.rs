@@ -104,3 +104,31 @@ impl TryFrom<u8> for DeviceOpcode {
         }
     }
 }
+
+#[cfg(test)]
+mod len_tests {
+    use super::*;
+
+    // frob:tests crates/sadi-proto/src/v3/opcode.rs::HostOpcode.frame_len
+    #[test]
+    fn host_frame_len() {
+        assert_eq!(HostOpcode::PredefInit.frame_len(), 12);
+        assert_eq!(HostOpcode::Stop.frame_len(), 4);
+    }
+
+    // frob:tests crates/sadi-proto/src/v3/opcode.rs::DeviceOpcode.byte
+    #[test]
+    fn device_byte() {
+        assert_eq!(DeviceOpcode::Data.byte(), 0x61);
+        assert_eq!(DeviceOpcode::Ack.byte(), 0xF2);
+        assert_eq!(DeviceOpcode::Version.byte(), 0xF6);
+    }
+
+    // frob:tests crates/sadi-proto/src/v3/opcode.rs::DeviceOpcode.frame_len
+    #[test]
+    fn device_frame_len() {
+        assert_eq!(DeviceOpcode::Data.frame_len(), 30);
+        assert_eq!(DeviceOpcode::Ack.frame_len(), 6);
+        assert_eq!(DeviceOpcode::Version.frame_len(), 8);
+    }
+}

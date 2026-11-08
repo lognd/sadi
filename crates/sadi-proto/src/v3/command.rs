@@ -143,3 +143,33 @@ impl Command {
         })
     }
 }
+
+#[cfg(test)]
+mod code_tests {
+    use super::*;
+
+    // frob:tests crates/sadi-proto/src/v3/command.rs::VendorRange.code
+    #[test]
+    fn vendor_range_code() {
+        assert_eq!(VendorRange::try_from(9).unwrap().code(), 9);
+    }
+
+    // frob:tests crates/sadi-proto/src/v3/command.rs::InitMode.code
+    #[test]
+    fn init_mode_code() {
+        assert_eq!(InitMode::Pendulum.code(), 2);
+        assert_eq!(InitMode::Mom.code(), 3);
+    }
+
+    // frob:tests crates/sadi-proto/src/v3/command.rs::Command.opcode
+    #[test]
+    fn command_opcode() {
+        assert_eq!(Command::Start.opcode(), HostOpcode::Start);
+        assert_eq!(Command::Stop.opcode(), HostOpcode::Stop);
+        assert_eq!(Command::Reset.opcode(), HostOpcode::Reset);
+        assert_eq!(Command::RequestReady.opcode(), HostOpcode::RequestReady);
+        let r = VendorRange::try_from(0).unwrap();
+        let c = Command::PredefInit { loop_freq_hz: 1, mode: InitMode::Mom, ranges: [r; 4] };
+        assert_eq!(c.opcode(), HostOpcode::PredefInit);
+    }
+}

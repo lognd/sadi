@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:39:44Z"
+digest = "b387fcb48c1bc46f209ffd5bc6dc208903c70b0f43469833ed864af0ba932617"
+exit_code = 0
+head = "124a9fab4886ad7393fb7f1e1ed46cd9190cf8dd"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 15 items
+
+python/tests/packaging/test_build_ui.py .......                          [ 46%]
+python/tests/test_typani_collisions.py ........                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1248595-0.xml --------------
+============================== 15 passed in 2.46s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/packaging/test_build_ui.py python/tests/test_typani_collisions.py"
+size = 602
+status = "measured"
+test_count = 15
+tests_digest = "1456a7bbcac4ff1dc591bdf770c430d65ce73638856b948cbc095306961d0a44"
+at = "2026-11-08T10:39:44Z"
+actor = "lognd"
+rev = 1

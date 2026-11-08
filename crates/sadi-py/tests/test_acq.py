@@ -3,7 +3,6 @@
 import time
 
 import pytest
-
 import sadi_py as sp
 from sadi_py import acq, sim
 

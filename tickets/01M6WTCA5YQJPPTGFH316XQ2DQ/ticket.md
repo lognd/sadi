@@ -2,7 +2,8 @@
 id = "01M6WTCA5YQJPPTGFH316XQ2DQ"
 title = "Publish OpenAPI and generate TypeScript client into web/src/api"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"

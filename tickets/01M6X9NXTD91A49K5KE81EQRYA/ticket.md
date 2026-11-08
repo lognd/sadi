@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:04:37Z"
-scope = ["docs/usability-report.md"]
+updated = "2026-11-08T10:04:38Z"
+scope = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx"]
 
 [[acceptance]]
 text = "Review Edit/Exclude labels use point numbers (U-02)"

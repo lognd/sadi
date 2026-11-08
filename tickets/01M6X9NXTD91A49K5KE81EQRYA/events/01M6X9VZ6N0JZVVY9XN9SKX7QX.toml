@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/usability-report.md"]
+new = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx"]
+at = "2026-11-08T10:04:38Z"
+actor = "lognd"
+rev = 1

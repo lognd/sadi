@@ -1,0 +1,62 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:39:41Z"
+digest = "005647ea25f597ebbc2a4572b7fa7247c44454ecc9207b27a31e3ac1754ca937"
+exit_code = 0
+head = "a30af047b31a967f836b6eaf13a721b49ea6b312"
+inline = """
+
+running 39 tests
+test codec::adc::tests::dll_unipolar_upper_half_is_negative ... ok
+test codec::adc::tests::dll_quirk_raw_zero_is_plus_full_scale ... ok
+test codec::adc::tests::every_raw_code_is_finite ... ok
+test codec::command::opcode_tests::command_opcode_bytes ... ok
+test codec::command::tests::code_round_trips ... ok
+test codec::command::tests::command_round_trips ... ok
+test codec::command::tests::decode_rejects_bad_frames ... ok
+test codec::command::tests::rejects_invalid_codes ... ok
+test codec::decoder::tests::buffered_and_reset ... ok
+test codec::decoder::tests::byte_at_a_time_and_garbage ... ok
+test codec::decoder::tests::counts_msg_gaps ... ok
+test codec::packet::tests::channel_try_from_validates ... ok
+test codec::packet::tests::data_round_trips ... ok
+test codec::packet::tests::rejects_malformed_frames ... ok
+test codec::packet::tests::unknown_state_is_preserved ... ok
+test codec::packet::tests::version_and_ack_round_trip ... ok
+test error::tests::overflow_message_mentions_counts ... ok
+test error::tests::timeout_message_mentions_duration ... ok
+test error::tests::transport_error_converts_into_proto_error ... ok
+test serial::tests::builders_replace_values ... ok
+test serial::tests::candidate_accessors ... ok
+test serial::tests::config_rejects_empty_allow_list ... ok
+test serial::tests::config_rejects_empty_name ... ok
+test serial::tests::newtypes_reject_zero ... ok
+test serial::tests::usb_id_display_is_hex ... ok
+test session::tests::block_reports_last_device_state ... ok
+test session::tests::config_reports_idempotence ... ok
+test session::tests::config_reports_read_timeout ... ok
+test session::tests::policy_reports_max_attempts ... ok
+test session::tests::raw_tap_closure_receives_bytes_and_propagates_errors ... ok
+test sim::device::tests::packet_index_wraps_msg_count_at_32_bits ... ok
+test sim::device::tests::raw_from_volts_inverts_convert ... ok
+test sim::device::tests::zero_rate_rejected ... ok
+test sim::physics::tests::lvdt_round_trips ... ok
+test sim::physics::tests::mass_follows_steps ... ok
+test sim::signal::tests::signal_source_is_usable_as_object ... ok
+test sim::signal_faults::tests::fold_reflects_and_repeats ... ok
+test sim::signal_faults::tests::noise_is_deterministic ... ok
+test transport::tests::trait_is_object_safe_and_send ... ok
+
+test result: ok. 39 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
+     Running unittests src/lib.rs (target/debug/deps/sadi_proto-008269244a45e625)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --lib"
+size = 2553
+status = "measured"
+at = "2026-11-08T10:39:41Z"
+actor = "lognd"
+rev = 1

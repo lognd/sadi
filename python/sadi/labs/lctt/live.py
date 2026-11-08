@@ -19,7 +19,7 @@ from sadi.labs.lctt.loading import (
     compute_loading,
     pool_tare,
 )
-from sadi.labs.lctt.modulus import CurvePoint, ModulusFit, fit_modulus
+from sadi.labs.lctt.modulus import CurvePoint, ModulusFit, fit_modulus, suggest_window
 from sadi.labs.lctt.yield_ import YieldResult, find_yield
 from sadi.logging_setup import get_logger
 from sadi.uncertainty import Measured, Provenance
@@ -310,6 +310,19 @@ def recompute(
     return Ok(_finish(vals, pending, notes, n_active))
 
 
+def _e_window(curve: list[CurvePoint], window: SetWindow | None) -> tuple[int, int]:
+    """Pick the E window: an explicit one wins, else the auto linear window, else all points."""
+    # frob:ticket 01M6X00779KYJW2VFKEEQ9QEP7
+    if window is not None:
+        return window.first, window.last
+    auto = suggest_window(curve)
+    if isinstance(auto, Ok):
+        _log.info("recompute: auto E window %d..%d of %d points", *auto.danger_ok, len(curve))
+        return auto.danger_ok
+    _log.info("recompute: no auto E window; fitting all %d points", len(curve))
+    return 0, len(curve) - 1
+
+
 def _fit_and_yield(  # noqa: PLR0913
     curve: list[CurvePoint],
     st: _State,
@@ -319,7 +332,7 @@ def _fit_and_yield(  # noqa: PLR0913
     pending: list[str],
 ) -> None:
     """Fit E over the chosen window, then yield; unavailable pieces become pending."""
-    first, last = (st.window.first, st.window.last) if st.window else (0, len(curve) - 1)
+    first, last = _e_window(curve, st.window)
     fit = fit_modulus(curve, first, last)
     if isinstance(fit, Err):
         notes.append(f"E: {fit.danger_err}")

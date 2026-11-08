@@ -170,3 +170,52 @@ def test_mc_crosscheck_flag() -> None:
     assert agree_e.mc.status is McStatus.AGREES
     assert agree.refinement == ()
     assert mc_crosscheck(1.0, 1.5).status is McStatus.DISAGREES
+
+
+def _curved_tail(n_lin: int, n_tail: int) -> list[LiveEvent]:
+    """Linear points then a softening tail (strain grows faster than stress)."""
+    out: list[LiveEvent] = []
+    for i in range(n_lin + n_tail):
+        extra = 0.0 if i < n_lin else 0.0006 * (i - n_lin + 1) ** 2
+        eps = 0.0004 * (i + 1) + extra
+        out.append(
+            LoadPoint(
+                point_id=f"c{i}",
+                volts=0.1 + eps * L0 / SLOPE,
+                u_volts=1e-4,
+                mass_kg=1.0 + 0.3 * i,
+                u_mass_kg=1e-4,
+            )
+        )
+    return out
+
+
+def _e(events: list[LiveEvent]) -> float:
+    """Return the E value of a recompute, failing the test when absent."""
+    rs = recompute(events).danger_ok
+    e = rs.get("E")
+    assert e is not None
+    return e.value
+
+
+# frob:tests python/sadi/labs/lctt/live.py::_e_window
+def test_auto_window_ignores_curved_tail() -> None:
+    events = [*_setup(), *_curved_tail(8, 4)]
+    auto = _e(events)
+    all_points = _e([*events, SetWindow(first=0, last=11)])
+    linear_only = _e([*events, SetWindow(first=0, last=7)])
+    assert auto != pytest.approx(all_points, rel=1e-3)
+    assert auto == pytest.approx(linear_only, rel=0.02)
+
+
+# frob:tests python/sadi/labs/lctt/live.py::_e_window
+def test_explicit_window_overrides_auto() -> None:
+    events = [*_setup(), *_curved_tail(8, 4)]
+    forced = _e([*events, SetWindow(first=4, last=11)])
+    assert forced != pytest.approx(_e(events), rel=1e-3)
+
+
+# frob:tests python/sadi/labs/lctt/live.py::_e_window
+def test_auto_window_is_pure() -> None:
+    events = [*_setup(), *_points(12)]
+    assert _e(events) == _e(events)

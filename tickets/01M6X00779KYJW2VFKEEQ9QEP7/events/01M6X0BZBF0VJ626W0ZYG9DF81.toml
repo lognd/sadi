@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T07:18:34Z"
+digest = "798ad78ada3ed33304ea948da7f1ed5058f266e1d1d8ae9907aad7c13df0a510"
+exit_code = 0
+head = "93974feaf66b7f260953e3cf333909936931fbb0"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/labs/lctt/test_live.py .                                    [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-850475-0.xml ---------------
+============================== 1 passed in 2.02s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_live.py::test_auto_window_is_pure"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "3cc716c0f3eaeaabcf01d67dabaf9c34b32acd003add7c87ff9618f60179ed2d"
+at = "2026-11-08T07:18:34Z"
+actor = "lognd"
+rev = 1

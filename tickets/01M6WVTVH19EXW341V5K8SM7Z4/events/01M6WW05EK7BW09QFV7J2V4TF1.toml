@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Export screen renders per-quantity provenance (point ids, sample span, algorithm) from GET /api/results"]
+moved = []
+at = "2026-11-08T06:02:15Z"
+actor = "lognd"
+rev = 1

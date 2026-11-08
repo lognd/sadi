@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["open_sim_device opens against a real built sadi_py and streams samples (test skipped when sadi_py is not importable)", "docs/server/launcher.md records the verification status"]
+moved = []
+at = "2026-11-08T06:03:30Z"
+actor = "lognd"
+rev = 1

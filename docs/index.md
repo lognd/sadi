@@ -40,6 +40,7 @@ Status: current
 - [Server results API](server/results.md)
 - [Data-safety design](data-safety.md)
 - [Concurrency testing: race, deadlock and kill-mid-write suite](concurrency-testing.md)
+- [Backend e2e testing: simulator fault injection](testing.md)
 - [Release process](release.md)
 - [Store durability primitives](store/durable.md)
 - [Data-root lock](store/lock.md)

@@ -33,6 +33,7 @@ from sadi_py._native import (
     encode_command,
     PROTOCOL_VERSION,
     __version__,
+    acq,
     open_serial,
     open_sim,
     ports,
@@ -42,7 +43,7 @@ from sadi_py._native import (
 )
 
 __all__ = [
-    "AdcMode", "AdcRange", "Block", "BusyError", "CodecFailure", "CommandKind",
+    "acq", "AdcMode", "AdcRange", "Block", "BusyError", "CodecFailure", "CommandKind",
     "CommandTimeoutError", "ConfigurationError", "ConsumedError", "DeviceState",
     "Handshake", "Idempotence", "PacketInfo", "PacketKind", "Phase", "PhaseError",
     "PortInfo", "ReadTimeoutError", "SadiError", "ScenarioFailure", "Session",

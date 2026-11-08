@@ -5,6 +5,7 @@
 # frob:ticket 01M6WMJZPYNHZR0KHY2C6W07WH
 # frob:ticket 01M6WMSZKN488HTWG19V69GETD
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
+# frob:ticket 01M6WP4WV9B3SCJ0GY2M32XWZV
 
 from __future__ import annotations
 
@@ -25,6 +26,7 @@ from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
+from sadi.store.spill import import_all_spills
 
 _log = get_logger(__name__)
 
@@ -74,6 +76,23 @@ def _take_lock(cfg: AppSettings) -> tuple[DataRootLock | None, RootLockFailed | 
     return got.danger_ok, None
 
 
+def _import_spills(cfg: AppSettings) -> int:
+    """Import emergency spills (lock held); log each, never delete; return the failure count."""
+    failures = 0
+    for spill, outcome in import_all_spills(cfg.data_root):
+        if outcome.is_err:
+            failures += 1
+            _log.error("spill %s NOT imported (file kept intact): %s", spill, outcome.danger_err)
+        elif outcome.danger_ok is None:
+            _log.info("spill %s already imported", spill)
+        else:
+            rep = outcome.danger_ok
+            _log.warning(
+                "recovered spill %s as %s (%d records)", spill, rep.version_dir, rep.record_count
+            )
+    return failures
+
+
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Hold the data-root lock for the app's lifetime; fail startup or degrade when refused."""
@@ -83,6 +102,7 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
     app.state.root_lock_failure = failure
     if failure is not None and cfg.require_root_lock:
         raise RootLockStartupError(failure)
+    app.state.spill_failures = _import_spills(cfg) if lock is not None else 0
     try:
         yield
     finally:
@@ -98,6 +118,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.state.settings = cfg
     app.state.root_lock = None
     app.state.root_lock_failure = None
+    app.state.spill_failures = 0
 
     @app.get("/api/root-lock")
     async def root_lock_state() -> dict[str, object]:

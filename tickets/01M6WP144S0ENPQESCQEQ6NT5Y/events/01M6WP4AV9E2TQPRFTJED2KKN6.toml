@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:19:38Z"
+digest = "178266e628bec0ff9da80c936828290ed4ac86b24dd1f76fd9de803c4a855641"
+exit_code = 0
+head = "6a3880d6035c8e467876db2f792c5a562b3efff3"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/server/test_curve_flags.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-387732-0.xml ---------------
+============================== 1 passed in 2.19s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_curve_flags.py::test_flags_reach_load_point"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "fa451096129b0d2427fa4eac2e587faf55aee8a7698880f03da76a68a27e28da"
+at = "2026-11-08T04:19:38Z"
+actor = "lognd"
+rev = 1

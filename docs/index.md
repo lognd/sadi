@@ -14,6 +14,7 @@ Status: current
 - [sadi-proto scaffold](sadi-proto.md)
 - [sadi-proto codec](device/codec.md)
 - [Python layout](python-layout.md)
+- [Packaging and the device extra](packaging.md)
 - [Uncertainty core: Measured](uncertainty/measured.md)
 - [Core models and error taxonomy](core/models.md)
 - [Result formatting](core/formatting.md)

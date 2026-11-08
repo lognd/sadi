@@ -39,3 +39,11 @@ written, `marker_written` is false and a warning is logged.
 
 The imported version has no `SESSION_START` (the spilled records are only the undurable
 tail); it is a data-bearing version whose lineage is in its manifest.
+
+## Startup
+
+`sadi.server.app._lifespan` calls `import_all_spills` right after the data-root lock is held
+and before the app serves. Each import is logged at WARNING (recovered), already-imported
+spills at INFO. A failed spill is logged at ERROR with the file left intact; startup
+continues and `app.state.spill_failures` holds the failure count. Spills are never deleted
+or overwritten. Without the lock (degraded mode) no import is attempted.

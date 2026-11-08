@@ -80,6 +80,11 @@ class LoadPoint(_Ev):
     u_volts: float = 0.0
     mass_kg: float
     u_mass_kg: float = 0.0
+    # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
+    settled: bool = False
+    forced_early: bool = False
+    drift_rate: float | None = None
+    t_since_load_s: float | None = None
 
 
 class OverridePoint(_Ev):

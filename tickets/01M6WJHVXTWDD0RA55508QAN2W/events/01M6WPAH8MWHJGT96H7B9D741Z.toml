@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["USB-010, USB-060, USB-070 and USB-080 exist with a remedy per mode for all four OSes", "USB-020..050 run (not skip) on Windows and macOS", "docs/doctor.md and docs/doctor-checks.md are current"]
+moved = []
+at = "2026-11-08T04:23:04Z"
+actor = "lognd"
+rev = 1

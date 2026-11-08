@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["pyproject declares the device optional-dependencies extra", "docs/packaging.md explains maturin develop", "a test asserts the extra exists"]
+moved = []
+at = "2026-11-08T04:22:58Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M6WQ6E3HVJC599WZJVBT39Q9"
 title = "Strengthen test_startup_ignores_spill_in_real_dir_standin to plant a spill where the app would look"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

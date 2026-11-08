@@ -43,6 +43,7 @@ Pages: [architecture](architecture.md), [domain](domain.md),
 | `docs/data-safety.md` | ~CKTER59 | Data-safety design: WAL format, sessions, snapshots, per-OS durability, recovery |
 | `docs/device/acquisition-thread.md` | ~A8Y67RG | sadi-py acquisition thread: GIL-released reader with bounded channel |
 | `docs/device/codec.md` | ~80SB0TA | sadi-proto codec: v1.003 commands, packets, ADC scaling, resync decoder |
+| `docs/device/v3.md` | ~2GGPZ5K | sadi-proto optional v3.41 codec: CRC framing, commands, packets, probe sketch |
 | `docs/device/serial.md` | ~Q4YBED4 | sadi-proto serial backend: config, port filter, purge/close, overflow |
 | `docs/device/hwprobe.md` | ~X42K86Y | hwprobe tool: scripted probe, raw capture and replay Transport |
 | `docs/device/python-binding.md` | ~QTAS277 | sadi-py: PyO3/maturin core bindings (Session, devices, numpy blocks) |

@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T04:34:32Z"
+digest = "f22bb1177f056859c22cc4b9ce69f20b3677cbf8c8902045c4f121a22ab904f9"
+exit_code = 0
+head = "df2412b9876d619c3f9a22b916f6146455b1360d"
+inline = """
+
+running 1 test
+test v3::crc::tests::check_value ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 38 filtered out; finished in 0.00s
+
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.58s
+     Running unittests src/lib.rs (target/debug/deps/sadi_proto-0ab84e4239613548)
+"""
+passed = true
+provider = "command"
+ref = "cargo test -j2 -p sadi-proto --features v3 --lib v3::crc"
+size = 370
+status = "measured"
+at = "2026-11-08T04:34:32Z"
+actor = "lognd"
+rev = 1

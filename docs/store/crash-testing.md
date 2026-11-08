@@ -47,7 +47,5 @@ macos and uploads `crash-artifacts` (session root plus oracle log) when any run 
 
 ## Known gaps
 
-- Replay-equivalence is skipped on WALs with a rotated segment: ~6H5B4R2 (`events.replay`
-  reports a gap at each SEAL seq).
 - A torn first segment header with zero acks is tolerated; the scan error is ~RGHGDN9.
 - Exports are not covered.

@@ -64,6 +64,7 @@ def _assert_clean(run: harness.Run, name: str) -> None:
 # frob:tests python/sadi/store/wal.py::WalWriter.append_batch
 # frob:tests python/sadi/store/wal.py::WalReader.records
 # frob:tests python/sadi/store/wal.py::WalReader.scan
+# frob:tests python/tests/crash/harness.py::verify_recovery
 @pytest.mark.parametrize("seed", range(ITERATIONS))
 def test_random_kill_recovers(tmp_path: Path, seed: int) -> None:
     """Kill at a random moment after the first ack; DS1 invariants hold on recovery."""
@@ -76,6 +77,7 @@ def test_random_kill_recovers(tmp_path: Path, seed: int) -> None:
 
 # frob:tests python/sadi/store/wal.py::WalWriter.append_batch
 # frob:tests python/sadi/store/wal.py::WalReader.scan
+# frob:tests python/tests/crash/harness.py::verify_recovery
 @pytest.mark.parametrize("run_no", range(FP_RUNS))
 @pytest.mark.parametrize("name", FAILPOINTS)
 def test_failpoint_kill_recovers(tmp_path: Path, name: str, run_no: int) -> None:
@@ -93,6 +95,7 @@ def test_failpoint_kill_recovers(tmp_path: Path, name: str, run_no: int) -> None
 
 
 # frob:tests python/sadi/store/wal.py::WalReader.scan
+# frob:tests python/tests/crash/harness.py::verify_recovery
 def test_partial_record_is_torn_tail_not_corruption(tmp_path: Path) -> None:
     """Dying between the two halves of a batch write leaves a torn tail the reader reports."""
     run = harness.run_crashee(

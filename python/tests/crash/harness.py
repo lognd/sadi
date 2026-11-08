@@ -234,12 +234,9 @@ def verify_recovery(run: Run, *, check_resume: bool = True) -> list[str]:
             report = scan.danger_ok
         _check_records(sdir, run, report, out)
         _check_snapshots(sdir, run, out)
-        rotated = any(s.sealed for s in report.segments) if report else False
-        if not rotated:
-            _check_state(sdir, out)
-        else:
-            # frob:todo 01M6WJMCTQ6M9SW2C3W6H5B4R2 rotated-WAL replay gap
-            _log.warning("skipping replay check on rotated WAL (known bug ~6H5B4R2)")
+        # frob:ticket 01M6WK6V5B6CH2T7GVSS2SQ33J
+        # Replay-equivalence runs on rotated WALs too.
+        _check_state(sdir, out)
     elif run.oracle.max_ack:
         out.append("I2: acknowledged records but no segment files")
     manifest = read_manifest(sdir)

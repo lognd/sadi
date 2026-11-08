@@ -7,8 +7,9 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:44:37Z"
-updated = "2026-11-08T05:44:40Z"
+updated = "2026-11-08T05:44:52Z"
 labels = ["ws:srv"]
+scope = ["python/pyproject.toml"]
 +++
 
 found in ~0VYJVFZ: launcher.default_data_dir uses platformdirs, only transitively installed.

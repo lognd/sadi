@@ -7,9 +7,9 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:52:43Z"
-updated = "2026-11-08T03:53:53Z"
+updated = "2026-11-08T03:53:54Z"
 labels = ["feature"]
-scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md"]
+scope = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md", "python/sadi/api/save_indicator.py"]
 +++
 
 make_save_indicator_router (python/sadi/api/save_indicator.py) is not mounted in sadi/server/app.py and SaveIndicator.mark_failed is not registered as WriterHandle.on_failure, so GET /api/save-indicator is unreachable. Wire both and test through the app.

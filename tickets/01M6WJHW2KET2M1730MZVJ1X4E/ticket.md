@@ -2,7 +2,8 @@
 id = "01M6WJHW2KET2M1730MZVJ1X4E"
 title = "doctor: parallel execution and per-check/run timeouts"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

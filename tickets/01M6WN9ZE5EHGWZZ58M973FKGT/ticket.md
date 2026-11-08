@@ -7,9 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:05:17Z"
-updated = "2026-11-08T04:08:40Z"
+updated = "2026-11-08T04:08:47Z"
 labels = ["python"]
-scope = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py"]
+scope = ["docs/doctor.md", "creates:python/tests/doctor/test_error_families.py", "python/tests/doctor/test_error_families.py"]
 
 [[acceptance]]
 text = "Doctor and server error families are typani ErrorSets; label/status enums stay StrEnum with unchanged wire values"

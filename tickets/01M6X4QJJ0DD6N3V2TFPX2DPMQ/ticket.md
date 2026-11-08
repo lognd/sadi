@@ -2,7 +2,7 @@
 id = "01M6X4QJJ0DD6N3V2TFPX2DPMQ"
 title = "e2e: capture never completes (Captured wait times out) on current main"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"

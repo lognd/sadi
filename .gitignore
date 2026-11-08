@@ -25,3 +25,5 @@ node_modules/
 python/tests/fixtures/real_fp/
 private/
 /plugins/
+python/sadi/_ui/*
+!python/sadi/_ui/.gitkeep

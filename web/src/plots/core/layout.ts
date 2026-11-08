@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
+// frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import { getLogger } from "../../api/log";
 import { axisTitle, pickColor } from "./scene";
 import type { Anchor, Column, Scene } from "./scene";
@@ -92,6 +93,37 @@ function extent(cols: readonly Column[], acc: [number, number]): void {
   }
 }
 
+/** y + sign * err, element-wise (used to keep error bars inside the autoscaled domain). */
+function offsetColumn(y: Column, err: Column, sign: 1 | -1): Column {
+  return Array.from({ length: y.length }, (_, i) => (y[i] as number) + sign * (err[i] ?? 0));
+}
+
+function overlaps(a: Rect, b: Rect): boolean {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
+const AUTO_ORDER: readonly Exclude<Anchor, "auto">[] = ["br", "tr", "bl", "tl"];
+const AUTO_SAMPLES = 2000;
+
+/** Count plotted vertices (series, fits, band edges) that fall inside `box`; strided so cost is bounded. */
+function hitsInBox(scene: Scene, xMap: LinearMap, yMap: LinearMap, box: Rect): number {
+  const cols: [Column, Column][] = [];
+  for (const s of scene.series) cols.push([s.x, s.y]);
+  for (const f of scene.fits ?? []) cols.push([f.x, f.y]);
+  for (const b of scene.bands ?? []) cols.push([b.x, b.lower], [b.x, b.upper]);
+  let hits = 0;
+  for (const [x, y] of cols) {
+    const n = Math.min(x.length, y.length);
+    const stride = Math.max(1, Math.ceil(n / AUTO_SAMPLES));
+    for (let i = 0; i < n; i += stride) {
+      const px = mapValue(xMap, x[i] as number);
+      const py = mapValue(yMap, y[i] as number);
+      if (px >= box.x && px <= box.x + box.w && py >= box.y && py <= box.y + box.h) hits++;
+    }
+  }
+  return hits;
+}
+
 function domain(
   lo: number | undefined,
   hi: number | undefined,
@@ -107,7 +139,7 @@ function domain(
   return { min: lo ?? acc[0], max: hi ?? acc[1], fixed };
 }
 
-function corner(anchor: Anchor, plot: Rect, w: number, h: number, dy: number): { x: number; y: number } {
+function corner(anchor: Exclude<Anchor, "auto">, plot: Rect, w: number, h: number, dy: number): { x: number; y: number } {
   const inset = 8;
   const x = anchor === "tl" || anchor === "bl" ? plot.x + inset : plot.x + plot.w - inset - w;
   const y = anchor === "tl" || anchor === "tr" ? plot.y + inset + dy : plot.y + plot.h - inset - h - dy;
@@ -128,6 +160,7 @@ export function computeLayout(scene: Scene): Layout {
   ]);
   const yd = domain(scene.yAxis.min, scene.yAxis.max, [
     ...scene.series.map((s) => s.y),
+    ...scene.series.flatMap((s) => (s.yErr === undefined ? [] : [offsetColumn(s.y, s.yErr, -1), offsetColumn(s.y, s.yErr, 1)])),
     ...bands.flatMap((b) => [b.lower, b.upper]),
     ...fits.map((f) => f.y),
   ]);
@@ -189,12 +222,29 @@ export function computeLayout(scene: Scene): Layout {
 
   let annotation: AnnotationLayout | null = null;
   if (scene.annotation !== undefined && scene.annotation.lines.length > 0) {
-    const anchor = scene.annotation.anchor ?? "br";
+    const requested = scene.annotation.anchor ?? "br";
     const lh = fs.annotation + 4;
     const w = Math.max(...scene.annotation.lines.map((l) => textWidth(l, fs.annotation))) + 16;
     const h = scene.annotation.lines.length * lh + 8;
-    const dy = anchor === "tr" && legend ? legend.box.h + 8 : 0;
-    const pos = corner(anchor, plot, w, h, dy);
+    const place = (a: Exclude<Anchor, "auto">): { x: number; y: number } =>
+      corner(a, plot, w, h, a === "tr" && legend ? legend.box.h + 8 : 0);
+    let anchor: Exclude<Anchor, "auto"> = "br";
+    if (requested === "auto") {
+      let best = Infinity;
+      for (const a of AUTO_ORDER) {
+        const p = place(a);
+        const box = { x: p.x, y: p.y, w, h };
+        const score = hitsInBox(scene, xMap, yMap, box) + (legend && overlaps(box, legend.box) ? 1e6 : 0);
+        if (score < best) {
+          best = score;
+          anchor = a;
+        }
+      }
+      log.debug("annotation auto-placed", { anchor, hits: best });
+    } else {
+      anchor = requested;
+    }
+    const pos = place(anchor);
     annotation = {
       box: { x: pos.x, y: pos.y, w, h },
       lines: scene.annotation.lines.map((text, i) => ({ text, y: pos.y + 4 + (i + 1) * lh - 3 })),

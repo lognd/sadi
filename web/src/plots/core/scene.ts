@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
+// frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import type { Theme } from "../theme";
 
 /** Numeric column; typed arrays are preferred for large series. */
@@ -27,6 +28,8 @@ export interface Series {
   readonly marker?: MarkerKind;
   readonly color?: string;
   readonly dashed?: boolean;
+  /** Optional symmetric y error half-widths (same length as y); drawn as capped bars on points series. */
+  readonly yErr?: Column;
 }
 
 /** A confidence band between lower and upper curves sharing the x column. */
@@ -48,8 +51,8 @@ export interface FitLine {
   readonly color?: string;
 }
 
-/** Corner of the plot area where the annotation box is anchored. */
-export type Anchor = "tl" | "tr" | "bl" | "br";
+/** Corner of the plot area for the annotation box; "auto" picks the corner that hides the least data. */
+export type Anchor = "tl" | "tr" | "bl" | "br" | "auto";
 
 /** Boxed text block (equations, fitted values with uncertainty). */
 export interface AnnotationBox {

@@ -2,7 +2,8 @@
 id = "01M6W7RB61AEQRD899AWKK27QJ"
 title = "Backend e2e suite: simulator fault injection (noise, drift, creep, slip, dropped bytes, saturation)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7R0D1R7J4VQJVKGX8YEZ9"

@@ -2,7 +2,8 @@
 id = "01M6X1GGD923K25M13JM84ZB2J"
 title = "app: no API/UI to mark a load change, so the live point never settles (guided-run e2e fails at [Settled])"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

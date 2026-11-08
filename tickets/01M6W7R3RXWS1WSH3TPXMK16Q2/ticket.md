@@ -2,13 +2,13 @@
 id = "01M6W7R3RXWS1WSH3TPXMK16Q2"
 title = "Two-specimen workflow: long (elastic) and short (plastic) sample runs"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T05:15:16Z"
 idempotency_key = "sadi-ts1"
 labels = ["ws:py", "lctt", "oq:Q8", "model:sonnet", "creates:python/sadi/labs/lctt/lab.py", "creates:python/sadi/labs/lctt/specimens.py", "creates:python/tests/labs/lctt/test_lab.py", "creates:docs/lctt/lab-module.md"]
 scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/specimens.py", "python/tests/labs/lctt/test_lab.py", "docs/lctt/lab-module.md"]

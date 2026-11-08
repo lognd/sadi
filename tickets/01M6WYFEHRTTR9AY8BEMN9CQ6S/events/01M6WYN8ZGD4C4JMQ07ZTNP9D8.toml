@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T06:48:43Z"
+digest = "0b40d5176823287284f4ee8849b571ef58b46bed6c2af8ca9963a737f420a033"
+exit_code = 0
+head = "9524bc699035bac3aafdfc8e74c0dbaf50ecfa03"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/crates/sadi-py
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+crates/sadi-py/tests/test_sim.py ..                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-695112-0.xml ---------------
+============================== 2 passed in 0.37s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "crates/sadi-py/tests/test_sim.py::test_byte_fault_plan_validation crates/sadi-py/tests/test_sim.py::test_open_with_byte_faults_is_deterministic_and_lossy"
+size = 529
+status = "measured"
+test_count = 2
+tests_digest = "c8e7bd7b1c954cbcb3917aee0c4d3f79db621fc4e113d774705a5ca55da4932f"
+at = "2026-11-08T06:48:43Z"
+actor = "lognd"
+rev = 1

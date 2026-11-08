@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given a valid ByteFaultPlan, when sadi_py.sim.open is called with byte_faults, then the session stream is deterministically corrupted and invalid plans raise ScenarioFailure"]
+moved = []
+at = "2026-11-08T06:49:11Z"
+actor = "lognd"
+rev = 1

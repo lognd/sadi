@@ -288,9 +288,10 @@ _LIVE_EVENT_TYPES = (
 
 
 #: The lctt-csv export format: project-defined 42-column layout, see docs/lctt/export-csv.md.
+# frob:ticket 01M6WYB1R6FYQ95T8SDQ62G869
 CSV_FORMAT = ExportFormat(
     id=ExportFormatId("lctt-csv"),
-    title="LCTT CSV (32 columns)",
+    title="LCTT CSV",
     media_type="text/csv",
     writer=_write_csv,
 )

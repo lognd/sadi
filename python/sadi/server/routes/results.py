@@ -1,6 +1,7 @@
 """REST routes for live results, uncertainty budgets, guided-run guidance and device status."""
 
 # frob:ticket 01M6WTCA1SET2XBYG05J73KJ11
+# frob:ticket 01M6WVGZHZBY41K8M1BHYC1SYW
 
 from __future__ import annotations
 
@@ -92,6 +93,43 @@ class DeviceView(BaseModel):
     hint: str = ""
 
 
+class QuantityProvenance(BaseModel):
+    """Where one reported quantity came from: its inputs, sample span and algorithm."""
+
+    model_config = ConfigDict(frozen=True)
+
+    name: str
+    point_ids: tuple[str, ...]
+    first_sample: int | None
+    last_sample: int | None
+    algorithm: str
+
+
+class ResultsView(ResultSet):
+    """`ResultSet` plus per-quantity provenance (which settle windows fed each value)."""
+
+    provenance: tuple[QuantityProvenance, ...] = ()
+
+
+def provenance_for(
+    lab_id: str, names: list[str], active: list[PointView]
+) -> tuple[QuantityProvenance, ...]:
+    """Describe each named quantity: the active points and sample span behind it, and the lab."""
+    firsts = [p.window.first_sample for p in active]
+    lasts = [p.window.last_sample for p in active]
+    ids = tuple(p.point_id for p in active)
+    return tuple(
+        QuantityProvenance(
+            name=n,
+            point_ids=ids,
+            first_sample=min(firsts) if firsts else None,
+            last_sample=max(lasts) if lasts else None,
+            algorithm=f"{lab_id}.recompute",
+        )
+        for n in names
+    )
+
+
 def _points_for(views: list[PointView]) -> list[PointView]:
     """Keep the active (non-excluded) points."""
     return [p for p in views if not p.excluded]
@@ -127,8 +165,8 @@ def _guidance_problem(err: ErrorSet) -> ApiProblem:
     )
 
 
-def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultSet, ApiProblem]:
-    """Recompute the open session's results through its lab (the lctt recompute is a stub)."""
+def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, ApiProblem]:
+    """Recompute the open session's results and their provenance (the lctt recompute is a stub)."""
     info = svc.info()
     pts = svc.points()
     if info.is_err or pts.is_err:
@@ -157,7 +195,10 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultSet, Ap
             values.append(made.danger_ok)
     loads = [p for p in active if p.phase not in _NON_LOAD]
     _log.info("live results: %d values from %d points", len(values), len(active))
-    return Ok(ResultSet(n_points=len(loads), values=tuple(values), notes=tuple(notes)))
+    prov = provenance_for(str(lab.id), [v.name for v in values], active)
+    return Ok(
+        ResultsView(n_points=len(loads), values=tuple(values), notes=tuple(notes), provenance=prov)
+    )
 
 
 def make_results_router(
@@ -170,7 +211,7 @@ def make_results_router(
     r = APIRouter(prefix="/api")
 
     @r.get("/results")
-    def results() -> ResultSet:
+    def results() -> ResultsView:
         """Live recompute of the open session's results."""
         return unwrap(live_results(svc, labs))
 

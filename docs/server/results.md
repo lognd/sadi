@@ -22,3 +22,7 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
   zeroed time fields because the point wire shape carries none.
 - Device status reads an injected `AppSettings.device` (a `DeviceService`); without one the
   response is `attached=false, status=error` with a hint.
+- `GET /api/results` also returns `provenance`: one `QuantityProvenance` per value (`name`,
+  `point_ids`, `first_sample`, `last_sample`, `algorithm`). Point ids and sample span are those of
+  the active (non-excluded) points fed to `recompute`; `algorithm` is `<lab>.recompute`. It is
+  empty while the lctt recompute is a stub.

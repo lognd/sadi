@@ -66,3 +66,6 @@ The pipeline decimates each block to at most 256 points; at 50 kS/s with 1000-sa
 that is 50 frames/s of about 2 KB (2 channels), roughly 100 KB/s. The test
 `test_50ksps_real_time_budget` runs 2 s of real-time publishing and requires at least 95% of
 frames delivered with p95 publish-to-receive latency under 100 ms (in-process).
+
+Versioned results (analytic, refining, stale markers) are specified in
+[results-stream.md](results-stream.md).

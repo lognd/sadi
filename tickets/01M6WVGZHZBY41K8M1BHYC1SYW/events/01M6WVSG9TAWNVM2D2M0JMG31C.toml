@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["GET /api/results includes a provenance list on the wire", "Each quantity provenance names point ids, sample span and algorithm"]
+moved = []
+at = "2026-11-08T05:58:37Z"
+actor = "lognd"
+rev = 1

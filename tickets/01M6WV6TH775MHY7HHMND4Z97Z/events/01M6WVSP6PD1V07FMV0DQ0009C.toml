@@ -1,0 +1,40 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:58:42Z"
+digest = "90f2be2a48ad67d1dbf13feb59bf7a1c27a47843c2a3b7df377b2d4017f36245"
+exit_code = 0
+head = "c586e0dda39aad2b4485795392b00b5079cd35b4"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/live/framestats.test.ts > runFrameBench harness > drives the pipeline on a fake 60 Hz clock and reports the frame count
+[plots.live.bench] bench done {
+  frames: 29,
+  meanMs: 16.666666666666675,
+  p95Ms: 16.666666666666686,
+  p99Ms: 16.666666666666686,
+  maxMs: 16.666666666666686,
+  fps: 59.99999999999997,
+  droppedFrames: 0
+}
+
+ \u{2713} web/src/plots/live/framestats.test.ts (3 tests) 26ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  00:58:42
+   Duration  688ms (transform 157ms, setup 0ms, collect 177ms, tests 26ms, environment 0ms, prepare 172ms)
+
+JSON report written to /tmp/frob-vitest-556279-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/live/framestats.test.ts"
+size = 680
+status = "measured"
+test_count = 3
+tests_digest = "dab6b6a5568abdae8cc8b0c4b7a9c0662f9a434c67c63c67439d8c7aea5d6e28"
+at = "2026-11-08T05:58:42Z"
+actor = "lognd"
+rev = 1

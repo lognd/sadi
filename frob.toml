@@ -130,3 +130,4 @@ name = "tsc"
 command = "npx"
 args = ["tsc", "-p", "web", "--strict", "--noEmit", "--pretty", "false"]
 parser = "tsc-text"
+requires = ["npm ci --prefix web"]

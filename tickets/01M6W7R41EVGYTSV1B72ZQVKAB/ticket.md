@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:37:19Z"
+updated = "2026-11-08T05:37:20Z"
 idempotency_key = "sadi-f9"
 labels = ["ws:web", "model:sonnet", "creates:web/src/components/wizard/**", "creates:web/src/components/status/**", "creates:web/src/keys/**", "creates:docs/web/wizard.md"]
 scope = ["web/src/components/wizard/**", "web/src/components/status/**", "web/src/keys/**", "docs/web/wizard.md"]
@@ -39,7 +39,7 @@ bound = true
 
 [[acceptance]]
 text = "Implements wireframes in docs/ux.md; component and keyboard tests"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

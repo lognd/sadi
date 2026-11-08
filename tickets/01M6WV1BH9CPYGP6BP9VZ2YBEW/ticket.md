@@ -7,20 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:45:26Z"
-updated = "2026-11-08T06:14:20Z"
+updated = "2026-11-08T06:14:28Z"
 scope = ["python/sadi/server/**"]
-
-[[acceptance]]
-text = "Without a device the launcher injects none, so status stays honestly unattached"
-bound = true
-
-[[acceptance]]
-text = "A failing simulator open exits EXIT_DEVICE without serving"
-bound = true
-
-[[acceptance]]
-text = "Launcher --sim passes the simulator DeviceService as AppSettings.device and closes it on shutdown"
-bound = true
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

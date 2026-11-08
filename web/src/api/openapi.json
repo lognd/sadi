@@ -866,6 +866,36 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HealthOut": {
+        "description": "Health payload consumed by web/src/api/client.ts getHealth.",
+        "properties": {
+          "simulated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulated"
+          },
+          "status": {
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "title": "HealthOut",
+        "type": "object"
+      },
       "History": {
         "description": "Undo and redo stacks, oldest first; the last element is what undo/redo would act on.",
         "properties": {
@@ -2509,6 +2539,28 @@
           }
         },
         "summary": "Export"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "description": "Return status \"ok\", the package version and the sim flag when known.",
+        "operationId": "get_health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Health",
+        "tags": [
+          "health"
+        ]
       }
     },
     "/api/labs": {

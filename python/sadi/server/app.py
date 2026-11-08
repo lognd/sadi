@@ -36,6 +36,7 @@ from sadi.server.routes.problem import install_problem_handlers
 from sadi.server.routes.results import BudgetSource, DeviceProbe, make_results_router
 from sadi.server.routes.sessions import make_sessions_router
 from sadi.server.routes_doctor import make_doctor_router
+from sadi.server.routes_health import make_health_router
 from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
 from sadi.server.service import SessionService
@@ -167,6 +168,11 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_plots_router(app.state.sessions))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
     app.include_router(make_doctor_router())
+    # frob:ticket 01M6WZZEHBSPSCHA90KQG3RK1T
+    _dev = cfg.device
+    app.include_router(
+        make_health_router((lambda: _dev.status == "simulated") if _dev is not None else None)
+    )
     app.include_router(make_plugins_router(cfg.registry))
     if cfg.bus is not None:
         app.state.results_stream = cfg.results or ResultsStream()

@@ -33,3 +33,14 @@ Not yet: accept/nudge/step navigation behaviour (run and review screens), mode t
 Results; the export screen for Export (and when no step is current). Each screen is keyed by its
 kind so it remounts on a step change, and reports rail changes through `WizardShell.onWizard`.
 On Results the review screen owns undo/redo (`delegateUndo`), so a key press is never applied twice.
+
+## Session setup (no open session)
+
+When `GET /api/session/wizard` answers 409 `no_open_session`, `WizardHost` shows
+`screens/setup/SessionSetup.tsx` instead of the step rail. It lists `GET /api/sessions` (including
+recovered ones) with a Resume button per row (`POST /api/sessions/resume`), and a form (lab from
+`GET /api/labs`, specimen name and material) that does `POST /api/sessions`. Data safety: resume
+saves a new version and create allocates a new id, so nothing is overwritten or discarded, and the
+screen has no delete action. After either succeeds the host reloads the wizard and the rail appears.
+The form is plain labelled controls, so Tab/Enter drive it. With no labs registered the form is
+disabled and says so.

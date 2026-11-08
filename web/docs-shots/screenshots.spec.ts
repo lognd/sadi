@@ -23,7 +23,7 @@ test("capture user-guide screenshots against the simulator", async ({
 }) => {
   await page.goto("/");
   await expect(page.locator("main, nav").first()).toBeVisible();
-  // frob:ticket 8ZJZX7F
+  // frob:ticket 01M6X8XTSNXF7EF647J8ZJZX7F
   // Doctor may already be open (backend has no health route); otherwise open it from the nav.
   const closeDoctor = page.getByRole("button", { name: "Close Doctor" });
   const alreadyOpen = await closeDoctor

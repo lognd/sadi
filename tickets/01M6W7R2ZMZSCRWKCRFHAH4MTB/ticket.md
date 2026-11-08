@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R04QJTECCTSV9EY2JADK"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T03:23:09Z"
+updated = "2026-11-08T03:23:12Z"
 idempotency_key = "sadi-ds6"
 labels = ["ws:store", "fault-injection", "model:sonnet", "creates:python/tests/crash/**", "creates:.github/workflows/crash.yml", "creates:docs/store/crash-testing.md"]
 scope = ["python/tests/crash/**", ".github/workflows/crash.yml", "docs/store/crash-testing.md", "docs/store/lock.md", "changelog.d/*HAH4MTB*"]
@@ -35,7 +35,7 @@ bound = true
 
 [[acceptance]]
 text = "Runs >= 200 randomized kills per OS in the crash.yml workflow on ubuntu, windows, macos; failures upload the session dir as artifact"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Separate test covers power-loss emulation via truncating files to the last fsynced offset"

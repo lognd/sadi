@@ -136,6 +136,7 @@ def test_division_by_zero_and_bad_power_are_errs() -> None:
     assert x.power(math.inf).err is UncertaintyError.InvalidExponent
 
 
+# frob:tests python/sadi/uncertainty/measured.py::Measured.from_json
 # frob:ticket 01M6W7R155JD0XGVXHDSP19B1H
 # frob:tests python/sadi/uncertainty/measured.py::Measured.to_json
 def test_json_round_trip_and_bad_json() -> None:

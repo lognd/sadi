@@ -279,6 +279,7 @@ def test_snapshot_with_unusable_state_falls_back_to_full_replay(tmp_path: Path) 
     assert recover_state(h.path).danger_ok == replay_wal(h.path / "wal").danger_ok
 
 
+# frob:tests python/sadi/store/failpoints.py::clear
 # frob:tests python/sadi/store/snapshot.py::write_snapshot
 @pytest.mark.parametrize(
     ("point", "published"),

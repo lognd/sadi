@@ -306,6 +306,7 @@ def test_open_failure_is_device_not_found() -> None:
 
 
 # frob:tests python/sadi/bench/ad3/dll.py::CtypesBackend.close
+# frob:tests python/sadi/bench/ad3/backend.py::OpenDevice.__init__
 # frob:tests python/sadi/bench/ad3/backend.py::OpenDevice.consume
 # frob:tests python/sadi/bench/ad3/backend.py::OpenDevice.native
 # frob:tests python/sadi/bench/ad3/backend.py::OpenDevice.is_open
@@ -326,6 +327,7 @@ def test_closed_handle_is_runtime_err() -> None:
 
 
 # frob:tests python/sadi/bench/ad3/backend.py::ClosedDevice
+# frob:tests python/sadi/bench/ad3/backend.py::ClosedDevice.__init__
 def test_closed_device_has_no_operations() -> None:
     """ClosedDevice exposes no instrument methods (the type-level half of the typestate)."""
     lib = FakeLib()

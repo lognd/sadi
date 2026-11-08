@@ -37,6 +37,7 @@ def test_mount_web_absent(tmp_path: Path) -> None:
     assert not launcher.mount_web(FastAPI(), tmp_path / "nope")
 
 
+# frob:tests python/sadi/launcher.py::main
 def test_serve_default_host_and_lock_released(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -207,6 +208,7 @@ def test_selftest_exit_codes(monkeypatch: pytest.MonkeyPatch) -> None:
     assert launcher.main(["--selftest"]) == launcher.EXIT_SELFTEST
 
 
+# frob:tests python/sadi/launcher.py::selftest
 def test_selftest_reports_missing_binding(monkeypatch: pytest.MonkeyPatch) -> None:
     """A missing or broken simulator is an Err."""
     from sadi.doctor import devprobe

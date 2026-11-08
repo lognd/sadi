@@ -41,6 +41,7 @@ from sadi.store.wal import (
     WalInvalidRecord,
     WalReader,
     WalWriter,
+    durable_close,
     segment_name,
 )
 
@@ -76,6 +77,9 @@ def _read_all(wal: Path) -> list[bytes]:
 
 # frob:ticket 01M6W7R1VQHABR51SH64668M06
 # frob:tests python/sadi/store/wal.py::WalWriter.append
+# frob:tests python/sadi/store/wal.py::WalWriter.__init__
+# frob:tests python/sadi/store/wal.py::WalWriter.open
+# frob:tests python/sadi/store/wal.py::WalWriter.close
 def test_append_assigns_dense_seq_and_is_durable(tmp_path: Path) -> None:
     """Appends return dense seqs; durable_seq has reached them when append returns."""
     w = _open(tmp_path)
@@ -91,6 +95,7 @@ def test_append_assigns_dense_seq_and_is_durable(tmp_path: Path) -> None:
 
 
 # frob:tests python/sadi/store/wal.py::WalWriter.append_nowait
+# frob:tests python/sadi/store/wal.py::WalWriter.stats
 def test_group_commit_batches_many_records_per_fsync(tmp_path: Path) -> None:
     """Many nowait appends are covered by far fewer fsync batches."""
     w = _open(tmp_path)
@@ -462,3 +467,51 @@ def test_corrupt_first_header_stays_error(tmp_path: Path) -> None:
     assert WalReader.scan(tmp_path / "wal").is_err
     seg.write_bytes(b"XXXXXXXXXX")
     assert WalReader.scan(tmp_path / "wal").is_err
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/store/wal.py::WalWriter.set_fsync_observer
+# frob:tests python/sadi/store/wal.py::WalWriter.set_failure_observer
+def test_observers_see_fsync_latency_and_failure(tmp_path: Path) -> None:
+    """The fsync observer gets latencies; the failure observer fires once on an fsync error."""
+    w = _open(tmp_path)
+    latencies: list[float] = []
+    failures: list[object] = []
+    w.set_fsync_observer(latencies.append)
+    w.set_failure_observer(failures.append)
+    assert w.append(_rec(0)).is_ok
+    assert latencies and all(x >= 0.0 for x in latencies)
+    failpoints.configure({"wal.fsync.before": "once:error:5"})
+    assert w.append(_rec(1)).is_err
+    deadline = time.monotonic() + 5.0
+    while not failures and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert len(failures) == 1
+    w.close()
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/store/wal.py::WalReader.__init__
+# frob:tests python/sadi/store/wal.py::WalReader.report
+def test_reader_report_set_after_exhaustion(tmp_path: Path) -> None:
+    """report is None until records() is exhausted, then holds the scan summary."""
+    w = _open(tmp_path)
+    for i in range(3):
+        assert w.append(_rec(i)).is_ok
+    assert w.close().is_ok
+    reader = WalReader(tmp_path / "wal")
+    assert reader.report is None
+    assert len([r for r in reader.records() if r.is_ok]) == 3
+    assert reader.report is not None
+    assert reader.report.record_count == 3
+
+
+# frob:ticket 01M6XAKF7X3NKXQ7X8GACKX0VE
+# frob:tests python/sadi/store/wal.py::durable_close
+def test_durable_close_releases_fd_and_tolerates_bad_fd(tmp_path: Path) -> None:
+    """durable_close closes a valid fd and logs (does not raise) on an already-closed one."""
+    fd = os.open(tmp_path / "f", os.O_CREAT | os.O_WRONLY)
+    durable_close(fd)
+    with pytest.raises(OSError):
+        os.fstat(fd)
+    durable_close(fd)

@@ -138,6 +138,7 @@ def _elastic_results(n: int) -> ResultSet:
     return last
 
 
+# frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.guide
 # frob:tests python/sadi/labs/lctt/guidance.py::guide
 def test_confidence_and_stop_early_proposed_not_forced() -> None:
     rs = _elastic_results(8)

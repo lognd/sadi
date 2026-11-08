@@ -29,6 +29,7 @@ def _go(order, deps, work, budget=None, gate=None):
     )
 
 
+# frob:tests python/sadi/doctor/runner.py::schedule
 # frob:tests python/tests/doctor/test_runner.py::test_dependencies_run_first
 def test_dependencies_run_first() -> None:
     """A dependent starts only after its prerequisite finished, even with idle workers."""

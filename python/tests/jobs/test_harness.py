@@ -158,6 +158,8 @@ def test_unacknowledged_cancel_is_killed_after_grace() -> None:
     assert (m.killed_total, m.worker_restarts) == (1, 1)
 
 
+# frob:tests python/sadi/jobs/manager.py::JobManager.metrics
+# frob:tests python/sadi/jobs/pool.py::WorkerSlot.pending_coalesced
 # frob:tests python/sadi/jobs/testing.py::FakeSlot.pending_coalesced
 # frob:tests python/sadi/jobs/testing.py::FakeSlot.take_progress
 def test_progress_coalesces_when_loop_is_behind() -> None:

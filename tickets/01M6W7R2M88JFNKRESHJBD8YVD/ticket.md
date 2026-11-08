@@ -2,7 +2,8 @@
 id = "01M6W7R2M88JFNKRESHJBD8YVD"
 title = "sadi-py: simulator and fault-plan bindings"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"

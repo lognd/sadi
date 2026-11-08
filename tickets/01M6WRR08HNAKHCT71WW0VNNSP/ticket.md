@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:05:22Z"
-updated = "2026-11-08T05:06:55Z"
+updated = "2026-11-08T05:07:02Z"
 scope = ["python/sadi/uncertainty/numeric.py", "python/tests/uncertainty/test_fallbacks.py"]
 
 [[acceptance]]

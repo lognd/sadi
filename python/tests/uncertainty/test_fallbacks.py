@@ -353,3 +353,14 @@ def test_sample_count_and_from_mc_adapter() -> None:
     assert s.n == 1000
     me = from_mc(est)
     assert me.method == "mc" and me.value == est.mean and me.std_unc == est.std
+
+
+# frob:ticket 01M6WJQ4A9Q9MTK0XQQSJ9VQC9
+# frob:tests python/sadi/uncertainty/numeric.py::gradient
+def test_gradient_small_divisor_does_not_cross_pole() -> None:
+    """Steps scale with |x|, so a/b at b=1e-3 converges to (1/b, -a/b^2)."""
+    result = gradient(lambda a, b: a / b, [1.0, 1e-3])
+    assert isinstance(result, Ok)
+    da, db = result.danger_ok.gradient
+    assert math.isclose(da, 1e3, rel_tol=1e-4)
+    assert math.isclose(db, -1e6, rel_tol=1e-4)

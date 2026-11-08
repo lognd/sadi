@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given a divisor below 1e-80, when propagated on the analytic or numeric path, then the result is Ok or a typed Err and never raises"]
+moved = []
+at = "2026-11-08T03:23:37Z"
+actor = "lognd"
+rev = 1

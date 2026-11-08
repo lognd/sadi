@@ -1,0 +1,59 @@
+name: Crash recovery
+
+# frob:ticket 01M6W7R2ZMZSCRWKCRFHAH4MTB
+# Kills a writer subprocess mid-write (SIGKILL / TerminateProcess) and checks the DS1
+# invariants on reopen. See docs/store/crash-testing.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "python/sadi/store/**"
+      - "python/tests/crash/**"
+      - ".github/workflows/crash.yml"
+  schedule:
+    - cron: "17 4 * * *"
+
+concurrency:
+  group: crash-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  crash:
+    name: crash (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: python
+    env:
+      # 200 randomized kills plus 100 power-loss runs plus 3 failpoint sweeps per OS.
+      SADI_CRASH_ITERATIONS: "200"
+      SADI_CRASH_FP_RUNS: "3"
+      SADI_CRASH_ARTIFACTS: ${{ github.workspace }}/crash-artifacts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: python/uv.lock
+      - name: uv sync
+        run: uv sync --frozen
+      - name: crash tests
+        run: uv run pytest tests/crash -q -p no:cacheprovider
+      - name: upload failing session dirs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-sessions-${{ matrix.os }}
+          path: crash-artifacts
+          if-no-files-found: ignore
+          retention-days: 14

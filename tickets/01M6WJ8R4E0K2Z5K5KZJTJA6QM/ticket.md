@@ -4,9 +4,10 @@ title = "Add Setup wizard step (Phase.SETUP) hosting clamp-slip sub-check"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:12:11Z"
-updated = "2026-11-08T03:12:11Z"
+updated = "2026-11-08T03:49:06Z"
 scope = ["python/sadi/core/models.py,python/sadi/labs/lctt/plugin.py,python/tests/plugins/test_lctt_plugin.py"]
 +++
 

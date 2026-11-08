@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T05:33:03Z"
+updated = "2026-11-08T05:33:06Z"
 idempotency_key = "sadi-b4"
 labels = ["ws:srv", "model:sonnet", "creates:python/sadi/server/app.py", "creates:python/sadi/server/routes/**", "creates:python/sadi/server/schemas.py", "creates:python/tests/server/test_routes.py", "creates:docs/server/api.md"]
 scope = ["python/sadi/server/app.py", "python/sadi/server/routes/**", "python/sadi/server/schemas.py", "python/tests/server/test_routes.py", "docs/server/api.md", "python/sadi/store/session.py", "python/sadi/server/service.py", "python/tests/server/test_routes_problem.py", "python/tests/store/test_session_held_root.py", "docs/server/app.md"]
@@ -47,7 +47,7 @@ bound = true
 
 [[acceptance]]
 text = "Handlers map typani errors to problem+json with a what-to-do hint; no business logic in handlers"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Tested with httpx (TestClient) against the real WAL and the lctt lab"

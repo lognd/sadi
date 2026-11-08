@@ -4,9 +4,10 @@ title = "Server doctor endpoints: GET /api/doctor and POST /api/doctor/{check_id
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:35:02Z"
-updated = "2026-11-08T03:35:02Z"
+updated = "2026-11-08T03:35:38Z"
 scope = ["python/sadi/server/routes_doctor.py"]
 
 [[links]]

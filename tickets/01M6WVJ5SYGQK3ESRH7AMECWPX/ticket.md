@@ -2,12 +2,12 @@
 id = "01M6WVJ5SYGQK3ESRH7AMECWPX"
 title = "PointView lacks settled/forced_early flags for review screen"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:54:37Z"
-updated = "2026-11-08T06:07:44Z"
+updated = "2026-11-08T06:07:45Z"
 labels = ["ws:server"]
 +++
 

@@ -7,9 +7,13 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:37:20Z"
-updated = "2026-11-08T05:41:13Z"
+updated = "2026-11-08T05:41:17Z"
 labels = ["modifies:docs/server/api.md"]
 scope = ["docs/server/api.md"]
+
+[[acceptance]]
+text = "Resume folds the parent's POINT, EDIT, SETTINGS and MARKER records into the child WAL and the parent stays byte-identical (docs/server/api.md Data safety)"
+bound = false
 +++
 
 The Data safety resume bullet in docs/server/api.md still says the new version starts a fresh WAL and the parent state is not folded in. ~S7757MP landed folding; update the text. Start after ~4QRM2GS releases its lease on that file.

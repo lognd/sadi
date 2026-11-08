@@ -8,10 +8,10 @@ points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:08:26Z"
+updated = "2026-11-08T03:09:42Z"
 idempotency_key = "sadi-j3"
 labels = ["ws:conc", "model:sonnet", "creates:python/sadi/jobs/tasks/mc.py", "creates:python/sadi/jobs/tasks/gp.py", "creates:python/tests/jobs/test_tasks.py", "creates:docs/jobs/tasks.md"]
-scope = ["python/sadi/jobs/tasks/mc.py", "python/sadi/jobs/tasks/gp.py", "python/tests/jobs/test_tasks.py", "docs/jobs/tasks.md", "python/sadi/jobs/tasks/__init__.py", "python/sadi/jobs/tasks/_drive.py"]
+scope = ["python/sadi/jobs/tasks/mc.py", "python/sadi/jobs/tasks/gp.py", "python/tests/jobs/test_tasks.py", "docs/jobs/tasks.md", "python/sadi/jobs/tasks/__init__.py", "python/sadi/jobs/tasks/_drive.py", "docs/jobs/jobs.md"]
 
 [[links]]
 kind = "blocked-by"

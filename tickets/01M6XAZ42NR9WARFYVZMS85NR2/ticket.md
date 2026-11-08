@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T10:23:50Z"
-updated = "2026-11-08T10:26:17Z"
+updated = "2026-11-08T10:26:25Z"
 scope = ["docs/web/wizard.md", "web/src/api/runPhase.test.ts", "web/src/api/runPhase.ts", "web/src/api/schema.ts", "web/src/screens/WizardHost.tsx"]
 
 [[acceptance]]

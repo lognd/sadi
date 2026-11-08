@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Stream clock vs record window_end/time_since_load relationship is pinned by a unit test and documented"]
+moved = []
+at = "2026-11-08T06:00:42Z"
+actor = "lognd"
+rev = 1

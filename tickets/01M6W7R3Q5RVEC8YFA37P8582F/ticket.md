@@ -2,7 +2,8 @@
 id = "01M6W7R3Q5RVEC8YFA37P8582F"
 title = "CSV export in the 32-column LabVIEW schema"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 parent = "01M6W7R06C7F7ZN0RC4CV3NWW5"

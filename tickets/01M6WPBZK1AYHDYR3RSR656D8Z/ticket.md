@@ -12,7 +12,7 @@ scope = ["python/tests/conftest.py", "python/tests/server/conftest.py", "python/
 
 [[acceptance]]
 text = "Autouse fixture in tests/server and tests/cli conftest redirects user data dir and OS temp dir"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A test shows create_app startup in tests/server does not see a spill outside the isolated dirs"

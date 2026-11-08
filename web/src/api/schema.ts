@@ -1154,6 +1154,11 @@ export interface components {
         PointView: {
             /** Excluded */
             excluded: boolean;
+            /**
+             * Forced Early
+             * @default false
+             */
+            forced_early: boolean;
             /** History */
             history: string[];
             /** Inputs */
@@ -1166,6 +1171,11 @@ export interface components {
             point_id: string;
             /** Seq */
             seq: number;
+            /**
+             * Settled
+             * @default false
+             */
+            settled: boolean;
             window: components["schemas"]["PointWindow"];
         };
         /**

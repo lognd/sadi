@@ -1132,6 +1132,11 @@
             "title": "Excluded",
             "type": "boolean"
           },
+          "forced_early": {
+            "default": false,
+            "title": "Forced Early",
+            "type": "boolean"
+          },
           "history": {
             "items": {
               "type": "string"
@@ -1155,6 +1160,11 @@
           "seq": {
             "title": "Seq",
             "type": "integer"
+          },
+          "settled": {
+            "default": false,
+            "title": "Settled",
+            "type": "boolean"
           },
           "window": {
             "$ref": "#/components/schemas/PointWindow"

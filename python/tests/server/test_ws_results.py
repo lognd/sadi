@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from starlette.testclient import WebSocketTestSession
 
 from sadi.core.pipeline import Bus
 from sadi.jobs.state import JobKey, ResultEnvelope, ResultState
@@ -28,8 +29,8 @@ def _app(rs: ResultsStream, root: Path) -> TestClient:
     return TestClient(create_app(cfg))
 
 
-def _recv_env(ws: object) -> framing.Frame:
-    msg = ws.receive_bytes()  # type: ignore[attr-defined]
+def _recv_env(ws: WebSocketTestSession) -> framing.Frame:
+    msg = ws.receive_bytes()
     res = framing.decode(msg)
     assert res.is_ok
     return res.danger_ok

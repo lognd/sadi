@@ -101,6 +101,8 @@ class PointView(BaseModel):
     inputs: dict[str, Any]
     window: PointWindow
     history: tuple[str, ...]
+    settled: bool = False
+    forced_early: bool = False
 
     @staticmethod
     def of(cur: CurrentPoint) -> PointView:
@@ -113,6 +115,8 @@ class PointView(BaseModel):
             inputs=cur.inputs,
             window=cur.window,
             history=cur.history,
+            settled=cur.point.settled,
+            forced_early=cur.point.forced_early,
         )
 
 

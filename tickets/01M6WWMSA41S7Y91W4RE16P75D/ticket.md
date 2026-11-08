@@ -1,0 +1,11 @@
++++
+id = "01M6WWMSA41S7Y91W4RE16P75D"
+title = "Add TYP004 hints to problem+json errors in routes/inventory.py and routes/export.py"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+reporter = "lognd"
+created = "2026-11-08T06:13:31Z"
+updated = "2026-11-08T06:13:31Z"
++++

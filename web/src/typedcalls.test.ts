@@ -1,5 +1,6 @@
 // frob:ticket 01M6XBSMZHZFQ84PV6PFTS8WZC
 // frob:ticket 01M6XBY9FQS5658X6WQ5PCC2QG
+// frob:ticket 01M6XCCR9STNBNGX9N4K6N7VQC
 // Receiver-qualified calls on typed variables so the call graph resolves them.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { getLogger, type Logger } from "./api/log";
@@ -29,6 +30,12 @@ function driveWindow(win: TraceWindow, f: TraceFrame): { lo: number[]; hi: numbe
   out.now0 = win.now();
   out.len0 = win.snapshot(2).x.length;
   return out;
+}
+
+/** Parameter-typed driver so the call graph resolves StreamHandle.close and SocketLike.close exactly. */
+function closeBoth(hd: StreamHandle, sock: SocketLike): void {
+  hd.close();
+  sock.close();
 }
 
 describe("Logger levels", () => {
@@ -83,12 +90,11 @@ describe("close", () => {
       binaryType: "", onopen: null, onclose: null, onerror: null, onmessage: null,
       close(): void { closed++; },
     };
-    const hd: StreamHandle = openStream(
+    const hd = openStream(
       { url: "ws://x", create: () => sock, timers: { setTimeout: () => 1, clearTimeout: () => undefined } },
       { onState: () => undefined, onFrame: () => undefined, onMessage: () => undefined, onBad: () => undefined },
     );
-    hd.close();
-    sock.close();
+    closeBoth(hd, sock);
     expect(closed).toBe(2);
   });
 });

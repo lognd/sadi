@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
-updated = "2026-11-08T04:32:39Z"
+updated = "2026-11-08T04:32:40Z"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Independent checks overlap and concurrency is bounded by the worker limit"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A check exceeding its per-check timeout is reported skip/timeout (unverified) with a remedy and never hangs the run"

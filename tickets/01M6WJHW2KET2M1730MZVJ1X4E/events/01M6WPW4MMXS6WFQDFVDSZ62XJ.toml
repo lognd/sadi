@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T04:32:40Z"
+digest = "2a5548811c7c51b2816ad78adb199692e12a6ff25cb1cc03707ebe992fcfd738"
+exit_code = 0
+head = "5b71f68fe90a473ebf743886fd2b97bf6cf95431"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_runner.py .                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-428231-0.xml ---------------
+============================== 1 passed in 0.34s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_runner.py::test_independent_checks_overlap"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "6851262a680f3e9de32a077fe75effee4e14104e01afa2afa00f76f2443c2dd6"
+at = "2026-11-08T04:32:40Z"
+actor = "lognd"
+rev = 1

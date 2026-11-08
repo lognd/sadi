@@ -7,12 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-08T05:48:25Z"
-updated = "2026-11-08T05:54:53Z"
+updated = "2026-11-08T05:55:12Z"
 scope = ["web/vite.config.ts", "web/src/viteProxy.test.ts", "docs/web/live-trace.md"]
 
 [[acceptance]]
 text = "Vite /api proxy sets ws:true and targets the launcher default port"
-bound = false
+bound = true
 +++
 
 found while working 7KWS2S7

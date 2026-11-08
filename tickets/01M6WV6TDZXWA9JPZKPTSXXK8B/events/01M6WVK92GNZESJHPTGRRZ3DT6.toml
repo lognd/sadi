@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T05:55:12Z"
+digest = "ddc6c80f5f0e17067daa7cc47c84f3eed47f135c8d3c3bca77dd12e0c306afbc"
+exit_code = 0
+head = "d37025aac7d24c5148aaaf3df1d917e56e961556"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/viteProxy.test.ts (1 test) 3ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:55:12
+   Duration  728ms (transform 58ms, setup 0ms, collect 163ms, tests 3ms, environment 0ms, prepare 154ms)
+
+JSON report written to /tmp/frob-vitest-544061-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "src/viteProxy.test.ts"
+size = 310
+status = "measured"
+test_count = 1
+tests_digest = "da6049c7a7afffb6b61a3e278dce21ee0017713cd38b951d8d8869f938b1962b"
+at = "2026-11-08T05:55:12Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,42 @@
+kind = "evidence"
+captured_at = "2026-11-08T04:32:06Z"
+digest = "445cb6a46f7c1ddd91f86ffeef75550805dd0db6ea27bc0119f78a5acd010485"
+exit_code = 1
+head = "8e20ebc33e9eb72792b8333fc766bc646fc1f791"
+inline = """
+warning[unused-ignore-comment]: Unused `ty: ignore` directive
+  --> python/tests/uncertainty/test_fallbacks.py:92:44
+   |
+92 |     r2 = gradient(lambda x: 1 / 0, [1.0])  # ty: ignore[division-by-zero]  # intentional failing function
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Remove the unused suppression comment
+   |
+91 |     assert isinstance(r, Err) and r.danger_err is NumericError.NumNonFinite
+   -     r2 = gradient(lambda x: 1 / 0, [1.0])  # ty: ignore[division-by-zero]  # intentional failing function
+92 +     r2 = gradient(lambda x: 1 / 0, [1.0])  # intentional failing function
+93 |     assert isinstance(r2, Err) and r2.danger_err is NumericError.NumEvalFailed
+   |
+
+warning[unused-ignore-comment]: Unused `ty: ignore` directive
+   --> python/tests/uncertainty/test_fallbacks.py:263:70
+    |
+263 |     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # ty: ignore[division-by-zero]  # intentional
+    |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Remove the unused suppression comment
+    |
+262 |     assert abs(branchy.mean - 10.0) <= K * branchy.se_mean
+    -     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # ty: ignore[division-by-zero]  # intentional
+263 +     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # intentional
+264 |     assert isinstance(raising, Err) and raising.danger_err is MonteCarloError.McEvalFailed
+    |
+
+Found 2 diagnostics
+"""
+passed = false
+provider = "command"
+ref = "uv run --frozen --project python ty check python/tests/api python/tests/cli python/tests/core python/tests/jobs python/tests/labs python/tests/plugins python/tests/server python/tests/store python/tests/uncertainty"
+size = 1527
+status = "measured"
+at = "2026-11-08T04:32:06Z"
+actor = "lognd"
+rev = 1

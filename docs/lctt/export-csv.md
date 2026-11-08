@@ -15,9 +15,18 @@ load_n, u_load_n, area_m2, u_area_m2, stress_pa, u_stress_pa, strain, u_strain,
 secant_modulus_pa, hanger_kg, total_mass_kg, offset_line_pa, excluded, in_window, saturated,
 settle_source, is_yield, is_ultimate, low_r2, warnings, slope_m_per_v, tare_v, l0_m`.
 
-Open item: the original lab VI column names are private (gitignored) and not available to the
-tracked tree; the names above are this project's definition of the 32 columns. If the VI
-header differs, change `PointRow` only; reader, writer and tests follow its field order.
+Reference comparison: a private mapping of these columns and metadata keys against the original
+lab VI export exists in the gitignored private tree (not linked from tracked files); the names
+above remain this project's own definition. Structural differences found: the reference has an
+elapsed-time column and a per-sample standard deviation column that `PointRow` lacks; it carries
+uncertainty columns for several quantities `PointRow` omits (tare, voltage difference,
+displacement, gauge length, hanger load, diameter, secant modulus); it repeats session constants
+(calibration, tare, gauge length, diameter) on every row where this project keeps them in the
+metadata block; it expresses loads in force units where `PointRow` uses mass; column order differs;
+and `PointRow` adds selection and flag columns (id, index, window, exclusion, yield, ultimate,
+saturation, warnings). The reference metadata also stores raw calibration points and per-input
+reading statistics, which the metadata block here does not. Any change to `PointRow` is tracked
+as a separate ticket; reader, writer and tests follow its field order.
 
 Numbers: 10 significant digits, `.` decimal, `NaN`, `Inf`, `-Inf` literal; booleans `1`/`0`.
 

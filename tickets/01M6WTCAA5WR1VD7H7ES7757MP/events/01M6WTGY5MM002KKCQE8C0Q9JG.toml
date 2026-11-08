@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Resume should fold parent state into the new WAL version"]
+new = ["Resume should fold parent state into the new WAL version", "Resume copies parent POINT/EDIT/SETTINGS/MARKER records into the child WAL; parent unchanged"]
+moved = [1]
+at = "2026-11-08T05:36:28Z"
+actor = "lognd"
+rev = 1

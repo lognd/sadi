@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:36:25Z"
+updated = "2026-11-08T05:36:28Z"
 scope = ["python/sadi/server/service.py", "python/tests/server/test_resume_fold.py"]
 
 [[links]]
@@ -17,6 +17,10 @@ target = "01M6W7R3XY1B0BF689RX3H80G2"
 
 [[acceptance]]
 text = "Resume should fold parent state into the new WAL version"
+bound = false
+
+[[acceptance]]
+text = "Resume copies parent POINT/EDIT/SETTINGS/MARKER records into the child WAL; parent unchanged"
 bound = false
 +++
 

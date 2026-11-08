@@ -43,7 +43,7 @@ class FixAction:
     mutates: Mutates
 
 
-def plan(result: CheckResult, data_root: str) -> list[FixAction]:
+def plan(result: CheckResult, data_root: str | None) -> list[FixAction]:
     """List the fixable commands of a result; data, data-dir, install and data-root ones never qualify."""
     if result.remediation is None:
         return []
@@ -52,7 +52,7 @@ def plan(result: CheckResult, data_root: str) -> list[FixAction]:
         if step.kind is StepKind.VERIFY or step.mutates not in RUNNABLE:
             continue
         for c in step.commands:
-            if c.fixable and data_root not in c.line:
+            if c.fixable and (data_root is None or data_root not in c.line):
                 actions.append(FixAction(n, c, step.mutates))
     return actions
 

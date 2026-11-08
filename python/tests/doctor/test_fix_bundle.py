@@ -14,6 +14,7 @@ import sadi.doctor as doctor
 import sadi.doctor.fix as fixmod
 from sadi.doctor import cli
 from sadi.doctor.bundle import capture_log, redact, write_bundle
+from sadi.doctor.probes import Probes
 from sadi.doctor.schema import (
     Command,
     DoctorError,
@@ -39,8 +40,8 @@ def _with_fixable(monkeypatch: pytest.MonkeyPatch, mutates: Mutates, line: str) 
     """Patch `fix.run` so the failing result carries one fixable command; return the exec log."""
     real = doctor.run
 
-    def fake(options: RunOptions, probes: object = None):  # noqa: ANN202
-        rep = real(options, probes)  # type: ignore[arg-type]
+    def fake(options: RunOptions, probes: Probes | None = None):  # noqa: ANN202
+        rep = real(options, probes)
         got = rep.unwrap()
         res = got.results[0]
         if res.remediation is None:

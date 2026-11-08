@@ -145,7 +145,8 @@ def py_030(ctx: Ctx) -> Outcome:
 @remedy("PY-030", "missing")
 def _py_030_missing(ctx: Ctx, out: Outcome) -> Fix:
     """Reinstall dependencies."""
-    names = ", ".join(str(n) for n in out.facts.get("missing", []) or [])
+    missing = out.facts.get("missing")
+    names = ", ".join(str(n) for n in missing) if isinstance(missing, list) else ""
     return Fix(
         f"Install the missing packages ({names})",
         (
@@ -264,7 +265,7 @@ def py_050(ctx: Ctx) -> Outcome:
     exe = _norm(ctx.probes.python_exe(), ctx.os)
     prefix = exe.rsplit("/", 2)[0] if exe.count("/") >= 2 else ""
     active = ctx.probes.env().get("VIRTUAL_ENV")
-    if active and _norm(active, ctx.os) != prefix:
+    if active is not None and active and _norm(active, ctx.os) != prefix:
         return warn(
             "wrong-venv",
             f"VIRTUAL_ENV is {active} but SADI runs from {prefix or exe}",

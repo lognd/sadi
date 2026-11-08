@@ -9,6 +9,8 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from typani import Ok
+
 from sadi.doctor import Budget, exit_code, run
 from sadi.doctor.bundle import capture_log, write_bundle
 from sadi.doctor.fix import fix
@@ -154,7 +156,7 @@ def _main(argv: Sequence[str] | None) -> int:
     try:
         args = _parser().parse_args(argv)
     except SystemExit as e:
-        return EXIT_USAGE if e.code else 0
+        return EXIT_USAGE if bool(e.code) else 0
     logging.getLogger("sadi").setLevel(logging.WARNING)
     if args.command == "list":
         return _list()
@@ -215,8 +217,8 @@ def _fix(args: argparse.Namespace, options: RunOptions) -> int:
         _log.exception("doctor fix crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
         return EXIT_CRASH
-    if got.is_err:
-        _err(f"{got.err.value}\n")
+    if not isinstance(got, Ok):
+        _err(f"{got.unwrap_err().value}\n")
         return EXIT_USAGE
     return got.unwrap()
 
@@ -232,15 +234,18 @@ def _run(args: argparse.Namespace, options: RunOptions) -> int:
         _log.exception("doctor crashed")
         _err("sadi-doctor crashed; see the log. This is a bug in the doctor.\n")
         return EXIT_CRASH
-    if result.is_err:
-        _err(f"{result.err.value}\n")
+    if not isinstance(result, Ok):
+        _err(f"{result.unwrap_err().value}\n")
         return EXIT_USAGE
     report = result.unwrap()
     if args.bundle:
-        wrote = write_bundle(report, captured.lines, Path(args.bundle), Path(report.host.data_root))
-        if wrote.is_err:
-            _err(f"{wrote.err.value}\n")
-            return EXIT_CRASH if wrote.err is DoctorError.BundleWriteFailed else EXIT_USAGE
+        data_root = report.host.data_root
+        assert data_root is not None, "run() always resolves the data root"
+        wrote = write_bundle(report, captured.lines, Path(args.bundle), Path(data_root))
+        if not isinstance(wrote, Ok):
+            wrote_err = wrote.unwrap_err()
+            _err(f"{wrote_err.value}\n")
+            return EXIT_CRASH if wrote_err is DoctorError.BundleWriteFailed else EXIT_USAGE
         _err(f"bundle written: {wrote.unwrap()}\n")
     _out(
         report.model_dump_json(indent=2) + "\n"

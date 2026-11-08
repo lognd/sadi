@@ -169,7 +169,7 @@ def _gate(
     """Return a SKIP for a check that must not run (wrong OS, opt-in, failed prerequisite)."""
     if os not in spec.applies_to:
         return _skipped(spec, SkipReason.NOT_APPLICABLE_OS, f"Not applicable on {os.value}")
-    if spec.opt_in_flag and not getattr(options, spec.opt_in_flag, False):
+    if spec.opt_in_flag is not None and not getattr(options, spec.opt_in_flag, False):
         return _skipped(spec, SkipReason.OPT_IN, f"Needs --{spec.opt_in_flag.replace('_', '-')}")
     blocker = next(
         (
@@ -183,7 +183,7 @@ def _gate(
         ),
         None,
     )
-    if blocker:
+    if blocker is not None:
         return _skipped(spec, SkipReason.PREREQUISITE_FAILED, f"Skipped because {blocker} failed")
     return None
 
@@ -278,8 +278,8 @@ def run(
     """Run the selected checks in parallel (deps first, time-boxed); report in catalog order."""
     probes = probes or RealProbes()
     selected = _select(options)
-    if selected.is_err:
-        return Err(selected.err)
+    if not isinstance(selected, Ok):
+        return Err[DoctorReport, DoctorError](selected.unwrap_err())
     chosen = selected.unwrap()
     started_at = datetime.now(UTC)
     os = options.render_os or probes.os_kind()

@@ -11,6 +11,7 @@ from typani import Err, Ok, Result
 
 from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
+from sadi.doctor.probes import BindState
 from sadi.doctor.schema import CommandRun, Os, ProbeError
 from sadi.doctor.sessions import SessionFacts
 from sadi.doctor.volprobe import FlushFacts, LockState
@@ -61,7 +62,7 @@ class FakeProbes:
     )
     requires: dict[str, str] = field(default_factory=lambda: {"sadi": ">=3.11"})
     import_errors: dict[str, str] = field(default_factory=dict)
-    bind: str = "free"
+    bind: BindState = "free"
     loopback: bool = True
     localhost: list[str] = field(default_factory=lambda: ["127.0.0.1", "::1"])
     bundle: tuple[bool, int] = (True, 2048)
@@ -200,7 +201,7 @@ class FakeProbes:
         """Return the fake import error text, or None when it imports."""
         return self.import_errors.get(module)
 
-    def bind_state(self, port: int) -> str:
+    def bind_state(self, port: int) -> BindState:
         """Return the fake bind state."""
         return self.bind
 

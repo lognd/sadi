@@ -245,7 +245,7 @@ def plat_050(ctx: Ctx) -> Outcome:
     """Warn when fault injection is armed outside tests."""
     env = ctx.probes.env()
     sadi_vars = sorted(k for k in env if k.startswith("SADI_"))
-    if env.get("SADI_FAILPOINTS"):
+    if bool(env.get("SADI_FAILPOINTS")):
         return warn(
             "failpoints-armed", "SADI_FAILPOINTS is set; faults will be injected", vars=sadi_vars
         )

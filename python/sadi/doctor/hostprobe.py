@@ -58,8 +58,9 @@ def mount_fstype(mount_output: str, real: str) -> str | None:
         if (real == mount or real.startswith(mount.rstrip("/") + "/")) and (
             best is None or len(mount) > best[0]
         ):
-            best = (len(mount), match["fs"].lower())
-    return best[1] if best else None
+            fstype = str(match["fs"])
+            best = (len(mount), fstype.lower())
+    return best[1] if best is not None else None
 
 
 def windows_fstype(path: str) -> str | None:

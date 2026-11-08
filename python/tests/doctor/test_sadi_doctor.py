@@ -32,7 +32,7 @@ from sadi.doctor.schema import (
     StepKind,
 )
 from sadi.doctor.sessions import SessionFacts
-from sadi.doctor.volprobe import FlushFacts
+from sadi.doctor.volprobe import FlushFacts, LockState
 from sadi.doctor.workerprobe import WorkerFacts
 from sadi.plugins.doctor import DoctorFinding
 from sadi.plugins.doctor import Severity as FSev
@@ -86,12 +86,12 @@ def _out_cmd(key: str, text: str) -> Mut:
     return f
 
 
-def _with_config(lock: str = "ok", text: str = "") -> Mut:
+def _with_config(lock: LockState = "ok", text: str = "") -> Mut:
     """Mutator: a config.toml under the root with the given text and lock state."""
 
     def f(p: FakeProbes) -> None:
         p.files[f"{ROOT}/config.toml"] = text
-        p.lock = lock  # type: ignore[assignment]
+        p.lock = lock
 
     return f
 
@@ -256,7 +256,7 @@ def _sf(**kw: object) -> SessionFacts:
         "last_seq": 3,
     }
     base.update(kw)
-    return SessionFacts(**base)  # type: ignore[arg-type]
+    return SessionFacts.model_validate(base)
 
 
 def _dev(**kw: object) -> Mut:
@@ -268,14 +268,14 @@ def _dev(**kw: object) -> Mut:
 
 def _simf(**kw: object) -> Mut:
     def f(p: FakeProbes) -> None:
-        p.sim = SimFacts(**kw)  # type: ignore[arg-type]
+        p.sim = SimFacts.model_validate(kw)
 
     return f
 
 
 def _wrk(**kw: object) -> Mut:
     def f(p: FakeProbes) -> None:
-        p.workers = WorkerFacts(**kw)  # type: ignore[arg-type]
+        p.workers = WorkerFacts.model_validate(kw)
 
     return f
 
@@ -591,7 +591,7 @@ CASES: list[tuple[str, str, Os, Mut]] = [
 
 
 def _run(p: FakeProbes, os: Os, **opts: object) -> DoctorReport:
-    options = RunOptions(render_os=os, **opts)  # type: ignore[arg-type]
+    options = RunOptions.model_validate({"render_os": os, **opts})
     return doctor.run(options, p).unwrap()
 
 
@@ -812,6 +812,7 @@ def test_exit_codes_and_verdict() -> None:
     p.py = (3, 9, 0)
     r = _run(p, Os.LINUX, data_root=ROOT)
     assert doctor.exit_code(r) == 2 and r.summary.verdict == "blocked"
+    assert r.summary.first_action is not None
     assert r.summary.first_action
 
 
@@ -1201,7 +1202,7 @@ def test_build_target_is_none_without_attribute(monkeypatch: pytest.MonkeyPatch)
     fake = types.ModuleType("sadi_py")
     monkeypatch.setitem(__import__("sys").modules, "sadi_py", fake)
     assert hostprobe.build_target() is None
-    fake.BUILD_TARGET = "x86_64-unknown-linux-gnu"  # type: ignore[attr-defined]
+    fake.__dict__["BUILD_TARGET"] = "x86_64-unknown-linux-gnu"
     assert hostprobe.build_target() == "x86_64-unknown-linux-gnu"
 
 

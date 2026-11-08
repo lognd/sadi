@@ -27,7 +27,11 @@ LAUNCH_WAIT_S = 10.0
 )
 def brw_010(ctx: Ctx) -> Outcome:
     """Warn when launching the UI automatically will not work."""
-    if ctx.os is Os.WSL and not ctx.probes.which("wslview") and not ctx.probes.env().get("BROWSER"):
+    if (
+        ctx.os is Os.WSL
+        and not bool(ctx.probes.which("wslview"))
+        and not bool(ctx.probes.env().get("BROWSER"))
+    ):
         return warn("wsl-no-wslview", "WSL has no wslview and BROWSER is unset")
     if ctx.probes.browser_available():
         return ok("A browser controller is available")

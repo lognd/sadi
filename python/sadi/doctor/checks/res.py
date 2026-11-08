@@ -168,7 +168,7 @@ POWERCFG = ("powercfg", "/q", "SCHEME_CURRENT", "2a737441-1930-4402-8d77-b2bebba
 )
 def res_040(ctx: Ctx) -> Outcome:
     """Report battery power and, on Windows, USB selective suspend."""
-    if ctx.probes.on_battery():
+    if ctx.probes.on_battery() is True:
         return warn("on-battery", "Running on battery power")
     if ctx.os is Os.WINDOWS:
         res = ctx.probes.run(POWERCFG)

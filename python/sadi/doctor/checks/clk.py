@@ -116,7 +116,7 @@ def _clk_020_fix(ctx: Ctx, out: Outcome) -> Fix:
 def clk_030(ctx: Ctx) -> Outcome:
     """Report an unresolvable local timezone."""
     name = ctx.probes.tz_name()
-    if not name:
+    if name is None or not name:
         return warn("tz-unknown", "Timezone could not be determined")
     return ok(f"Timezone is {name}", tz=name)
 

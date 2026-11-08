@@ -336,7 +336,7 @@ class RealProbes:
         if "WSL_DISTRO_NAME" in os.environ:
             return Os.WSL
         text = self.read_text("/proc/version")
-        return Os.WSL if text and "microsoft" in text.lower() else Os.LINUX
+        return Os.WSL if text is not None and "microsoft" in text.lower() else Os.LINUX
 
     def os_version(self) -> str:
         """Return platform.platform()."""
@@ -475,7 +475,7 @@ class RealProbes:
     def requires_python(self, name: str) -> str | None:
         """Return the Requires-Python metadata of a distribution, or None."""
         try:
-            return importlib.metadata.metadata(name).get("Requires-Python")
+            return importlib.metadata.metadata(name)["Requires-Python"]
         except importlib.metadata.PackageNotFoundError:
             return None
 
@@ -589,7 +589,8 @@ class RealProbes:
         try:
             import psutil
 
-            battery = psutil.sensors_battery()
+            sensors = getattr(psutil, "sensors_battery", None)
+            battery = sensors() if sensors is not None else None
         except Exception:  # noqa: BLE001 - psutil is optional evidence
             return None
         if battery is None or battery.power_plugged is None:
@@ -652,8 +653,8 @@ class RealProbes:
         if kind is Os.WINDOWS:
             return hostprobe.windows_default_browser()
         name = self._browser_name()
-        family = hostprobe.family_of(name) if name else None
-        if not name or family is None:
+        family = hostprobe.family_of(name) if name is not None and name else None
+        if name is None or not name or family is None:
             return None
         if kind is Os.MACOS and family == "safari":
             plist = "/Applications/Safari.app/Contents/Info"

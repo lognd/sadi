@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "Launcher --sim passes the simulator DeviceService as AppSettings.device and closes it on shutdown"
-bound = false
+bound = true
 +++
 
 found while working ~J73KJ11: AppSettings.device is never set, so status reports unattached

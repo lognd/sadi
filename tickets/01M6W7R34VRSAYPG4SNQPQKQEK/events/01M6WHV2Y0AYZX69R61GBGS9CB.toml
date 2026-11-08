@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-08T03:04:41Z"
+digest = "99800521f1d57d4e217930d14ab8a8096dcb8ee4e8c5dd8363b1ca9585d70be4"
+exit_code = 0
+head = "ff2997b6c2d038463f26ac9dac22efe35c6e6c9a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 12 items
+
+python/tests/labs/lctt/test_capture.py ............                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-226955-0.xml ---------------
+============================== 12 passed in 1.51s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_capture.py"
+size = 522
+status = "measured"
+test_count = 12
+tests_digest = "99eb1d75c3efde9fce01259b8e7ecb9656dd2b592dc73ec928c90df232c20b63"
+at = "2026-11-08T03:04:41Z"
+actor = "lognd"
+rev = 1

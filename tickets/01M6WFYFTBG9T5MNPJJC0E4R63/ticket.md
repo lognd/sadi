@@ -2,7 +2,8 @@
 id = "01M6WFYFTBG9T5MNPJJC0E4R63"
 title = "Plugin manifest model and api_version compatibility"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 parent = "01M6WFY7CGXVKS192DN0WXNCH9"

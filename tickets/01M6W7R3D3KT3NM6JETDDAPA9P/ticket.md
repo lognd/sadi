@@ -8,10 +8,10 @@ points = 3
 parent = "01M6W7R0BA45XYP4MGXJ21Z778"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T03:43:57Z"
+updated = "2026-11-08T03:45:02Z"
 idempotency_key = "sadi-f5"
 labels = ["ws:web", "plots", "model:sonnet", "creates:web/src/plots/calibration/**", "creates:docs/web/calibration-plot.md"]
-scope = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md"]
+scope = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md", "web/src/plots/core/**"]
 
 [[links]]
 kind = "blocked-by"

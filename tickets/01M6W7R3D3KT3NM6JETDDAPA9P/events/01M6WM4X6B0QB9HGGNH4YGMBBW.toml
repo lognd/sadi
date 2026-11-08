@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md"]
+new = ["web/src/plots/calibration/**", "docs/web/calibration-plot.md", "web/src/plots/core/**"]
+at = "2026-11-08T03:45:02Z"
+actor = "lognd"
+rev = 1

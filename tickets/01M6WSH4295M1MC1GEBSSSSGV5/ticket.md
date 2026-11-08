@@ -2,7 +2,8 @@
 id = "01M6WSH4295M1MC1GEBSSSSGV5"
 title = "Core Phase lacks tare/results/export phases"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

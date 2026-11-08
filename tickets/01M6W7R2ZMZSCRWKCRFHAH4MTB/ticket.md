@@ -2,7 +2,8 @@
 id = "01M6W7R2ZMZSCRWKCRFHAH4MTB"
 title = "Crash-recovery tests: kill the process mid-write on every OS"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "critical"
 points = 8
 parent = "01M6W7R04QJTECCTSV9EY2JADK"

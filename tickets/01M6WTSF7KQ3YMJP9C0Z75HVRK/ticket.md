@@ -2,7 +2,8 @@
 id = "01M6WTSF7KQ3YMJP9C0Z75HVRK"
 title = "Wire inventory router and provider into create_app"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

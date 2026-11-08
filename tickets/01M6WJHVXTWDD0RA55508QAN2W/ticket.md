@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:17:10Z"
 updated = "2026-11-08T04:23:22Z"
-scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md"]
+scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md", "docs/doctor-checks.md"]
 
 [[acceptance]]
 text = "USB-010, USB-060, USB-070 and USB-080 exist with a remedy per mode for all four OSes"

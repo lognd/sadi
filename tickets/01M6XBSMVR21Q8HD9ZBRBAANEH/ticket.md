@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:38:19Z"
-updated = "2026-11-08T10:39:41Z"
+updated = "2026-11-08T10:39:43Z"
 scope = ["crates/sadi-proto/src/codec/command.rs", "crates/sadi-proto/src/v3/command.rs", "crates/sadi-proto/src/v3/opcode.rs"]
 
 [[acceptance]]

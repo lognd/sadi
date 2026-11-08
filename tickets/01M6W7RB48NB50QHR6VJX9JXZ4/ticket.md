@@ -2,7 +2,8 @@
 id = "01M6W7RB48NB50QHR6VJX9JXZ4"
 title = "Wheels and release workflow with install smoke test (maturin, 3 OS)"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 parent = "01M6W7R00Z87A80RZB3JCC7HDM"

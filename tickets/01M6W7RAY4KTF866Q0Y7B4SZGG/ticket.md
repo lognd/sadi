@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:27Z"
-updated = "2026-11-08T06:19:33Z"
+updated = "2026-11-08T06:19:35Z"
 idempotency_key = "sadi-j5"
 labels = ["ws:conc", "ws:qa", "fault-injection", "model:sonnet", "creates:python/tests/concurrency/**", "creates:docs/concurrency-testing.md"]
 scope = ["python/tests/concurrency/**", "docs/concurrency-testing.md"]
@@ -39,7 +39,7 @@ bound = true
 
 [[acceptance]]
 text = "Kill (SIGKILL/TerminateProcess) the whole app mid-WAL-write while MC/GP jobs run: recovery keeps every acknowledged record, jobs restart from raw, no torn state"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "asyncio loop-lag assertion (<50 ms p99) while acquisition at 50 kS/s and jobs are active"

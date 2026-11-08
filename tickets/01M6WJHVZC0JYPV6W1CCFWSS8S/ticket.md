@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "PLAT-040 warns on Windows for long-paths-off, reserved names and trailing dot or space"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "WEB-020 warns when the UI bundle version differs from the installed SADI"

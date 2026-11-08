@@ -8,5 +8,5 @@ points = 3
 reporter = "lognd"
 created = "2026-11-08T03:30:17Z"
 updated = "2026-11-08T03:31:02Z"
-scope = ["python/sadi/uncertainty/numeric.py", "python/sadi/uncertainty/measured.py"]
+scope = ["python/sadi/uncertainty/numeric.py", "python/sadi/uncertainty/measured.py", "python/tests/uncertainty/crosscheck/test_labs_crosscheck.py"]
 +++

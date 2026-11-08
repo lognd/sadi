@@ -79,8 +79,6 @@ def test_send_run_executes_and_busy_slot_refuses_then_join_is_polite() -> None:
         done = rig.until(Done)
         assert isinstance(done, Done) and done.job_id == spec.job_id
         rig.slot.request_shutdown()
-        # wait for the pump's death notice first: join() racing the pump's own proc.join()
-        # can lose the waitpid and misreport a polite exit (filed as a separate bug)
         _pid, code = rig.deaths.get(timeout=TIMEOUT)
         assert code == 0
         assert rig.slot.join() is True
@@ -117,3 +115,17 @@ def test_kill_retires_slot_reports_death_and_send_run_errors() -> None:
     assert res.is_err and res.danger_err.code is JobCode.WORKER_CRASHED
     rig.slot.send_cancel(uuid4())  # dead pipe: ignored, must not raise
     assert rig.slot.join(5.0) is True
+
+
+# frob:ticket 01M6XBHBQBE3XM2A685QGTY599
+# frob:tests python/sadi/jobs/pool.py::WorkerSlot.join
+def test_join_immediately_after_polite_exit_is_polite() -> None:
+    for _ in range(3):
+        rig = _Rig()
+        try:
+            rig.until(Ready)
+            rig.slot.request_shutdown()
+            assert rig.slot.join() is True  # no wait for the death notice: races the pump
+            assert rig.deaths.get(timeout=TIMEOUT)[1] == 0
+        finally:
+            rig.slot.kill()

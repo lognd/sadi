@@ -227,6 +227,7 @@ class WorkerSlot:
         cmd_recv.close()
         evt_send.close()
         self._lock = threading.Lock()  # leaf lock: guards only the pending-progress cell
+        self._reap_lock = threading.Lock()  # serialises proc.join between pump and join()
         self._pending: Progress | None = None
         self.coalesced = 0
         self._pump = threading.Thread(
@@ -275,12 +276,13 @@ class WorkerSlot:
 
     def join(self, timeout_s: float = WORKER_JOIN_S) -> bool:
         """Join the process (kill it on timeout) and the pump thread; True if it exited politely."""
-        self._proc.join(timeout_s)
-        polite = not self._proc.is_alive()
+        # frob:ticket 01M6XBHBQBE3XM2A685QGTY599
+        self._reap(timeout_s)
+        polite = self._proc.exitcode is not None
         if not polite:
             _log.warning("slot %d: worker did not exit in %.1fs, killing", self.index, timeout_s)
             self._proc.kill()
-            self._proc.join(timeout_s)
+            self._reap(timeout_s)
         self._close_cmd()
         self._pump.join(timeout_s)
         return polite
@@ -295,6 +297,11 @@ class WorkerSlot:
         with self._lock:
             event, self._pending = self._pending, None
             return event
+
+    def _reap(self, timeout_s: float) -> None:
+        """Join the process under a lock so concurrent waitpid callers cannot lose the status."""
+        with self._reap_lock:
+            self._proc.join(timeout_s)
 
     def _close_cmd(self) -> None:
         try:
@@ -316,7 +323,7 @@ class WorkerSlot:
                 continue
             if not self._deliver(event):
                 return
-        self._proc.join(WORKER_JOIN_S)
+        self._reap(WORKER_JOIN_S)
         pid, code = self._proc.pid, self._proc.exitcode
         self._events.close()
         self._safe_post(lambda: self._on_death(self, pid, code))

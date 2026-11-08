@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-08T00:53:00Z"
 updated = "2026-11-08T03:33:17Z"
 labels = ["model:sonnet", "ws:web"]
-scope = ["web/src/doctor/**"]
+scope = ["web/src/doctor/**", "web/src/api/client.ts"]
 
 [[links]]
 kind = "blocked-by"

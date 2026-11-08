@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-08T06:03:36Z"
+digest = "3e012240eba8bd7b90b723a81b825ecc4314088581c3d9e7b88882a0c9115146"
+head = "1d33edb677ac79c1be7b1de746d091254567df75"
+provider = "file"
+ref = "docs/server/launcher.md"
+size = 2851
+status = "measured"
+at = "2026-11-08T06:03:36Z"
+actor = "lognd"
+rev = 1

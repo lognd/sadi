@@ -2,7 +2,8 @@
 id = "01M6WEYV1HZCER8M2NVRMF702S"
 title = "Surface RootLockFailed in sadi CLI recover and launcher startup"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T01:22:53Z"
-updated = "2026-11-08T03:03:44Z"
+updated = "2026-11-08T03:03:50Z"
 scope = ["python/sadi/store/session.py", "python/tests/store/test_session.py"]
 
 [[acceptance]]
@@ -16,7 +16,7 @@ bound = true
 
 [[acceptance]]
 text = "Tests show reserved Windows names and forbidden characters cannot reach the filesystem"
-bound = false
+bound = true
 +++
 
 Follow-up from ~T5XVYE8: python/sadi/store/names.py exists but session.py does not call it for user-derived specimen ids or titles.

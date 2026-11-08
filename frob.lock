@@ -973,6 +973,39 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:47:22.684359266Z"
 
 [[symbol]]
+identity = "web/src/results-stream/StreamedValue.tsx"
+symref = "web/src/results-stream/StreamedValue.tsx"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "bd780deabda1cc4e8635ee80f264d9a61acafe31cd139cc8efaa63f67fd1c2dc"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:36.867897953Z"
+
+[[symbol]]
+identity = "web/src/results-stream/StreamedValue.tsx::StreamedValue"
+symref = "web/src/results-stream/StreamedValue.tsx::StreamedValue"
+sig = "d5b91b146db4068d0a0fd2914f2ff6babe8af8e077e3b204a1aba3123c0dc5ae"
+body = "e431fb1438672e71ed00c884df78702df24adc845084b5d5248f2361c6ce8d83"
+doc = "a7ae33cfc1fc69d4b9ea93fd4e23db7888c3d35bf16c5dfa05ce3f1c93d6f64d"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "9086b0f1d68e1de1c1f0e999399410a14e0d53366975247f06fd222e94531133"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:36.867897953Z"
+
+[[symbol]]
+identity = "web/src/results-stream/StreamedValue.tsx::StreamedValueProps"
+symref = "web/src/results-stream/StreamedValue.tsx::StreamedValueProps"
+sig = "7933a056ff40461f04ca1ada3e144257b87ec21599e4a11277990a19de6dfa77"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "19251441c7b18cc09bae6a34c5165dd298e6597d9c419948d572867aca4bf55f"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "b870bdeb4828eab04b4b2ef2f5533252cfb6260d16ea5c77b076cb30f601b25b"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-08T06:05:36.867897953Z"
+
+[[symbol]]
 identity = "web/src/screens/export/ExportScreen.test.tsx"
 symref = "web/src/screens/export/ExportScreen.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

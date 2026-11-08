@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-08T09:45:22Z"
+digest = "5d1b836d204c32df5a26087129b1e076f47eb209c27fa34550b113423f8b7ae9"
+head = "457b9541f3493b0ce570263fd0d70c144c641b8f"
+provider = "file"
+ref = "python/tests/e2e/harness.py"
+size = 6133
+status = "measured"
+at = "2026-11-08T09:45:22Z"
+actor = "lognd"
+rev = 1

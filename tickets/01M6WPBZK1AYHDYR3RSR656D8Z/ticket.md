@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T04:23:51Z"
-updated = "2026-11-08T04:25:09Z"
+updated = "2026-11-08T04:25:20Z"
 scope = ["python/tests/conftest.py", "python/tests/server/conftest.py", "python/tests/cli/conftest.py", "python/tests/cli/test_launcher_spill.py", "python/tests/server/test_spill_isolation.py"]
 
 [[acceptance]]

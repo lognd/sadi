@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R02ZYSESQF4CBEEDYF4K"
 reporter = "lognd"
 created = "2026-11-08T00:08:19Z"
-updated = "2026-11-08T04:04:45Z"
+updated = "2026-11-08T04:04:50Z"
 idempotency_key = "sadi-r7b"
 labels = ["ws:rust", "fault-injection", "model:sonnet", "creates:crates/sadi-py/src/sim.rs", "creates:crates/sadi-py/python/sadi_py/sim.pyi", "creates:crates/sadi-py/tests/**"]
 scope = ["crates/sadi-py/src/sim.rs", "crates/sadi-py/python/sadi_py/sim.pyi", "crates/sadi-py/tests/**", "docs/device/python-binding.md"]
@@ -31,7 +31,7 @@ bound = false
 
 [[acceptance]]
 text = "Runtime control is thread-safe and tested; invalid plans return a typed error"
-bound = false
+bound = true
 +++
 
 Suggested model: Sonnet.

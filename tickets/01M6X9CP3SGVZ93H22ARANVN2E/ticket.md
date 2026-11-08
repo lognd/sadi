@@ -7,5 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:56:17Z"
-updated = "2026-11-08T09:56:21Z"
+updated = "2026-11-08T10:02:32Z"
+
+[[acceptance]]
+text = "Export and live views detect corruption in already-applied WAL bytes"
+bound = false
 +++

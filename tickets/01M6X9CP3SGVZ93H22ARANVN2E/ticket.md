@@ -2,7 +2,8 @@
 id = "01M6X9CP3SGVZ93H22ARANVN2E"
 title = "SessionReplayCache: periodically re-verify already-applied WAL bytes (export must never serve unverified data)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

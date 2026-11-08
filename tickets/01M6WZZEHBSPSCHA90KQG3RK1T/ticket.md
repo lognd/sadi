@@ -4,7 +4,8 @@ title = "Backend: add GET /api/health route the web client calls"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T07:11:46Z"
-updated = "2026-11-08T07:11:46Z"
+updated = "2026-11-08T07:15:33Z"
 +++

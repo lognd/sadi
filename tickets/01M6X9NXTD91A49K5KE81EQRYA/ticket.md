@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:05:14Z"
+updated = "2026-11-08T10:05:15Z"
 scope = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/RunScreen.usability.md", "web/src/screens/run/RunView.tsx", "web/src/screens/run/phases.ts", "web/src/components/wizard/wizardApi.ts"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "Run screen says to press Mark load change before Settled (U-05)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Bare 422 on wizard writes shows a rebuild web/dist hint (U-09)"

@@ -4,9 +4,10 @@ title = "Run screen: F3 export from the run trace"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-08T06:13:47Z"
-updated = "2026-11-08T06:13:47Z"
+updated = "2026-11-08T06:21:31Z"
 scope = ["web/src/screens/run/**"]
 +++
 

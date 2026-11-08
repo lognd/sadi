@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-08T10:13:48Z"
+digest = "fe883070a54d93df8cbd93fb4fa63a909afaf903356f3919885e241d91b28011"
+exit_code = 0
+head = "6bd307655c40d9bcd129316eb52bf14c3c80741b"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/hooks/stopText.test.ts (3 tests) 4ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  05:13:49
+   Duration  663ms (transform 64ms, setup 0ms, collect 54ms, tests 4ms, environment 0ms, prepare 158ms)
+
+JSON report written to /tmp/frob-vitest-1140008-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/hooks/stopText.test.ts"
+size = 316
+status = "measured"
+test_count = 3
+tests_digest = "6b34d4b7704d570b82d51e7d39b6b5f5d5045d38b7df5d60287b9e4caa8e8261"
+at = "2026-11-08T10:13:48Z"
+actor = "lognd"
+rev = 1

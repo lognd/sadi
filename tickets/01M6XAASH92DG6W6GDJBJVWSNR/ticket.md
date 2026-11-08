@@ -12,5 +12,5 @@ scope = ["web/src/hooks/stopText.ts", "web/src/hooks/stopText.test.ts", "web/src
 
 [[acceptance]]
 text = "A server stop (device_fault) renders plain language with next steps (Doctor, check cable) and, with zero points captured, says to capture a point first"
-bound = false
+bound = true
 +++

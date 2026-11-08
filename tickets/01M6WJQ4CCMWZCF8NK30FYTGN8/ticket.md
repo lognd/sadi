@@ -2,12 +2,12 @@
 id = "01M6WJQ4CCMWZCF8NK30FYTGN8"
 title = "Overflow in propagation leaks exceptions: pydantic ValidationError (analytic) and OverflowError (numeric) from _derive/effective_dof"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T03:20:02Z"
-updated = "2026-11-08T03:21:23Z"
+updated = "2026-11-08T03:21:24Z"
 scope = ["python/sadi/uncertainty/measured.py", "python/sadi/uncertainty/coverage.py"]
 +++
 

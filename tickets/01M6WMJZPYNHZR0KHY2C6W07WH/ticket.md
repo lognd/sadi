@@ -4,10 +4,10 @@ title = "Mount save-indicator router in app and register mark_failed"
 type = "task"
 category = "todo"
 priority = "high"
-points = 2
+points = 3
 reporter = "lognd"
 created = "2026-11-08T03:52:43Z"
-updated = "2026-11-08T03:52:43Z"
+updated = "2026-11-08T03:53:25Z"
 labels = ["feature"]
 +++
 

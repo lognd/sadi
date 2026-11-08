@@ -2,7 +2,8 @@
 id = "01M6X9EHYXYSA7QP4N7PDT1RZ6"
 title = "Doctor screenshot fakes EXT-040 as pass; show the real sim state or caption it honestly"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

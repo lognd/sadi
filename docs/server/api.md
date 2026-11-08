@@ -7,6 +7,8 @@ them in the threadpool and the event loop stays free). All logic lives in
 `sadi.server.service.SessionService`, which reuses the session layer (`create_session_in_held_root`,
 `resume_session_in_held_root`), `WriterHandle`, `recover_state` and the core `Wizard`.
 
+Live data (trace frames, state, results) is pushed over a WebSocket: [websocket.md](websocket.md).
+
 ## Data safety
 
 - Every write is a WAL record, durable (`wait_durable`) before the response is sent.

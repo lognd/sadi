@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Shows the ranked uncertainty budget per result (bar chart + table) and highlights the dominant input; click a result to see its formula and derivation rendered from `.latex`", "KaTeX (or equivalent) dependency added via a package.json lease widen; component tests with fixture budgets"]
+new = ["Shows the ranked uncertainty budget per result (bar chart + table) and highlights the dominant input; click a result to see its formula and derivation rendered from `.latex`", "KaTeX (or equivalent) dependency added via a package.json lease widen; component tests with fixture budgets", "Backend gap: getBudgets() targets GET /api/results/budgets (~J73KJ11); panel is props/fixture driven until it exists"]
+moved = [1, 2]
+at = "2026-11-08T05:39:30Z"
+actor = "lognd"
+rev = 1

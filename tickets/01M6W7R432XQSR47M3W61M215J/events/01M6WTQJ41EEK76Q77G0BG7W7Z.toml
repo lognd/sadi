@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json", "web/package-lock.json", "docs/README.md"]
+new = ["web/src/components/budget/**", "docs/web/budget-panel.md", "web/package.json", "web/package-lock.json", "docs/README.md", "docs/index.md"]
+at = "2026-11-08T05:40:05Z"
+actor = "lognd"
+rev = 1

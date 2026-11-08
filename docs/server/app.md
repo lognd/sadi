@@ -10,6 +10,8 @@ and `make_plugins_router(registry)` (`/api/plugins`).
 default empty) and `data_root` (a `Path`, default `data`). The settings are stored on
 `app.state.settings`. Unknown paths return HTTP 404. The `sadi` launcher ([launcher.md](launcher.md)) mounts the built web assets.
 
+`AppSettings.bus` (a pipeline `Bus`) optionally enables `WS /api/stream`; see [websocket.md](websocket.md).
+
 ## Data-root lock
 
 The app lifespan takes the exclusive data-root lock (`sadi.store.lock.acquire`) on

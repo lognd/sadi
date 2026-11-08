@@ -1,0 +1,40 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-08T05:39:36Z"
+digest = "eb405bf8a10f5eecd3b22c19012ec7509f65b021d34be5567c32a067fa291c27"
+exit_code = 0
+head = "e884f4cc5384e5f9a825b33939438bb9a50a90f1"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/budget/BudgetPanel.test.tsx > budget panel > getBudgets returns an http error Result when the endpoint is missing
+[api.client] request { path: '/api/results/budgets' }
+
+ \u{2713} web/src/components/budget/BudgetPanel.test.tsx (6 tests) 27ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:39:36
+   Duration  629ms (transform 95ms, setup 0ms, collect 152ms, tests 27ms, environment 0ms, prepare 108ms)
+
+JSON report written to /tmp/frob-vitest-484049-0.json
+stderr | web/src/components/budget/BudgetPanel.test.tsx > budget panel > falls back to escaped source on invalid latex
+[components.budget] latex render failed {
+  message: "KaTeX parse error: Unexpected end of input in a macro argument, expected '}' at end of input: \\frac{<"
+}
+
+stderr | web/src/components/budget/BudgetPanel.test.tsx > budget panel > getBudgets returns an http error Result when the endpoint is missing
+[api.client] http error { path: '/api/results/budgets', status: 404 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/budget/BudgetPanel.test.tsx"
+size = 1024
+status = "measured"
+test_count = 6
+tests_digest = "3ed6704ff9e47f46ee45e90a9f54bab9b10a89c899d76c93d61230a4ca1159b5"
+at = "2026-11-08T05:39:36Z"
+actor = "lognd"
+rev = 1

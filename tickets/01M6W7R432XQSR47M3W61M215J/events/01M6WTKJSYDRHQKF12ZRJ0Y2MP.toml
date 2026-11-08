@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/61M215J; scope: web/src/components/budget/**, docs/web/budget-panel.md; ttl 7200s"
+at = "2026-11-08T05:37:54Z"
+actor = "lognd"
+rev = 1

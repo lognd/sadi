@@ -8,5 +8,5 @@ points = 1
 reporter = "lognd"
 created = "2026-11-08T06:04:49Z"
 updated = "2026-11-08T06:06:17Z"
-scope = ["web/src/api/schema.ts", "web/src/api/openapi.json"]
+scope = ["web/src/api/schema.ts", "web/src/api/openapi.json", "web/src/screens/export/types.ts"]
 +++

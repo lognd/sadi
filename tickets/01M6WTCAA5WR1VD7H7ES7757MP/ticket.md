@@ -8,7 +8,7 @@ points = 3
 parent = "01M6W7R09P668G2VDDAWEDCSRM"
 reporter = "lognd"
 created = "2026-11-08T05:33:56Z"
-updated = "2026-11-08T05:36:30Z"
+updated = "2026-11-08T05:36:34Z"
 scope = ["python/sadi/server/service.py", "python/tests/server/test_resume_fold.py"]
 
 [[links]]
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Resume copies parent POINT/EDIT/SETTINGS/MARKER records into the child WAL; parent unchanged"
-bound = false
+bound = true
 +++
 
 found while working ~X3H80G2 (split out of its original acceptance). resume creates a fresh WAL; the child does not see the parent's points or wizard state.

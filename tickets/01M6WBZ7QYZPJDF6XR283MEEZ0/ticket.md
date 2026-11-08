@@ -2,12 +2,13 @@
 id = "01M6WBZ7QYZPJDF6XR283MEEZ0"
 title = "JobManager: inject clock and executor instead of patching time/_spawn"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T01:22:08Z"
-updated = "2026-11-08T01:22:08Z"
+updated = "2026-11-08T03:03:25Z"
+scope = ["python/sadi/jobs/*.py", "python/tests/jobs/*.py"]
 
 [[acceptance]]
 text = "JobManager accepts a clock and an executor/spawn factory; defaults unchanged"

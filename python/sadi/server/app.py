@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6WKQCC4HJ5C8HXP946BRKXW
 # frob:ticket 01M6WK31FEG5BZNZNZHVQ3HMMX
+# frob:ticket 01M6WMJZPYNHZR0KHY2C6W07WH
 
 from __future__ import annotations
 
@@ -13,6 +14,7 @@ from typing import cast
 from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
+from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.routes_doctor import make_doctor_router
@@ -32,6 +34,14 @@ class AppSettings(BaseModel):
     data_root: Path = Path("data")
     recover_stale: bool = False
     require_root_lock: bool = True
+    writer: FailableSeqSource | None = None
+
+
+class _NoWriter:
+    """Seq source used when no writer is injected: nothing pending, so the header reads Saved."""
+
+    durable_seq = 0
+    enqueued_seq = 0
 
 
 class RootLockStartupError(RuntimeError):
@@ -77,7 +87,7 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
 
 def create_app(settings: AppSettings | None = None) -> FastAPI:
-    """Build a fresh FastAPI app (no global state) with the doctor and plugin routers mounted."""
+    """Build a fresh FastAPI app (no global state) with all routers mounted."""
     cfg = settings if settings is not None else AppSettings()
     app = FastAPI(title="SADI", lifespan=_lifespan)
     app.state.settings = cfg
@@ -92,6 +102,12 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             return {"ok": app.state.root_lock is not None}
         return {"ok": False, "kind": type(failure.error).__name__, "hint": failure.hint}
 
+    indicator = SaveIndicator(cfg.writer if cfg.writer is not None else _NoWriter())
+    if cfg.writer is not None:
+        cfg.writer.on_failure(indicator.mark_failed)
+    app.state.save_indicator = indicator
+
+    app.include_router(make_save_indicator_router(indicator))
     app.include_router(make_doctor_router())
     app.include_router(make_plugins_router(cfg.registry))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))

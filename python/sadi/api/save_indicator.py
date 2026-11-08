@@ -7,7 +7,7 @@ import threading
 import time
 from collections.abc import Callable
 from enum import StrEnum
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
@@ -52,6 +52,15 @@ class SeqSource(Protocol):
     @property
     def enqueued_seq(self) -> int:
         """Highest assigned seq."""
+        ...
+
+
+@runtime_checkable
+class FailableSeqSource(SeqSource, Protocol):
+    """A `SeqSource` that also accepts failure listeners (the real `WriterHandle`)."""
+
+    def on_failure(self, listener: Callable[[WriterError], None]) -> None:
+        """Register a callback run once when the writer fails."""
         ...
 
 

@@ -18,3 +18,12 @@ stale lock is never stolen (`recover_stale=True` is the explicit takeover). When
 startup raises `RootLockStartupError` (wrapping a typed `RootLockFailed`), so uvicorn
 exits non-zero. With `require_root_lock=False` the app starts degraded and
 `GET /api/root-lock` returns `{ok: false, kind, hint}`.
+
+## Save indicator
+
+`create_app` mounts `make_save_indicator_router` (`GET /api/save-indicator`, see
+`sadi.api.save_indicator`). `AppSettings.writer` optionally injects the `WriterHandle`
+(any `FailableSeqSource`); the app builds one `SaveIndicator` over it (kept on
+`app.state.save_indicator`) and registers `SaveIndicator.mark_failed` via
+`writer.on_failure`, so a writer failure latches NOT SAVED. With no writer the indicator
+reads Saved with nothing pending.

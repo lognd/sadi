@@ -125,3 +125,14 @@ def test_errors_are_frozen_and_usable_in_result() -> None:
     with pytest.raises(ValidationError):
         err.detail = "x"  # ty: ignore[invalid-assignment]
     assert Err(err).danger_err is err
+
+
+# frob:ticket 01M6WBKXD1562WNR2FQS9RXHNM
+# frob:tests python/sadi/core/errors.py::StoreCode
+def test_store_code_covers_writer_failures() -> None:
+    """StoreCode carries the writer-thread failures, each with a hint and a 500 body."""
+    for name in ("backpressure", "disk_full", "closed", "stalled"):
+        err = E.StoreError(code=E.StoreCode(name))
+        assert err.hint
+        assert err.problem()["type"] == f"urn:sadi:error:store:{name}"
+        assert err.status == 500

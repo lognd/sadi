@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md", "python/tests/test_docs_index.py"]
+new = ["python/sadi/server/app.py", "python/tests/server/test_app.py", "docs/server/app.md", "python/tests/test_docs_index.py", "docs/web/doctor-ui.md"]
+at = "2026-11-08T03:39:29Z"
+actor = "lognd"
+rev = 1

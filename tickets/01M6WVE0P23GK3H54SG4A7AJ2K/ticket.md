@@ -2,12 +2,12 @@
 id = "01M6WVE0P23GK3H54SG4A7AJ2K"
 title = "Python lint debt: ty error in test_loop_lag.py and ruff format/check findings"
 type = "chore"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T05:52:21Z"
-updated = "2026-11-08T05:52:21Z"
+updated = "2026-11-08T05:52:24Z"
 labels = ["python"]
 +++
 

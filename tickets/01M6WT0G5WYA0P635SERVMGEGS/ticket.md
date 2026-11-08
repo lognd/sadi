@@ -4,9 +4,10 @@ title = "COV001: sess.names reached by no test"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-08T05:27:29Z"
-updated = "2026-11-08T05:27:29Z"
+updated = "2026-11-08T05:30:39Z"
 scope = ["python/sadi/doctor/checks/sess.py"]
 +++
 

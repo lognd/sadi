@@ -1,17 +1,17 @@
 +++
 id = "01M6W7R3G88NFY3N76MPX6X3ZQ"
-title = "Progressive background jobs: Monte Carlo interval refinement"
+title = "Progressive background jobs: Monte Carlo interval refinement and GP fit"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 parent = "01M6W7R0G9VM8M2C0QQNX209CZ"
 reporter = "lognd"
 created = "2026-11-08T00:08:20Z"
-updated = "2026-11-08T00:08:20Z"
+updated = "2026-11-08T03:05:07Z"
 idempotency_key = "sadi-j3"
-labels = ["ws:conc", "model:sonnet", "creates:python/sadi/jobs/tasks/mc.py", "creates:python/tests/jobs/test_tasks.py", "creates:docs/jobs/tasks.md"]
-scope = ["python/sadi/jobs/tasks/mc.py", "python/tests/jobs/test_tasks.py", "docs/jobs/tasks.md"]
+labels = ["ws:conc", "model:sonnet", "creates:python/sadi/jobs/tasks/mc.py", "creates:python/sadi/jobs/tasks/gp.py", "creates:python/tests/jobs/test_tasks.py", "creates:docs/jobs/tasks.md"]
+scope = ["python/sadi/jobs/tasks/mc.py", "python/sadi/jobs/tasks/gp.py", "python/tests/jobs/test_tasks.py", "docs/jobs/tasks.md"]
 
 [[links]]
 kind = "blocked-by"
@@ -26,7 +26,7 @@ kind = "blocked-by"
 target = "01M6W7R39TND6SN4ENN93ZD322"
 
 [[acceptance]]
-text = "MC job emits progressive intervals as samples accumulate (interval tightens, progress fraction), stops at target samples or when superseded"
+text = "MC job emits progressive intervals as samples accumulate (interval tightens, progress fraction), stops at target samples or when superseded; GP fit/suggestion job likewise supersedable"
 bound = false
 
 [[acceptance]]

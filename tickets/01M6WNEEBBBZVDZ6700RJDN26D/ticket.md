@@ -7,9 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T04:07:43Z"
-updated = "2026-11-08T04:10:54Z"
+updated = "2026-11-08T04:11:01Z"
 labels = ["python"]
-scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md", "creates:python/tests/labs/lctt/test_capture_record.py"]
+scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "docs/lctt/capture.md", "creates:python/tests/labs/lctt/test_capture_record.py", "python/tests/labs/lctt/test_capture_record.py"]
 
 [[acceptance]]
 text = "Captured points carry LoadInputs with window-averaged volts and the start_point mass"

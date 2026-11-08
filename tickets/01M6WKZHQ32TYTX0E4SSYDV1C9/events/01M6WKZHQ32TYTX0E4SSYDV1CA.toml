@@ -1,0 +1,8 @@
+kind = "create"
+title = "Verify CSV export 32-column names and metadata keys against the private reference VI header"
+type = "task"
+category = "todo"
+priority = "medium"
+at = "2026-11-08T03:42:07Z"
+actor = "lognd"
+rev = 1

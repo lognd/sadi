@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
 updated = "2026-11-08T10:04:40Z"
-scope = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md"]
+scope = ["docs/usability-report.md", "web/src/components/wizard/NextActionPanel.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/screens/review/ReviewScreen.test.tsx", "web/src/screens/review/ReviewScreen.tsx", "web/src/screens/review/ReviewScreen.usability.md", "web/src/screens/run/RunScreen.test.tsx"]
 
 [[acceptance]]
 text = "Review Edit/Exclude labels use point numbers (U-02)"

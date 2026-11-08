@@ -7,8 +7,8 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T09:58:29Z"
-updated = "2026-11-08T09:59:29Z"
-scope = ["web/src/keys/**"]
+updated = "2026-11-08T10:00:15Z"
+scope = ["web/src/keys/**", "docs/web/wizard.md"]
 
 [[acceptance]]
 text = "Enter/Space on a focused button, link, summary or role=button/link activates that control and does not trigger the wizard hotkey; keymap tests cover it"

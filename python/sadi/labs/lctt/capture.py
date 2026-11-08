@@ -21,7 +21,8 @@ from sadi.labs.lctt.settle_stream import (
     StreamStatus,
 )
 from sadi.logging_setup import get_logger
-from sadi.store.events import EditV1, PointV1, PointWindow
+# frob:ticket 01M6WJPHV1FMFMMRZ9WXZE3GBF
+from sadi.core.events import EditV1, PointV1, PointWindow
 
 _log = get_logger(__name__)
 

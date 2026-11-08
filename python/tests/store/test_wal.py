@@ -429,3 +429,36 @@ def test_record_known_and_seal_roundtrip() -> None:
     assert mk(int(RecordType.NOTE)).known and not mk(0x55).known
     seal = decode_seal(encode_seal(3, 1, 3, b"\x01" * 32))
     assert seal.is_ok and seal.danger_ok.record_count == 3
+
+
+# frob:ticket 01M6WJQV8ZG969CCJ9XRGHGDN9
+# frob:tests python/sadi/store/wal.py::WalReader.scan
+@pytest.mark.parametrize("cut", [0, 5, 8, SEGMENT_HEADER_LEN - 1])
+def test_torn_first_header_scans_as_empty(tmp_path: Path, cut: int) -> None:
+    """A lone first segment with a short header holds no acks: Ok, empty, tail set, file kept."""
+    w = _open(tmp_path)
+    assert w.close().is_ok
+    seg = tmp_path / "wal" / segment_name(1)
+    seg.write_bytes(seg.read_bytes()[:cut])
+    before = seg.read_bytes()
+    rep = WalReader.scan(tmp_path / "wal").danger_ok
+    assert rep.record_count == 0
+    assert rep.tail is not None and (rep.tail.offset, rep.tail.length) == (0, cut)
+    assert seg.read_bytes() == before
+    assert list(WalReader(tmp_path / "wal").records()) == []
+
+
+# frob:ticket 01M6WJQV8ZG969CCJ9XRGHGDN9
+# frob:tests python/sadi/store/wal.py::WalReader.scan
+def test_corrupt_first_header_stays_error(tmp_path: Path) -> None:
+    """A full-length first header with a flipped bit, or non-magic short bytes, is still an Err."""
+    w = _open(tmp_path)
+    assert w.close().is_ok
+    seg = tmp_path / "wal" / segment_name(1)
+    good = seg.read_bytes()
+    bad = bytearray(good[:SEGMENT_HEADER_LEN])
+    bad[20] ^= 0x01
+    seg.write_bytes(bytes(bad))
+    assert WalReader.scan(tmp_path / "wal").is_err
+    seg.write_bytes(b"XXXXXXXXXX")
+    assert WalReader.scan(tmp_path / "wal").is_err

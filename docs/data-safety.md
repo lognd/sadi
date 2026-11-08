@@ -357,6 +357,7 @@ Given the rotation order in section 4.2:
 | 1..K-1 sealed, K has header only | Crash after step 2 or 3 of rotation. Prefix = through K-1. Fine. |
 | Any unsealed segment followed by another segment file | Impossible under 4.2 ordering. `Corrupt`. |
 | Header of K invalid or short, K is the last file, K-1 sealed | Crash in step 2 while writing the header. Treat as torn: prefix = through K-1; report the partial header as `Torn`. |
+| Segment 1 is the only file and its header is short (fewer than 64 bytes, bytes a prefix of the magic) | Crash while writing the first header, before any acknowledgement. No acked data exists: scan returns Ok, zero records, `tail = Torn(0, len)` with a warning; the file is left in place. A full-length header with a bad CRC or a non-magic prefix stays `SegmentHeaderInvalid`. |
 | File name gap (seg-000003 without seg-000002) | `Corrupt`. |
 | `first_seq` of K != last seq of K-1 + 2 (the +1 is K-1's seal) | `Corrupt`. |
 

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-08T10:01:20Z"
-updated = "2026-11-08T10:06:44Z"
+updated = "2026-11-08T10:07:10Z"
 scope = ["web/src/screens/run/useRunLive.ts", "web/src/screens/run/RunScreen.tsx", "web/src/screens/run/RunScreen.test.tsx", "docs/server/websocket.md", "python/sadi/server/ws.py", "python/tests/server/test_ws.py", "web/src/ws/messages.ts", "changelog.d/01M6X9NXWB7KW3ZGQP02KDWN8N.changed.md"]
 
 [[acceptance]]

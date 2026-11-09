@@ -13,5 +13,5 @@ scope = ["python/sadi/bench/lctt_source.py", "python/tests/bench/test_ad3_fake.p
 
 [[acceptance]]
 text = "ty check sadi tests and ruff check . are clean"
-bound = false
+bound = true
 +++

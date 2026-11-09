@@ -30,13 +30,18 @@ class CountingDwf(FakeDwf):
         print("CLOSE", flush=True)
         return super().close(dev)
 
+def _ready():
+    # Raw write, not print(): a SIGTERM that lands while print() still holds the stdout buffer
+    # lock makes the handler's print("CLOSE") raise "reentrant call" and the close is lost.
+    os.write(1, b"READY\\n")
+
 guard = open_managed_ad3(lambda: Ok(Ad3Closed(CountingDwf()))).unwrap()
 """
 
 _PLAIN = (
     _PRELUDE
     + """
-print("READY", flush=True)
+_ready()
 signal.pause()
 """
 )
@@ -52,7 +57,7 @@ server = uvicorn.Server(cfg)
 orig = server.startup
 async def startup(sockets=None):
     await orig(sockets)
-    print("READY", flush=True)
+    _ready()
 server.startup = startup
 try:
     server.run()
@@ -82,6 +87,7 @@ def _run_and_term(code: str, tmp_path: Path, sig: int) -> tuple[int, str]:
         out, err = proc.communicate()
         raise AssertionError(f"child hung after signal {sig}: {out!r} {err!r}") from None
     assert proc.returncode is not None
+    assert "reentrant call" not in _err, f"child stdout re-entered during signal: {_err!r}"
     return int(proc.returncode), out
 
 

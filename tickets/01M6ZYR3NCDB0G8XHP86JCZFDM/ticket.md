@@ -2,7 +2,7 @@
 id = "01M6ZYR3NCDB0G8XHP86JCZFDM"
 title = "docs: organize into one grouped index (merge README.md and index.md)"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

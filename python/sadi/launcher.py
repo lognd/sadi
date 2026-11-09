@@ -26,6 +26,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from typani import Err, Ok, Result
 
+from sadi.core import devfacade
 from sadi.doctor import exit_code, run
 from sadi.doctor.cli import main as doctor_main
 from sadi.doctor.render_text import render
@@ -180,11 +181,13 @@ def sim_requested(flag: bool, env: Mapping[str, str] | None = None) -> bool:
 
 def open_sim_device() -> Result[DeviceService, str]:
     """Open a simulator `DeviceService` for the app; Err when `sadi_py` or the open fails."""
-    try:
-        from sadi.core.device import DeviceService, DeviceSource
-    except ImportError as exc:
-        _log.error("simulator unavailable: %s", exc)
-        return Err(f"simulator unavailable (sadi_py not importable): {exc}")
+    bound = devfacade.binding()
+    if bound.is_err:
+        detail = bound.danger_err.detail
+        _log.error("simulator unavailable: %s", detail)
+        return Err(f"simulator unavailable (sadi_py not importable): {detail}")
+    from sadi.core.device import DeviceService, DeviceSource
+
     svc = DeviceService(DeviceSource(kind="sim", manual_load=True))
     opened = svc.open()
     if opened.is_err:

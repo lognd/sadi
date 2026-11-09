@@ -1,0 +1,83 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T03:32:21Z"
+digest = "81460bb852f0639fbf52507037e8b4cf6f657013f983bc83c2df0e8ff442a5aa"
+exit_code = 0
+head = "43f595302a812f436c89db97871f7ac108a5a52a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 11 items
+
+python/tests/e2e/test_lctt_ad3.py ...........                            [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-710406-0.xml ---------------
+forgot 7b1da6995ed5426fb7369f316328ee2e
+forgot f3f1d889160f47dea3214b891740b173
+forgot 86a61d6f36fc42d1bdbd6682fa890c75
+forgot d9bddad8b2824994bfe214bafa6868e4
+forgot 545a21f3d04949c9ac6144308397b878
+forgot abbb0b3d11434bf889eaef7da73ec621
+forgot 46b7977a9ab44e77a3e3e65f0f0b03b4
+forgot 2d1a3a950e2643aa99c7e66171c6a9e2
+forgot 41777d4ceb54409bbb4fed504d4e9c1b
+forgot 5229206a3cfc42b8abdb19db077b8337
+forgot 2e31d4733ffd45c0860603a78b0bc5fb
+forgot 68caebb6801545a290e393d6dfa1249f
+forgot c2f196f872a94a40b389d66ff3534925
+forgot 20a654e69cbc47e8a2293ec0bc5c5dc1
+forgot ca0e7f8591354a67b8a6f60079646c14
+forgot 8b0419395b7f445faf884027fe6de6d6
+forgot 25f6eed8a1544c5bb2cc4a519eef91da
+forgot 4757d1e684654737aba56520f6eaf07b
+forgot 71bd9434271048408491b2118ed8fc90
+forgot 8d4366f6fcb846cea94d1b41de4aa47a
+forgot c01a609e04df43b6988ff0d31e950cec
+forgot 3300ee452dd842199f0476810f559574
+forgot 6e0dd66bdc1645b389efe6ceea9050b3
+forgot 8255358778ff4de79671b580f4ee0a8b
+forgot b196517a7a15462b90fb9ef5838b8b36
+forgot afe17939dddb4da38a76f4f520f4f803
+forgot 2673b3cb6d4d4684bdc6abea0834855d
+forgot 0a3fbe866d46490e8b401573b91f8c93
+forgot 85d65ee242224161a2b5c4d73fc800a1
+forgot 93d7ee46fdb04c79bb99c42ab4989141
+forgot 537bfc1b87fd4169b9eb34dc8596c0fc
+forgot e001c47665464851b98a382b8a43fad2
+forgot 47f7e7f4fde7408b833b2c0d860b0e6f
+forgot 26d8475aabe9448db08fbd1bd91ff938
+forgot 671750fea35f4795a47d5f23803a769f
+forgot 4b4cd7342b6642c3bf019d024c5b3978
+forgot a65083f4052e49d784efb97cd947579a
+forgot 8068fab16bfc43738261eb3ba2b83b70
+forgot f8fae08d79874011b7d9442d1c5a7298
+forgot a8a14d627a574c19976a62e2dd374f26
+forgot 47aa56d2b4674343ba2fe4bc7f18bbf5
+forgot 0a0cae37b9de44c2ad504e1237fb9f84
+forgot bfbd039ab6b543eb85664d77bd9ed550
+forgot a08e6d06ad7744c5b7ee48a504c2667d
+forgot ea2eb7f8eb924e029988081e734699d4
+forgot f42b361948164f6186441267ad34ea8d
+forgot e5a09c6bd9034973ae3bb9ad53e901e9
+forgot eeb93193dd3e4363b2c4c8c6b661f832
+forgot 9e064c990c3c40d5b89e87506e5a1fd5
+forgot 4b5e5347e0794fc1880fe693efcd1389
+forgot c611f980e1c84fe2b53db7f3a3c8e947
+forgot 448ecc165db94d8892312b770fd779ba
+forgot 3ea0306a824d4390af16a199faac4db8
+forgot d66ecc2fd4be41368c0d1989cfd16902
+============================== 11 passed in 7.29s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_lctt_ad3.py"
+size = 2682
+status = "measured"
+test_count = 11
+tests_digest = "e169a4e93e952232aca9405033e40bc8f417f195f132e187338e0956d675fec4"
+at = "2026-11-09T03:32:21Z"
+actor = "lognd"
+rev = 1

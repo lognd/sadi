@@ -28,6 +28,7 @@ _log = get_logger(__name__)
 _ABI_MARKERS = ("PyInit", "GLIBC_", "dlopen", "DLL load failed", "incompatible architecture")
 IMPORT_TIMEOUT_S = 20.0
 SELFTEST_TIMEOUT_S = 10.0
+PORT_ENV = "SADI_PORT"
 CHILD_TIMEOUT_S = 10.0
 
 INFO_SCRIPT = (
@@ -270,18 +271,44 @@ def _ext_030_missing(ctx: Ctx, out: Outcome) -> Fix:
     depends_on=("EXT-010",),
 )
 def ext_040(ctx: Ctx) -> Outcome:
-    """Warn when the extension lacks udev, so ports cannot be matched by VID/PID."""
+    """Warn when udev is missing and no explicit port works; an explicit working port is a pass."""
     got = child_json(ctx, FEATURES_SCRIPT)
     if got.is_err:
         return _unreadable("its serial features", got.unwrap_err())
     features = [str(f) for f in got.unwrap()]
-    if "udev" not in features:
+    if "udev" in features:
+        return ok("sadi_py has udev support", features=features)
+    port = explicit_port(ctx)  # frob:ticket 01M6Z5G0SEZ5PNGG11RYBAN6G3
+    if port is None:
+        _log.info("EXT-040: no udev and no explicit port configured")
         return warn(
             "no-udev-feature",
             "sadi_py has no udev support; use an explicit --port",
             features=features,
         )
-    return ok("sadi_py has udev support", features=features)
+    facts = ctx.probes.device_facts(port, 0, False)
+    if facts.open_status == "ok" and facts.query_status == "ok":
+        _log.info("EXT-040: enumeration unsupported but explicit port %s answers", port)
+        return ok(
+            f"Enumeration unsupported (no udev); explicit port {port} answers",
+            features=features,
+            enumeration="unsupported",
+            port=port,
+        )
+    _log.warning("EXT-040: explicit port %s did not answer: %s", port, facts.open_status)
+    return warn(
+        "no-udev-feature",
+        f"sadi_py has no udev support and explicit port {port} did not answer",
+        features=features,
+        enumeration="unsupported",
+        port=port,
+        open_status=facts.open_status,
+    )
+
+
+def explicit_port(ctx: Ctx) -> str | None:
+    """Return the port named by --port, else SADI_PORT, else None (auto-detect)."""
+    return ctx.options.port or ctx.probes.env().get(PORT_ENV) or None
 
 
 @remedy("EXT-040", "no-udev-feature")
@@ -305,8 +332,12 @@ def _ext_040_udev(ctx: Ctx, out: Outcome) -> Fix:
             ),
             _build_steps(ctx),
             manual(
-                "Until then, pass the serial port explicitly.",
-                "SADI connects when started with --port.",
+                "Until then, find your board's port (for example `ls -l /dev/ttyUSB*`).",
+                "One ttyUSB or ttyACM entry appears when the board is plugged in.",
+            ),
+            manual(
+                "Pass that port explicitly, via --port or the SADI_PORT environment variable.",
+                "`sadi-doctor --port <port>` reports the port answers; SADI connects with --port.",
             ),
         ),
     )

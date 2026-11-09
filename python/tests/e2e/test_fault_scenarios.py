@@ -11,9 +11,10 @@ from numpy.typing import NDArray
 
 pytest.importorskip("sadi_py", reason="native extension not built")
 
+from sadi.bench.lctt_source import AdcModel
 from sadi.labs.lctt.saturation import SaturationConfig, check_saturation
 from sadi.labs.lctt.settle_stream import SettleState
-from sadi.labs.lctt.slip import SlipEvent, detect_slip
+from sadi.labs.lctt.slip import SlipEvent, detect_slip, slip_config_from_adc
 from sadi.logging_setup import get_logger
 from sadi.store.records import RecordType, decode_raw_junk
 from tests.e2e.harness import (
@@ -75,7 +76,10 @@ def _slip_events(run: Run) -> list[SlipEvent]:
     hold = t > LOAD_AT_S + 0.01
     base = float(v[t < LOAD_AT_S - 0.01].mean())
     strain = (v[hold] - base) * STRAIN_PER_V
-    res = detect_slip(t[hold].tolist(), strain.tolist(), LOAD_AT_S)
+    # Quantised stream: the physical noise floor is one ADC LSB, not the 1e-12 default.
+    cfg = slip_config_from_adc(AdcModel().full_scale_v, STRAIN_PER_V)
+    assert cfg.is_ok, cfg
+    res = detect_slip(t[hold].tolist(), strain.tolist(), LOAD_AT_S, config=cfg.danger_ok)
     assert res.is_ok, res
     return list(res.danger_ok.events)
 

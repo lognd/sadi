@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["SIGTERM with a raising log handler still closes the AD3 exactly once and exits 128+signum"]
+moved = []
+at = "2026-11-09T03:40:41Z"
+actor = "lognd"
+rev = 1

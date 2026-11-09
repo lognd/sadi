@@ -206,6 +206,13 @@ def _dev_010_io(ctx: Ctx, out: Outcome) -> Fix:
     )
 
 
+def _tried(facts: DeviceFacts) -> str:
+    """Suffix naming every port tried (an FT2232 has two channels), or empty."""
+    if len(facts.port_results) < 2:
+        return ""
+    return " on any of " + ", ".join(r.split(":", 1)[0] for r in facts.port_results)
+
+
 def _fw_known(version: str) -> bool:
     """True when the firmware version string matches a known release."""
     try:
@@ -236,7 +243,11 @@ def dev_020(ctx: Ctx) -> Outcome:
         return skip(SkipReason.PREREQUISITE_FAILED, "The port did not open (see DEV-010)")
     if facts.query_status == "no-reply":
         return fail(
-            "no-reply", "The board did not answer", port=facts.port, detail=facts.stream_detail
+            "no-reply",
+            "The board did not answer" + _tried(facts),
+            port=facts.port,
+            detail=facts.stream_detail,
+            ports_tried=list(facts.port_results),
         )
     if facts.query_status == "garbage":
         return fail(
@@ -245,6 +256,7 @@ def dev_020(ctx: Ctx) -> Outcome:
             port=facts.port,
             reply_hex=facts.reply_hex[:128],
             detail=facts.stream_detail,
+            ports_tried=list(facts.port_results),
         )
     if not _fw_known(facts.fw_version):
         return warn(
@@ -252,7 +264,12 @@ def dev_020(ctx: Ctx) -> Outcome:
             f"Firmware {facts.fw_version} is not 1.003 or 3.41",
             firmware=facts.fw_version,
         )
-    return ok(f"Board answered, firmware {facts.fw_version}", firmware=facts.fw_version)
+    return ok(
+        f"Board answered on {facts.port}, firmware {facts.fw_version}",
+        firmware=facts.fw_version,
+        port=facts.port,
+        ports_tried=list(facts.port_results),
+    )
 
 
 @remedy("DEV-020", "no-reply")
@@ -266,9 +283,12 @@ def _dev_020_silent(ctx: Ctx, out: Outcome) -> Fix:
                 "The power LED is lit.",
             ),
             manual(
-                "On a multi-channel board, confirm the channel selector matches the channel "
-                "SADI is wired to.",
-                "The selector points at the connected channel.",
+                "An FT2232 board shows two serial ports (channel A and B) and SADI answers on "
+                "only one, normally the lower-numbered (channel A). The doctor tries every "
+                "FTDI port; the per-port results are in the evidence (ports_tried). If every "
+                "port is silent the board is unpowered, not flashed, or not attached here.",
+                "At least one port answers when probed with `--port <that port>`.",
+                if_not="On WSL, re-attach the device with usbipd and re-run.",
             ),
             _list_ports_step(ctx),
             _power_cycle_step(),

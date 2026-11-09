@@ -1361,3 +1361,62 @@ def test_usb_070_passes_when_class_path_reads_2() -> None:
     report = _run(p, Os.LINUX, data_root=ROOT, allow_network_fs=False, api_port=8000)
     result = next(r for r in report.results if r.id == "USB-070")
     assert result.status is Status.PASS
+
+
+# frob:tests python/sadi/doctor/devprobe.py::probe_device
+# frob:tests python/sadi/doctor/devprobe.py::_pick_ports
+# frob:tests python/sadi/doctor/checks/dev.py::dev_020
+def test_probe_device_tries_both_ft2232_channels(monkeypatch: pytest.MonkeyPatch) -> None:
+    """frob:ticket 01M6Z1VM8TA5ZF8F05QG0ZFJH3 - silent channel B is skipped; channel A answers; all outcomes kept."""
+    import sys
+    import types
+
+    class CommandTimeoutError(Exception):
+        detail = "query timed out"
+
+    class Sess:
+        def __init__(self, ok: bool) -> None:
+            self.ok = ok
+
+        def connect(self) -> None: ...
+
+        def query(self) -> object:
+            if not self.ok:
+                raise CommandTimeoutError()
+            state = "DeviceState.BOOTED"  # native enum: no .name attribute
+            return types.SimpleNamespace(fw_version=1.003, state=state, state_byte=1)
+
+        def close(self) -> None: ...
+
+    def port(name: str) -> object:
+        return types.SimpleNamespace(name=name, vid=0x0403)
+
+    fake = types.SimpleNamespace(
+        ports=lambda: [port("/dev/ttyUSB1"), port("/dev/ttyUSB0")],
+        SessionConfig=lambda **kw: kw,
+        Handshake=types.SimpleNamespace(QUERY_ONLY=1),
+        open_serial=lambda p, cfg: Sess(p == "/dev/ttyUSB0"),
+    )
+    monkeypatch.setitem(sys.modules, "sadi_py", fake)
+    from sadi.doctor.devprobe import probe_device
+
+    got = probe_device(None, 0, False)
+    assert got.port == "/dev/ttyUSB0" and got.query_status == "ok"
+    assert got.fw_version == "1.003" and len(got.port_results) == 1
+
+    fake.open_serial = lambda p, cfg: Sess(p == "/dev/ttyUSB1")
+    got = probe_device(None, 0, False)
+    assert got.port == "/dev/ttyUSB1" and len(got.port_results) == 2
+    assert "silent" in got.port_results[0] and "answered" in got.port_results[1]
+
+    fake.open_serial = lambda p, cfg: Sess(False)
+    got = probe_device(None, 0, False)
+    assert got.query_status == "no-reply" and len(got.port_results) == 2
+    p = healthy()
+    p.device = got
+    report = _run(p, Os.WSL, data_root=ROOT, stream_seconds=0, with_reset=False)
+    res = next(r for r in report.results if r.id == "DEV-020")
+    assert res.mode == "no-reply" and "/dev/ttyUSB0, /dev/ttyUSB1" in res.headline
+
+    got = probe_device("/dev/ttyUSB1", 0, False)
+    assert got.port_results == (got.port_results[0],) and "silent" in got.port_results[0]

@@ -5,6 +5,7 @@ informational result) on a machine without the native binding or a board.
 """
 
 # frob:ticket 01M6WJHVRVS94M67F41C3P2BMG
+# frob:ticket 01M6Z1VM8TA5ZF8F05QG0ZFJH3
 from __future__ import annotations
 
 import time
@@ -36,6 +37,7 @@ class DeviceFacts(BaseModel):
     model_config = ConfigDict(frozen=True)
     ports: tuple[str, ...] = ()
     port: str | None = None
+    port_results: tuple[str, ...] = ()
     open_status: OpenStatus = "no-device"
     open_detail: str = ""
     query_status: QueryStatus = "not-run"
@@ -77,14 +79,73 @@ def _classify_open(detail: str) -> OpenStatus:
     return "io-error"
 
 
-def _pick_port(sp: Any, wanted: str | None) -> tuple[tuple[str, ...], str | None]:
-    """Return (all port names, the port to use): the requested one, else the first FTDI."""
+def _pick_ports(sp: Any, wanted: str | None) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Return (all port names, ports to try): the requested one, else every FTDI port sorted.
+
+    An FT2232 exposes two serial ports (channels A and B); SADI sits on only one.
+    """
     infos = sp.ports()
     names: tuple[str, ...] = tuple(str(p.name) for p in infos)
     if wanted is not None:
-        return names, wanted
-    ftdi = [str(p.name) for p in infos if p.vid == FTDI_VID]
-    return names, (ftdi[0] if ftdi else None)
+        return names, (wanted,)
+    return names, tuple(sorted(str(p.name) for p in infos if p.vid == FTDI_VID))
+
+
+def _query_port(sp: Any, port: str, cfg: Any) -> tuple[Any, dict[str, object]]:
+    """Open `port` and query it; return (session or None, facts so far). Read-only."""
+    try:
+        sess = sp.open_serial(port, cfg)
+    except Exception as exc:  # noqa: BLE001 - classified by text below
+        detail = getattr(exc, "detail", str(exc))
+        _log.info("open %s failed: %s", port, detail)
+        return None, {
+            "port": port,
+            "open_status": _classify_open(detail),
+            "open_detail": detail,
+        }
+    facts: dict[str, object] = {"port": port, "open_status": "ok"}
+    try:
+        sess.connect()
+        info = sess.query()
+    except Exception as exc:  # noqa: BLE001 - no reply vs garbage by error kind
+        garbage = type(exc).__name__ == "CodecFailure"
+        facts["query_status"] = "garbage" if garbage else "no-reply"
+        facts["stream_detail"] = getattr(exc, "detail", str(exc))
+        _close(sess)
+        return None, facts
+    facts.update(
+        query_status="ok",
+        fw_version=f"{info.fw_version:.3f}",
+        state=_state_name(info.state),
+        state_byte=info.state_byte,
+    )
+    return sess, facts
+
+
+def _state_name(state: Any) -> str:
+    """Lower-case name of a DeviceState; the native enum has no `.name`, so parse its str."""
+    return str(getattr(state, "name", None) or str(state).rsplit(".", 1)[-1]).lower()
+
+
+def _close(sess: Any) -> None:
+    """Close a session, best effort."""
+    try:
+        sess.close()
+    except Exception as exc:  # noqa: BLE001 - closing is best effort
+        _log.warning("close failed: %s", exc)
+
+
+def _summarize(facts: dict[str, object]) -> str:
+    """One line saying what a probed port did, for the per-port diagnosis."""
+    port = facts["port"]
+    if facts["open_status"] != "ok":
+        return f"{port}: did not open ({facts['open_status']}: {facts.get('open_detail', '')})"
+    status = facts.get("query_status")
+    if status == "ok":
+        return f"{port}: answered, firmware {facts['fw_version']}"
+    if status == "garbage":
+        return f"{port}: bytes arrived but no valid reply ({facts.get('stream_detail', '')})"
+    return f"{port}: silent ({facts.get('stream_detail', '')})"
 
 
 def _stream(sp: Any, sess: Any, seconds: int) -> dict[str, object]:
@@ -136,44 +197,37 @@ def _reset(sess: Any) -> dict[str, object]:
 
 
 def probe_device(port: str | None, stream_seconds: int, with_reset: bool) -> DeviceFacts:
-    """Open the board, query it and optionally stream or reset; never raises, never writes data."""
+    """Open the board, query it and optionally stream or reset; never raises, never writes data.
+
+    With no explicit port every FTDI port is tried in order (an FT2232 has two channels, only
+    one wired to SADI); the first that answers is used and each port's outcome is recorded.
+    """
     try:
         import sadi_py as sp
     except ImportError as exc:
         return DeviceFacts(open_status="no-device", open_detail=f"sadi_py not importable: {exc}")
     try:
-        names, chosen = _pick_port(sp, port)
+        names, candidates = _pick_ports(sp, port)
     except Exception as exc:  # noqa: BLE001 - enumeration failure degrades to no device
         _log.warning("port enumeration failed: %s", exc)
         return DeviceFacts(open_status="no-device", open_detail=f"port listing failed: {exc}")
-    if chosen is None:
+    if not candidates:
         return DeviceFacts(ports=names, open_status="no-device", open_detail="no serial port")
     cfg = sp.SessionConfig(handshake=sp.Handshake.QUERY_ONLY)
+    results: list[str] = []
+    sess: Any = None
+    facts: dict[str, object] = {}
+    for cand in candidates:
+        sess, facts = _query_port(sp, cand, cfg)
+        results.append(_summarize(facts))
+        _log.info("probe %s: %s", cand, results[-1])
+        if sess is not None:
+            break
+    facts.update(ports=names, port_results=tuple(results))
+    if sess is None:
+        return DeviceFacts.model_validate(facts)
     try:
-        sess = sp.open_serial(chosen, cfg)
-    except Exception as exc:  # noqa: BLE001 - classified by text below
-        detail = getattr(exc, "detail", str(exc))
-        _log.info("open %s failed: %s", chosen, detail)
-        return DeviceFacts(
-            ports=names, port=chosen, open_status=_classify_open(detail), open_detail=detail
-        )
-    facts: dict[str, object] = {"ports": names, "port": chosen, "open_status": "ok"}
-    try:
-        try:
-            sess.connect()
-            info = sess.query()
-        except Exception as exc:  # noqa: BLE001 - no reply vs garbage by error kind
-            garbage = type(exc).__name__ == "CodecFailure"
-            facts["query_status"] = "garbage" if garbage else "no-reply"
-            facts["stream_detail"] = getattr(exc, "detail", str(exc))
-            return DeviceFacts.model_validate(facts)
-        facts.update(
-            query_status="ok",
-            fw_version=f"{info.fw_version:.3f}",
-            state=info.state.name.lower(),
-            state_byte=info.state_byte,
-        )
-        if stream_seconds > 0 and info.state.name != "RUNNING":
+        if stream_seconds > 0 and facts["state"] != "running":
             try:
                 facts.update(_stream(sp, sess, stream_seconds))
             except Exception as exc:  # noqa: BLE001 - stream failure is a fact, not a crash
@@ -181,10 +235,7 @@ def probe_device(port: str | None, stream_seconds: int, with_reset: bool) -> Dev
         if with_reset:
             facts.update(_reset(sess))
     finally:
-        try:
-            sess.close()
-        except Exception as exc:  # noqa: BLE001 - closing is best effort
-            _log.warning("close failed: %s", exc)
+        _close(sess)
     return DeviceFacts.model_validate(facts)
 
 

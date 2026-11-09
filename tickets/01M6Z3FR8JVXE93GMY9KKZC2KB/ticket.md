@@ -7,8 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T02:51:35Z"
-updated = "2026-11-09T02:59:36Z"
+updated = "2026-11-09T02:59:45Z"
 scope = ["python/tests/e2e/test_lctt_ad3.py", "python/tests/e2e/test_lctt_ad3_yield_mc.py", "docs/bench/lctt-ad3-matrix.md"]
+
+[[acceptance]]
+text = "Given an AD3-driven plastic ramp, when LCTT results are recomputed, then yield stress matches the analytic crossing and Monte Carlo agrees with RSS"
+bound = false
 +++
 
 found while working GHQ8PEY

@@ -2,7 +2,8 @@
 id = "01M708R6FQ6BWZ4006185C0R1D"
 title = "ci: windows rust paced_clock_sleeps_in_real_time gets 12 packets, expects exactly 11"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

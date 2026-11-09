@@ -2,7 +2,8 @@
 id = "01M709DXGS91GPWZ3M06FWXJPY"
 title = "ci: macos browser e2e: guided-run gets 409 acquisition_halted (saving failed), then port 8765 left busy for later specs"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

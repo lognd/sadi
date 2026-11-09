@@ -4,7 +4,8 @@ title = "docs: top-level README quick-start for making a plugin and using the sa
 type = "docs"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:16:08Z"
+updated = "2026-11-09T11:16:27Z"
 +++

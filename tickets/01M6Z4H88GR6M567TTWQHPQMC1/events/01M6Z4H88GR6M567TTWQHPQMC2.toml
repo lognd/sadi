@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor USB-070: step-by-step fix for FTDI latency_timer 16 -> 2 on WSL (udev/sysfs, read-only guidance plus fix --apply command)"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "usb070-latency"
+at = "2026-11-09T03:09:53Z"
+actor = "lognd"
+rev = 1

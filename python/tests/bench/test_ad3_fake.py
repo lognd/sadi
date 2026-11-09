@@ -327,3 +327,52 @@ def test_sadi_pins_match_bench_wiring() -> None:
     assert (SADI_PINS.load.out_channel, SADI_PINS.load.sadi_channel) == (1, 2)
     assert SADI_PINS.load.polarity == "negative"
     assert SADI_PINS.supply_scope_channel == 0
+
+
+# frob:ticket 01M6Z3FR6FP6TTP9BW4MHJSE85
+def _stream_fake(mode: AcqMode) -> tuple[FakeDwf, object]:
+    """Build an opened fake armed in `mode` with a 1 kHz ramp on ch 0 sampled at 4 kHz."""
+    f = FakeDwf()
+    dev = f.open(0).unwrap()
+    ch, node = Channel(0), OutNode.CARRIER
+    f.out_node_enable(dev, ch, node, True)
+    f.out_node_function(dev, ch, node, WaveFunction.RAMP_UP)
+    f.out_node_frequency(dev, ch, node, 1000.0)
+    f.out_node_amplitude(dev, ch, node, 1.0)
+    f.out_configure(dev, ch, True)
+    f.in_channel_enable(dev, ch, True)
+    f.in_channel_range(dev, ch, 10.0)
+    f.in_frequency(dev, 2000.0)
+    f.in_buffer_size(dev, 3)
+    assert isinstance(f.in_acquisition_mode(dev, mode), Ok)
+    assert isinstance(f.in_configure(dev, True, True), Ok)
+    return f, dev
+
+
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
+@pytest.mark.parametrize("mode", [AcqMode.RECORD, AcqMode.SCAN_SCREEN, AcqMode.SCAN_SHIFT])
+def test_streaming_blocks_are_phase_continuous(mode: AcqMode) -> None:
+    """Streaming polls stay TRIGGERED and latch contiguous blocks of one waveform."""
+    f, dev = _stream_fake(mode)
+    ch = Channel(0)
+    got: list[float] = []
+    for _ in range(3):
+        assert f.in_status(dev, True).unwrap() == AcqState.TRIGGERED
+        got += f.in_data(dev, ch, 3).unwrap()
+    # 2 kHz sampling of a 1 kHz ramp alternates between 2 phases (-1, 0)
+    assert got == pytest.approx([-1.0, 0.0] * 4 + [-1.0])
+    # polls without read_data do not advance the stream
+    assert f.in_status(dev, False).unwrap() == AcqState.TRIGGERED
+    # re-arming restarts the stream
+    f.in_configure(dev, True, True)
+    f.in_status(dev, True)
+    assert f.in_data(dev, ch, 1).unwrap() == pytest.approx([-1.0])
+
+
+# frob:tests python/sadi/bench/ad3/fake.py::FakeDwf
+def test_unsupported_mode_rejected() -> None:
+    """Oversample stays unsupported and is reported as a value."""
+    f = FakeDwf()
+    dev = f.open(0).unwrap()
+    res = f.in_acquisition_mode(dev, AcqMode.OVERSAMPLE)
+    assert isinstance(res, Err)

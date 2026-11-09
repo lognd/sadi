@@ -7,6 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T02:41:23Z"
-updated = "2026-11-09T02:41:26Z"
+updated = "2026-11-09T02:41:56Z"
 idempotency_key = "ad3-docs-no-apt"
+scope = ["docs/bench/ad3.md"]
 +++

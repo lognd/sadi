@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:43:08Z"
 updated = "2026-11-09T02:55:13Z"
 idempotency_key = "ad3-facade-hardening"
-scope = ["python/sadi/bench/ad3/**", "python/tests/bench/**"]
+scope = ["python/sadi/bench/ad3/**", "python/tests/bench/**", "docs/bench/ad3.md"]
 +++

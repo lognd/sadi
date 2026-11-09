@@ -4,6 +4,7 @@ title = "Migrate launcher.open_sim_device and doctor hostprobe/probes/checks/ext
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:09:53Z"
 updated = "2026-11-09T03:09:53Z"

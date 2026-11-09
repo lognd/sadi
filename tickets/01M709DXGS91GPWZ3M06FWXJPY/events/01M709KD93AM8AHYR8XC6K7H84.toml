@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/core/device.py", "web/e2e/fixtures.ts", "python/tests/core/test_device.py"]
+new = ["python/sadi/core/device.py", "web/e2e/fixtures.ts", "python/tests/core/test_device.py", "changelog.d/01M709DXGS91GPWZ3M06FWXJPY.changed.md"]
+at = "2026-11-09T13:57:41Z"
+actor = "lognd"
+rev = 1

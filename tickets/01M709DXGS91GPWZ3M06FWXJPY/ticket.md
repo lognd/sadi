@@ -7,6 +7,6 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T13:54:41Z"
-updated = "2026-11-09T13:56:11Z"
-scope = ["python/sadi/core/device.py", "web/e2e/fixtures.ts", "python/tests/core/test_device.py"]
+updated = "2026-11-09T13:57:41Z"
+scope = ["python/sadi/core/device.py", "web/e2e/fixtures.ts", "python/tests/core/test_device.py", "changelog.d/01M709DXGS91GPWZ3M06FWXJPY.changed.md"]
 +++

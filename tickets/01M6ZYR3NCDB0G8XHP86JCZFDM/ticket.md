@@ -4,8 +4,9 @@ title = "docs: organize into one grouped index (merge README.md and index.md)"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T10:48:00Z"
-updated = "2026-11-09T10:48:00Z"
+updated = "2026-11-09T10:48:01Z"
 idempotency_key = "docs-organize-index"
 +++

@@ -4,8 +4,9 @@ title = "sadi_py/pyserial boundary facade: wrap device access so no third-party 
 type = "task"
 category = "todo"
 priority = "medium"
+points = 5
 reporter = "lognd"
 created = "2026-11-09T02:43:08Z"
-updated = "2026-11-09T02:43:08Z"
+updated = "2026-11-09T02:43:10Z"
 idempotency_key = "sadi-py-facade"
 +++

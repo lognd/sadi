@@ -5,6 +5,7 @@
 # frob:ticket 01M6W7RAW944RFCMESYZKJSYXC
 # frob:ticket 01M6WTZVX9DFPHBKVJ1NXB07G0
 # frob:ticket 01M6X06TPZ3W86FDHQPX01MME8
+# frob:ticket 01M6Z52N7A69ET20H5GMS8S7BG
 from __future__ import annotations
 
 import argparse
@@ -37,6 +38,7 @@ from sadi.logging_setup import get_logger
 # a spawn-context worker re-imports the entry script, and WRK-010 requires that child to
 # stay free of sadi.store.
 if TYPE_CHECKING:
+    from sadi.bench.ad3.launch import Ad3Guard
     from sadi.core.device import DeviceService  # frob:ticket 01M6Z4AH5A8BTYYG8G7FEV63Y8
     from sadi.core.registry import LabRegistry
     from sadi.plugins.registry import PluginRegistry
@@ -52,6 +54,7 @@ DEFAULT_WEB_DIST = Path("web") / "dist"
 EXIT_SELFTEST = 4
 EXIT_PORT = 5
 EXIT_DEVICE = 6
+EXIT_AD3 = 7
 SIM_ENV = "SADI_SIM"
 APP_NAME = "sadi"
 BROWSER_WAIT_S = 15.0
@@ -299,6 +302,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     serve.add_argument("--no-browser", action="store_true", help="do not open the browser")
     serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
+    serve.add_argument("--ad3", action="store_true", help="open the Digilent AD3 (closed on exit)")
     serve.add_argument("--selftest", action="store_true", help="run a simulator acquisition, exit")
     serve.add_argument("--version", action="store_true", help="print the version and exit")
     serve.add_argument(
@@ -350,6 +354,33 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _err(f"sadi: {opened.danger_err}\n")
             return EXIT_DEVICE
         device = opened.danger_ok
+    from sadi.bench.ad3.launch import ad3_requested, open_managed_ad3
+
+    ad3: Ad3Guard | None = None
+    if ad3_requested(args.ad3):
+        _log.info("ad3 requested")
+        got_ad3 = open_managed_ad3()
+        if got_ad3.is_err:
+            _err(f"sadi: {got_ad3.danger_err}\n")
+            if device is not None:
+                device.close()
+            return EXIT_AD3
+        ad3 = got_ad3.danger_ok
+    try:
+        return _serve_app(args, serve, data_root, port, device)
+    finally:
+        if ad3 is not None:
+            ad3.close()
+
+
+def _serve_app(
+    args: argparse.Namespace,
+    serve: Serve,
+    data_root: Path,
+    port: int,
+    device: DeviceService | None,
+) -> int:
+    """Build the app, mount the web and serve; return the exit code."""
     from sadi.core.pipeline import Bus
     from sadi.server.app import AppSettings, RootLockStartupError, create_app
     from sadi.server.live import LiveAcquisition

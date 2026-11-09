@@ -3,12 +3,12 @@
 # frob:ticket 01M6Z4EQZNMV31NM299XC9RPS4
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from typani import Err, Ok
 
+from sadi.bench.ad3.backend import DwfBackend, DwfCode
 from sadi.bench.ad3.consts import AcqState
-from sadi.bench.ad3.backend import DwfCode
 from sadi.bench.inject import capture
 from tests.e2e.ad3_flow import make_fake
 
@@ -42,7 +42,7 @@ def test_capture_waits_through_prefill_and_armed() -> None:
     """Capture polls past PREFILL/ARMED and then returns the full sample count."""
     slow = _SlowFake(make_fake(), pending=5)
     dev = slow.open(0).danger_ok
-    res = capture(slow, dev, 0, 1000.0, 50)
+    res = capture(cast(DwfBackend, slow), dev, 0, 1000.0, 50)
     slow.close(dev)
     assert isinstance(res, Ok) and len(res.unwrap()) == 50
     assert slow.polls > 5
@@ -54,6 +54,6 @@ def test_capture_times_out_when_never_done(monkeypatch: Any) -> None:
     monkeypatch.setattr("sadi.bench.inject._CAPTURE_MARGIN_S", 0.05)
     stuck = _NeverDone(make_fake(), pending=0)
     dev = stuck.open(0).danger_ok
-    res = capture(stuck, dev, 0, 1000.0, 10)
+    res = capture(cast(DwfBackend, stuck), dev, 0, 1000.0, 10)
     stuck.close(dev)
     assert isinstance(res, Err) and res.unwrap_err().code == DwfCode.TIMEOUT

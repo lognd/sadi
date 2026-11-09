@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T03:28:38Z"
+digest = "f49ec5e5d773667437120233fe748d5dc86d7a507474b7348f2df5598e27d7bb"
+exit_code = 0
+head = "182210f60df6840df2c2d0f9387a8d9090d008ca"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/bench/test_inject_capture_wait.py ..                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-705090-0.xml ---------------
+============================== 2 passed in 1.99s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_inject_capture_wait.py"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "a09da53b0c9320504db244a29e4b70b6498ffae944ce30dab8fe98aa0b3ae8b2"
+at = "2026-11-09T03:28:38Z"
+actor = "lognd"
+rev = 1

@@ -60,7 +60,7 @@ BOARD_FULL_SCALE_V = 5.12
 
 
 class AdcModel(BaseModel):
-    """Ideal SADI ADC input range: full scale in volts (bipolar 16 bit, defaults to the real +-5.12 V board)."""
+    """Ideal SADI ADC input range: full scale in volts (bipolar 16 bit, real board +-5.12 V)."""
 
     model_config = ConfigDict(frozen=True)
 

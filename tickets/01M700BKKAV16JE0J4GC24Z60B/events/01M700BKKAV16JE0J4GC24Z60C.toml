@@ -1,0 +1,8 @@
+kind = "create"
+title = "ci: cargo fmt drift in sadi-proto codec/v3 command.rs and sadi-py sim.rs"
+type = "bug"
+category = "todo"
+priority = "medium"
+at = "2026-11-09T11:16:08Z"
+actor = "lognd"
+rev = 1

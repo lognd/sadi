@@ -2,7 +2,8 @@
 id = "01M6Z32CP3XANNZ4ZRNGHQ8PEY"
 title = "E2E: run the full LCTT test flow (calibration, zero, load ramp, hold, unload, export, recovery) with the AD3 (DAD) producing the test voltages; fake-backed in CI, hardware-marked live"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 8
 reporter = "lognd"

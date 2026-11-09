@@ -2,7 +2,8 @@
 id = "01M6Z3FR8JVXE93GMY9KKZC2KB"
 title = "AD3 LCTT E2E: untested stages (yield stress, Monte Carlo uncertainty)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

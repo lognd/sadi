@@ -7,6 +7,6 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T12:36:44Z"
-updated = "2026-11-09T12:38:39Z"
+updated = "2026-11-09T12:38:41Z"
 scope = ["python/pyproject.toml"]
 +++

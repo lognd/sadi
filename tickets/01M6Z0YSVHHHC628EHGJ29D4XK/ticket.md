@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
 updated = "2026-11-09T02:14:18Z"
 idempotency_key = "usb080"
-scope = ["docs/doctor-checks.md", "python/sadi/doctor/checks/usb.py"]
+scope = ["docs/doctor-checks.md", "python/sadi/doctor/checks/usb.py", "python/tests/doctor/test_sadi_doctor.py"]
 +++

@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:37:31Z"
-updated = "2026-11-09T03:39:01Z"
+updated = "2026-11-09T03:39:44Z"
 idempotency_key = "gap-slip-callers-tests"
 scope = ["python/tests/e2e/test_fault_scenarios.py", "python/tests/labs/lctt/test_real_data.py"]
 

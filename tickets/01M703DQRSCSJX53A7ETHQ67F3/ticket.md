@@ -2,12 +2,12 @@
 id = "01M703DQRSCSJX53A7ETHQ67F3"
 title = "ci: typani TYP007 in jobs/testing.py and macOS python test failures"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:43Z"
-updated = "2026-11-09T12:09:43Z"
+updated = "2026-11-09T12:09:47Z"
 
 [[acceptance]]
 text = "typani lint clean; the 3 macOS tests pass logic-wise on Linux and path handling is symlink-safe"

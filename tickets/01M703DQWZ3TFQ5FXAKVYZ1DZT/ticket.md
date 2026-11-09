@@ -7,7 +7,8 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:09:51Z"
+updated = "2026-11-09T12:12:24Z"
+scope = ["python/tests/crash/**"]
 
 [[acceptance]]
 text = "bounded-retry for lock release and manifest read in harness (or product if real bug); Linux crash suite still passes; no invariant weakened"

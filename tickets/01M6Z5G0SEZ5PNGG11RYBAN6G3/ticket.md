@@ -4,8 +4,9 @@ title = "Doctor EXT-040: probe SADI via explicit --port / SADI_PORT when sadi_py
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:26:41Z"
-updated = "2026-11-09T03:26:41Z"
+updated = "2026-11-09T03:26:42Z"
 idempotency_key = "gap-ext040-port"
 +++

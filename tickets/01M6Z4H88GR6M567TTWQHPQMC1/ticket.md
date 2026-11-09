@@ -4,6 +4,7 @@ title = "doctor USB-070: step-by-step fix for FTDI latency_timer 16 -> 2 on WSL 
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:09:53Z"
 updated = "2026-11-09T03:09:53Z"

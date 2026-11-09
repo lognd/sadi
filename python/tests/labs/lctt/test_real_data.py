@@ -50,6 +50,8 @@ def _points() -> tuple[list[float], list[float]]:
     return [p[0] for p in pairs], [p[1] for p in pairs]
 
 
+# No ADC LSB is knowable for the recorded strain column (post-processed, no range/bits in the
+# fixture), so these tests keep the default noise_floor rather than guess one.
 def _series() -> tuple[list[float], list[float], list[float]]:
     """Read (t, load, strain) columns of the real local short-run file time series."""
     with (FIX / "short_data_series.csv").open(newline="", encoding="ascii") as fh:

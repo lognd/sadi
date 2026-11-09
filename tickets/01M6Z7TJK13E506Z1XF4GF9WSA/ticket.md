@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T04:07:24Z"
-updated = "2026-11-09T04:07:27Z"
+updated = "2026-11-09T04:12:58Z"
 idempotency_key = "gap-sigterm-flaky-fullsuite"
+
+[[acceptance]]
+text = "tests/bench/test_ad3_launch_signals.py passes repeatedly under CPU load (root cause: print(READY) race fixed in a64c64f5)"
+bound = false
 +++

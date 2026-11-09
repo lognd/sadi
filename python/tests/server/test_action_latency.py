@@ -17,6 +17,7 @@ from sadi.server.app import AppSettings, create_app
 from sadi.server.service import SessionService
 from sadi.store.events import recover_state
 from sadi.store.records import NewRecord, RecordType, encode_raw_block
+from sadi.store.writer_thread import Backpressure
 
 WINDOW = {"first_raw_seq": 1, "last_raw_seq": 5}
 RAW_RECORDS = 200_000
@@ -47,7 +48,10 @@ def test_actions_do_not_scale_with_raw_record_count(client: TestClient, tmp_path
     last = 0
     for _ in range(RAW_RECORDS):
         sub = writer.submit(raw)
-        assert sub.is_ok
+        while sub.is_err:  # slow disks (Windows fsync) fill the queue: drain, then retry
+            assert isinstance(sub.danger_err, Backpressure), sub
+            assert writer.wait_durable(last, 120.0).is_ok
+            sub = writer.submit(raw)
         last = sub.danger_ok
     assert writer.wait_durable(last, 120.0).is_ok
 

@@ -13,8 +13,8 @@ from sadi.doctor.steps import action, cmd
     Layer.WEB,
     "Built UI bundle present",
     Severity.BLOCKER,
-    {"missing-bundle": "sadi/web/dist/index.html is absent or empty"},
-    "sadi/web/dist/index.html exists and is non-empty",
+    {"missing-bundle": "No non-empty index.html in sadi/_ui or web/dist"},
+    "sadi/_ui/index.html (else web/dist/index.html) exists and is non-empty",
 )
 def web_010(ctx: Ctx) -> Outcome:
     """Confirm the UI bundle was built."""
@@ -28,24 +28,29 @@ def web_010(ctx: Ctx) -> Outcome:
 
 @remedy("WEB-010", "missing-bundle")
 def _web_010_missing(ctx: Ctx, out: Outcome) -> Fix:
-    """Build the UI."""
+    """Build the UI with the repo's packaging script (Vite -> python/sadi/_ui)."""
     return Fix(
         "Build the web UI",
         (
             action(
-                "Install the UI dependencies (needs Node.js 20 or newer).",
-                "npm finishes with no errors.",
-                cmd(ctx.os, "npm ci", context="in the repository's web/ directory"),
-                mutates=Mutates.INSTALL,
-                changes="Creates web/node_modules.",
-                if_not="Install Node.js from nodejs.org and repeat.",
+                "Check that Node.js 20 or newer and npm are installed.",
+                "node prints v20 or higher.",
+                cmd(ctx.os, "node --version"),
+                if_not="Install Node.js 20+ from nodejs.org and repeat.",
             ),
             action(
-                "Build the bundle into the Python package.",
-                "Vite prints 'built in' and python/sadi/web/dist/index.html exists.",
-                cmd(ctx.os, "npm run build", context="in the repository's web/ directory"),
+                "Build the bundle (runs npm ci and the Vite build in web/, then copies web/dist "
+                "into python/sadi/_ui, the folder the launcher serves).",
+                "Vite prints 'built in' and python/sadi/_ui/index.html exists.",
+                cmd(
+                    ctx.os,
+                    "python packaging/build_ui.py",
+                    context="in the repository root, using the SADI Python environment",
+                ),
                 mutates=Mutates.INSTALL,
-                changes="Writes python/sadi/web/dist.",
+                changes="Creates web/node_modules, web/dist and python/sadi/_ui; nothing is deleted.",
+                if_not="Read the npm error above; fix it and repeat. "
+                "Without a bundle the launcher falls back to web/dist.",
             ),
         ),
     )

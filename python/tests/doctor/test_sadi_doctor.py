@@ -1355,9 +1355,29 @@ def test_usb_070_resolves_real_wsl_path_in_fix() -> None:
     assert result.mode == "latency-not-2ms"
     assert result.remediation is not None
     lines = [c.line for s in result.remediation.steps for c in s.commands]
-    assert f"echo 2 | sudo tee {_WSL_REAL}/latency_timer" in lines
+    assert f"sudo sh -c 'echo 2 > {_WSL_REAL}/latency_timer'" in lines
     text = render(report)
     assert "resets on replug" in text and "usbipd attach" in text
+
+
+# frob:ticket 01M6Z4H88GR6M567TTWQHPQMC1
+# frob:tests python/sadi/doctor/checks/usb.py::_usb_070_latency
+def test_usb_070_fix_has_persistent_udev_rule_and_fixable_steps() -> None:
+    """The USB-070 fix sets the timer, installs a udev rule, verifies, and marks writes fixable."""
+    p = healthy()
+    p.os = Os.WSL
+    p.files["/sys/bus/usb-serial/devices/ttyUSB0/latency_timer"] = "16\n"
+    report = _run(p, Os.WSL, data_root=ROOT, allow_network_fs=False, api_port=8000)
+    result = next(r for r in report.results if r.id == "USB-070")
+    assert result.remediation is not None
+    cmds = [c for s in result.remediation.steps for c in s.commands]
+    lines = [c.line for c in cmds]
+    assert any("99-sadi-latency.rules" in line and "latency_timer" in line for line in lines)
+    assert "sudo udevadm control --reload-rules" in lines
+    assert any(line.startswith("cat ") for line in lines)
+    fixable = [c.line for c in cmds if c.fixable]
+    assert fixable and not any(line.startswith("cat ") for line in fixable)
+    assert not any("|" in line for line in lines)
 
 
 # frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP

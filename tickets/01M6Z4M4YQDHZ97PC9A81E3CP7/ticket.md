@@ -2,11 +2,12 @@
 id = "01M6Z4M4YQDHZ97PC9A81E3CP7"
 title = "frob test --base main: pytest collection errors in sadi-py tests"
 type = "bug"
-category = "todo"
+category = "done"
+outcome = "wont-fix"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-09T03:11:28Z"
-updated = "2026-11-09T03:11:28Z"
+updated = "2026-11-09T03:13:05Z"
 scope = ["crates/sadi-py/**"]
 +++
 

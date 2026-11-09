@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["WEB-010 and DATA-010 remediation give concrete, read-only-safe setup commands"]
+moved = []
+at = "2026-11-09T03:15:32Z"
+actor = "lognd"
+rev = 1

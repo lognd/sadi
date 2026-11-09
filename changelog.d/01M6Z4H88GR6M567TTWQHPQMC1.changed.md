@@ -1,0 +1,1 @@
+Doctor USB-070 now gives a step-by-step fix for an FTDI latency_timer other than 2 ms: set it now, install a persistent udev rule, and verify; the writes are runnable via `sadi doctor fix USB-070 --apply`.

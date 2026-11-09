@@ -4,9 +4,10 @@ title = "FakeDwf supports only SINGLE acquisition: no continuous streaming for A
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T02:51:35Z"
-updated = "2026-11-09T02:51:35Z"
+updated = "2026-11-09T03:06:13Z"
 scope = ["python/sadi/bench/ad3/fake.py"]
 +++
 

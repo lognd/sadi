@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["crates/sadi-proto/src/codec/command.rs", "crates/sadi-proto/src/v3/command.rs", "crates/sadi-py/src/sim.rs"]
+new = ["crates/sadi-proto/src/codec/command.rs", "crates/sadi-proto/src/v3/command.rs", "crates/sadi-py/src/sim.rs", "changelog.d/01M700BKKAV16JE0J4GC24Z60B.fixed.md"]
+at = "2026-11-09T11:17:18Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,9 @@
+kind = "create"
+title = "Switch test_fault_scenarios.py and test_real_data.py detect_slip calls to slip_config_from_adc (default noise_floor is fragile on quantised data)"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-slip-callers-tests"
+at = "2026-11-09T03:37:31Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,9 @@
+kind = "create"
+title = "AD3 dwf facade hardening: exhaustive edge cases, no exception escapes the CtypesBackend, Result everywhere"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "ad3-facade-hardening"
+at = "2026-11-09T02:43:08Z"
+actor = "lognd"
+rev = 1

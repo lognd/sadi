@@ -153,3 +153,25 @@ def test_open_is_opt_in_and_reports() -> None:
         assert pred(r), (status, r)
         assert "[windows]" in r.headline
     assert get_remedy("AD3-040", "open-failed") is not None
+
+
+# frob:tests python/sadi/doctor/checks/ad3.py::_deb_workaround_steps
+def test_deb_workaround_text_in_remedies() -> None:
+    """AD3-020 no-libdwf and AD3-040 open-failed document the extract-deb firmware workaround."""
+    p = _machine(Os.LINUX, sysfs=True)
+    r = _res_of(_run(p), "AD3-020")
+    assert r.remediation is not None
+    text = " ".join(st.text for st in r.remediation.steps)
+    for needle in (
+        "dpkg-deb -x",
+        "SADI_DWF_LIB",
+        "/usr/share/digilent/waveforms",
+        "dialout",
+        "No compatible configuration",
+    ):
+        assert needle in text, needle
+    p = _machine(Os.LINUX, sysfs=True, lib=True)
+    ad3_setup(p, sysfs=True, lib=True, open_json={"status": "open-failed", "detail": "x"})
+    r = _res_of(_run(p, ad3_open=True), "AD3-040")
+    assert r.remediation is not None
+    assert "dpkg-deb -x" in " ".join(st.text for st in r.remediation.steps)

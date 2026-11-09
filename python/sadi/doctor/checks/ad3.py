@@ -21,7 +21,7 @@ from sadi.bench.ad3.dll import candidate_names
 from sadi.doctor.checks.ext import child_json
 from sadi.doctor.checks.usb import _USBIPD_LINE, SYSFS_USB, USBIPD_PATHS
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
-from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason
+from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason, Step
 from sadi.doctor.steps import action, cmd, manual
 from sadi.logging_setup import get_logger
 
@@ -327,6 +327,34 @@ def _ad3_020_use_windows(ctx: Ctx, out: Outcome) -> Fix:
     )
 
 
+def _deb_workaround_steps() -> tuple[Step, ...]:
+    """Manual steps for when `apt install` of the WaveForms .deb fails (offline mirror, huge GUI deps)."""
+    return (
+        manual(
+            "If `apt install` of the WaveForms .deb fails (offline or unreachable mirror, huge "
+            "Qt/GUI dependencies), extract it instead: `dpkg-deb -x <path>/digilent.waveforms_*_amd64.deb "
+            "~/.local/share/digilent-waveforms`, then "
+            f"`export {ENV_LIB_PATH}=$HOME/.local/share/digilent-waveforms/usr/lib/libdwf.so`.",
+            "The exported path points at an existing libdwf.so.",
+        ),
+        manual(
+            "libdwf hardcodes /usr/share/digilent/waveforms/firmware, so copy it: "
+            "`sudo mkdir -p /usr/share/digilent && sudo cp -r "
+            "~/.local/share/digilent-waveforms/usr/share/digilent/waveforms /usr/share/digilent/`. "
+            "Without it, open fails with 'Device not supported. No compatible configuration found'.",
+            "/usr/share/digilent/waveforms/firmware exists.",
+            mutates=Mutates.SYSTEM,
+            changes="Copies firmware files under /usr/share/digilent (needs sudo).",
+        ),
+        manual(
+            "The Adept runtime must also be installed; your shell needs the dialout group "
+            "(relogin, or run via `sg dialout -c '<command>'`); always close the device before "
+            "the process exits.",
+            "AD3-040 passes with --ad3-open.",
+        ),
+    )
+
+
 @remedy("AD3-020", "no-libdwf")
 def _ad3_020_nolib(ctx: Ctx, out: Outcome) -> Fix:
     """Install the Linux WaveForms and Adept packages."""
@@ -345,6 +373,7 @@ def _ad3_020_nolib(ctx: Ctx, out: Outcome) -> Fix:
             if_not=f"Set {ENV_LIB_PATH} to the full path of libdwf.so.",
         ),
     ]
+    steps.extend(_deb_workaround_steps())
     return Fix("Install the Linux WaveForms runtime", tuple(steps))
 
 
@@ -483,6 +512,7 @@ def _ad3_040_open(ctx: Ctx, out: Outcome) -> Fix:
         if ctx.os is Os.WSL
         else ()
     )
+    deb = _deb_workaround_steps() if ctx.os is not Os.WINDOWS else ()
     return Fix(
         "Free the AD3",
         (
@@ -491,5 +521,6 @@ def _ad3_040_open(ctx: Ctx, out: Outcome) -> Fix:
                 "The AD3 LED is on and AD3-030 passes.",
             ),
             *wsl,
+            *deb,
         ),
     )

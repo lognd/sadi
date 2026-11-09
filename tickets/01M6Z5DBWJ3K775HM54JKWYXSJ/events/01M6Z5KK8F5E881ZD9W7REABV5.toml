@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["ty check sadi tests and ruff check . are clean"]
+moved = []
+at = "2026-11-09T03:28:38Z"
+actor = "lognd"
+rev = 1

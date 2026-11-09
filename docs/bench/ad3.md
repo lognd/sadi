@@ -145,12 +145,14 @@ unreachable mirror, huge Qt/GUI dependencies). It mirrors the doctor remedy
 | W1 + GND | ACH0 +/- | positive | `lvdt` (out 0) |
 | W2 + GND | ACH2 +/- | negative | `load` (out 1) |
 | (none) | ACH1 | floating | unused |
-| Scope ch 1 (index 0) | SADI GND and +3V3 | n/a | `supply_scope_channel` |
+| Scope Channel 1 (index 0) | SADI GND and +3V3 | n/a | `supply_scope_channel` (reads ~3.3 V) |
 
-Source: the pin mapping is from the operator's wiring description and is
-unverified on hardware. NOT verified on hardware:
-the AD3 was not enumerated by WSL during this change (only the SADI serial
-port was present), so no signal or supply voltage was measured.
+Scope indices are 0-based in code; "Scope Channel 1" on the AD3 is index 0. The LVDT and
+load levels are NOT on the scope: they are read back from the SADI board over the serial
+facade (`sadi.bench.sadi_readback.read_board`, `SADI_PORT=/dev/ttyUSB0`). Verified on
+hardware (AD3 plus SADI fw 1.003): W1 0.9 V reads 0.8975 V on ACH0, W2 +0.5 V reads
+-0.5006 V on ACH2 (negative polarity), ACH1 ~0, and the supply monitor reads ~3.3 V. The
+board range is +-5.12 V (about 6413 counts/V).
 
 ## FakeDwf acquisition modes
 

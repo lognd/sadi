@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["hostprobe/launcher use devfacade; web_bundle_version looks in sadi/_ui then web/dist"]
+moved = []
+at = "2026-11-09T03:20:28Z"
+actor = "lognd"
+rev = 1

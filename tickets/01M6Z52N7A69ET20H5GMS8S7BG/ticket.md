@@ -13,5 +13,5 @@ scope = ["python/sadi/launcher.py", "python/sadi/bench/ad3/**", "python/tests/be
 
 [[acceptance]]
 text = "sadi serve --ad3 opens the AD3 via open_managed_ad3 and always closes it on exit; missing libdwf/device is a clean Err"
-bound = false
+bound = true
 +++

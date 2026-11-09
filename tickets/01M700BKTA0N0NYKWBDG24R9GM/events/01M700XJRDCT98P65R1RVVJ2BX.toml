@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["given the crash suite, when run on Windows, then oracle digests match and the held lock file does not break clone or digest"]
+moved = []
+at = "2026-11-09T11:25:57Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M707RQKGE0TE7MG2SZ28028M"
 title = "ci: windows test_second_process_gets_lockheld_with_pid compares venv shim pid"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

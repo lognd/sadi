@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:23:07Z"
 updated = "2026-11-09T02:29:41Z"
 idempotency_key = "dev020-probe"
-scope = ["docs/doctor.md", "python/sadi/doctor/checks/dev.py", "python/sadi/doctor/devprobe.py"]
+scope = ["docs/doctor.md", "python/sadi/doctor/checks/dev.py", "python/sadi/doctor/devprobe.py", "python/tests/doctor/test_sadi_doctor.py"]
 +++

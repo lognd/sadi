@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:43:08Z"
 updated = "2026-11-09T02:47:58Z"
 idempotency_key = "sadi-py-facade"
-scope = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py", "python/sadi/core/device.py", "python/sadi/core/errors.py", "python/sadi/core/phases.py", "python/sadi/doctor/devprobe.py"]
+scope = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py", "python/sadi/core/device.py", "python/sadi/core/errors.py", "python/sadi/core/phases.py", "python/sadi/doctor/devprobe.py", "python/tests/core/test_devfacade.py"]
 +++

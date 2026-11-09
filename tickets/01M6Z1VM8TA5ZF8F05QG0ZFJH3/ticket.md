@@ -4,8 +4,9 @@ title = "doctor DEV-020: board does not answer on /dev/ttyUSB1; probe both FT223
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T02:23:07Z"
-updated = "2026-11-09T02:23:07Z"
+updated = "2026-11-09T02:27:00Z"
 idempotency_key = "dev020-probe"
 +++

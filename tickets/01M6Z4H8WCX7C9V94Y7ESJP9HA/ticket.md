@@ -2,7 +2,8 @@
 id = "01M6Z4H8WCX7C9V94Y7ESJP9HA"
 title = "Migrate api/acquisition.py and pipeline.py protocol types off raw sadi_py/pyserial onto devfacade"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

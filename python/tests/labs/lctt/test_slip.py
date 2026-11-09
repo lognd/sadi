@@ -15,7 +15,14 @@ import pytest
 from pydantic import ValidationError
 from typani import Err, Ok, Result
 
-from sadi.labs.lctt.slip import SlipConfig, SlipError, SlipReport, detect_slip
+from sadi.labs.lctt.slip import (
+    SlipConfig,
+    SlipError,
+    SlipReport,
+    detect_slip,
+    noise_floor_for_lsb,
+    slip_config_from_adc,
+)
 
 T_LOAD = 100.0
 SIGMA = 2e-6
@@ -143,3 +150,43 @@ def test_config_frozen_and_validated() -> None:
         SlipConfig(window=1)
     with pytest.raises(ValidationError):
         SlipConfig().window = 3  # ty: ignore[invalid-assignment]  # frozen model: assignment must raise
+
+
+LSB_V = 2 * 5.12 / 2**16
+STRAIN_PER_V = 0.05
+
+
+def _quantised(steps: dict[int, float]) -> tuple[list[float], list[float]]:
+    """Near-constant hold quantised to ADC codes with 1-LSB flicker, plus optional steps."""
+    t = [T_LOAD + 1 + i * 0.1 for i in range(120)]
+    codes = [(i % 7 == 0) + (i % 11 == 0) for i in range(120)]
+    y = [
+        STRAIN_PER_V * LSB_V * (c + sum(v for k, v in steps.items() if i >= k))
+        for i, c in enumerate(codes)
+    ]
+    return t, y
+
+
+# frob:ticket 01M6Z5X8ABWY83TMY0ETZBMN5W
+# frob:tests python/sadi/labs/lctt/slip.py::slip_config_from_adc
+def test_derived_floor_suppresses_lsb_flicker_but_keeps_glitch() -> None:
+    """With the one-LSB floor a quantised hold has no events and a 26-LSB step is found."""
+    cfg_r = slip_config_from_adc(5.12, STRAIN_PER_V)
+    assert cfg_r.is_ok
+    cfg = cfg_r.danger_ok
+    assert cfg.noise_floor == pytest.approx(STRAIN_PER_V * LSB_V)
+    t, y = _quantised({})
+    assert _ok(detect_slip(t, y, T_LOAD, config=cfg)).events == ()
+    t, y = _quantised({60: 26.0})
+    (ev,) = _ok(detect_slip(t, y, T_LOAD, config=cfg)).events
+    assert 58 <= ev.index <= 62
+
+
+# frob:ticket 01M6Z5X8ABWY83TMY0ETZBMN5W
+# frob:tests python/sadi/labs/lctt/slip.py::noise_floor_for_lsb
+def test_noise_floor_for_lsb_rejects_bad_input() -> None:
+    """Non-positive full scale, zero gain and zero bits are errors, not silent floors."""
+    assert noise_floor_for_lsb(0.0, 1.0).is_err
+    assert noise_floor_for_lsb(5.12, 0.0).is_err
+    assert noise_floor_for_lsb(5.12, 1.0, bits=0).is_err
+    assert noise_floor_for_lsb(5.12, -2.0).danger_ok == pytest.approx(2 * 2 * 5.12 / 2**16)

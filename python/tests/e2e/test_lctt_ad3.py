@@ -21,7 +21,7 @@ from sadi.labs.lctt.live import LiveConfig, LiveEvent, LoadPoint, recompute
 from sadi.labs.lctt.loading import SHORT_L0_M
 from sadi.labs.lctt.saturation import SaturationConfig, check_saturation
 from sadi.labs.lctt.settle_stream import SettleState
-from sadi.labs.lctt.slip import SlipConfig, detect_slip
+from sadi.labs.lctt.slip import detect_slip, slip_config_from_adc
 from sadi.logging_setup import get_logger
 from sadi.store.records import RecordType
 from sadi.store.session import resume_session
@@ -153,8 +153,9 @@ def test_slip_like_glitch_is_detected_and_clean_hold_is_not(tmp_path: Path) -> N
     # A quiet hold quantises to a near-constant code stream, so the MAD noise estimate collapses
     # to zero and 1-LSB flicker looks like slip. The ADC cannot resolve below one LSB, so that is
     # the physical noise floor (frob:ticket FMCPAK6); the 4 mV glitch is ~26 LSB and still detected.
-    lsb_v = 2 * AdcModel().full_scale_v / 2**16
-    cfg = SlipConfig(noise_floor=SLOPE_M_PER_V * lsb_v / SHORT_L0_M)
+    cfg_r = slip_config_from_adc(AdcModel().full_scale_v, SLOPE_M_PER_V / SHORT_L0_M)
+    assert cfg_r.is_ok
+    cfg = cfg_r.danger_ok
     ok = detect_slip(times, to_strain(clean), 0.0, config=cfg)
     bad = detect_slip(times, to_strain(glitch), 0.0, config=cfg)
     assert ok.is_ok and bad.is_ok

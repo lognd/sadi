@@ -27,6 +27,16 @@ Limits: the first `window` jumps of a hold are not evaluated (onset creep is ste
 cannot be cancelled from one side); slips there are missed and logged at debug level.
 Two slips closer than `window` samples can mask each other.
 
+## Noise floor (callers must set it)
+
+On quantised near-constant data the MAD noise estimate collapses to 0 and sigma falls to
+`SlipConfig.noise_floor` (default 1e-12), so every one-LSB flicker scores a huge z. Every
+caller must set the floor to one ADC LSB in strain: build the config with
+`slip_config_from_adc(full_scale_v, strain_per_volt, bits=16, **overrides)` (or
+`noise_floor_for_lsb`), both returning `Result`. `full_scale_v` is 5.12 on the real board
+(`BOARD_FULL_SCALE_V`). Ticket ~TZBMN5W; no production caller of `detect_slip` existed at
+the time, only tests, which now use the helper.
+
 ## Performance bound
 
 On seeded synthetic holds (creep 2e-4 * ln(1 + dt/20), white noise sigma 2e-6, 120

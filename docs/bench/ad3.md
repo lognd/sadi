@@ -68,3 +68,16 @@ from sadi.bench.ad3 import load_backend
 be = load_backend().unwrap()
 dev = be.open(-1).unwrap()
 ```
+
+## SADI wiring (`sadi.bench.inject.SADI_PINS`)
+
+| AD3 | SADI | Polarity | Route |
+|-----|------|----------|-------|
+| W1 + GND | ACH0 +/- | positive | `lvdt` (out 0) |
+| W2 + GND | ACH2 +/- | negative | `load` (out 1) |
+| (none) | ACH1 | floating | unused |
+| Scope ch 1 (index 0) | SADI GND and +3V3 | n/a | `supply_scope_channel` |
+
+Source: wiring as described by the bench operator. NOT verified on hardware:
+the AD3 was not enumerated by WSL during this change (only the SADI serial
+port was present), so no signal or supply voltage was measured.

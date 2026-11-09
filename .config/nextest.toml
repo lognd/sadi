@@ -1,0 +1,7 @@
+# frob:ticket 01M713J4SAWVHAXSHB0KEFJYR4
+# No test may hang CI for hours: warn every 30s, kill after 4 periods (2 min).
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 4 }
+
+[profile.ci]
+slow-timeout = { period = "30s", terminate-after = 4 }

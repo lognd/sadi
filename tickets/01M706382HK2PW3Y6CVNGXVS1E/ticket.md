@@ -2,7 +2,8 @@
 id = "01M706382HK2PW3Y6CVNGXVS1E"
 title = "ci: windows python bench signal tests and action latency test fail"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -7,6 +7,6 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T13:25:38Z"
-updated = "2026-11-09T13:26:45Z"
+updated = "2026-11-09T13:26:49Z"
 scope = ["python/tests/store/test_lock.py"]
 +++

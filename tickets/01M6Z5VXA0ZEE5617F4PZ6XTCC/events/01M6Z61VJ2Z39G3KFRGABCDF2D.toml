@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["SIGTERM/SIGHUP/uvicorn subprocess tests pass 120 consecutive runs under 12-way CPU contention"]
+moved = []
+at = "2026-11-09T03:36:25Z"
+actor = "lognd"
+rev = 1

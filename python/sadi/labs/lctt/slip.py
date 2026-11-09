@@ -38,6 +38,31 @@ class SlipConfig(BaseModel):
     load_tol: float = Field(default=0.0, ge=0, description="Load change above this is not slip")
 
 
+def noise_floor_for_lsb(
+    full_scale_v: float, strain_per_volt: float, *, bits: int = 16
+) -> Result[float, str]:
+    """Strain equivalent of one ADC LSB (bipolar +-full_scale_v): the physical noise floor."""
+    if not (math.isfinite(full_scale_v) and full_scale_v > 0):
+        return Err("full_scale_v must be finite and positive")
+    if not (math.isfinite(strain_per_volt) and strain_per_volt != 0):
+        return Err("strain_per_volt must be finite and non-zero")
+    if bits < 1:
+        return Err("bits must be >= 1")
+    floor = abs(strain_per_volt) * 2 * full_scale_v / 2**bits
+    _log.debug("noise floor for one LSB: %.6g strain", floor)
+    return Ok(floor)
+
+
+def slip_config_from_adc(
+    full_scale_v: float, strain_per_volt: float, *, bits: int = 16, **overrides: float
+) -> Result[SlipConfig, str]:
+    """SlipConfig whose noise_floor is one ADC LSB in strain; callers must use this, not 1e-12."""
+    floor = noise_floor_for_lsb(full_scale_v, strain_per_volt, bits=bits)
+    if floor.is_err:
+        return Err(floor.danger_err)
+    return Ok(SlipConfig(noise_floor=floor.danger_ok, **overrides))
+
+
 class SlipEvent(BaseModel):
     """One detected slip: time of the first post-step sample, size (strain) and confidence 0..1."""
 

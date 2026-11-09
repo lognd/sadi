@@ -2,7 +2,8 @@
 id = "01M6Z2HK9VCDRFZV4Z3WKD8T9Z"
 title = "doctor child_json: parse last JSON line so backend log lines on stdout do not break AD3-040 open probe"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

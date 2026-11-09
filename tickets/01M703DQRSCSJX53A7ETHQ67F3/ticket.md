@@ -2,7 +2,8 @@
 id = "01M703DQRSCSJX53A7ETHQ67F3"
 title = "ci: typani TYP007 in jobs/testing.py and macOS python test failures"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

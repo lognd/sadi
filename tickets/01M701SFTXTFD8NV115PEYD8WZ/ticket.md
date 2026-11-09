@@ -7,7 +7,8 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T11:41:11Z"
-updated = "2026-11-09T11:41:18Z"
+updated = "2026-11-09T11:43:49Z"
+scope = [".gitattributes", "crates/sadi-proto/tests/serial_loopback.rs", "web/src/api/schema.test.ts"]
 
 [[acceptance]]
 text = "clippy -D warnings clean on cfg(unix) and non-unix; vitest schema test passes with CRLF input"

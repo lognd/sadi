@@ -4,8 +4,9 @@ title = "doctor WRK-010: worker imports sadi.store (found on WSL run)"
 type = "bug"
 category = "todo"
 priority = "high"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:07:22Z"
+updated = "2026-11-09T02:12:11Z"
 idempotency_key = "wrk010"
 +++

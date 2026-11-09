@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:08:31Z"
-updated = "2026-11-09T03:10:41Z"
+updated = "2026-11-09T03:11:12Z"
 idempotency_key = "capture-wait-hw"
 scope = ["python/sadi/bench/inject.py", "python/tests/bench/test_inject_capture_wait.py"]
 +++

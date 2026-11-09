@@ -1,0 +1,9 @@
+kind = "create"
+title = "Flaky: test_sigterm_subprocess_single_close_exit_code fails in full pytest run, passes alone"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-sigterm-flaky-fullsuite"
+at = "2026-11-09T04:07:24Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M700BKWCEYRQ3ZE7B8BZ8KWR"
 title = "docs: top-level README quick-start for making a plugin and using the sadi library"
 type = "docs"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

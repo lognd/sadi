@@ -287,6 +287,11 @@ fn paced_clock_sleeps_in_real_time() {
         },
     );
     let t0 = std::time::Instant::now();
-    assert_eq!(pull(&mut d, &mut dec, 11).len(), 11);
+    // frob:ticket 01M708R6FQ6BWZ4006185C0R1D
+    // pull() drains whole read buffers, and a coarse/slow clock (Windows)
+    // can make more packets due per read, so it may return more than the
+    // 11 requested. Assert a lower bound; the real-time check below still
+    // proves the paced clock actually slept.
+    assert!(pull(&mut d, &mut dec, 11).len() >= 11);
     assert!(t0.elapsed() >= Duration::from_millis(9));
 }

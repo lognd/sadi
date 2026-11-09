@@ -99,12 +99,8 @@ def pid_alive(pid: int) -> bool:
     return True
 
 
-def read_holder_pid(path: Path) -> int | None:
-    """Read the pid recorded in the lock file (read-only); None if absent or unparsable."""
-    try:
-        text = path.read_text(encoding="ascii", errors="replace")
-    except OSError:
-        return None
+def _parse_holder_pid(text: str) -> int | None:
+    """Extract the `pid=N` token from lock-file text; None if absent or unparsable."""
     for token in text.split():
         if token.startswith("pid="):
             try:
@@ -112,6 +108,32 @@ def read_holder_pid(path: Path) -> int | None:
             except ValueError:
                 return None
     return None
+
+
+def read_holder_pid(path: Path) -> int | None:
+    """Read the pid recorded in the lock file (read-only); None if absent or unparsable."""
+    try:
+        text = path.read_text(encoding="ascii", errors="replace")
+    except OSError:
+        return None
+    return _parse_holder_pid(text)
+
+
+# frob:ticket 01M701SFR4E1BKBXW1RCN14TK3
+def _read_holder_pid_fd(fd: int) -> int | None:
+    """Read the recorded pid through the already-locked `fd`.
+
+    On Windows a byte-range lock denies reads from any other handle, even in the same
+    process, so a path-based read of a file we just locked always fails and would hide a stale
+    holder. Reading through the locking handle is allowed on every platform.
+    """
+    try:
+        os.lseek(fd, 0, os.SEEK_SET)
+        text = os.read(fd, 4096).decode("ascii", errors="replace")
+    except OSError as exc:
+        _log.warning("cannot read holder pid through locked fd: %s", exc)
+        return None
+    return _parse_holder_pid(text)
 
 
 class DataRootLock:
@@ -177,7 +199,7 @@ def acquire(root: Path, *, recover_stale: bool = False) -> Result[DataRootLock, 
                 hint=f"Another sadi process (pid {pid}) is using this data folder.",
             )
         )
-    prior = read_holder_pid(path)
+    prior = _read_holder_pid_fd(fd)
     if prior is not None and not recover_stale:
         _os_unlock(fd)
         os.close(fd)

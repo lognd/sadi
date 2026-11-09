@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from sadi.store import events, snapshot
+from sadi.store.lock import LOCK_FILENAME
 from sadi.store.manifest import read_manifest
 from sadi.store.records import RecordType
 from sadi.store.session import open_readonly, resume_session
@@ -132,7 +133,8 @@ def tree_digest(root: Path) -> str:
         h.update(f"{p.relative_to(root).as_posix()}|{p.is_dir()}\n".encode())
         if p.is_file():
             # frob:ticket 01M700BKTA0N0NYKWBDG24R9GM
-            # A held lock file cannot be read on Windows (byte-range lock); its size still catches any silent rewrite.
+            # A held lock file cannot be read on Windows (byte-range lock);
+            # its size still catches any silent rewrite.
             h.update(str(p.stat().st_size).encode() if p.name == LOCK_NAME else p.read_bytes())
     return h.hexdigest()
 
@@ -287,7 +289,15 @@ def power_loss_copy(run: Run, dest_root: Path, rng: random.Random) -> Run:
         with last.open("r+b") as fh:
             fh.truncate(min(keep, last.stat().st_size))
             fh.seek(0, os.SEEK_END)
-            fh.write(rng.randbytes(rng.randint(0, 4096)))
+            kept = fh.tell()
+            junk = rng.randint(0, 4096)
+            if kept < SEGMENT_HEADER_LEN:
+                # frob:ticket 01M701SFR4E1BKBXW1RCN14TK3
+                # The writer fsyncs a segment header before any record can be acked into the
+                # segment, so a cut inside the header models a torn header (<= 64 bytes); a full
+                # garbage "header" would be arbitrary corruption, not power loss.
+                junk = min(junk, SEGMENT_HEADER_LEN - kept)
+            fh.write(rng.randbytes(junk))
     return Run(dest_root, run.oracle_path, run.seed, run.returncode, run.oracle, run.seg_bytes)
 
 
@@ -297,7 +307,14 @@ def save_artifact(run: Run, name: str) -> None:
     if target is None or target == "":
         return
     dest = Path(target) / name
-    shutil.copytree(run.root, dest / "root", dirs_exist_ok=True)
+    # frob:ticket 01M701SFR4E1BKBXW1RCN14TK3
+    # Lock files may still be byte-range locked (Windows WinError 33) and carry no evidence.
+    shutil.copytree(
+        run.root,
+        dest / "root",
+        dirs_exist_ok=True,
+        ignore=shutil.ignore_patterns(LOCK_NAME, LOCK_FILENAME),
+    )
     if run.oracle_path.exists():
         shutil.copy2(run.oracle_path, dest / "oracle.log")
     _log.error("saved failing run to %s", dest)

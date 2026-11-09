@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:13:17Z"
+updated = "2026-11-09T12:14:03Z"
 scope = ["web/e2e/**"]
 
 [[acceptance]]

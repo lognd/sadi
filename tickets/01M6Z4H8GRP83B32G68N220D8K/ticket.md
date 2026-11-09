@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/checks/web.py", "python/sadi/doctor/checks/data.py"
 
 [[acceptance]]
 text = "WEB-010 and DATA-010 remediation give concrete, read-only-safe setup commands"
-bound = false
+bound = true
 +++

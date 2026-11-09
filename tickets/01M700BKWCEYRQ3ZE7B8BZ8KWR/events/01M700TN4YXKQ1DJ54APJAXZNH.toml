@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["README.md"]
+at = "2026-11-09T11:24:21Z"
+actor = "lognd"
+rev = 1

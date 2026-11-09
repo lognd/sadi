@@ -1,0 +1,49 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T11:28:06Z"
+digest = "3a195d9427b780ddafb33a0f8aa310c1433db98e8341e4e06bb4d8bd970687d2"
+exit_code = 0
+head = "b907f5acbbf46897bfe7c17ceecc47be520693e0"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 214 items
+
+python/tests/concurrency/test_kill_with_jobs.py .......                  [  3%]
+python/tests/store/test_csv_export.py .....                              [  5%]
+python/tests/store/test_durable.py .......................s              [ 16%]
+python/tests/store/test_events.py ......................                 [ 27%]
+python/tests/store/test_exports.py ...........                           [ 32%]
+python/tests/store/test_failpoints.py ........                           [ 35%]
+python/tests/store/test_incremental.py ......                            [ 38%]
+python/tests/store/test_incremental_notes.py ..                          [ 39%]
+python/tests/store/test_lock.py .......                                  [ 42%]
+python/tests/store/test_names.py ........................                [ 54%]
+python/tests/store/test_session.py ...........................           [ 66%]
+python/tests/store/test_session_held_root.py .                           [ 67%]
+python/tests/store/test_session_plugin_provenance.py .....               [ 69%]
+python/tests/store/test_spill.py ........                                [ 73%]
+python/tests/store/test_wal.py ..................................        [ 89%]
+python/tests/store/test_writer_thread.py .......................         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-944675-0.xml ---------------
+======================= 213 passed, 1 skipped in 34.20s ========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/concurrency/test_kill_with_jobs.py python/tests/store"
+size = 1723
+status = "measured"
+test_count = 213
+tests_digest = "4f94e56971fd7c928962844fba99ae14d4d209bfe775c3a0d97e54ca31efe693"
+at = "2026-11-09T11:28:06Z"
+actor = "lognd"
+rev = 1
+
+[non_passing]
+skipped = 1
+xfailed = 0
+xpassed = 0

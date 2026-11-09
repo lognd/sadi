@@ -314,7 +314,11 @@ fn open(
         shared.set_seed(seed);
     }
     let sim = SimDevice::new(Box::new(shared.clone()), SimConfig::default());
-    tracing::info!(?seed, byte_faults = plan.is_some(), "controllable simulator opened");
+    tracing::info!(
+        ?seed,
+        byte_faults = plan.is_some(),
+        "controllable simulator opened"
+    );
     let transport: Box<dyn Transport> = match plan {
         Some(plan) => Box::new(FaultyTransport::new(sim, plan)),
         None => Box::new(sim),

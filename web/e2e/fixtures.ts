@@ -52,7 +52,7 @@ export const test = base.extend({
     const url = `http://127.0.0.1:${String(port)}`;
     const child = spawn(
       "uv",
-      ["run", "--project", py, "sadi", "--sim", "--no-browser", "--skip-preflight", "--port", String(port), "--data-dir", dataDir, "--web-dist", dist],
+      ["run", "--no-sync", "--project", py, "sadi", "--sim", "--no-browser", "--skip-preflight", "--port", String(port), "--data-dir", dataDir, "--web-dist", dist],
       { stdio: "inherit" },
     );
     try {

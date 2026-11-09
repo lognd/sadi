@@ -36,6 +36,8 @@ _LATENCY_FMTS = (
 )
 _TTY_CLASS_FMT = "/sys/class/tty/{node}"
 _UDEV_RULE = "/etc/udev/rules.d/99-sadi.rules"
+_LATENCY_RULE = "/etc/udev/rules.d/99-sadi-latency.rules"
+_LATENCY_RULE_BODY = '"ACTION==\\"add\\", SUBSYSTEM==\\"usb-serial\\", DRIVER==\\"ftdi_sio\\", ATTR{latency_timer}=\\"2\\""'
 _PS_BASE = ("powershell", "-NoProfile", "-NonInteractive", "-Command")
 PS_FTDI = (
     "Get-PnpDevice -PresentOnly | Where-Object InstanceId -like 'USB\\VID_0403*' "
@@ -878,20 +880,40 @@ def _usb_070_latency(ctx: Ctx, out: Outcome) -> Fix:
     replug = "The value resets on replug"
     if ctx.os is Os.WSL:
         replug += "; repeat usbipd attach after every replug"
-    return Fix(
-        "Set the latency timer to 2 ms",
-        tuple(
-            action(
-                f"Write 2 to {path} ({replug}).",
-                "No output.",
-                cmd(ctx.os, f"echo 2 | sudo tee {path}"),
-                mutates=Mutates.SYSTEM,
-                changes="Changes the FTDI latency timer until the device is replugged.",
-                alt='Add ATTR{latency_timer}="2" to a udev rule for a permanent change.',
-            )
-            for path in paths
-        ),
+    rule = _LATENCY_RULE
+    steps = [
+        action(
+            f"Write 2 to {path} now ({replug}).",
+            "No output.",
+            cmd(ctx.os, f"sudo sh -c 'echo 2 > {path}'", fixable=True),
+            mutates=Mutates.SYSTEM,
+            changes="Changes the FTDI latency timer until the device is replugged.",
+        )
+        for path in paths
+    ]
+    steps.append(
+        action(
+            "Make it permanent with a udev rule (applies on every plug-in).",
+            f"{rule} exists.",
+            cmd(
+                ctx.os,
+                f"sudo sh -c 'echo {_LATENCY_RULE_BODY} > {rule}'",
+                fixable=True,
+            ),
+            cmd(ctx.os, "sudo udevadm control --reload-rules", fixable=True),
+            mutates=Mutates.SYSTEM,
+            changes=f"Writes {rule} and reloads udev rules.",
+        )
     )
+    steps.append(
+        action(
+            "Check the value took effect.",
+            "Each line prints 2.",
+            *(cmd(ctx.os, f"cat {path}") for path in paths),
+            if_not="Replug the adapter (WSL: usbipd attach again) and rerun `sadi doctor`.",
+        )
+    )
+    return Fix("Set the latency timer to 2 ms", tuple(steps))
 
 
 def _kernel_config(ctx: Ctx) -> str | None:
@@ -936,7 +958,7 @@ def usb_080(ctx: Ctx) -> Outcome:
     if not any(state.lower().startswith("attached") for _, state in rows):
         return skip(SkipReason.PREREQUISITE_FAILED, "No attached usbipd device (see USB-020)")
     config = _kernel_config(ctx)
-    if not config:
+    if config is None or config == "":
         _log.info("USB-080: kernel config unreadable; not judging vhci_hcd from it")
     elif not re.search(r"^CONFIG_USB_VHCI_HCD=[ym]", config, re.MULTILINE):
         if _vhci_loaded(ctx):

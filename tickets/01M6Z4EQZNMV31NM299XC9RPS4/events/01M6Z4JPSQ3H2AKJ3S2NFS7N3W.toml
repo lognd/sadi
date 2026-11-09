@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/bench/inject.py", "python/tests/bench/test_inject_capture_wait.py"]
+at = "2026-11-09T03:10:40Z"
+actor = "lognd"
+rev = 1

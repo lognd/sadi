@@ -1,6 +1,7 @@
 """Deterministic in-memory DwfBackend: out waveforms sampled by scope channels, no hardware."""
 
 # frob:ticket 01M6WSQ57BQ8EZYECPGPFQFWB7
+# frob:ticket 01M6Z3FR6FP6TTP9BW4MHJSE85
 from __future__ import annotations
 
 import math
@@ -27,6 +28,8 @@ _log = get_logger(__name__)
 __all__ = ["FakeConfig", "FakeDwf", "ScopeCal"]
 
 _FAKE_NATIVE_HANDLE = 1
+_SINGLE_MODES = (AcqMode.SINGLE, AcqMode.SINGLE1)
+_STREAM_MODES = (AcqMode.SCAN_SHIFT, AcqMode.SCAN_SCREEN, AcqMode.RECORD)
 
 
 class ScopeCal(BaseModel):
@@ -107,6 +110,8 @@ class FakeDwf:
         self._rate = 1.0e6
         self._size = 512
         self._armed = False
+        self._mode = AcqMode.SINGLE
+        self._cursor = 0
         self._latched: dict[int, list[float]] = {}
         self._io: dict[tuple[int, int], float] = {}
         self._dio_dir = 0
@@ -139,15 +144,15 @@ class FakeDwf:
         unit = waveform(st.func, phase)
         return st.offset + st.amplitude * (unit if unit is not None else 0.0)
 
-    def _sample(self, ch: int, n: int) -> list[float]:
-        """Generate `n` calibrated, clipped, noisy scope readings for scope channel `ch`."""
+    def _sample(self, ch: int, n: int, start: int = 0) -> list[float]:
+        """Generate `n` calibrated, clipped, noisy readings of scope `ch` from sample `start`."""
         cal = self.config.cal.get(ch, ScopeCal())
         sc = self._scope[ch]
         src = self.config.wiring.get(ch)
         half = sc.range_v / 2.0
         out: list[float] = []
         for k in range(n):
-            sig = self._out_value(src, k / self._rate) if src is not None else 0.0
+            sig = self._out_value(src, (start + k) / self._rate) if src is not None else 0.0
             noise = self._rng.gauss(0.0, cal.noise_v) if cal.noise_v > 0.0 else 0.0
             v = cal.gain * (sig + noise) + cal.offset_v - sc.offset
             out.append(max(-half, min(half, v)))
@@ -343,12 +348,14 @@ class FakeDwf:
         return Ok(None)
 
     def in_acquisition_mode(self, dev: OpenDevice, mode: AcqMode) -> Result[None, DwfError]:
-        """Accept SINGLE only; the fake has no streaming modes."""
+        """Accept SINGLE/SINGLE1 and the continuous SCAN_SHIFT/SCAN_SCREEN/RECORD modes."""
         live = self._live(dev)
         if not isinstance(live, Ok):
             return live
-        if mode not in (AcqMode.SINGLE, AcqMode.SINGLE1):
+        if mode not in _SINGLE_MODES and mode not in _STREAM_MODES:
             return Err(_bad(f"acquisition mode {mode.name} not supported by FakeDwf"))
+        self._mode = mode
+        _log.info("fake acquisition mode %s", mode.name)
         return Ok(None)
 
     def in_configure(
@@ -358,20 +365,30 @@ class FakeDwf:
         live = self._live(dev)
         if isinstance(live, Ok):
             self._armed = start
+            self._cursor = 0
         return live
 
     def in_status(self, dev: OpenDevice, read_data: bool) -> Result[AcqState, DwfError]:
-        """Return DONE once armed (latching samples if asked), else READY."""
+        """Return DONE (single) or TRIGGERED (streaming) once armed, latching data if asked.
+
+        In streaming modes each read_data poll latches the next contiguous block, so the
+        waveform phase continues across polls and the acquisition never completes.
+        """
         live = self._live(dev)
         if not isinstance(live, Ok):
             return Err(live.unwrap_err())
         if not self._armed:
             return Ok(AcqState.READY)
+        streaming = self._mode in _STREAM_MODES
         if read_data:
             self._latched = {
-                ch: self._sample(ch, self._size) for ch, s in self._scope.items() if s.enabled
+                ch: self._sample(ch, self._size, self._cursor)
+                for ch, s in self._scope.items()
+                if s.enabled
             }
-        return Ok(AcqState.DONE)
+            if streaming:
+                self._cursor += self._size
+        return Ok(AcqState.TRIGGERED if streaming else AcqState.DONE)
 
     def in_data(self, dev: OpenDevice, ch: Channel, count: int) -> Result[list[float], DwfError]:
         """Return up to `count` latched samples of `ch`; Err if none were latched."""

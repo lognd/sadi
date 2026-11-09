@@ -12,5 +12,5 @@ idempotency_key = "gap-ad3-signal-flake"
 
 [[acceptance]]
 text = "SIGTERM/SIGHUP/uvicorn subprocess tests pass 120 consecutive runs under 12-way CPU contention"
-bound = false
+bound = true
 +++

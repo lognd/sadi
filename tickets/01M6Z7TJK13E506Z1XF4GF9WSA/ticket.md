@@ -2,7 +2,7 @@
 id = "01M6Z7TJK13E506Z1XF4GF9WSA"
 title = "Flaky: test_sigterm_subprocess_single_close_exit_code fails in full pytest run, passes alone"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"

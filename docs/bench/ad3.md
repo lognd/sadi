@@ -110,3 +110,5 @@ Source: the pin mapping is from the operator's wiring description and is
 unverified on hardware. NOT verified on hardware:
 the AD3 was not enumerated by WSL during this change (only the SADI serial
 port was present), so no signal or supply voltage was measured.
+
+See also: [LCTT test flow driven by the AD3](lctt-ad3-matrix.md).

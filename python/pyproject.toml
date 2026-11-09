@@ -54,6 +54,9 @@ artifacts = ["sadi/_ui/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "ad3_hw: needs a real Digilent AD3 plus a SADI board (auto-skips otherwise)",
+]
 
 [tool.ruff]
 line-length = 100

@@ -39,3 +39,5 @@ conversion (see [protocol](../protocol.md) section 4). The CI loopback test
 injects a sine through `FakeDwf`, captures it and compares the resulting counts
 with the analytic counts. The compiled `sadi_py` simulator is a maturin extension
 and is not required in CI, so this model stands in for it.
+
+See also: [LCTT test flow driven by the AD3](lctt-ad3-matrix.md).

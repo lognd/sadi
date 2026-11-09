@@ -1,0 +1,10 @@
++++
+id = "01M700BKTA0N0NYKWBDG24R9GM"
+title = "ci: crash tests fail on Windows (I4 snapshot changed, locked lock file in copytree)"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-09T11:16:08Z"
+updated = "2026-11-09T11:16:08Z"
++++

@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["crates/sadi-proto/tests/sim_device.rs"]
+at = "2026-11-09T13:43:13Z"
+actor = "lognd"
+rev = 1

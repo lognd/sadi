@@ -2,7 +2,8 @@
 id = "01M700BKR5MEDX30NV79VV5628"
 title = "ci: e2e fails, sadi_py not importable in the sadi server subprocess (macOS/Windows)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

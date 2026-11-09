@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:33:55Z"
-updated = "2026-11-09T03:33:58Z"
+updated = "2026-11-09T03:34:55Z"
 idempotency_key = "gap-slip-noise-floor"
+
+[[acceptance]]
+text = "slip_config_from_adc derives noise_floor from one ADC LSB; quantised hold gives no events, real glitch detected"
+bound = false
 +++

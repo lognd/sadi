@@ -1,0 +1,69 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T03:31:11Z"
+digest = "4ce8185cc16dbc0171077cb650d44397a4a427a3f444ae18e37372807ebd7f2e"
+exit_code = 1
+failed_tests = ["python/tests/bench/test_ad3_launch_signals.py::test_sigterm_subprocess_single_close_exit_code"]
+head = "3de369a0163da95d40a3539f45d6d15b7a73123a"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/bench/test_ad3_launch_signals.py F....                      [100%]
+
+=================================== FAILURES ===================================
+________________ test_sigterm_subprocess_single_close_exit_code ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-logan/pytest-118/test_sigterm_subprocess_single0')
+
+    def test_sigterm_subprocess_single_close_exit_code(tmp_path: Path) -> None:
+        """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
+>       code, out = _run_and_term(_PLAIN, tmp_path, signal.SIGTERM)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+python/tests/bench/test_ad3_launch_signals.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+code = '\nimport os, signal, sys\nfrom typani import Ok\nfrom sadi.bench.ad3 import Ad3Closed\nfrom sadi.bench.ad3.fake impor...uard = open_managed_ad3(lambda: Ok(Ad3Closed(CountingDwf()))).unwrap()\n\nprint("READY", flush=True)\nsignal.pause()\n'
+tmp_path = PosixPath('/tmp/pytest-of-logan/pytest-118/test_sigterm_subprocess_single0')
+sig = <Signals.SIGTERM: 15>
+
+    def _run_and_term(code: str, tmp_path: Path, sig: int) -> tuple[int, str]:
+        script = tmp_path / "child.py"
+        script.write_text(textwrap.dedent(code))
+        proc = subprocess.Popen(
+            [sys.executable, str(script)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        assert proc.stdout is not None
+        for line in proc.stdout:  # logging may share stdout; skip until the READY marker
+            if line.strip() == "READY":
+                break
+        else:
+            raise AssertionError("child never became READY")
+        proc.send_signal(sig)
+        try:
+            out, _err = proc.communicate(timeout=20)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            out, err = proc.communicate()
+>           raise AssertionError(f"child hung after signal {sig}: {out!r} {err!r}") from None
+E           AssertionError: child hung after signal 15: '' ''
+
+python/tests/bench/test_ad3_launch_signals.py:83: AssertionError
+-------------- generated xml file: /tmp/frob-pytest-708942-0.xml ---------------
+========================= 1 failed, 4 passed in 21.21s =========================
+'''
+passed = false
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_launch_signals.py"
+size = 2558
+status = "measured"
+test_count = 5
+tests_digest = "b3cd872e81b39f4e3e495d9d544d1412cf7eb224baf1b891bb090f6595a64bd1"
+at = "2026-11-09T03:31:11Z"
+actor = "lognd"
+rev = 1

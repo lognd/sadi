@@ -20,6 +20,7 @@ from sadi.bench.ad3 import (
     OutNode,
     WaveFunction,
 )
+from sadi.bench.ad3.backend import OpenDevice
 from sadi.bench.ad3.dll import CtypesBackend
 from sadi.bench.ad3.fake import FakeConfig, FakeDwf, ScopeCal, waveform
 from sadi.bench.inject import (
@@ -330,7 +331,7 @@ def test_sadi_pins_match_bench_wiring() -> None:
 
 
 # frob:ticket 01M6Z3FR6FP6TTP9BW4MHJSE85
-def _stream_fake(mode: AcqMode) -> tuple[FakeDwf, object]:
+def _stream_fake(mode: AcqMode) -> tuple[FakeDwf, OpenDevice]:
     """Build an opened fake armed in `mode` with a 1 kHz ramp on ch 0 sampled at 4 kHz."""
     f = FakeDwf()
     dev = f.open(0).unwrap()

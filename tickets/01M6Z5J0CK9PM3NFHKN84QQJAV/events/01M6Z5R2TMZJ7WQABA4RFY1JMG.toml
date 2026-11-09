@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Ad3Guard closes the device exactly once on SIGTERM/SIGHUP (alone and under uvicorn), restores prior handlers, installs only on the main thread"]
+moved = []
+at = "2026-11-09T03:31:05Z"
+actor = "lognd"
+rev = 1

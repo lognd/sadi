@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from sadi.store.spill import user_data_dir
+
 
 @pytest.fixture
 def tmp_session_dir(tmp_path: Path) -> Path:
@@ -29,4 +31,4 @@ def isolated_spill_dirs(
     monkeypatch.setenv("XDG_DATA_HOME", str(xdg))
     monkeypatch.setenv("LOCALAPPDATA", str(home / "local"))
     monkeypatch.setattr("tempfile.tempdir", str(temp))
-    return xdg / "sadi", temp
+    return user_data_dir(), temp

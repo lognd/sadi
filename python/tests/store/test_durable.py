@@ -57,7 +57,8 @@ def test_fsync_file_error_is_result(monkeypatch: pytest.MonkeyPatch, tmp_path: P
     def boom(_fd: int) -> None:
         raise OSError(errno.EIO, "eio")
 
-    monkeypatch.setattr(durable.os, "fsync", boom)
+    # Patch the platform-neutral flush: macOS uses F_FULLFSYNC, not os.fsync.
+    monkeypatch.setattr(durable, "_flush_fd", boom)
     fd = os.open(tmp_path / "f", os.O_WRONLY | os.O_CREAT | getattr(os, "O_BINARY", 0))
     try:
         r = fsync_file(fd)
@@ -263,7 +264,7 @@ def test_atomic_replace_fsync_failure_keeps_original(
     def boom(_fd: int) -> None:
         raise OSError(errno.EIO, "eio")
 
-    monkeypatch.setattr(durable.os, "fsync", boom)
+    monkeypatch.setattr(durable, "_flush_fd", boom)
     r = atomic_replace(tmp, dst)
     assert isinstance(r, Err)
     assert dst.read_bytes() == b"old"

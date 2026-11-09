@@ -4,3 +4,4 @@ tickets/_cycles/*/cycle.md merge=frob-ledger
 * text=auto
 *.csv -text
 *.json text eol=lf
+web/src/api/schema.ts text eol=lf

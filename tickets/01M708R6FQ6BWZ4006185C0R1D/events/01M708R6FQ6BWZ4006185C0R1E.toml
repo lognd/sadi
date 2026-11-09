@@ -1,0 +1,9 @@
+kind = "create"
+title = "ci: windows rust paced_clock_sleeps_in_real_time gets 12 packets, expects exactly 11"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+at = "2026-11-09T13:42:49Z"
+actor = "lognd"
+rev = 1

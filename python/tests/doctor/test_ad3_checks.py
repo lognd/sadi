@@ -218,3 +218,22 @@ def test_session_is_opt_in_and_maps_statuses() -> None:
     r = _res_of(_run(p, ad3_open=True), "AD3-080")
     assert r.skip_reason is SkipReason.NO_DEVICE
     assert get_remedy("AD3-080", "session-failed") is not None
+
+
+# frob:tests python/sadi/doctor/checks/ad3.py::_persist_lib_steps
+def test_persist_dwf_lib_steps() -> None:
+    """Missing/unset libdwf remedies end with locate, persist and verify steps per OS."""
+    p = _machine(Os.LINUX, sysfs=True)
+    r = _res_of(_run(p), "AD3-020")
+    assert r.remediation is not None
+    text = " ".join(st.text for st in r.remediation.steps)
+    assert "~/.bashrc" in text and "currently unset" in text
+    ad3_setup(p, sysfs=True, lib_override="/gone/libdwf.so")
+    r = _res_of(_run(p), "AD3-050")
+    assert r.remediation is not None
+    text = " ".join(st.text for st in r.remediation.steps)
+    assert "/gone/libdwf.so" in text and "~/.bashrc" in text
+    w = _machine(Os.WINDOWS, pnp=True)
+    r = _res_of(_run(w), "AD3-020")
+    assert r.remediation is not None
+    assert "setx SADI_DWF_LIB" in " ".join(st.text for st in r.remediation.steps)

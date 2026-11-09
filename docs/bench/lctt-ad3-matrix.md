@@ -44,5 +44,5 @@ levels stay at or below 1 V (`MAX_SAFE_V`).
 - On real hardware AD3 Scope Channel 1 (index 0) monitors the SADI 3V3 supply (it reads
   ~3.3 V, not the LVDT), so levels are read back from the board with
   `sadi.bench.sadi_readback.read_board` over the serial facade (`SADI_PORT`). The board
-  range is +-5.12 V (`board_adc_model()`, about 6413 counts/V), unlike the simulated
-  `AdcModel` default of 1.25 V. Hardware matrix row: `ad3_hw` tests pass (4/4).
+  range is +-5.12 V (`board_adc_model()`, about 6413 counts/V), which is also the
+  `AdcModel` default (`BOARD_FULL_SCALE_V`). Hardware matrix row: `ad3_hw` tests pass (4/4).

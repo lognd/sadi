@@ -1,6 +1,7 @@
 """AD3-driven LCTT test source: DwfBackend stimulus -> SADI ADC model -> pipeline-ready blocks."""
 
 # frob:ticket 01M6Z32CP3XANNZ4ZRNGHQ8PEY
+# frob:ticket 01M6Z53SMZTVJW9YGWRT1ZA5MF
 from __future__ import annotations
 
 import math
@@ -28,6 +29,7 @@ from sadi.logging_setup import get_logger
 _log = get_logger(__name__)
 
 __all__ = [
+    "BOARD_FULL_SCALE_V",
     "MAX_SAFE_V",
     "PACKET_LEN",
     "SAMPLES_PER_PACKET",
@@ -53,12 +55,16 @@ _PAYLOAD_OFFSET = 8
 _SAMPLE_LEN = 12  # int32 LE encoder + four u16 BE ADC words
 
 
+#: Default SADI input range (AdcRange +-5.12 V); measured 6413 counts/V on firmware 1.003.
+BOARD_FULL_SCALE_V = 5.12
+
+
 class AdcModel(BaseModel):
-    """Ideal SADI ADC input range: full scale in volts (bipolar 16 bit, ADS8688 style)."""
+    """Ideal SADI ADC input range: full scale in volts (bipolar 16 bit, defaults to the real +-5.12 V board)."""
 
     model_config = ConfigDict(frozen=True)
 
-    full_scale_v: float = Field(default=1.25, gt=0)
+    full_scale_v: float = Field(default=BOARD_FULL_SCALE_V, gt=0)
 
     def quantise(self, volts: float) -> int:
         """ADC code for `volts`, clipped to the input range."""

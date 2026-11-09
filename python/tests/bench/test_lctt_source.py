@@ -6,7 +6,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from sadi.bench.lctt_source import Ad3Source, AdcModel, Segment, ramp_segments
+from sadi.bench.lctt_source import BOARD_FULL_SCALE_V, Ad3Source, AdcModel, Segment, ramp_segments
 from tests.e2e.ad3_flow import make_fake
 
 
@@ -17,6 +17,15 @@ def test_adc_quantise_round_trip_within_one_lsb() -> None:
     lsb = 2 * adc.full_scale_v / 65536
     for v in (-0.9, 0.0, 0.123456, 0.9):
         assert adc.to_volts(int(adc.quantise(v))) == pytest.approx(v, abs=lsb)
+
+
+# frob:ticket 01M6Z53SMZTVJW9YGWRT1ZA5MF
+# frob:tests python/sadi/bench/lctt_source.py::AdcModel
+def test_adc_default_matches_real_board_range() -> None:
+    """The sim default is the real board's +-5.12 V range (~6413 counts/V), not 1.25 V."""
+    adc = AdcModel()
+    assert adc.full_scale_v == BOARD_FULL_SCALE_V == 5.12
+    assert adc.quantise(0.9) == pytest.approx(38515, abs=60)
 
 
 # frob:tests python/sadi/bench/lctt_source.py::ramp_segments

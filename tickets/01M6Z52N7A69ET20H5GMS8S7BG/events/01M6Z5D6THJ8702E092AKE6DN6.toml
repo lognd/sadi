@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["sadi serve --ad3 opens the AD3 via open_managed_ad3 and always closes it on exit; missing libdwf/device is a clean Err"]
+moved = []
+at = "2026-11-09T03:25:09Z"
+actor = "lognd"
+rev = 1

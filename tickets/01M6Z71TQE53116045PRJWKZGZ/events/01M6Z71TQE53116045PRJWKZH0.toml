@@ -1,0 +1,9 @@
+kind = "create"
+title = "Fix 9 eslint errors in web: e2e and docs-shots files not covered by tsconfig/project service"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-web-eslint-e2e"
+at = "2026-11-09T03:53:53Z"
+actor = "lognd"
+rev = 1

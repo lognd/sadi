@@ -109,12 +109,22 @@ def ext_010(ctx: Ctx) -> Outcome:
     )
 
 
+_MATURIN_CONTEXT = "in crates/sadi-py (needs a Rust toolchain)"
+
+
+def _maturin_line(ctx: Ctx) -> str:
+    """Return the maturin build line, pointing VIRTUAL_ENV at python/.venv, for the OS shell."""
+    if ctx.os is Os.WINDOWS:
+        return r"$env:VIRTUAL_ENV = '..\..\python\.venv'; uvx maturin develop --release --uv"
+    return "VIRTUAL_ENV=../../python/.venv uvx maturin develop --release --uv"
+
+
 def _build_steps(ctx: Ctx) -> Step:
     """Return the rebuild step shared by the load failures."""
     return action(
         "Rebuild and install the extension for this Python.",
         "maturin finishes with 'Installed sadi_py'.",
-        cmd(ctx.os, "uv run maturin develop --release"),
+        cmd(ctx.os, _maturin_line(ctx), context=_MATURIN_CONTEXT),
         mutates=Mutates.INSTALL,
         changes="Compiles the Rust crate and installs it into python/.venv.",
         if_not="Install the Rust toolchain from rustup.rs, open a new terminal, and repeat.",
@@ -157,7 +167,7 @@ def _ext_010_timeout(ctx: Ctx, out: Outcome) -> Fix:
                 "Import it by hand and watch for a prompt, antivirus dialog or hang.",
                 "The command returns at once with no output.",
                 cmd(ctx.os, f"{py} -X importtime -c 'import sadi_py'"),
-                if_not="Rebuild with `uv run maturin develop --release` and repeat.",
+                if_not=f"Rebuild with `{_maturin_line(ctx)}` ({_MATURIN_CONTEXT}) and repeat.",
             ),
         ),
     )
@@ -391,7 +401,7 @@ def _ext_050_timeout(ctx: Ctx, out: Outcome) -> Fix:
                 "Run the self-test by hand while the machine is otherwise idle.",
                 "The command returns within a second with no output.",
                 cmd(ctx.os, f"{py} -c 'import sadi_py; sadi_py.selftest()'"),
-                if_not="Rebuild with `uv run maturin develop --release` and repeat.",
+                if_not=f"Rebuild with `{_maturin_line(ctx)}` ({_MATURIN_CONTEXT}) and repeat.",
             ),
         ),
     )

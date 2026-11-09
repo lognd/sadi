@@ -31,6 +31,7 @@ from sadi.doctor.sessions import SessionFacts, survey_sessions
 from sadi.doctor.volprobe import FlushFacts, LockState, probe_flush, probe_lock
 from sadi.doctor.workerprobe import WorkerFacts, probe_workers
 from sadi.logging_setup import get_logger
+from sadi.webdist import CHECKOUT_WEB_DIST
 
 if TYPE_CHECKING:
     from sadi.plugins.doctor import DoctorFinding
@@ -540,7 +541,7 @@ class RealProbes:
         pkg = Path(__file__).resolve().parent.parent
         for index in (
             pkg / "_ui" / "index.html",
-            pkg.parent.parent / "web" / "dist" / "index.html",
+            CHECKOUT_WEB_DIST / "index.html",
         ):
             try:
                 if index.is_file() and index.stat().st_size > 0:

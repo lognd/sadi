@@ -31,7 +31,7 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
 ## Running locally
 
 ```
-uv sync --frozen --project python          # plus maturin develop for sadi_py (simulator)
+uv sync --frozen --project python          # plus `uvx maturin develop --release --uv` in crates/sadi-py for sadi_py (simulator)
 uv run --project python python packaging/build_ui.py
 cd web && npx playwright install chromium
 npx playwright test -c e2e/playwright.config.ts

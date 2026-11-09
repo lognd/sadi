@@ -3,6 +3,8 @@
 # frob:ticket 01M6WSQ57BQ8EZYECPGPFQFWB7
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typani import Err, Ok, Result
 
@@ -14,6 +16,7 @@ _log = get_logger(__name__)
 
 __all__ = [
     "PinMap",
+    "SADI_PINS",
     "SignalRoute",
     "capture",
     "counts_to_volts",
@@ -24,8 +27,6 @@ __all__ = [
 ]
 
 
-# frob:todo 01M6WT4Z643F7CJDFJT2GQ2J53 real-board pin mapping is unknown;
-# PinMap is supplied by the hardware session.
 _ADC_BITS = 16
 _ADC_MAX = (1 << _ADC_BITS) - 1
 
@@ -37,6 +38,8 @@ class SignalRoute(BaseModel):
 
     out_channel: int = Field(ge=0)
     scope_channel: int | None = Field(default=None, ge=0)
+    sadi_channel: int | None = Field(default=None, ge=0)
+    polarity: Literal["positive", "negative"] = "positive"
 
 
 class PinMap(BaseModel):
@@ -46,6 +49,7 @@ class PinMap(BaseModel):
 
     lvdt: SignalRoute
     load: SignalRoute
+    supply_scope_channel: int | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")
     def _distinct_outputs(self) -> PinMap:
@@ -53,6 +57,16 @@ class PinMap(BaseModel):
         if self.lvdt.out_channel == self.load.out_channel:
             raise ValueError("lvdt and load must use different analog out channels")
         return self
+
+
+# frob:ticket 01M6WT4Z643F7CJDFJT2GQ2J53
+# Real bench wiring: AD3 W1+GND -> SADI ACH0 +/- (positive); W2+GND -> SADI ACH2 +/-
+# (negative polarity); ACH1 floating; SADI GND/+3V3 -> AD3 scope ch 0 (supply monitor).
+SADI_PINS = PinMap(
+    lvdt=SignalRoute(out_channel=0, sadi_channel=0, polarity="positive"),
+    load=SignalRoute(out_channel=1, sadi_channel=2, polarity="negative"),
+    supply_scope_channel=0,
+)
 
 
 def volts_to_counts(volts: float, full_scale: float) -> int:

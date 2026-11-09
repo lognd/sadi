@@ -315,3 +315,15 @@ def test_backends_match_protocol_signatures() -> None:
             want = list(inspect.signature(getattr(DwfBackend, name)).parameters)
             got = list(inspect.signature(getattr(impl, name)).parameters)
             assert got == want, f"{impl.__name__}.{name}"
+
+
+# frob:tests python/sadi/bench/inject.py::PinMap
+def test_sadi_pins_match_bench_wiring() -> None:
+    """SADI_PINS encodes W1->ACH0 (+), W2->ACH2 (-), supply monitor on scope ch 0."""
+    from sadi.bench.inject import SADI_PINS
+
+    assert (SADI_PINS.lvdt.out_channel, SADI_PINS.lvdt.sadi_channel) == (0, 0)
+    assert SADI_PINS.lvdt.polarity == "positive"
+    assert (SADI_PINS.load.out_channel, SADI_PINS.load.sadi_channel) == (1, 2)
+    assert SADI_PINS.load.polarity == "negative"
+    assert SADI_PINS.supply_scope_channel == 0

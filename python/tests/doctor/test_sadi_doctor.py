@@ -17,7 +17,7 @@ import sadi.doctor as doctor
 from sadi.doctor import cli, hostprobe
 from sadi.doctor.checks import ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
-from sadi.doctor.registry import all_checks, get_remedy
+from sadi.doctor.registry import Ctx, all_checks, get_remedy
 from sadi.doctor.render_text import render
 from sadi.doctor.schema import (
     CommandRun,
@@ -1420,3 +1420,29 @@ def test_probe_device_tries_both_ft2232_channels(monkeypatch: pytest.MonkeyPatch
 
     got = probe_device("/dev/ttyUSB1", 0, False)
     assert got.port_results == (got.port_results[0],) and "silent" in got.port_results[0]
+
+
+def _child_stdout(text: str) -> FakeProbes:
+    p = healthy()
+    p.commands["-c S"] = Ok(CommandRun(argv=("py",), exit_code=0, stdout_tail=text))
+    return p
+
+
+def _child_ctx(p: FakeProbes) -> Ctx:
+    return Ctx(probes=p, options=RunOptions(), os=Os.LINUX, data_root=ROOT)
+
+
+# frob:ticket 01M6Z2HK9VCDRFZV4Z3WKD8T9Z
+# frob:tests python/sadi/doctor/checks/ext.py::child_json
+def test_child_json_ignores_leading_log_lines() -> None:
+    """Log lines before the final JSON line do not break parsing."""
+    out = 'dwf call FDwfEnum\nopened device index=-1 hdwf=1\n{"status": "ok"}\n\n'
+    res = ext.child_json(_child_ctx(_child_stdout(out)), "S")
+    assert res.unwrap() == {"status": "ok"}
+
+
+# frob:tests python/sadi/doctor/checks/ext.py::child_json
+def test_child_json_err_without_json_and_ok_for_pure_json() -> None:
+    """No JSON line is an Err; a bare JSON document still parses."""
+    assert ext.child_json(_child_ctx(_child_stdout("just logs\nmore")), "S").is_err
+    assert ext.child_json(_child_ctx(_child_stdout("[1, 2]")), "S").unwrap() == [1, 2]

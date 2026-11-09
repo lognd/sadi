@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:37:26Z"
+digest = "31d4735789a4f4a95ad5c0a4995e10fc0c9ccaa9c2e9ab47711256102a2787b1"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 14 items
+
+python/tests/bench/test_ad3_fake.py ..............                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-265308-0.xml ---------------
+============================== 14 passed in 0.91s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_fake.py::test_analog_out_in_round_trip python/tests/bench/test_ad3_fake.py::test_backends_match_protocol_signatures python/tests/bench/test_ad3_fake.py::test_custom_and_ramp_waveforms python/tests/bench/test_ad3_fake.py::test_deterministic_noise_and_cal python/tests/bench/test_ad3_fake.py::test_io_calls python/tests/bench/test_ad3_fake.py::test_loopback_fake_to_sadi_adc_model python/tests/bench/test_ad3_fake.py::test_open_close_typestate python/tests/bench/test_ad3_fake.py::test_pinmap_validation python/tests/bench/test_ad3_fake.py::test_rejects_bad_arguments python/tests/bench/test_ad3_fake.py::test_sadi_pins_match_bench_wiring python/tests/bench/test_ad3_fake.py::test_satisfies_protocol python/tests/bench/test_ad3_fake.py::test_session_calls python/tests/bench/test_ad3_fake.py::test_sine_sampled_exactly python/tests/bench/test_ad3_fake.py::test_stop_injection_silences_outputs"
+size = 522
+status = "measured"
+test_count = 14
+tests_digest = "f4859b744f0ca2464e7df63b6a33ba4a4565d3adca927d762ce8f5016812dbb8"
+at = "2026-11-09T02:37:26Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor fix --apply: allow DATA-010 mkdir and WEB-010 build"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "doctor-apply-mkdir-build"
+at = "2026-11-09T10:41:49Z"
+actor = "lognd"
+rev = 1

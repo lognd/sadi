@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/checks/usb.py", "python/tests/doctor/test_sadi_doct
 
 [[acceptance]]
 text = "USB-070 fix gives set-now, persistent udev rule and verify steps; test passes"
-bound = false
+bound = true
 +++

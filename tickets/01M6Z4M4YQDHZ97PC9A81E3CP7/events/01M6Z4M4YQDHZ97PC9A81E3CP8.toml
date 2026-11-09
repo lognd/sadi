@@ -1,0 +1,10 @@
+kind = "create"
+title = "frob test --base main: pytest collection errors in sadi-py tests"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["crates/sadi-py/**"]
+body = "found while working ~FEV63Y8: frob test --base main fails with pytest exit 4 (collection errors in python/sadi_py/tests/test_smoke.py, tests/test_acq.py, tests/test_sim.py); the same run against the branch base 6c4b35a2 passes. Those files live at crates/sadi-py/ on main."
+at = "2026-11-09T03:11:28Z"
+actor = "lognd"
+rev = 1

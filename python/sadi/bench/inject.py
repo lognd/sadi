@@ -8,8 +8,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from typani import Err, Ok, Result
 
-from sadi.bench.ad3.backend import DwfBackend, DwfError, OpenDevice
-from sadi.bench.ad3.consts import AcqMode, AcqState, Channel, OutNode, WaveFunction
+from sadi.bench.ad3.backend import DwfBackend, DwfError, OpenDevice, wait_acquired
+from sadi.bench.ad3.consts import AcqMode, Channel, OutNode, WaveFunction
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
@@ -29,6 +29,7 @@ __all__ = [
 
 _ADC_BITS = 16
 _ADC_MAX = (1 << _ADC_BITS) - 1
+_CAPTURE_MARGIN_S = 2.0  # slack on top of samples/rate for arming and trigger latency
 
 
 class SignalRoute(BaseModel):
@@ -162,11 +163,11 @@ def capture(
         if not isinstance(res, Ok):
             _log.error("capture setup failed ch=%d: %s", scope_channel, res.unwrap_err().detail)
             return Err(res.unwrap_err())
-    state = be.in_status(dev, True)
-    if not isinstance(state, Ok):
-        return Err(state.unwrap_err())
-    if state.unwrap() != AcqState.DONE:
-        _log.warning("capture not done state=%s", state.unwrap().name)
+    # frob:ticket 01M6Z4EQZNMV31NM299XC9RPS4
+    waited = wait_acquired(be, dev, timeout_s=samples / rate_hz + _CAPTURE_MARGIN_S)
+    if not isinstance(waited, Ok):
+        _log.error("capture wait failed ch=%d: %s", scope_channel, waited.unwrap_err().detail)
+        return Err(waited.unwrap_err())
     data = be.in_data(dev, ch, samples)
     if isinstance(data, Ok):
         _log.info("captured ch=%d n=%d", scope_channel, len(data.unwrap()))

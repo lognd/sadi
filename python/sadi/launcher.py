@@ -36,9 +36,9 @@ from sadi.logging_setup import get_logger
 # a spawn-context worker re-imports the entry script, and WRK-010 requires that child to
 # stay free of sadi.store.
 if TYPE_CHECKING:
+    from sadi.core.device import DeviceService  # frob:ticket 01M6Z4AH5A8BTYYG8G7FEV63Y8
     from sadi.core.registry import LabRegistry
     from sadi.plugins.registry import PluginRegistry
-    from sadi.core.device import DeviceService
 
 _log = get_logger(__name__)
 

@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/checks/ext.py", "python/tests/doctor/test_ext_040_p
 
 [[acceptance]]
 text = "EXT-040 passes as 'enumeration unsupported' when an explicit port (--port or SADI_PORT) answers without udev, and warns with step-by-step port remediation otherwise"
-bound = false
+bound = true
 +++

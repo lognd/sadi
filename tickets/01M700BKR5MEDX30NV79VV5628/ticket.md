@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:19:24Z"
+updated = "2026-11-09T11:20:24Z"
 scope = [".github/workflows/e2e.yml", "web/e2e/fixtures.ts"]
 
 [[acceptance]]

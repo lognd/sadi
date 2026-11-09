@@ -4,8 +4,9 @@ title = "Verify Ad3Guard SIGTERM/SIGHUP handlers coexist with uvicorn shutdown (
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:27:46Z"
-updated = "2026-11-09T03:27:46Z"
+updated = "2026-11-09T03:27:48Z"
 idempotency_key = "gap-ad3guard-signals"
 +++

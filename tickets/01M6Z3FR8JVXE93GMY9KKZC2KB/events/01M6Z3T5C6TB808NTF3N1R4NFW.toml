@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/e2e/test_lctt_ad3.py"]
+new = ["python/tests/e2e/test_lctt_ad3.py", "python/tests/e2e/test_lctt_ad3_yield_mc.py"]
+at = "2026-11-09T02:57:16Z"
+actor = "lognd"
+rev = 1

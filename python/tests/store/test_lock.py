@@ -21,8 +21,8 @@ from sadi.store.lock import (
 )
 
 _HOLDER = (
-    "import sys,time\nfrom pathlib import Path\nfrom sadi.store.lock import acquire\n"
-    "r=acquire(Path(sys.argv[1]))\nlk=r.unwrap()\nprint('READY',flush=True)\n"
+    "import os,sys,time\nfrom pathlib import Path\nfrom sadi.store.lock import acquire\n"
+    "r=acquire(Path(sys.argv[1]))\nlk=r.unwrap()\nprint('READY',os.getpid(),flush=True)\n"
     "sys.stdin.readline()\nlk.release()\n"
 )
 
@@ -60,10 +60,11 @@ def test_second_process_gets_lockheld_with_pid(tmp_path: Path) -> None:
     try:
         assert proc.stdout is not None
         lines = iter(proc.stdout.readline, "")
-        assert any(ln.strip() == "READY" for ln in lines)
+        ready = next(ln.split() for ln in lines if ln.startswith("READY"))
+        holder_pid = int(ready[1])  # real pid; Popen.pid may be a venv shim on Windows
         match acquire(tmp_path):
             case Err(LockHeld() as e):
-                assert e.pid == proc.pid
+                assert e.pid == holder_pid
             case other:
                 raise AssertionError(other)
     finally:

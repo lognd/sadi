@@ -1,0 +1,9 @@
+kind = "create"
+title = "Migrate launcher.open_sim_device and doctor hostprobe/probes/checks/ext to devfacade (no raw sadi_py/pyserial)"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "facade-migrate-launcher-doctor"
+at = "2026-11-09T03:09:53Z"
+actor = "lognd"
+rev = 1

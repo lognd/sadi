@@ -2,7 +2,8 @@
 id = "01M6ZYCRTJCE3APQQYAFZSTZCM"
 title = "doctor fix --apply: allow DATA-010 mkdir and WEB-010 build"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

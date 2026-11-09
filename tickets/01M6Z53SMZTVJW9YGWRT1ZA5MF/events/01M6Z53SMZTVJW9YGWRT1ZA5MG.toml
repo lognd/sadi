@@ -1,0 +1,9 @@
+kind = "create"
+title = "AdcModel default full scale 1.25 V does not match real board (+-5.12 V, ~6400 counts/V); reconcile sim vs hardware"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-adcmodel-fullscale"
+at = "2026-11-09T03:20:00Z"
+actor = "lognd"
+rev = 1

@@ -4,8 +4,9 @@ title = "doctor USB-070: fix command uses wrong sysfs path; use find on /sys for
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-09T02:13:06Z"
-updated = "2026-11-09T02:13:06Z"
+updated = "2026-11-09T02:13:10Z"
 idempotency_key = "lat070"
 +++

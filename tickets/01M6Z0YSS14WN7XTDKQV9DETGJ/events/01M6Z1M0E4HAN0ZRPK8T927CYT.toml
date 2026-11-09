@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given the sadi entry modules, when a spawned worker imports them, then sadi.store is not loaded and doctor WRK-010 passes"]
+moved = []
+at = "2026-11-09T02:18:57Z"
+actor = "lognd"
+rev = 1

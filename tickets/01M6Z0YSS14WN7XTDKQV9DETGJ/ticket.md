@@ -7,7 +7,11 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:18:52Z"
+updated = "2026-11-09T02:18:57Z"
 idempotency_key = "wrk010"
 scope = ["python/sadi/doctor/cli.py", "python/sadi/launcher.py", "python/tests/doctor/test_entry_imports.py", "python/tests/cli/test_launcher.py"]
+
+[[acceptance]]
+text = "Given the sadi entry modules, when a spawned worker imports them, then sadi.store is not loaded and doctor WRK-010 passes"
+bound = false
 +++

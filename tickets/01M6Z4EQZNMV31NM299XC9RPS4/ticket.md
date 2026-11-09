@@ -4,6 +4,7 @@ title = "inject.capture reads before acquisition done (PREFILL): use wait_acquir
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:08:31Z"
 updated = "2026-11-09T03:08:31Z"

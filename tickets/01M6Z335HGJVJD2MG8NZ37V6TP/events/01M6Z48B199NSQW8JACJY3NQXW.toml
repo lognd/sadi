@@ -1,0 +1,33 @@
+kind = "evidence"
+captured_at = "2026-11-09T03:04:43Z"
+digest = "7aed08153937aea116bea78853f9d9f1ca03d422741fa5f75e99af9c5db9b8b7"
+exit_code = 0
+head = "10e23d786df1ac8ac083e9dfe9d55d8fe894f818"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 234 items
+
+python/tests/bench/test_ad3_device.py .........                          [  3%]
+python/tests/doctor/test_ad3_checks.py ..............                    [  9%]
+python/tests/doctor/test_sadi_doctor.py ................................ [ 23%]
+........................................................................ [ 54%]
+........................................................................ [ 85%]
+...................................                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-433356-0.xml ---------------
+============================= 234 passed in 18.03s =============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_device.py python/tests/doctor/test_ad3_checks.py python/tests/doctor/test_sadi_doctor.py"
+size = 923
+status = "measured"
+test_count = 234
+tests_digest = "dcc2046d6f933a2e7eeadd6ec47d9c6b67bb9952b56064ebd23ec386a0da1ab0"
+at = "2026-11-09T03:04:43Z"
+actor = "lognd"
+rev = 1

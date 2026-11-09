@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["web/docs-shots/**", "web/e2e/**", "web/eslint.config.js", "web/package.json", "web/tsconfig.e2e.json"]
+at = "2026-11-09T03:56:14Z"
+actor = "lognd"
+rev = 1

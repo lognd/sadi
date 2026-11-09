@@ -2,7 +2,8 @@
 id = "01M6Z5DBWJ3K775HM54JKWYXSJ"
 title = "Fix 12 ty errors in tests (FakeDwf arg types, Ok type args, skip_reason/status attrs) and ruff I001/other in tests/bench"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

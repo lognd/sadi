@@ -2,7 +2,8 @@
 id = "01M6Z2F1863EAXD0ME0BDQ2060"
 title = "doctor AD3-020/040: when apt install of WaveForms fails, document extract-deb + copy /usr/share/digilent/waveforms firmware workaround"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

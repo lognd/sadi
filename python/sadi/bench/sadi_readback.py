@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result
 
-from sadi.bench.lctt_source import AdcModel
+from sadi.bench.lctt_source import BOARD_FULL_SCALE_V, AdcModel
 from sadi.core.devfacade import default_adc_mode
 from sadi.core.errors import DeviceCode, DeviceError
 from sadi.core.phases import open_serial
@@ -21,8 +21,6 @@ _log = get_logger(__name__)
 
 __all__ = ["BOARD_FULL_SCALE_V", "BoardReading", "board_adc_model", "read_board"]
 
-#: Default SADI input range (AdcRange +-5.12 V); measured 6413 counts/V on firmware 1.003.
-BOARD_FULL_SCALE_V = 5.12
 _SETTLE_S = 0.3  # let the AD3 output settle before the stream starts
 _DISCARD_BLOCKS = 8  # leading blocks that may straddle the stimulus step
 
@@ -38,7 +36,7 @@ class BoardReading(BaseModel):
 
 
 def board_adc_model() -> AdcModel:
-    """The `AdcModel` matching the real board's +-5.12 V range (the 1.25 V default is the sim)."""
+    """The `AdcModel` matching the real board's +-5.12 V range (also the `AdcModel` default)."""
     return AdcModel(full_scale_v=BOARD_FULL_SCALE_V)
 
 

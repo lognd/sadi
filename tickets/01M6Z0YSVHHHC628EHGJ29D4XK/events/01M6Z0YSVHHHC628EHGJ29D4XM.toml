@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor USB-080 false FAIL on WSL: VHCI config check though usbipd attach works"
+type = "bug"
+category = "todo"
+priority = "medium"
+idempotency_key = "usb080"
+at = "2026-11-09T02:07:22Z"
+actor = "lognd"
+rev = 1

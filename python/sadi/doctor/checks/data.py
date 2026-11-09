@@ -66,17 +66,23 @@ def data_010(ctx: Ctx) -> Outcome:
 
 @remedy("DATA-010", "missing")
 def _data_010_missing(ctx: Ctx, out: Outcome) -> Fix:
-    """Point to the Setup screen; the doctor never creates the data root."""
+    """Create the missing data root (owner-only), or let SADI create it on first start."""
     root = _root(ctx)
+    if ctx.os is Os.WINDOWS:
+        mk = f"New-Item -ItemType Directory -Path '{root}'"
+    else:
+        mk = f"mkdir -p -m 700 '{root}'"
     return Fix(
-        "Create the data root from SADI",
+        "Create the data root",
         (
-            manual(
-                f"Start SADI and accept or choose the data folder on the Setup screen ({root}).",
-                "SADI creates the folder and shows the main screen.",
+            action(
+                f"Create the data folder {root} (the configured --data-root or SADI_DATA_ROOT, "
+                "else the default). Skip this step to let SADI create it on the Setup screen.",
+                "The command prints nothing (or the new folder) and no error.",
+                cmd(ctx.os, mk),
                 mutates=Mutates.DATA_DIR,
-                changes=f"Creates the data folder {root}.",
-                if_not="Choose a folder on a local, writable disk.",
+                changes=f"Creates the empty folder {root}; an existing folder is left untouched.",
+                if_not="Choose a local, writable disk with --data-root or SADI_DATA_ROOT.",
             ),
         ),
     )

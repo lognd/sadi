@@ -536,12 +536,18 @@ class RealProbes:
         return _record_integrity()
 
     def web_bundle(self) -> tuple[bool, int]:
-        """Look for sadi/web/dist/index.html next to the package."""
-        index = Path(__file__).resolve().parent.parent / "web" / "dist" / "index.html"
-        try:
-            return index.is_file(), index.stat().st_size if index.is_file() else 0
-        except OSError:
-            return False, 0
+        """Look for index.html in the packaged sadi/_ui, else the repo web/dist (as the launcher does)."""
+        pkg = Path(__file__).resolve().parent.parent
+        for index in (
+            pkg / "_ui" / "index.html",
+            pkg.parent.parent / "web" / "dist" / "index.html",
+        ):
+            try:
+                if index.is_file() and index.stat().st_size > 0:
+                    return True, index.stat().st_size
+            except OSError:
+                continue
+        return False, 0
 
     def now(self) -> float:
         """Return time.time()."""

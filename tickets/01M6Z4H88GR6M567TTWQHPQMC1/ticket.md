@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:09:53Z"
-updated = "2026-11-09T03:11:57Z"
+updated = "2026-11-09T03:12:57Z"
 idempotency_key = "usb070-latency"
 scope = ["python/sadi/doctor/checks/usb.py", "python/tests/doctor/test_sadi_doctor.py", "changelog.d/01M6Z4H88GR6M567TTWQHPQMC1.changed.md", "docs/doctor-checks.md"]
 

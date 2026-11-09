@@ -4,10 +4,10 @@ title = "DAD parity with SADI: high-level typani device wrapper (typestate, cont
 type = "task"
 category = "todo"
 priority = "medium"
-points = 8
+points = 5
 reporter = "lognd"
 created = "2026-11-09T02:44:43Z"
-updated = "2026-11-09T02:44:46Z"
+updated = "2026-11-09T02:57:48Z"
 idempotency_key = "dad-parity"
 
 [[links]]

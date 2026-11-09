@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-08T05:29:56Z"
-updated = "2026-11-09T02:37:00Z"
+updated = "2026-11-09T02:37:26Z"
 labels = ["ws:py", "ad3"]
 scope = ["python/sadi/bench/inject.py", "docs/bench/ad3.md", "python/tests/bench/test_ad3_fake.py"]
 +++

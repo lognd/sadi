@@ -1,0 +1,9 @@
+kind = "create"
+title = "DAD parity with SADI: high-level typani device wrapper (typestate, context manager, Result, ErrorSet) plus full doctor family, launcher/docs integration"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "dad-parity"
+at = "2026-11-09T02:44:43Z"
+actor = "lognd"
+rev = 1

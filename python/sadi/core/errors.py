@@ -31,6 +31,11 @@ class DeviceCode(ErrorSet):
     TIMEOUT = "timeout"
     PROTOCOL = "protocol"
     SATURATED = "saturated"
+    PERMISSION_DENIED = "permission denied"
+    BUSY = "busy"
+    BINDING_MISSING = "binding missing"
+    BAD_DATA = "bad data"
+    INTERNAL = "internal"
 
 
 class InputCode(ErrorSet):
@@ -87,6 +92,11 @@ _HINTS: dict[ErrorSet, str] = {
     DeviceCode.TIMEOUT: "The board stopped answering; unplug it, plug it back in and retry.",
     DeviceCode.PROTOCOL: "Unexpected data from the board; reconnect it and retry the step.",
     DeviceCode.SATURATED: "LVDT is near +/-5 V; slide the core back toward the coil centre.",
+    DeviceCode.PERMISSION_DENIED: "No permission for the port (Linux: add yourself to dialout).",
+    DeviceCode.BUSY: "Another program holds the board; close it (or unplug and replug) and retry.",
+    DeviceCode.BINDING_MISSING: "The native device module is not installed; run `sadi doctor`.",
+    DeviceCode.BAD_DATA: "The board sent malformed data; reconnect it and retry the step.",
+    DeviceCode.INTERNAL: "The device layer failed unexpectedly; see the log, then reconnect.",
     InputCode.OUT_OF_RANGE: "Enter a value inside the allowed range shown next to the field.",
     InputCode.MISSING: "Fill in the required field before continuing.",
     InputCode.DUPLICATE: "That name is already used; choose a different one.",

@@ -1,0 +1,10 @@
+kind = "create"
+title = "AD3 LCTT E2E: untested stages (yield stress, Monte Carlo uncertainty)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/tests/e2e/test_lctt_ad3.py"]
+body = "found while working GHQ8PEY"
+at = "2026-11-09T02:51:35Z"
+actor = "lognd"
+rev = 1

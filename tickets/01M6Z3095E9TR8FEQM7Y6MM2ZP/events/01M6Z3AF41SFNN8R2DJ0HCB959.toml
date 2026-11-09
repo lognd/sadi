@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:48:41Z"
+digest = "e76196bedc836bd271324e9b2597c0c570046d31823ebe2308e6d0954322c7fa"
+exit_code = 0
+head = "ae39252251215f0a3ce9c0e6e72456862e496a3e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 8 items
+
+python/tests/doctor/test_devprobe_facade.py ........                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-339505-0.xml ---------------
+============================== 8 passed in 0.58s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_devprobe_facade.py"
+size = 521
+status = "measured"
+test_count = 8
+tests_digest = "7570eb610cfcdacb4d9a40fd389bbb8ff397058cc319d4f10ab76e38f0ace264"
+at = "2026-11-09T02:48:41Z"
+actor = "lognd"
+rev = 1

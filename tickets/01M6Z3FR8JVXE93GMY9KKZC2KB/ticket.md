@@ -1,0 +1,13 @@
++++
+id = "01M6Z3FR8JVXE93GMY9KKZC2KB"
+title = "AD3 LCTT E2E: untested stages (yield stress, Monte Carlo uncertainty)"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-09T02:51:35Z"
+updated = "2026-11-09T02:51:35Z"
+scope = ["python/tests/e2e/test_lctt_ad3.py"]
++++
+
+found while working GHQ8PEY

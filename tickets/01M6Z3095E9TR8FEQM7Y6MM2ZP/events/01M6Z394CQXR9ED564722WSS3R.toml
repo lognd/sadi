@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py", "python/sadi/core/device.py", "python/sadi/core/errors.py"]
+new = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py", "python/sadi/core/device.py", "python/sadi/core/errors.py", "python/sadi/core/phases.py"]
+at = "2026-11-09T02:47:58Z"
+actor = "lognd"
+rev = 1

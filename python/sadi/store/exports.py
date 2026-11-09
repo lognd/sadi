@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, ErrorSet, Ok, Result
+from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store import durable, snapshot
@@ -227,14 +227,14 @@ def _tmp_path(directory: Path, label: str) -> Path:
     return directory / f".{label}.tmp-{os.getpid()}-{secrets.token_hex(4)}"
 
 
+@propagate
 def _write_sidecar(final: Path, prov: ExportProvenanceV1) -> Result[Path, ExportError]:
     """Write the provenance sidecar next to `final` (tmp, fsync, no-replace rename)."""
     sidecar = final.with_name(final.name + PROV_SUFFIX)
     data = (prov.model_dump_json(indent=2) + "\n").encode("utf-8")
     tmp = _tmp_path(final.parent, "prov")
     written = _write_tmp(tmp, data, "export.sidecar")
-    if written.is_err:
-        return Err(written.danger_err)
+    written.unwrap()
     renamed = durable.rename_noreplace(tmp, sidecar)
     if renamed.is_err:
         _log.error("sidecar publish %s failed: %s", sidecar, renamed.danger_err)
@@ -259,6 +259,7 @@ def _emit_ref(sink: RefSink | None, rel: str, prov: ExportProvenanceV1) -> None:
         _log.warning("EXPORT_REF for %s refused: %s", rel, res.danger_err)
 
 
+@propagate
 def write_export(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     session: _HasPath,
     kind: str,
@@ -282,9 +283,7 @@ def write_export(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     kind = sanitize_name(kind)
     base = sanitize_name(basename)
     bounds = _provenance_bounds(session_dir, covers_seq)
-    if bounds.is_err:
-        return Err(bounds.danger_err)
-    seq, phash = bounds.danger_ok
+    seq, phash = bounds.unwrap()
     when = now or datetime.now(UTC)
     stamp = when.strftime("%Y%m%dT%H%M%SZ")
     directory = export_dir(session_dir, kind)
@@ -295,12 +294,9 @@ def write_export(  # noqa: PLR0913 - explicit knobs keep tests deterministic
         return _io_err(exc, directory)
     tmp = _tmp_path(directory, base)
     written = _write_tmp(tmp, payload, "export.data")
-    if written.is_err:
-        return Err(written.danger_err)
+    written.unwrap()
     published = _publish(directory, tmp, lambda n: f"{n:04d}-{stamp}-{base}.{ext}")
-    if published.is_err:
-        return Err(published.danger_err)
-    final = published.danger_ok
+    final = published.unwrap()
     rel = final.relative_to(session_dir).as_posix()
     prov = ExportProvenanceV1(
         kind=kind,

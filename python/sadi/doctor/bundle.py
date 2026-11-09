@@ -14,7 +14,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.doctor.schema import DoctorError, DoctorReport
 from sadi.logging_setup import get_logger
@@ -93,6 +93,7 @@ def _payload(report: DoctorReport, log_lines: list[str]) -> bytes:
     return buf.getvalue()
 
 
+@propagate
 def _write_tmp(tmp: Path, data: bytes) -> Result[None, DoctorError]:
     """Create `tmp` exclusively, write all bytes and fsync."""
     created = create_exclusive(tmp)
@@ -110,8 +111,7 @@ def _write_tmp(tmp: Path, data: bytes) -> Result[None, DoctorError]:
         return Err(DoctorError.BundleWriteFailed)
     finally:
         os.close(fd)
-    if synced.is_err:
-        return Err(DoctorError.BundleWriteFailed)
+    synced.unwrap(err=DoctorError.BundleWriteFailed)
     return Ok(None)
 
 

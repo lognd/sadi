@@ -16,7 +16,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store.csv_export import write_csv_exclusive
@@ -158,12 +158,11 @@ def _segment_lines(ro: ReadOnlySession) -> list[str]:
     return lines
 
 
+@propagate
 def cmd_verify(session_dir: Path) -> Result[int, CliFailure]:
     """Verify every WAL checksum and seal of one session; read-only."""
     opened = _open(session_dir)
-    if opened.is_err:
-        return Err(opened.danger_err)
-    ro = opened.danger_ok
+    ro = opened.unwrap()
     text, sev = _status(ro)
     _out(f"{session_dir.name}: {text}")
     for line in _segment_lines(ro):
@@ -248,21 +247,20 @@ def _type_name(code: int) -> str:
         return f"0x{code:02x}"
 
 
+@propagate
 def cmd_export(session_dir: Path, target: Path, *, excel_bom: bool) -> Result[int, CliFailure]:
     """Write the verified records of a session to a NEW csv; refuses an existing target."""
     opened = _open(session_dir)
-    if opened.is_err:
-        return Err(opened.danger_err)
-    ro = opened.danger_ok
+    ro = opened.unwrap()
     if ro.scan is None:
         if ro.scan_error is not None:
             return Err(_fail("Refused: the recording is damaged; run `verify`.", Exit.CORRUPT))
         return Err(_fail("This session has no WAL to export.", Exit.UNREADABLE))
     rows: list[list[str | int]] = []
     for item in WalReader(session_dir / "wal").records():
-        if item.is_err:
-            return Err(_fail("Refused: the recording is damaged; run `verify`.", Exit.CORRUPT))
-        rec = item.danger_ok
+        rec = item.unwrap(
+            err=_fail("Refused: the recording is damaged; run `verify`.", Exit.CORRUPT)
+        )
         rows.append(
             [rec.seq, rec.wall_ns, _type_name(rec.type), _payload_text(rec.flags, rec.payload)]
         )

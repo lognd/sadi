@@ -14,7 +14,7 @@ from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, create_exclusive, fsync_dir, fsync_file
@@ -52,6 +52,7 @@ def render_csv(
     return UTF8_BOM + data if excel_bom else data
 
 
+@propagate
 def write_csv_exclusive(
     path: Path,
     header: Sequence[str],
@@ -76,8 +77,7 @@ def write_csv_exclusive(
         return Err(CsvWriteFailure(path=path, detail=str(exc)))
     finally:
         os.close(fd)
-    if synced.is_err:
-        return Err(CsvWriteFailure(path=path, cause=synced.unwrap_err()))
+    synced.map_err(lambda e: CsvWriteFailure(path=path, cause=e)).unwrap()
     fsync_dir(path.parent)
     _log.info("csv export written: %s (%d bytes)", path, len(data))
     return Ok(len(data))

@@ -13,7 +13,7 @@ from collections.abc import Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.core.point_inputs import (
     CalibrationInputs,
@@ -92,6 +92,7 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
 
 
 # frob:ticket 01M6WP144S0ENPQESCQEQ6NT5Y
+@propagate
 def session_events(
     sdir: Path, replayer: IncrementalReplay | None = None
 ) -> Result[list[LiveEvent], str]:
@@ -102,10 +103,8 @@ def session_events(
     state: Result[ReplayState, object] = (
         recover_state(sdir) if replayer is None else replayer.state()
     )
-    if state.is_err:
-        return Err(str(state.danger_err))
     events: list[LiveEvent] = []
-    for cp in state.danger_ok.view().points:
+    for cp in state.map_err(str).unwrap().view().points:
         ev = _event(cp)
         if ev is None:
             _log.warning("curve source: point %s has unusable inputs", cp.point.point_id)

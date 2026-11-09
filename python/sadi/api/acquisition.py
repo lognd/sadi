@@ -13,7 +13,7 @@ import threading
 from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
-from typani import Err, ErrorSet, Ok, Result
+from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.core.errors import DeviceError
 from sadi.core.events import PointWindow
@@ -186,14 +186,14 @@ class AcquisitionDriver:
         )
         return Ok(step)
 
+    @propagate
     def record_point(
         self, inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None
     ) -> Result[str, WriterError | PipelineError]:
         """Write a POINT event (inputs plus settle meta) in the shared mapping; Ok is its id."""
         point = build_point(inputs, window, meta)
         res = self._pipe.record_point(point)
-        if res.is_err:
-            return Err(res.danger_err)
+        res.unwrap()
         return Ok(point.point_id)
 
     def _record_fault(self, fault: DriverFault) -> None:

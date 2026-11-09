@@ -22,7 +22,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
@@ -278,6 +278,7 @@ class SessionHandle:
     _lock_fd: int | None = field(default=None, repr=False)
     _root_lock: DataRootLock | None = field(default=None, repr=False)
 
+    @propagate
     def close(self, state: str = "closed") -> Result[None, SessionError]:
         """Write the closed manifest atomically, then release both locks; idempotent."""
         if self._lock_fd is None:
@@ -289,8 +290,7 @@ class SessionHandle:
         if self._root_lock is not None:
             self._root_lock.release()
             self._root_lock = None
-        if written.is_err:
-            return Err(SessionIo(error=written.danger_err))
+        written.map_err(lambda e: SessionIo(error=e)).unwrap()
         object.__setattr__(self, "manifest", updated)
         _log.info("session closed: %s", self.path)
         return Ok(None)
@@ -332,6 +332,7 @@ def _take_version(
     return Err(TooManyVersions(family=family))
 
 
+@propagate
 def _init_dir(path: Path, manifest: Manifest) -> Result[SessionHandle, SessionError]:
     """Create subdirs, take the lock, write the manifest and fsync the directory entries."""
     try:
@@ -341,9 +342,7 @@ def _init_dir(path: Path, manifest: Manifest) -> Result[SessionHandle, SessionEr
         _log.error("subdir create in %s failed: %s", path, exc)
         return Err(_io(exc, path))
     created = create_exclusive(path / LOCK_NAME)
-    if created.is_err:
-        return Err(SessionIo(error=created.danger_err))
-    fd = created.danger_ok
+    fd = created.map_err(lambda e: SessionIo(error=e)).unwrap()
     if not _try_os_lock(fd):
         os.close(fd)
         return Err(Locked(path=path / LOCK_NAME))
@@ -395,6 +394,7 @@ def _attach_root_lock(
     return built
 
 
+@propagate
 def create_session(
     root: Path,
     meta: SessionMeta,
@@ -407,9 +407,8 @@ def create_session(
     A stale data-root lock is reported as RootLockFailed unless the user passes `recover_stale`.
     """
     locked = _take_root_lock(root, recover_stale)
-    if locked.is_err:
-        return Err(locked.danger_err)
-    return _attach_root_lock(_create_locked(root, meta, now), locked.danger_ok)
+    root_lock = locked.unwrap()
+    return _attach_root_lock(_create_locked(root, meta, now), root_lock)
 
 
 def create_session_in_held_root(
@@ -422,6 +421,7 @@ def create_session_in_held_root(
     return _create_locked(root, meta, now)
 
 
+@propagate
 def _create_locked(
     root: Path, meta: SessionMeta, now: datetime | None
 ) -> Result[SessionHandle, SessionError]:
@@ -434,9 +434,7 @@ def _create_locked(
         return Err(_io(exc, sessions))
     family = f"{when.strftime('%Y%m%dT%H%M%SZ')}-{_slug(meta.slug)}"
     taken = _take_version(sessions, family, 1)
-    if taken.is_err:
-        return Err(taken.danger_err)
-    path, ver = taken.danger_ok
+    path, ver = taken.unwrap()
     manifest = Manifest(
         session_uuid=str(uuid.uuid4()),
         dir_name=path.name,
@@ -450,6 +448,7 @@ def _create_locked(
     return _init_dir(path, manifest)
 
 
+@propagate
 def resume_session(
     parent_dir: Path,
     *,
@@ -467,9 +466,8 @@ def resume_session(
     if not parent_dir.is_dir():
         return Err(NotASession(path=parent_dir))
     locked = _take_root_lock(parent_dir.parent.parent, recover_stale)
-    if locked.is_err:
-        return Err(locked.danger_err)
-    return _attach_root_lock(_resume_locked(parent_dir, m, plugins), locked.danger_ok)
+    root_lock = locked.unwrap()
+    return _attach_root_lock(_resume_locked(parent_dir, m, plugins), root_lock)
 
 
 def resume_session_in_held_root(
@@ -484,13 +482,13 @@ def resume_session_in_held_root(
     return _resume_locked(parent_dir, m, plugins)
 
 
+@propagate
 def _resume_locked(
     parent_dir: Path, m: re.Match[str], plugins: Sequence[SessionPluginRef] | None = None
 ) -> Result[SessionHandle, SessionError]:
     """Resume once the data-root lock is held."""
     locked = probe_lock(parent_dir)
-    if locked.is_err:
-        return Err(locked.danger_err)
+    locked.unwrap()
     if not (parent_dir / "wal").is_dir():
         return Err(ParentIncomplete(parent=parent_dir))
     scan = WalReader.scan(parent_dir / "wal")
@@ -501,9 +499,7 @@ def _resume_locked(
     family = m.group("family")
     now = datetime.now(UTC)
     taken = _take_version(parent_dir.parent, family, int(m.group("ver")) + 1)
-    if taken.is_err:
-        return Err(taken.danger_err)
-    path, ver = taken.danger_ok
+    path, ver = taken.unwrap()
     pm = read_manifest(parent_dir)
     pmf = pm.danger_ok if pm.is_ok else None
     manifest = Manifest(

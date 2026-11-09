@@ -7,7 +7,7 @@ import json
 import re
 from typing import Any
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
 from sadi.doctor.schema import (
@@ -47,11 +47,10 @@ FEATURES_SCRIPT = "import json,sadi_py\nprint(json.dumps(list(sadi_py.serial_fea
 SELFTEST_SCRIPT = "import sadi_py\nsadi_py.selftest()"
 
 
+@propagate
 def child_json(ctx: Ctx, script: str, timeout: float = CHILD_TIMEOUT_S) -> Result[Any, ProbeError]:
     """Run `python -c script` and parse the last JSON line of its stdout (earlier log lines are ignored); any failure is a ProbeError."""
     res = ctx.probes.run((ctx.probes.python_exe(), "-c", script), timeout)
-    if res.is_err:
-        return Err(res.unwrap_err())
     run: CommandRun = res.unwrap()
     if run.exit_code != 0:
         return Err(ProbeError(kind="exception", detail=run.stderr_tail[-300:] or "non-zero exit"))

@@ -17,7 +17,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypeVar
 
-from typani import Err, Ok, Result
+from pydantic import BaseModel
+from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import LabId, LabModule, StepId
 from sadi.core.point_inputs import PointMeta, build_point, parse_inputs
@@ -95,6 +96,12 @@ _FOLD_TYPES = frozenset(
 )
 
 
+def _from_store(err: BaseModel) -> ApiProblem:
+    """Map a store-layer error to its API problem (shared by every propagation site)."""
+    return from_model(err, "store")
+
+
+@propagate
 def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
     """Append the parent's state records to `writer` in order and wait until durable.
 
@@ -111,14 +118,11 @@ def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
         if rec.type not in _FOLD_TYPES:
             continue
         sub = writer.submit(NewRecord(type=rec.type, payload=rec.payload, flags=rec.flags))
-        if sub.is_err:
-            return Err(from_model(sub.danger_err, "store"))
-        last = sub.danger_ok
+        last = sub.map_err(_from_store).unwrap()
         count += 1
     if last:
         durable = writer.wait_durable(last, DURABLE_TIMEOUT_S)
-        if durable.is_err:
-            return Err(from_model(durable.danger_err, "store"))
+        durable.map_err(_from_store).unwrap()
     _log.info("folded %d state records from %s", count, parent.name)
     return Ok(count)
 
@@ -184,21 +188,19 @@ class SessionService:
 
     # ---- lifecycle --------------------------------------------------------------------
 
+    @propagate
     def create(self, req: SessionCreate) -> Result[SessionInfo, ApiProblem]:
         """Create a new session family for the requested lab and open it for writing."""
         with self._lock:
             busy = self._refuse_if_open()
             if busy is not None:
                 return Err(busy)
-            lab = self._labs.get(LabId(req.lab))
-            if lab.is_err:
-                return Err(from_sadi(lab.danger_err))
+            lab = self._labs.get(LabId(req.lab)).map_err(from_sadi).unwrap()
             meta = SessionMeta(slug=req.slug, lab_module=req.lab, specimen=req.specimen)
             made = create_session_in_held_root(self._root, meta)
-            if made.is_err:
-                return Err(from_model(made.danger_err, "store"))
-            return self._attach(made.danger_ok, lab.danger_ok)
+            return self._attach(made.map_err(_from_store).unwrap(), lab)
 
+    @propagate
     def resume(self, name: str) -> Result[SessionInfo, ApiProblem]:
         """Open the next version of session `name`; the parent is never modified.
 
@@ -214,14 +216,11 @@ class SessionService:
                 return Err(not_found(name, "Pick a session from the list of sessions."))
             mf = read_manifest(parent)
             lab_id = mf.danger_ok.lab_module if mf.is_ok and mf.danger_ok is not None else ""
-            lab = self._labs.get(LabId(lab_id))
-            if lab.is_err:
-                return Err(from_sadi(lab.danger_err))
+            lab = self._labs.get(LabId(lab_id)).map_err(from_sadi).unwrap()
             made = resume_session_in_held_root(parent)
-            if made.is_err:
-                return Err(from_model(made.danger_err, "store"))
-            return self._attach(made.danger_ok, lab.danger_ok, fold_from=parent)
+            return self._attach(made.map_err(_from_store).unwrap(), lab, fold_from=parent)
 
+    @propagate
     def close(self) -> Result[None, ApiProblem]:
         """Drain the writer and close the open session (manifest written atomically)."""
         with self._lock:
@@ -237,8 +236,7 @@ class SessionService:
                 cur.handle.close(state="incomplete")
                 return Err(from_model(closed.danger_err, "store"))
             shut = cur.handle.close()
-            if shut.is_err:
-                return Err(from_model(shut.danger_err, "store"))
+            shut.map_err(_from_store).unwrap()
             _log.info("session %s closed", cur.handle.path.name)
             return Ok(None)
 
@@ -292,26 +290,26 @@ class SessionService:
         """List captured points with edits applied (excluded points included, flagged)."""
         return self._read(lambda _cur, rp: [PointView.of(p) for p in rp.view().points])
 
+    @propagate
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
         """Validate typed inputs, then append a POINT through the wizard."""
         parsed = parse_inputs(body.phase, body.inputs)
-        if parsed.is_err:
-            return Err(
-                ApiProblem(
-                    type="urn:sadi:error:input:missing",
-                    title="missing",
-                    status=422,
-                    detail=parsed.danger_err,
-                    hint="Fill in the required field before continuing.",
-                )
+        parsed_ok = parsed.map_err(
+            lambda detail: ApiProblem(
+                type="urn:sadi:error:input:missing",
+                title="missing",
+                status=422,
+                detail=detail,
+                hint="Fill in the required field before continuing.",
             )
+        ).unwrap()
         meta = PointMeta(
             t_since_load_s=body.t_since_load_s,
             drift_rate=body.drift_rate,
             settled=body.settled,
             forced_early=body.forced_early,
         )
-        point = build_point(parsed.danger_ok, body.window, meta)
+        point = build_point(parsed_ok, body.window, meta)
         return self._act(lambda cur, rp: cur.wizard.capture(rp, point))
 
     def edit(self, target: str, body: EditBody) -> Result[Committed, ApiProblem]:
@@ -333,6 +331,7 @@ class SessionService:
     # ---- notes ------------------------------------------------------------------------
 
     # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
+    @propagate
     def append_note(self, payload: str) -> Result[int, ApiProblem]:
         """Append a JSON NOTE record and return its seq once durable (never overwrites)."""
         with self._lock:
@@ -343,13 +342,11 @@ class SessionService:
                 type=int(RecordType.NOTE), payload=payload.encode("utf-8"), flags=FLAG_JSON
             )
             sub = cur.writer.submit(note)
-            if sub.is_err:
-                return Err(from_model(sub.danger_err, "store"))
-            durable = cur.writer.wait_durable(sub.danger_ok, DURABLE_TIMEOUT_S)
-            if durable.is_err:
-                return Err(from_model(durable.danger_err, "store"))
-            _log.info("note appended at seq %d (%d bytes)", sub.danger_ok, len(payload))
-            return Ok(sub.danger_ok)
+            last = sub.map_err(_from_store).unwrap()
+            durable = cur.writer.wait_durable(last, DURABLE_TIMEOUT_S)
+            durable.map_err(_from_store).unwrap()
+            _log.info("note appended at seq %d (%d bytes)", last, len(payload))
+            return Ok(last)
 
     # frob:ticket 01M6WTC9ZQWCTYX5WADMDHYBZ1
     # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
@@ -359,7 +356,7 @@ class SessionService:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
-            got = cur.replayer.notes()
+            got = cur.replayer.notes()  # typani: ignore[TYP001]
             if got.is_err:
                 _log.error("note scan stopped by corruption: %s", got.danger_err)
                 return Err(from_model(got.danger_err, "store"))
@@ -373,6 +370,7 @@ class SessionService:
         return self._read(lambda _cur, rp: _phase_view(fold_phase(rp.markers)))
 
     # frob:ticket 01M6XAKF5AK7FCJNBHPM62NYRS
+    @propagate
     def enter_phase(self, phase: Phase) -> Result[RunPhaseView, ApiProblem]:
         """Record entry into `phase` (append-only MARKER, durable); only the next phase is legal."""
         with self._lock:
@@ -380,9 +378,7 @@ class SessionService:
             if cur is None:
                 return Err(self._none_open())
             rp = self._replay(cur)
-            if rp.is_err:
-                return Err(rp.danger_err)
-            now = fold_phase(rp.danger_ok.markers)
+            now = fold_phase(rp.unwrap().markers)
             ok = check_transition(now, phase)
             if ok.is_err:
                 refusal = ok.danger_err
@@ -396,12 +392,10 @@ class SessionService:
                     )
                 )
             sub = cur.writer.submit(phase_record(phase))
-            if sub.is_err:
-                return Err(from_model(sub.danger_err, "store"))
-            durable = cur.writer.wait_durable(sub.danger_ok, DURABLE_TIMEOUT_S)
-            if durable.is_err:
-                return Err(from_model(durable.danger_err, "store"))
-            _log.info("run phase %s -> %s at seq %d", now, phase, sub.danger_ok)
+            last = sub.map_err(_from_store).unwrap()
+            durable = cur.writer.wait_durable(last, DURABLE_TIMEOUT_S)
+            durable.map_err(_from_store).unwrap()
+            _log.info("run phase %s -> %s at seq %d", now, phase, last)
             return Ok(_phase_view(phase))
 
     # ---- internals --------------------------------------------------------------------
@@ -464,13 +458,13 @@ class SessionService:
         return Ok(self._info(self._open))
 
     # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
+    @propagate
     def _replay(self, cur: _Open) -> Result[ReplayState, ApiProblem]:
         """Return the current ReplayState (incrementally cached; equal to a full replay)."""
         got = cur.replayer.state()
-        if got.is_err:
-            return Err(from_model(got.danger_err, "store"))
-        return Ok(got.danger_ok)
+        return Ok(got.map_err(_from_store).unwrap())
 
+    @propagate
     def _read(self, fn: Callable[[_Open, ReplayState], _T]) -> Result[_T, ApiProblem]:
         """Run a read-only projection over the replayed state."""
         with self._lock:
@@ -478,10 +472,9 @@ class SessionService:
             if cur is None:
                 return Err(self._none_open())
             rp = self._replay(cur)
-            if rp.is_err:
-                return Err(rp.danger_err)
-            return Ok(fn(cur, rp.danger_ok))
+            return Ok(fn(cur, rp.unwrap()))
 
+    @propagate
     def _act(
         self, fn: Callable[[_Open, ReplayState], Result[Command, WizardError]]
     ) -> Result[Committed, ApiProblem]:
@@ -491,29 +484,20 @@ class SessionService:
             if cur is None:
                 return Err(self._none_open())
             rp = self._replay(cur)
-            if rp.is_err:
-                return Err(rp.danger_err)
-            cmd = fn(cur, rp.danger_ok)
-            if cmd.is_err:
-                return Err(from_wizard(cmd.danger_err))
+            cmd = fn(cur, rp.unwrap())
             seq = 0
-            for rec in cmd.danger_ok.records:
+            for rec in cmd.map_err(from_wizard).unwrap().records:
                 sub = cur.writer.submit(rec)
-                if sub.is_err:
-                    return Err(from_model(sub.danger_err, "store"))
-                seq = sub.danger_ok
+                seq = sub.map_err(_from_store).unwrap()
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
-            if durable.is_err:
-                return Err(from_model(durable.danger_err, "store"))
-            after = self._replay(cur)
-            if after.is_err:
-                return Err(after.danger_err)
+            durable.map_err(_from_store).unwrap()
+            after = self._replay(cur).unwrap()
             _log.info("committed seq %d: %s", seq, cmd.danger_ok.summary)
             return Ok(
                 Committed(
                     seq=seq,
                     summary=cmd.danger_ok.summary,
-                    wizard=cur.wizard.state(after.danger_ok),
-                    history=cur.wizard.history(after.danger_ok),
+                    wizard=cur.wizard.state(after),
+                    history=cur.wizard.history(after),
                 )
             )

@@ -13,5 +13,5 @@ scope = ["docs/bench/ad3.md", "python/sadi/bench/ad3/launch.py", "python/tests/b
 
 [[acceptance]]
 text = "SIGTERM with a raising log handler still closes the AD3 exactly once and exits 128+signum"
-bound = false
+bound = true
 +++

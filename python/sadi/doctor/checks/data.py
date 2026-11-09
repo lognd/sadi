@@ -79,7 +79,7 @@ def _data_010_missing(ctx: Ctx, out: Outcome) -> Fix:
                 f"Create the data folder {root} (the configured --data-root or SADI_DATA_ROOT, "
                 "else the default). Skip this step to let SADI create it on the Setup screen.",
                 "The command prints nothing (or the new folder) and no error.",
-                cmd(ctx.os, mk),
+                cmd(ctx.os, mk, fixable=ctx.os is not Os.WINDOWS),
                 mutates=Mutates.DATA_DIR,
                 changes=f"Creates the empty folder {root}; an existing folder is left untouched.",
                 if_not="Choose a local, writable disk with --data-root or SADI_DATA_ROOT.",

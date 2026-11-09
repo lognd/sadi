@@ -29,7 +29,8 @@ _log = get_logger(__name__)
 EXIT_OK = 0
 EXIT_STILL_BAD = 1
 EXIT_DECLINED = 3
-RUNNABLE = frozenset({Mutates.SYSTEM, Mutates.PROCESS})
+# data-dir (mkdir of the empty root) and install (UI build) only ever create; neither deletes or overwrites.
+RUNNABLE = frozenset({Mutates.SYSTEM, Mutates.PROCESS, Mutates.DATA_DIR, Mutates.INSTALL})
 
 __all__ = ["FixAction", "plan", "fix"]
 
@@ -44,7 +45,7 @@ class FixAction:
 
 
 def plan(result: CheckResult, data_root: str | None) -> list[FixAction]:
-    """List the fixable commands of a result; data, data-dir, install and data-root ones never qualify."""
+    """List the fixable commands of a result; `data` steps and commands touching an existing data root never qualify."""
     if result.remediation is None:
         return []
     actions = []
@@ -52,7 +53,9 @@ def plan(result: CheckResult, data_root: str | None) -> list[FixAction]:
         if step.kind is StepKind.VERIFY or step.mutates not in RUNNABLE:
             continue
         for c in step.commands:
-            if c.fixable and (data_root is None or data_root not in c.line):
+            if c.fixable and (
+                step.mutates is Mutates.DATA_DIR or data_root is None or data_root not in c.line
+            ):
                 actions.append(FixAction(n, c, step.mutates))
     return actions
 

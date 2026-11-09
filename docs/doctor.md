@@ -365,7 +365,7 @@ Every step carries `mutates`, one of:
 | `process` | Starts or stops a program (close LabVIEW, start SADI, kill a process by pid). | the step says which process; the doctor never kills anything itself |
 | `system` | OS configuration outside the data root: udev rule, group membership, driver install, usbipd bind, Defender exclusion, registry key, kernel module, clock. | always typed by the user; `sadi doctor fix` performs only the subset in section 4.4 and only after an explicit yes |
 | `install` | Installs or reinstalls software (uv sync, wheel reinstall, usbipd, wslu). | typed by the user |
-| `data-dir` | Creates or changes files under the data root but never under `sessions/`: creating the root, the config file, the log directory. | NEVER performed by `sadi doctor fix` (decision D2). The step shows the command or says "In SADI, open Setup and choose Change"; the app creates the folder under its own human-confirms rule. |
+| `data-dir` | Creates or changes files under the data root but never under `sessions/`: creating the root, the config file, the log directory. | Only the DATA-010 create-the-empty-root mkdir is run by `sadi doctor fix --apply` (decision D2, amended); every other such step is never run. The step shows the command or says "In SADI, open Setup and choose Change"; the app creates the folder under its own human-confirms rule. |
 | `data` | Touches session data (resume, import spill, start a new family). | NEVER a doctor step. The step says "In SADI, open ... and choose Resume"; the app performs it under its own human-confirms rule (ux.md principle 3, data-safety.md 2.3). |
 
 Invariant: no `Remediation` object contains a `data` step with a command. A
@@ -388,11 +388,11 @@ Step 2 of 2: Verify.
 USB-050 pass: udev rule present
 ```
 
-Decision D2: `fix` is read-only for the user data dir. It never creates,
-writes or changes anything under the data root, including the root itself
-and `config.toml`; for a `data-dir` step it prints the command and the Setup
-screen route and the user acts. `DATA-010 missing` is therefore not
-fixable by the doctor.
+Decision D2 (amended by the owner): `fix` never overwrites or deletes
+anything under the data root. The one exception is the `DATA-010 missing`
+step, `mkdir -p -m 700 <root>`, which only creates the empty folder and
+leaves an existing one untouched; `--apply` may run it after a y/N. Every
+other `data-dir` step and every `data` step is still printed for the user.
 
 Allowed fixable steps (the whole list, none of which touch the data root; anything else prints the command and
 asks the user to run it):
@@ -406,7 +406,7 @@ asks the user to run it):
 Catalog status (~Z1GAYMZ): the three rows above are tagged `fixable` in the
 catalog (USB-050 udev install on Linux/WSL, USB-020 `usbipd.exe attach` on
 WSL only, BRW-010 `python3 -m webbrowser` as a `process` step). `usbipd bind`
-and every `install`, `data-dir` and `data` step stay unfixable.
+and every `data` step stay unfixable. Two create-only steps are also fixable: the `DATA-010 missing` mkdir (`data-dir`) and the `WEB-010 missing-bundle` UI build (`install`, `python packaging/build_ui.py`).
 
 `--yes` answers yes to every prompt for scripted lab setup and is refused
 when stdin is not a terminal unless `--yes` is given together with
@@ -806,9 +806,9 @@ accept `fix` and `--bundle`.
 command `[fixable]` or `[run it yourself]`, changes nothing and exits 1 (the
 problem is still there). With `--apply` it asks `Run ...? [y/N]` for each
 fixable command and runs it without a shell. A command is fixable only when
-the catalog marks it `fixable`, its step is class `system` or `process`, and
-its line does not mention the data root; `data`, `data-dir` and `install`
-steps are never run. `--yes` skips the prompts and needs a terminal or
+the catalog marks it `fixable`, its step is class `system`, `process`,
+`data-dir` or `install`, and (except for the `data-dir` mkdir) its line does
+not mention the data root; `data` steps are never run. `--yes` skips the prompts and needs a terminal or
 `--non-interactive`. Exit codes: 0 verify passes, 1 still failing, 3 declined,
 64 usage. No catalog command is marked `fixable` yet, so `--apply` currently
 reports that there is nothing to run.

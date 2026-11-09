@@ -26,11 +26,12 @@ def _fixables(os: Os) -> list[tuple[str, str, Mutates, str]]:
 
 
 def test_fixable_commands_are_only_safe_classes_and_avoid_data_root() -> None:
-    """No fixable command is install/data/data-dir class, a verify step, or touches the data root."""
+    """No fixable command is data class, a verify step, or (outside the data-dir mkdir) touches the data root."""
     for os in Os:
         for _, _, mutates, line in _fixables(os):
             assert mutates in fixmod.RUNNABLE
-            assert ROOT not in line
+            assert mutates not in (Mutates.DATA, Mutates.NONE)
+            assert mutates is Mutates.DATA_DIR or ROOT not in line
             assert "bind" not in line.split()
     for spec, _ in all_checks():
         for mode in spec.modes:

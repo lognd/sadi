@@ -131,14 +131,27 @@ def test_fix_yes_needs_terminal(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 # frob:tests python/sadi/doctor/fix.py::plan
-@pytest.mark.parametrize("mutates", [Mutates.DATA, Mutates.DATA_DIR, Mutates.INSTALL, Mutates.NONE])
+@pytest.mark.parametrize("mutates", [Mutates.DATA, Mutates.NONE])
 def test_plan_excludes_non_runnable_classes(
     monkeypatch: pytest.MonkeyPatch, mutates: Mutates
 ) -> None:
-    """data, data-dir, install and read-only steps are never planned for execution."""
+    """data and read-only steps are never planned for execution."""
     _with_fixable(monkeypatch, mutates, "true")
     res = fixmod.run(RunOptions(checks=("DATA-010",)), _broken()).unwrap().results[0]
     assert fixmod.plan(res, "/root") == []
+
+
+# frob:tests python/sadi/doctor/fix.py::plan
+@pytest.mark.parametrize("mutates", [Mutates.DATA_DIR, Mutates.INSTALL])
+def test_plan_includes_create_only_classes(
+    monkeypatch: pytest.MonkeyPatch, mutates: Mutates
+) -> None:
+    """data-dir (mkdir of the root) and install (UI build) steps are planned."""
+    p = _broken()
+    line = f"mkdir -p {p.data_dir}" if mutates is Mutates.DATA_DIR else "true"
+    _with_fixable(monkeypatch, mutates, line)
+    res = fixmod.run(RunOptions(checks=("DATA-010",)), p).unwrap().results[0]
+    assert len(fixmod.plan(res, p.data_dir)) == 1
 
 
 # frob:tests python/sadi/doctor/fix.py::plan

@@ -46,6 +46,7 @@ def _web_010_missing(ctx: Ctx, out: Outcome) -> Fix:
                     ctx.os,
                     "python packaging/build_ui.py",
                     context="in the repository root, using the SADI Python environment",
+                    fixable=True,
                 ),
                 mutates=Mutates.INSTALL,
                 changes="Creates web/node_modules, web/dist and python/sadi/_ui; nothing is deleted.",

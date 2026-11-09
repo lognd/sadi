@@ -49,11 +49,13 @@ def test_data_010_missing_honors_configured_root() -> None:
 
 
 # frob:tests python/sadi/doctor/fix.py::plan
-def test_fix_never_plans_install_or_data_dir_steps() -> None:
-    """Doctor stays read-only: the build and mkdir steps are never auto-applied."""
+def test_fix_plans_only_the_create_only_build_and_mkdir() -> None:
+    """The UI build and the data-root mkdir are the only install/data-dir steps --apply may run."""
     p = healthy()
     p.web_bundle = lambda: (False, 0)  # type: ignore[method-assign]
-    assert fixmod.plan(_result(p, "WEB-010"), None) == []
+    web = fixmod.plan(_result(p, "WEB-010"), None)
+    assert [a.command.line for a in web] == ["python packaging/build_ui.py"]
     q = healthy()
     q.dirs.pop(q.data_dir)
-    assert fixmod.plan(_result(q, "DATA-010"), None) == []
+    data = fixmod.plan(_result(q, "DATA-010"), q.data_dir)
+    assert [a.command.line.split()[0] for a in data] == ["mkdir"]

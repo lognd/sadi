@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T10:41:49Z"
-updated = "2026-11-09T10:45:01Z"
+updated = "2026-11-09T10:45:07Z"
 idempotency_key = "doctor-apply-mkdir-build"
 scope = ["python/sadi/doctor/**", "python/tests/doctor/**", "docs/doctor.md"]
 

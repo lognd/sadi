@@ -4,8 +4,9 @@ title = "AdcModel default full scale 1.25 V does not match real board (+-5.12 V,
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:20:00Z"
-updated = "2026-11-09T03:20:00Z"
+updated = "2026-11-09T03:22:01Z"
 idempotency_key = "gap-adcmodel-fullscale"
 +++

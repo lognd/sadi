@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["docs/index.md lists every docs/**/*.md exactly once in grouped sections; README.md points to it; no relative link broken"]
+moved = []
+at = "2026-11-09T10:50:49Z"
+actor = "lognd"
+rev = 1

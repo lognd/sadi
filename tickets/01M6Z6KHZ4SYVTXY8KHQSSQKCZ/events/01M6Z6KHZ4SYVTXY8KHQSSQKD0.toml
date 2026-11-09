@@ -1,0 +1,9 @@
+kind = "create"
+title = "Fix tests/core/test_phases.py::test_kind_mapping[codec]: phases.to_device_error maps codec to BAD_DATA but test expects PROTOCOL; reconcile with devfacade mapping"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-phases-codec-mapping"
+at = "2026-11-09T03:46:05Z"
+actor = "lognd"
+rev = 1

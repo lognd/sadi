@@ -7,6 +7,6 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T21:31:22Z"
-updated = "2026-11-09T21:37:22Z"
-scope = ["web/e2e/fixtures.ts"]
+updated = "2026-11-09T21:37:23Z"
+scope = ["web/e2e/fixtures.ts", "web/e2e/lctt-data.spec.ts"]
 +++

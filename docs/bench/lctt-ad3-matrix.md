@@ -41,5 +41,8 @@ levels stay at or below 1 V (`MAX_SAFE_V`).
   0x55, little-endian msg_count, big-endian ADC words, AA 55 AA 55 tail); encoder is zero
   and a short final packet repeats its last sample.
 - The fake supports only SINGLE acquisition, so there is no true continuous streaming.
-- On real hardware scope ch0 monitors the supply, so the LVDT read-back must come from
-  the SADI board via the serial facade, which does not exist yet.
+- On real hardware AD3 Scope Channel 1 (index 0) monitors the SADI 3V3 supply (it reads
+  ~3.3 V, not the LVDT), so levels are read back from the board with
+  `sadi.bench.sadi_readback.read_board` over the serial facade (`SADI_PORT`). The board
+  range is +-5.12 V (`board_adc_model()`, about 6413 counts/V), unlike the simulated
+  `AdcModel` default of 1.25 V. Hardware matrix row: `ad3_hw` tests pass (4/4).

@@ -2,7 +2,8 @@
 id = "01M6Z4T0ADDSYYWRHVF5CMYTJ3"
 title = "ty: fix remaining 6 type errors in doctor/checks/ad3.py and usb.py"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

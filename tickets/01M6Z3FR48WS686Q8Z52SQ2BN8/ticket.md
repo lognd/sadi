@@ -2,7 +2,8 @@
 id = "01M6Z3FR48WS686Q8Z52SQ2BN8"
 title = "AD3 LCTT hardware: SADI read-back over serial facade for ad3_hw tests (scope ch0 is supply monitor)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

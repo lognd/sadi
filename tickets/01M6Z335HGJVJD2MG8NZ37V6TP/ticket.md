@@ -2,7 +2,7 @@
 id = "01M6Z335HGJVJD2MG8NZ37V6TP"
 title = "DAD parity with SADI: high-level typani device wrapper (typestate, context manager, Result, ErrorSet) plus full doctor family, launcher/docs integration"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"

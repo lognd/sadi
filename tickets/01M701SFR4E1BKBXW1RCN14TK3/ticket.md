@@ -2,12 +2,12 @@
 id = "01M701SFR4E1BKBXW1RCN14TK3"
 title = "ci: windows crash tests (power-loss-25 bad segment magic, stale-lock, artifact lock copy) and harness E501"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T11:41:11Z"
-updated = "2026-11-09T11:41:11Z"
+updated = "2026-11-09T11:41:14Z"
 
 [[acceptance]]
 text = "ruff check python passes; crash tests pass on Linux and logic is sound for Windows; no invariant weakened"

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T04:07:24Z"
-updated = "2026-11-09T04:13:00Z"
+updated = "2026-11-09T04:13:05Z"
 idempotency_key = "gap-sigterm-flaky-fullsuite"
 
 [[acceptance]]

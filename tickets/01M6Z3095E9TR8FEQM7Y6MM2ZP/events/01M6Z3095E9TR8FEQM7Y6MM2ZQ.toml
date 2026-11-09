@@ -1,0 +1,9 @@
+kind = "create"
+title = "sadi_py/pyserial boundary facade: wrap device access so no third-party exception or panic escapes; Result + exhaustive error codes"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "sadi-py-facade"
+at = "2026-11-09T02:43:08Z"
+actor = "lognd"
+rev = 1

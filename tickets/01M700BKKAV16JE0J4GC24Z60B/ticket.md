@@ -4,7 +4,8 @@ title = "ci: cargo fmt drift in sadi-proto codec/v3 command.rs and sadi-py sim.r
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:16:08Z"
+updated = "2026-11-09T11:16:25Z"
 +++

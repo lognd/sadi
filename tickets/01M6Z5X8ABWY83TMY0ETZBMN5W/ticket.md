@@ -12,5 +12,5 @@ idempotency_key = "gap-slip-noise-floor"
 
 [[acceptance]]
 text = "slip_config_from_adc derives noise_floor from one ADC LSB; quantised hold gives no events, real glitch detected"
-bound = false
+bound = true
 +++

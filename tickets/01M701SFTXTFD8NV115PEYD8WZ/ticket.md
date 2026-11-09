@@ -2,7 +2,8 @@
 id = "01M701SFTXTFD8NV115PEYD8WZ"
 title = "ci: rust windows clippy unused imports and web windows schema.ts CRLF"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

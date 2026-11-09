@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:14:56Z"
+updated = "2026-11-09T02:14:57Z"
 idempotency_key = "wrk010"
-scope = ["python/sadi/doctor/cli.py"]
+scope = ["python/sadi/doctor/cli.py", "python/sadi/launcher.py"]
 +++

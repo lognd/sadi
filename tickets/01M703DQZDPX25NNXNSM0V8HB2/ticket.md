@@ -2,7 +2,8 @@
 id = "01M703DQZDPX25NNXNSM0V8HB2"
 title = "ci: windows browser e2e guided-run fails (durability timeouts on windows)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

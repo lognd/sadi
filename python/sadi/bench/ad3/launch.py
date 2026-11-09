@@ -40,7 +40,8 @@ class Ad3Guard:
     def __init__(self, session: Ad3Session) -> None:
         """Take ownership of `session` and arm the atexit close."""
         self.session = session
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()  # re-entrant: a signal may land inside close()
+        self._closing = False
         self._done = False
         self._prev: dict[int, _Handler] = {}
         atexit.register(self.close)
@@ -56,9 +57,14 @@ class Ad3Guard:
             if self._done:
                 return Ok(None)
             self._done = True
+            self._closing = True
         atexit.unregister(self.close)
+        # Stay armed until the device is closed: a second signal must not kill mid-close.
+        try:
+            res = self.session.close()
+        finally:
+            self._closing = False
         self._restore_signals()
-        res = self.session.close()
         if isinstance(res, Err):
             _log.error("ad3 guard close failed: %s", res.unwrap_err().code.value)
             return Err(res.unwrap_err())
@@ -71,10 +77,15 @@ class Ad3Guard:
             _log.warning("ad3 signal handlers skipped: not on the main thread")
             return
         for sig in _EXIT_SIGNALS:
+            if sig in self._prev:
+                continue  # idempotent: never save our own handler as the "prior" one
             self._prev[sig] = signal.signal(sig, self._on_signal)
 
     def _on_signal(self, signum: int, _frame: FrameType | None) -> None:
         """Close the device now, then leave via SystemExit(128+signum)."""
+        if self._closing:
+            _log.warning("signal %d during ad3 close; letting the close finish", signum)
+            return
         _log.warning("signal %d received; closing ad3 before exit", signum)
         if self.close().is_err:
             _log.error("ad3 close during signal %d failed", signum)
@@ -82,9 +93,10 @@ class Ad3Guard:
 
     def _restore_signals(self) -> None:
         """Put back the handlers saved by install_signal_handlers."""
-        for sig, prev in self._prev.items():
-            if threading.current_thread() is threading.main_thread():
-                signal.signal(sig, prev)
+        if threading.current_thread() is threading.main_thread():
+            for sig, prev in self._prev.items():
+                # None means the prior handler was not installed from Python; fall back to default.
+                signal.signal(sig, signal.SIG_DFL if prev is None else prev)
         self._prev.clear()
 
     def __enter__(self) -> Ad3Guard:

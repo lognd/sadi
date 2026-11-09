@@ -7,7 +7,8 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:09:55Z"
+updated = "2026-11-09T12:11:23Z"
+scope = ["web/e2e/**"]
 
 [[acceptance]]
 text = "e2e guided run robust on windows; durability never weakened; ubuntu/macos e2e unaffected"

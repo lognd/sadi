@@ -38,7 +38,8 @@ _log = get_logger(__name__)
 #: USB vendor id of FTDI, the bridge chip on the SADI board.
 FTDI_VID: Final[int] = 0x0403
 #: Default bounded reader queue depth, in blocks (concurrency.md section 3).
-DEFAULT_QUEUE_BLOCKS: Final[int] = 256
+#: Deep enough to ride out a slow CI runner or fsync stall.
+DEFAULT_QUEUE_BLOCKS: Final[int] = 4096  # frob:ticket 01M709DXGS91GPWZ3M06FWXJPY
 _JOIN_TIMEOUT_S: Final[float] = 5.0
 
 

@@ -7,7 +7,11 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:37:31Z"
-updated = "2026-11-09T03:38:54Z"
+updated = "2026-11-09T03:38:55Z"
 idempotency_key = "gap-slip-callers-tests"
 scope = ["python/tests/e2e/test_fault_scenarios.py", "python/tests/labs/lctt/test_real_data.py"]
+
+[[acceptance]]
+text = "Quantised e2e slip detection uses an ADC-LSB noise floor; real-data tests document why the default stays"
+bound = false
 +++

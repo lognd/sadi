@@ -29,6 +29,8 @@ _log = get_logger(__name__)
 
 __all__ = [
     "MAX_SAFE_V",
+    "PACKET_LEN",
+    "SAMPLES_PER_PACKET",
     "AdcModel",
     "Ad3Block",
     "Ad3Source",
@@ -39,8 +41,16 @@ __all__ = [
 
 #: Hard ceiling on any AD3 output amplitude/offset used by the source (volts).
 MAX_SAFE_V = 1.0
-_SAMPLE_BYTES = 8  # four int16 channels per sample in the stand-in raw framing
 _N_CH = 4
+#: Real SADI device-packet layout (crates/sadi-proto/src/codec/packet.rs).
+PACKET_LEN = 612
+SAMPLES_PER_PACKET = 50
+_SYNC = 0x55
+_TAIL = bytes([0xAA, 0x55, 0xAA, 0x55])
+_TYPE_DATA = 5
+_STATE_RUNNING = 3
+_PAYLOAD_OFFSET = 8
+_SAMPLE_LEN = 12  # int32 LE encoder + four u16 BE ADC words
 
 
 class AdcModel(BaseModel):
@@ -97,9 +107,24 @@ def ramp_segments(
     return out
 
 
+# frob:ticket 01M6Z3FR114SYB4SDYQVQPGZXY
+def _encode_data_packet(msg_count: int, codes: NDArray[np.uint16]) -> bytes:
+    """One 612-byte type-5 packet: `codes` is (50, 4) raw ADC words; encoder fields are zero."""
+    f = bytearray(PACKET_LEN)
+    f[0] = _SYNC
+    f[1] = _TYPE_DATA
+    f[2] = _STATE_RUNNING
+    f[4:8] = msg_count.to_bytes(4, "little")
+    for k in range(SAMPLES_PER_PACKET):
+        o = _PAYLOAD_OFFSET + _SAMPLE_LEN * k
+        f[o + 4 : o + _SAMPLE_LEN] = codes[k].astype(">u2").tobytes()
+    f[PACKET_LEN - 4 :] = _TAIL
+    return bytes(f)
+
+
 @dataclass
 class Ad3Block:
-    """A pipeline `BlockLike` built from AD3-sourced volts with count-packed stand-in raw."""
+    """A pipeline `BlockLike` built from AD3-sourced volts with real SADI data-packet raw."""
 
     volts: NDArray[np.float64]
     raw: bytes
@@ -125,7 +150,7 @@ class Ad3Source:
     load_scope: int = 1
     rate_hz: float = 100_000.0
     max_chunk: int = 4096
-    _seq: int = field(default=0, init=False)
+    _seq: int = field(default=0, init=False)  # next data-packet msg_count
 
     def _check(self, *levels: float) -> None:
         """Refuse levels above MAX_SAFE_V so a test can never over-drive the board."""
@@ -209,18 +234,36 @@ class Ad3Source:
         x = got.danger_ok
         return Ok(math.sqrt(2.0 * float(np.mean(x * x))))
 
-    def to_block(self, volts: NDArray[np.float64], packet_len: int = 612) -> Ad3Block:
-        """Pack `volts` as int16 ADC codes, zero-padded to whole `packet_len` packets."""
-        codes = np.array([[self.adc.quantise(float(v)) for v in row] for row in volts], dtype=">u2")
-        raw = codes.tobytes()
-        pad = (-len(raw)) % packet_len
+    # frob:ticket 01M6Z3FR114SYB4SDYQVQPGZXY
+    def to_block(self, volts: NDArray[np.float64], packet_len: int = PACKET_LEN) -> Ad3Block:
+        """Frame `volts` as real SADI type-5 data packets (sync, header, 50 samples, tail).
+
+        A short final packet repeats its last sample, as the device always sends full packets;
+        `msg_count` carries each sample's packet counter, continuing across blocks.
+        """
+        if packet_len != PACKET_LEN:
+            raise ValueError(f"SADI data packets are {PACKET_LEN} bytes, not {packet_len}")
+        n = len(volts)
+        codes = np.array(
+            [[self.adc.quantise(float(v)) for v in row] for row in volts], dtype=np.uint16
+        ).reshape(n, _N_CH)
+        n_pkts = -(-n // SAMPLES_PER_PACKET)
+        if n_pkts * SAMPLES_PER_PACKET > n and n:
+            fill = np.repeat(codes[-1:], n_pkts * SAMPLES_PER_PACKET - n, axis=0)
+            codes = np.concatenate([codes, fill])
         start = self._seq
-        self._seq += len(volts)
+        frames = bytearray()
+        for k in range(n_pkts):
+            frames += _encode_data_packet(
+                start + k, codes[k * SAMPLES_PER_PACKET : (k + 1) * SAMPLES_PER_PACKET]
+            )
+        self._seq += n_pkts
+        _log.debug("ad3 to_block: %d samples -> %d packets from msg %d", n, n_pkts, start)
         return Ad3Block(
             volts=volts,
-            raw=raw + bytes(pad),
-            msg_count=np.arange(start, start + len(volts), dtype=np.int64),
-            n_samples=len(volts),
+            raw=bytes(frames),
+            msg_count=start + np.arange(n, dtype=np.int64) // SAMPLES_PER_PACKET,
+            n_samples=n,
         )
 
     def stop(self) -> Result[None, DwfError]:

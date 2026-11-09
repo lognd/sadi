@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/e2e/test_lctt_ad3.py", "python/tests/e2e/test_lctt_ad3_yield_mc.py"]
+new = ["python/tests/e2e/test_lctt_ad3.py", "python/tests/e2e/test_lctt_ad3_yield_mc.py", "docs/bench/lctt-ad3-matrix.md"]
+at = "2026-11-09T02:58:59Z"
+actor = "lognd"
+rev = 1

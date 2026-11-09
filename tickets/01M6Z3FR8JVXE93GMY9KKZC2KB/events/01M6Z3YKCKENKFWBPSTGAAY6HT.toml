@@ -1,0 +1,47 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:59:36Z"
+digest = "711b1ce9a6020685695efc66713931f6a3c6abab65ce209e31b9817f00f09a04"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/e2e/test_lctt_ad3_yield_mc.py ...                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-353585-0.xml ---------------
+============================== 3 passed in 3.57s ===============================
+forgot fa77652368ad48498a0c7b0e09070498
+forgot 683f35715942409092e2748cb30dcf87
+forgot 38131e53d16b412393d89cbb8fc9cbfd
+forgot f36c82df8b834b64801c16942bf9e5bc
+forgot c0bdf685665945ea935fe1b6dc221088
+forgot 939eeaae39164100b90b65b077880b4f
+forgot 1322a147791946d88a9aa8140a30a49f
+forgot f3f9acf455914dd488030e31ed3ad6e2
+forgot 4482f5e167754745bebca563b3711a46
+forgot c180f1b7a02c4a6ab45a7992c470f505
+forgot a874e9cd09794e36a5a66338097fead1
+forgot b14315b82dca4d4c869f0660ca6b4622
+forgot 47956a58de6d4e6cb1afd948a340d6d3
+forgot d180019cef044b24ab87915bdbf94295
+forgot dde3285ef3b541f28d335d427f800907
+forgot d639399e45fb48d287478216a58c1d2d
+forgot caed8beb4d1141a7bce672ec322a3112
+forgot 30dd0a38477342b0b2e1c1b10b217616
+forgot 11d59f080f8445c598b21e7b567f66c5
+forgot 706666ceb417409c887b4b3c98aae079
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_lctt_ad3_yield_mc.py::test_monte_carlo_agrees_with_analytic_yield_uncertainty python/tests/e2e/test_lctt_ad3_yield_mc.py::test_yield_stays_pending_for_elastic_only_run python/tests/e2e/test_lctt_ad3_yield_mc.py::test_yield_stress_recovered_from_ad3_plastic_ramp"
+size = 1321
+status = "measured"
+test_count = 3
+tests_digest = "a5fdad8ec0b218205c7413bd04f317414d5396f7498a4ff946093239aa943a67"
+at = "2026-11-09T02:59:36Z"
+actor = "lognd"
+rev = 1

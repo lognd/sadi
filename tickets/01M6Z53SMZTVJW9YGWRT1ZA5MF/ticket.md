@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:20:00Z"
-updated = "2026-11-09T03:22:02Z"
+updated = "2026-11-09T03:23:17Z"
 idempotency_key = "gap-adcmodel-fullscale"
+
+[[acceptance]]
+text = "AdcModel default full scale equals the real board's +-5.12 V"
+bound = false
 +++

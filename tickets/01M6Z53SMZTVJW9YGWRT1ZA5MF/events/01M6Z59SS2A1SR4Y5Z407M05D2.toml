@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["AdcModel default full scale equals the real board's +-5.12 V"]
+moved = []
+at = "2026-11-09T03:23:17Z"
+actor = "lognd"
+rev = 1

@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:13:06Z"
 updated = "2026-11-09T02:18:31Z"
 idempotency_key = "lat070"
-scope = ["docs/doctor-checks.md"]
+scope = ["docs/doctor-checks.md", "docs/doctor.md"]
 +++

@@ -8,5 +8,5 @@ points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
 updated = "2026-11-09T11:17:18Z"
-scope = ["crates/sadi-proto/src/codec/command.rs"]
+scope = ["crates/sadi-proto/src/codec/command.rs", "crates/sadi-proto/src/v3/command.rs"]
 +++

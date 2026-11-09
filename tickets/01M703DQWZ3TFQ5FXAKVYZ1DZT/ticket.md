@@ -2,12 +2,12 @@
 id = "01M703DQWZ3TFQ5FXAKVYZ1DZT"
 title = "ci: windows crash tests - lock released lazily after kill, manifest.json PermissionError"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:09:44Z"
+updated = "2026-11-09T12:09:51Z"
 
 [[acceptance]]
 text = "bounded-retry for lock release and manifest read in harness (or product if real bug); Linux crash suite still passes; no invariant weakened"

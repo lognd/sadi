@@ -2,7 +2,8 @@
 id = "01M6Z5PPYME6C2RYB0TFMCPAK6"
 title = "Fix failing tests/e2e/test_lctt_ad3.py::test_slip_like_glitch_is_detected_and_clean_hold_is_not (likely from AdcModel 5.12 V default change)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

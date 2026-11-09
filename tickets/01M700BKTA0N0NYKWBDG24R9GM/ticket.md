@@ -7,10 +7,10 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:25:57Z"
+updated = "2026-11-09T11:26:00Z"
 scope = ["python/tests/crash/**"]
 
 [[acceptance]]
 text = "given the crash suite, when run on Windows, then oracle digests match and the held lock file does not break clone or digest"
-bound = false
+bound = true
 +++

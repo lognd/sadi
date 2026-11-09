@@ -4,8 +4,9 @@ title = "docs/bench/ad3.md: add 'Installing without apt' section (extract deb, S
 type = "task"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-09T02:41:23Z"
-updated = "2026-11-09T02:41:23Z"
+updated = "2026-11-09T02:41:25Z"
 idempotency_key = "ad3-docs-no-apt"
 +++

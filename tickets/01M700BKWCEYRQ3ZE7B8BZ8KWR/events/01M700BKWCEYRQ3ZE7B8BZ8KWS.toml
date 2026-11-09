@@ -1,0 +1,8 @@
+kind = "create"
+title = "docs: top-level README quick-start for making a plugin and using the sadi library"
+type = "docs"
+category = "todo"
+priority = "medium"
+at = "2026-11-09T11:16:08Z"
+actor = "lognd"
+rev = 1

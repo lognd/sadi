@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor WRK-010: worker imports sadi.store (found on WSL run)"
+type = "bug"
+category = "todo"
+priority = "high"
+idempotency_key = "wrk010"
+at = "2026-11-09T02:07:22Z"
+actor = "lognd"
+rev = 1

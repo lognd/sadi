@@ -7,6 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:46:05Z"
-updated = "2026-11-09T03:46:06Z"
+updated = "2026-11-09T03:46:59Z"
 idempotency_key = "gap-phases-codec-mapping"
+scope = ["docs/core/device.md", "python/tests/core/test_phases.py"]
 +++

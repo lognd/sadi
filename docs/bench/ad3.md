@@ -152,4 +152,12 @@ unverified on hardware. NOT verified on hardware:
 the AD3 was not enumerated by WSL during this change (only the SADI serial
 port was present), so no signal or supply voltage was measured.
 
+## FakeDwf acquisition modes
+
+`FakeDwf` supports SINGLE/SINGLE1 (completes on the first poll) and the continuous
+modes RECORD, SCAN_SCREEN and SCAN_SHIFT. In a continuous mode `in_status` returns
+`TRIGGERED` (running) and each `read_data=True` poll latches the next contiguous
+block of `buffer_size` samples, so waveform phase carries across polls; re-arming
+restarts the stream. OVERSAMPLE is rejected with `CALL_FAILED`.
+
 See also: [LCTT test flow driven by the AD3](lctt-ad3-matrix.md).

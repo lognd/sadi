@@ -10,6 +10,7 @@ import textwrap
 import threading
 from pathlib import Path
 
+import pytest
 from typani import Ok
 
 from sadi.bench.ad3 import Ad3Closed
@@ -81,6 +82,15 @@ finally:
 )
 
 
+#: Windows has no SIGHUP and signal.pause, and an external TerminateProcess / CTRL_BREAK (SIGBREAK,
+#: which the guard deliberately does not handle) cannot run the SIGTERM handler, so the
+#: real-signal subprocess tests are POSIX-only; the in-process test keeps single-close everywhere.
+_POSIX_ONLY = pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="external SIGTERM/SIGHUP to a handler is POSIX-only (Windows: TerminateProcess)",
+)
+
+
 def _run_and_term(code: str, tmp_path: Path, sig: int) -> tuple[int, str]:
     script = tmp_path / "child.py"
     script.write_text(textwrap.dedent(code))
@@ -105,6 +115,7 @@ def _run_and_term(code: str, tmp_path: Path, sig: int) -> tuple[int, str]:
     return int(proc.returncode), out
 
 
+@_POSIX_ONLY
 # frob:tests python/sadi/bench/ad3/launch.py::Ad3Guard._on_signal
 def test_sigterm_subprocess_single_close_exit_code(tmp_path: Path) -> None:
     """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
@@ -113,6 +124,7 @@ def test_sigterm_subprocess_single_close_exit_code(tmp_path: Path) -> None:
     assert code == 128 + signal.SIGTERM
 
 
+@_POSIX_ONLY
 def test_sigterm_with_raising_log_handler_still_closes(tmp_path: Path) -> None:
     """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
     code, out = _run_and_term(_REENTRANT, tmp_path, signal.SIGTERM)
@@ -120,6 +132,7 @@ def test_sigterm_with_raising_log_handler_still_closes(tmp_path: Path) -> None:
     assert code == 128 + signal.SIGTERM
 
 
+@_POSIX_ONLY
 def test_sigterm_with_uvicorn_single_close(tmp_path: Path) -> None:
     """frob:tests sadi.bench.ad3.launch.Ad3Guard.close"""
     code, out = _run_and_term(_UVICORN, tmp_path, signal.SIGTERM)
@@ -127,6 +140,7 @@ def test_sigterm_with_uvicorn_single_close(tmp_path: Path) -> None:
     assert code in (0, 128 + signal.SIGTERM)
 
 
+@_POSIX_ONLY
 def test_sighup_subprocess_single_close(tmp_path: Path) -> None:
     """frob:tests sadi.bench.ad3.launch.Ad3Guard.install_signal_handlers"""
     code, out = _run_and_term(_PLAIN, tmp_path, signal.SIGHUP)
@@ -136,6 +150,15 @@ def test_sighup_subprocess_single_close(tmp_path: Path) -> None:
 
 def _guard() -> Ad3Guard:
     return open_managed_ad3(lambda: Ok(Ad3Closed(FakeDwf()))).unwrap()
+
+
+def test_on_signal_in_process_closes_once_and_exits_128_plus_signum() -> None:
+    """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
+    guard = _guard()
+    with pytest.raises(SystemExit) as exc:
+        guard._on_signal(signal.SIGTERM, None)
+    assert exc.value.code == 128 + signal.SIGTERM
+    assert guard.close().is_ok  # already closed: idempotent, no second device close
 
 
 # frob:tests python/sadi/bench/ad3/launch.py::Ad3Guard._restore_signals

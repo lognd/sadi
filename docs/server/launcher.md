@@ -40,6 +40,10 @@ data-root lock); the launcher then exits 0.
 `--selftest`: runs the simulator acquisition (`sadi.doctor.devprobe.probe_sim`) and exits
 0 on success, 4 on failure, without starting a server.
 
+AD3: `--ad3` (or `SADI_AD3=1|true|yes`) opens the Digilent AD3 via `open_managed_ad3` and always
+closes it on exit, including on errors and SIGTERM; failure exits 7. See
+[AD3 wrapper](../bench/ad3.md#launcher-integration).
+
 Simulator: `--sim` (or `SADI_SIM=1|true|yes` in the environment, read once by the launcher via
 `sim_requested`) opens a simulator `DeviceService` (`open_sim_device`) and passes it as
 `AppSettings.device`, so `/api/device/status` reports `simulated`. If `sadi_py` is missing or the

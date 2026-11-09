@@ -355,6 +355,57 @@ def _deb_workaround_steps() -> tuple[Step, ...]:
     )
 
 
+def _persist_lib_steps(ctx: Ctx, current: str | None = None) -> tuple[Step, ...]:
+    """Ordered steps to locate libdwf/dwf.dll and persist SADI_DWF_LIB (locate, set, verify)."""
+    _log.info("AD3: building %s persistence steps for %s", ENV_LIB_PATH, ctx.os.value)
+    was = f" (currently {current}, which does not exist)" if bool(current) else " (currently unset)"
+    if ctx.os is Os.WINDOWS:
+        return (
+            action(
+                f"Locate the WaveForms runtime{was}.",
+                "A path ending in dwf.dll is printed.",
+                cmd(Os.WINDOWS, f"Get-Item {DLL_WINDOWS} | Select-Object -ExpandProperty FullName"),
+                if_not="Install Digilent WaveForms from digilent.com, then repeat.",
+            ),
+            manual(
+                f"Persist it for your user: in PowerShell run `setx {ENV_LIB_PATH} "
+                f'"{DLL_WINDOWS}"` (use the path found above), then open a new terminal.',
+                f"A new terminal shows the path in $env:{ENV_LIB_PATH}.",
+                mutates=Mutates.SYSTEM,
+                changes=f"Stores {ENV_LIB_PATH} in your user environment (not machine-wide).",
+            ),
+            action(
+                "Verify the setting in a NEW terminal.",
+                "The path is printed and Test-Path says True.",
+                cmd(Os.WINDOWS, f"$env:{ENV_LIB_PATH}; Test-Path $env:{ENV_LIB_PATH}"),
+            ),
+        )
+    return (
+        action(
+            f"Locate the WaveForms runtime{was}.",
+            "A path ending in libdwf.so is printed.",
+            cmd(
+                ctx.os,
+                "find /usr/lib /usr/local/lib /opt ~/.local/share -name 'libdwf.so*' 2>/dev/null",
+            ),
+            if_not="Install Digilent WaveForms (.deb) or extract it as described below, then repeat.",
+        ),
+        manual(
+            f"Persist it: append `export {ENV_LIB_PATH}=<path found above>` to ~/.bashrc "
+            "(or ~/.zshrc / ~/.profile), then start a new shell or `source` the file.",
+            f"A new shell prints the path from `echo ${ENV_LIB_PATH}`.",
+            mutates=Mutates.SYSTEM,
+            changes="Adds one export line to your shell profile.",
+        ),
+        action(
+            "Verify the setting in a NEW shell.",
+            "The path is printed and `ls` finds the file.",
+            cmd(ctx.os, f'echo "${ENV_LIB_PATH}" && ls "${ENV_LIB_PATH}"'),
+            if_not=f"Re-check the export line; AD3-050 reports a {ENV_LIB_PATH} that does not exist.",
+        ),
+    )
+
+
 @remedy("AD3-020", "no-libdwf")
 def _ad3_020_nolib(ctx: Ctx, out: Outcome) -> Fix:
     """Install the Linux WaveForms and Adept packages."""
@@ -373,6 +424,7 @@ def _ad3_020_nolib(ctx: Ctx, out: Outcome) -> Fix:
             if_not=f"Set {ENV_LIB_PATH} to the full path of libdwf.so.",
         ),
     ]
+    steps.extend(_persist_lib_steps(ctx))
     steps.extend(_deb_workaround_steps())
     return Fix("Install the Linux WaveForms runtime", tuple(steps))
 
@@ -396,6 +448,7 @@ def _ad3_020_nodll(ctx: Ctx, out: Outcome) -> Fix:
                 cmd(Os.WINDOWS, f"Test-Path {DLL_WINDOWS}"),
                 if_not=f"Set {ENV_LIB_PATH} to the full path of dwf.dll.",
             ),
+            *_persist_lib_steps(ctx),
         ),
     )
 
@@ -562,6 +615,7 @@ def _ad3_050_override(ctx: Ctx, out: Outcome) -> Fix:
                 f"or unset it to use default discovery (was {out.facts.get('path')}).",
                 "The path exists and AD3-020 passes.",
             ),
+            *_persist_lib_steps(ctx, str(out.facts.get("path"))),
         ),
     )
 

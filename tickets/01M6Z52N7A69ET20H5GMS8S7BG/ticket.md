@@ -2,12 +2,13 @@
 id = "01M6Z52N7A69ET20H5GMS8S7BG"
 title = "Launcher integration for the AD3 wrapper (open_ad3 via sadi launcher, closes device on exit)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:19:23Z"
-updated = "2026-11-09T03:25:09Z"
+updated = "2026-11-09T03:26:36Z"
 idempotency_key = "gap-launcher-ad3"
 scope = ["python/sadi/launcher.py", "python/sadi/bench/ad3/**", "python/tests/bench/test_ad3_launch.py", "python/tests/cli/test_launcher_ad3.py", "docs/bench/ad3.md", "docs/server/launcher.md"]
 

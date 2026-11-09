@@ -2,7 +2,8 @@
 id = "01M6Z3095E9TR8FEQM7Y6MM2ZP"
 title = "sadi_py/pyserial boundary facade: wrap device access so no third-party exception or panic escapes; Result + exhaustive error codes"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

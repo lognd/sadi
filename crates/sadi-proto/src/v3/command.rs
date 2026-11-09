@@ -169,7 +169,11 @@ mod code_tests {
         assert_eq!(Command::Reset.opcode(), HostOpcode::Reset);
         assert_eq!(Command::RequestReady.opcode(), HostOpcode::RequestReady);
         let r = VendorRange::try_from(0).unwrap();
-        let c = Command::PredefInit { loop_freq_hz: 1, mode: InitMode::Mom, ranges: [r; 4] };
+        let c = Command::PredefInit {
+            loop_freq_hz: 1,
+            mode: InitMode::Mom,
+            ranges: [r; 4],
+        };
         assert_eq!(c.opcode(), HostOpcode::PredefInit);
     }
 }

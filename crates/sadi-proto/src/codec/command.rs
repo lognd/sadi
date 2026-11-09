@@ -305,6 +305,9 @@ mod opcode_tests {
         assert_eq!(Command::Stop.opcode(), 2);
         assert_eq!(Command::Reset.opcode(), 3);
         assert_eq!(Command::Query.opcode(), 4);
-        assert_eq!(Command::start_from_codes([0, 5, 11, 15]).unwrap().opcode(), 1);
+        assert_eq!(
+            Command::start_from_codes([0, 5, 11, 15]).unwrap().opcode(),
+            1
+        );
     }
 }

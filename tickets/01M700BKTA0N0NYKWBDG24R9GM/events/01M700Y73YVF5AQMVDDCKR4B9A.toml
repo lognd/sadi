@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T11:26:00Z"
+digest = "63c40493f7ed268bfe095e348e9962add0c2213ad41be231c40991e0e445e9fb"
+exit_code = 0
+head = "087575f057c1c91c1b0b48edf47e82b18753ebf1"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 38 items
+
+python/tests/crash/test_crash.py ......................................  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-942537-0.xml ---------------
+============================= 38 passed in 17.62s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/crash"
+size = 522
+status = "measured"
+test_count = 38
+tests_digest = "b0914b249c5a20581fcfcf1eebf94b46b86cd718c1b74209fee40bf840b05726"
+at = "2026-11-09T11:26:00Z"
+actor = "lognd"
+rev = 1

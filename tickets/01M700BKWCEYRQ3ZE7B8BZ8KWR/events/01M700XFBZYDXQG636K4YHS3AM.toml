@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at d62d351cc3ac (python (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272638; python (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272589; web (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272563; python (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272534; rust (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272471; browser e2e (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324174/job/129116272445; rust (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272400; rust (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324114/job/129116272381; browser e2e (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324174/job/129116272287; crash (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324210/job/129116272157; browser e2e (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42604324174/job/129116272022): landing the fixes for the red base CI"
+at = "2026-11-09T11:24:59Z"
+actor = "lognd"
+rev = 1

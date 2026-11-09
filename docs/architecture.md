@@ -72,7 +72,10 @@ and event log.
    KeyboardInterrupt/SystemExit and phase-contract bugs propagate. Blocks
    are validated (NaN/inf, length mismatch) before callers see them, and
    sessions are closed on every path. Callers above the facade consume
-   Results only.
+   Results only: `api/acquisition.py` and `core/pipeline.py` import neither
+   `sadi_py` nor `serial` (enforced by `tests/core/test_facade_boundary.py`),
+   type device failures as `DeviceError`, and run `stop_device` through
+   `close_quietly`.
 4. HTTP: FastAPI maps `Err` values to RFC 7807 problem JSON (`type`,
    `title`, `status`, `detail`, plus the hint). The UI renders the hint.
 

@@ -12,7 +12,7 @@ scope = ["python/sadi/bench/ad3/fake.py", "python/tests/bench/test_ad3_fake.py",
 
 [[acceptance]]
 text = "Given FakeDwf in RECORD/SCAN mode, when polled with read_data, then TRIGGERED and phase-continuous blocks are latched"
-bound = false
+bound = true
 +++
 
 found while working GHQ8PEY

@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/tests/store/test_lock.py"]
+at = "2026-11-09T13:26:45Z"
+actor = "lognd"
+rev = 1

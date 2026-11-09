@@ -1,6 +1,7 @@
 // frob:ticket 01M6X3AVN6BF2D1RNPYDKZDSBS
 // frob:ticket 01M703DQZDPX25NNXNSM0V8HB2
 // frob:ticket 01M709DXGS91GPWZ3M06FWXJPY
+// frob:ticket 01M713J4YBWW0CZ9B7DBKQZGMH
 // Per-test backend: each test gets its own `sadi --sim` on a fresh temp data dir and port, so sessions never leak between specs.
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -75,12 +76,20 @@ async function stopBackend(child: ChildProcess): Promise<void> {
 }
 
 /** Playwright `test` whose `baseURL` points at a private backend started and torn down per test. */
-export const test = base.extend({
-  // Playwright requires fixtures to destructure their first argument, even when empty.
+export const test = base.extend<{ dataDir: string }>({
+  // The per-test temp data dir (never a real one); torn down after the backend that locks it.
   // eslint-disable-next-line no-empty-pattern
-  baseURL: async ({}, use) => {
+  dataDir: async ({}, use) => {
+    const dir = mkdtempSync(join(tmpdir(), "sadi-e2e-"));
+    try {
+      await use(dir);
+    } finally {
+      // Windows can hold the data-dir lock for a moment after the process tree dies, so retry the removal.
+      rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
+    }
+  },
+  baseURL: async ({ dataDir }, use) => {
     const port = await freePort();
-    const dataDir = mkdtempSync(join(tmpdir(), "sadi-e2e-")); // temp only; real data dirs are never touched
     const url = `http://127.0.0.1:${String(port)}`;
     const child = spawn(
       "uv",
@@ -92,8 +101,6 @@ export const test = base.extend({
       await use(url);
     } finally {
       await stopBackend(child);
-      // Windows can hold the data-dir lock for a moment after the process tree dies, so retry the removal.
-      rmSync(dataDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
     }
   },
 });

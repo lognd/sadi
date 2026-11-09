@@ -18,6 +18,9 @@ See [UX](ux.md) for the key map and [user guide](user-guide.md) for the procedur
 - `web/e2e/keyboard-only.spec.ts`: Setup to Export with Tab to each control then Enter/Space (Skip, Mark load
   change, Accept, Finish, Review Exclude/Include/Edit, Download link); never clicks. Relies on Enter/Space
   activating a focused control (~0MZ866N, [usability report](usability-report.md)); selectors are role+name (~JAZDW9B).
+- `web/e2e/lctt-data.spec.ts`: full LCTT run (calibrate, tare, elastic, plastic, review, export); asserts the downloaded
+  CSV has a header and numeric rows, the API holds every captured point, the temp data dir has non-empty files on disk,
+  and that closing then resuming the session recovers every point (~KQZGMH). The `dataDir` fixture exposes the temp dir.
 - `web/e2e/run-capture.spec.ts`: calibrate/tare/elastic/plastic capture phases (~A7JNFGT).
 - `web/e2e/live-fps.spec.ts`: opt-in (`SADI_E2E_BENCH=1`, window `SADI_E2E_BENCH_SECONDS`, default 8) frame-rate
   benchmark of the live trace on the sim stream. Samples `requestAnimationFrame` intervals in the page, requires the

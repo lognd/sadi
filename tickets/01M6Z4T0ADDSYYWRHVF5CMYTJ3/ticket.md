@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:14:40Z"
-updated = "2026-11-09T03:20:21Z"
+updated = "2026-11-09T03:21:01Z"
 idempotency_key = "ty-doctor-ad3-usb"
 scope = ["python/sadi/doctor/checks/ad3.py"]
 

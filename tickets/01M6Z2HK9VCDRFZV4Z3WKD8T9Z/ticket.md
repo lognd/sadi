@@ -9,5 +9,5 @@ reporter = "lognd"
 created = "2026-11-09T02:35:07Z"
 updated = "2026-11-09T02:36:53Z"
 idempotency_key = "child-json-log-lines"
-scope = ["python/sadi/doctor/checks/ext.py"]
+scope = ["python/sadi/doctor/checks/ext.py", "python/tests/doctor/test_sadi_doctor.py"]
 +++

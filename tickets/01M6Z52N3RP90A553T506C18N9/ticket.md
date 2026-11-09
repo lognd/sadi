@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/checks/ad3.py", "python/tests/doctor/test_ad3_check
 
 [[acceptance]]
 text = "Doctor AD3-020/AD3-050 remedies give ordered locate, persist and verify steps for SADI_DWF_LIB"
-bound = false
+bound = true
 +++

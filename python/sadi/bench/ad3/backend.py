@@ -1,8 +1,12 @@
 """Device-agnostic DWF backend contract: errors, typestate handles, DwfBackend Protocol."""
 
 # frob:ticket 01M6WSPW5XB6P5V3PR5SHEH6FP
+# frob:ticket 01M6Z3092SGKVHQ3CZ98AMGV5D
 from __future__ import annotations
 
+import math
+import time
+from collections.abc import Callable
 from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
@@ -32,6 +36,7 @@ __all__ = [
     "hint_for",
     "library_steps",
     "numbered",
+    "wait_acquired",
 ]
 
 
@@ -43,6 +48,15 @@ class DwfCode(ErrorSet):
     CALL_FAILED = "call failed"
     HANDLE_CLOSED = "handle closed"
     BAD_RESPONSE = "bad response"
+    SYMBOL_MISSING = "symbol missing"
+    BAD_ARGUMENT = "bad argument"
+    OUT_OF_RANGE = "out of range"
+    DEVICE_LOST = "device lost"
+    BUSY = "busy"
+    TIMEOUT = "timeout"
+    NOT_SUPPORTED = "not supported"
+    FFI_ERROR = "ffi error"
+    UNEXPECTED = "unexpected"
 
 
 _INSTALL_ANY = "Install Digilent WaveForms (includes the DWF runtime) from the Digilent website."
@@ -98,7 +112,53 @@ _BAD_STEPS = (
     "Update the Digilent WaveForms runtime to the latest version.",
     "Report the detail message if it repeats.",
 )
+_SYMBOL_STEPS = (
+    "The installed libdwf lacks a function SADI needs; update WaveForms to the latest version.",
+    "If several libdwf copies exist, point SADI_DWF_LIB at the newest one.",
+)
+_ARG_STEPS = (
+    "The value is not a finite number or has the wrong type; pass a plain finite float or int.",
+    "Check the call site; this was rejected before reaching the device.",
+)
+_RANGE_STEPS = (
+    "The value is outside what the API can carry (channel, node, count or int range).",
+    "Use a value within the documented range and retry.",
+)
+_LOST_STEPS = (
+    "The device disappeared during the call: check the USB cable and the device LED.",
+    "WSL users: run `usbipd attach --wsl --busid <id>` again after replugging.",
+    "Open the device again; the old handle has been closed and cannot be reused.",
+)
+_BUSY_STEPS = (
+    "Another program or process holds the device: close WaveForms and other SADI processes.",
+    "Wait a few seconds for the other holder to release it, then retry.",
+)
+_TIMEOUT_STEPS = (
+    "The device did not finish in time: check the trigger and sample rate x buffer length.",
+    "Raise the timeout, or replug the device if it never completes.",
+)
+_NOT_SUPPORTED_STEPS = (
+    "This device or firmware does not support the requested feature.",
+    "Use a different setting, or update the WaveForms runtime and device firmware.",
+)
+_FFI_STEPS = (
+    "The foreign call itself failed (bad library file or wrong bitness); see the detail text.",
+    "Reinstall WaveForms and make sure SADI_DWF_LIB points at a library matching this Python.",
+)
+_UNEXPECTED_STEPS = (
+    "An unforeseen error was caught at the library boundary; see the detail text.",
+    "Report the detail message; the device may need a replug.",
+)
 _STEPS: dict[ErrorSet, tuple[str, ...]] = {
+    DwfCode.SYMBOL_MISSING: _SYMBOL_STEPS,
+    DwfCode.BAD_ARGUMENT: _ARG_STEPS,
+    DwfCode.OUT_OF_RANGE: _RANGE_STEPS,
+    DwfCode.DEVICE_LOST: _LOST_STEPS,
+    DwfCode.BUSY: _BUSY_STEPS,
+    DwfCode.TIMEOUT: _TIMEOUT_STEPS,
+    DwfCode.NOT_SUPPORTED: _NOT_SUPPORTED_STEPS,
+    DwfCode.FFI_ERROR: _FFI_STEPS,
+    DwfCode.UNEXPECTED: _UNEXPECTED_STEPS,
     DwfCode.LIBRARY_MISSING: library_steps("linux"),
     DwfCode.DEVICE_NOT_FOUND: _DEVICE_STEPS,
     DwfCode.CALL_FAILED: _CALL_STEPS,
@@ -142,6 +202,7 @@ class DeviceInfo(BaseModel):
     name: str
     serial: str
     device_id: DeviceId | None = None
+    in_use: bool | None = None
 
 
 class ClosedDevice:
@@ -355,3 +416,44 @@ class DwfBackend(Protocol):
     def dio_input(self, dev: OpenDevice) -> Result[int, DwfError]:
         """Return the latched digital input bit mask."""
         ...
+
+
+def wait_acquired(
+    backend: DwfBackend,
+    dev: OpenDevice,
+    timeout_s: float = 10.0,
+    poll_s: float = 0.005,
+    clock: Callable[[], float] = time.monotonic,
+    sleep: Callable[[float], None] = time.sleep,
+) -> Result[None, DwfError]:
+    """Poll the scope until DONE, latching data; bounded: Err(TIMEOUT) after `timeout_s`."""
+    if not (math.isfinite(timeout_s) and timeout_s > 0 and math.isfinite(poll_s) and poll_s > 0):
+        _log.warning("wait_acquired bad timing timeout=%r poll=%r", timeout_s, poll_s)
+        return Err(
+            DwfError(
+                code=DwfCode.BAD_ARGUMENT,
+                detail=f"timeout_s={timeout_s!r} and poll_s={poll_s!r} must be finite and > 0",
+            )
+        )
+    deadline = clock() + timeout_s
+    state = None
+    while True:
+        res = backend.in_status(dev, False)
+        if isinstance(res, Err):
+            return Err(res.unwrap_err())
+        state = res.unwrap()
+        if state is AcqState.DONE:
+            latched = backend.in_status(dev, True)
+            if isinstance(latched, Err):
+                return Err(latched.unwrap_err())
+            _log.debug("acquisition done")
+            return Ok(None)
+        if clock() >= deadline:
+            _log.error("acquisition timed out after %.3fs in state %s", timeout_s, state.name)
+            return Err(
+                DwfError(
+                    code=DwfCode.TIMEOUT,
+                    detail=f"scope still {state.name} after {timeout_s}s",
+                )
+            )
+        sleep(poll_s)

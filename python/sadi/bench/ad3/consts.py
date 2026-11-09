@@ -1,6 +1,7 @@
 """Typed constants transcribed from the Digilent dwf.h header (header not vendored)."""
 
 # frob:ticket 01M6WSPW5XB6P5V3PR5SHEH6FP
+# frob:ticket 01M6Z3092SGKVHQ3CZ98AMGV5D
 from __future__ import annotations
 
 from enum import IntEnum, IntFlag
@@ -22,6 +23,15 @@ NAME_LEN: Final = 32
 HDWF_NONE: Final = 0
 # FDwfDeviceOpen index meaning "first available device".
 FIRST_DEVICE: Final = -1
+
+# Sanity ceilings validated before the FFI call (the library enforces the real device limits).
+MAX_CHANNELS: Final = 16
+MAX_NODES: Final = 16
+MAX_DEVICES: Final = 64
+MAX_BUFFER_SAMPLES: Final = 1 << 22
+INT_MIN: Final = -(1 << 31)
+INT_MAX: Final = (1 << 31) - 1
+UINT_MAX: Final = (1 << 32) - 1
 
 Channel = NewType("Channel", int)
 """Zero-based instrument channel index (idxChannel)."""

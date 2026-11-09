@@ -50,8 +50,28 @@ All fallible calls return typani `Result[T, DwfError]`.
 | LIBRARY_MISSING | no candidate loaded; see numbered hint |
 | DEVICE_NOT_FOUND | open failed or returned no handle |
 | CALL_FAILED | DWF returned 0; detail carries `FDwfGetLastErrorMsg` and erc |
-| HANDLE_CLOSED | device handle already consumed |
-| BAD_RESPONSE | unrecognised value from the library |
+| HANDLE_CLOSED | device handle already consumed (double close, use after close, lost device) |
+| BAD_RESPONSE | garbage from the library: NaN/inf samples, short sample count, unknown state, non-ASCII or empty name/SN, absurd device count |
+| SYMBOL_MISSING | the library lacks an FDwf function (old or wrong libdwf) |
+| BAD_ARGUMENT | wrong type, NaN/inf, non-bool flag, unknown enum member; rejected before the FFI call |
+| OUT_OF_RANGE | channel/node/index/count/mask outside its range (c_int/c_uint, buffer cap) |
+| DEVICE_LOST | the device vanished mid-use; the handle is invalidated and unregistered |
+| BUSY | device open in another process (erc ALREADY_OPENED or message) |
+| TIMEOUT | API lock timeout (erc) or `wait_acquired` deadline |
+| NOT_SUPPORTED | erc NOT_SUPPORTED |
+| FFI_ERROR | `OSError` from the native call |
+| UNEXPECTED | any other exception from the native call, contained |
+
+No exception escapes `CtypesBackend`: it is a facade over the thin ctypes layer. Inputs are
+validated before the FFI call, outputs after it, calls are serialized by an `RLock`, and every
+error is logged on `sadi.bench.ad3.dll`. Erc mapping: 2 -> TIMEOUT, 3 -> BUSY, 4 ->
+NOT_SUPPORTED, 0x10..0x14 -> BAD_ARGUMENT; otherwise message text (disconnect markers ->
+DEVICE_LOST, in-use markers -> BUSY), else the call's default code.
+
+Lifecycle: opened handles are registered; an `atexit` hook (`close_all_open`) closes leaked
+ones with a warning. `wait_acquired(backend, dev, timeout_s)` is the bounded polling loop and
+returns `Err(TIMEOUT)` rather than spinning forever. Enumeration reports `in_use` per device
+when `FDwfEnumDeviceIsOpened` exists.
 
 DWF returns BOOL where 0 is failure (the ticket text says "nonzero"; the real API is used).
 

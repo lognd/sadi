@@ -7,6 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T02:13:06Z"
-updated = "2026-11-09T02:13:11Z"
+updated = "2026-11-09T02:18:31Z"
 idempotency_key = "lat070"
+scope = ["docs/doctor-checks.md"]
 +++

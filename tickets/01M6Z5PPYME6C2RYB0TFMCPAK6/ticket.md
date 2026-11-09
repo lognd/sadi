@@ -4,8 +4,9 @@ title = "Fix failing tests/e2e/test_lctt_ad3.py::test_slip_like_glitch_is_detect
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:30:20Z"
-updated = "2026-11-09T03:30:20Z"
+updated = "2026-11-09T03:31:01Z"
 idempotency_key = "gap-e2e-slip-glitch-fail"
 +++

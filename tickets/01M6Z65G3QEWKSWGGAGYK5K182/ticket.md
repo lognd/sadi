@@ -4,6 +4,7 @@ title = "Audit Ad3Guard._on_signal/close for logging reentrancy: a signal during
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:38:25Z"
 updated = "2026-11-09T03:38:25Z"

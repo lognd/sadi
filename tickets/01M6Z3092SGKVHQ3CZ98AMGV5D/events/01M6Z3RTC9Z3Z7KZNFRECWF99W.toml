@@ -1,0 +1,30 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:56:30Z"
+digest = "736f66b8a8cea1942f32a6b96845916c25b4c3330416c2eb40d387fb24d5da78"
+exit_code = 0
+head = "069361372931ce082adb3098c31f05f1cfa75563"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 66 items
+
+python/tests/bench/test_ad3_facade.py .................................. [ 51%]
+.............                                                            [ 71%]
+python/tests/bench/test_ad3_binding.py ...................               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-348902-0.xml ---------------
+============================== 66 passed in 1.64s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_facade.py python/tests/bench/test_ad3_binding.py"
+size = 682
+status = "measured"
+test_count = 66
+tests_digest = "9642ce20d84bdf9c6a9f3db168f0e5eb9342d524117ef134bd6eb42447583209"
+at = "2026-11-09T02:56:30Z"
+actor = "lognd"
+rev = 1

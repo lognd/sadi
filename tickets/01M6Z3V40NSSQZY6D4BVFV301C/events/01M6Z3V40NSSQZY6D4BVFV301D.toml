@@ -1,0 +1,10 @@
+kind = "create"
+title = "frob test --base main: sadi_py tests break collection when extension unbuilt (skip or mark)"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+idempotency_key = "sadi-py-collect-skip"
+at = "2026-11-09T02:57:48Z"
+actor = "lognd"
+rev = 1

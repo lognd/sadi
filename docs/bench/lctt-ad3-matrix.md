@@ -36,7 +36,9 @@ levels stay at or below 1 V (`MAX_SAFE_V`).
 
 ## Known gaps
 
-- The raw framing in `Ad3Source.to_block` is a stand-in, not the real SADI protocol.
+- `Ad3Source.to_block` emits real 612-byte SADI type-5 data packets (50 samples each, sync
+  0x55, little-endian msg_count, big-endian ADC words, AA 55 AA 55 tail); encoder is zero
+  and a short final packet repeats its last sample.
 - The fake supports only SINGLE acquisition, so there is no true continuous streaming.
 - On real hardware scope ch0 monitors the supply, so the LVDT read-back must come from
   the SADI board via the serial facade, which does not exist yet.

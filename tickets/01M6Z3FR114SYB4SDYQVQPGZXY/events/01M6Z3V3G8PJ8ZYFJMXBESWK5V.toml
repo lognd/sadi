@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given an AD3 volts block, when to_block runs, then raw is whole 612-byte SADI type-5 packets with sync, LE msg_count, BE codes and tail"]
+moved = []
+at = "2026-11-09T02:57:47Z"
+actor = "lognd"
+rev = 1

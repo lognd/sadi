@@ -56,7 +56,7 @@ class FakeLib:
             args[0].value = b"fake failure text"
             return 1
         if name == "FDwfGetLastError":
-            self._out(args[0]).value = 0x12
+            self._out(args[0]).value = 0x01
             return 1
         if name in self.fail:
             return 0
@@ -77,6 +77,8 @@ class FakeLib:
         elif name == "FDwfAnalogInStatusData":
             for i in range(args[3].value):
                 args[2][i] = 0.5 * i
+        elif name == "FDwfAnalogInStatusSamplesValid":
+            self._out(args[1]).value = 4096
         elif name == "FDwfAnalogIOChannelNodeStatus":
             self._out(args[3]).value = 3.3
         elif name == "FDwfDigitalIOInputStatus":
@@ -258,7 +260,7 @@ def test_analog_in_marshalling() -> None:
     assert (lib.last()[1].value, lib.last()[2].value) == (1, 0)
     assert be.in_status(dev, True).unwrap() is AcqState.DONE
     assert be.in_data(dev, Channel(0), 4).unwrap() == [0.0, 0.5, 1.0, 1.5]
-    assert lib.call_names()[-1] == "FDwfAnalogInStatusData"
+    assert "FDwfAnalogInStatusData" in lib.call_names()
 
 
 # frob:tests python/sadi/bench/ad3/dll.py::CtypesBackend.io_node_set
@@ -289,7 +291,7 @@ def test_failure_maps_to_err_with_last_message() -> None:
     assert err.code is DwfCode.CALL_FAILED
     assert "fake failure text" in err.detail
     assert "FDwfAnalogOutConfigure" in err.detail
-    assert err.erc == 0x12
+    assert err.erc == 0x01
 
 
 # frob:tests python/sadi/bench/ad3/dll.py::CtypesBackend.open

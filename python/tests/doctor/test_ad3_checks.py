@@ -13,10 +13,18 @@ from typani import Ok
 import sadi.doctor as doctor
 from sadi.doctor.checks import ad3
 from sadi.doctor.registry import get_remedy
-from sadi.doctor.schema import CommandRun, DoctorReport, Os, RunOptions, SkipReason, Status
+from sadi.doctor.schema import (
+    CheckResult,
+    CommandRun,
+    DoctorReport,
+    Os,
+    RunOptions,
+    SkipReason,
+    Status,
+)
 
 
-def _res(out: str = "", code: int = 0) -> Ok[CommandRun]:
+def _res(out: str = "", code: int = 0) -> Ok[CommandRun, Any]:
     return Ok(CommandRun(argv=("x",), exit_code=code, stdout_tail=out))
 
 
@@ -34,7 +42,7 @@ def _run(p: FakeProbes, **opts: object) -> DoctorReport:
     return doctor.run(options, p).unwrap()
 
 
-def _res_of(report: DoctorReport, cid: str):  # noqa: ANN202
+def _res_of(report: DoctorReport, cid: str) -> CheckResult:
     return next(r for r in report.results if r.id == cid)
 
 
@@ -142,10 +150,10 @@ def test_open_is_opt_in_and_reports() -> None:
     """AD3-040 runs only with ad3_open and maps child statuses."""
     p = _machine(Os.WINDOWS, pnp=True, dll=True)
     assert _res_of(_run(p), "AD3-040").status is Status.SKIP
-    cases: dict[str, Callable[[object], bool]] = {
-        "ok": lambda r: r.status is Status.PASS,  # type: ignore[attr-defined]
-        "open-failed": lambda r: r.status is Status.FAIL,  # type: ignore[attr-defined]
-        "no-device": lambda r: r.skip_reason is SkipReason.NO_DEVICE,  # type: ignore[attr-defined]
+    cases: dict[str, Callable[[CheckResult], bool]] = {
+        "ok": lambda r: r.status is Status.PASS,
+        "open-failed": lambda r: r.status is Status.FAIL,
+        "no-device": lambda r: r.skip_reason is SkipReason.NO_DEVICE,
     }
     for status, pred in cases.items():
         ad3_setup(p, open_json={"status": status, "detail": "busy"})

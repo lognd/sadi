@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/hostprobe.py", "python/sadi/launcher.py", "python/t
 
 [[acceptance]]
 text = "hostprobe/launcher use devfacade; web_bundle_version looks in sadi/_ui then web/dist"
-bound = false
+bound = true
 +++

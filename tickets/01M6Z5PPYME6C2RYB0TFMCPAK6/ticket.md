@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:30:20Z"
-updated = "2026-11-09T03:32:51Z"
+updated = "2026-11-09T03:32:55Z"
 idempotency_key = "gap-e2e-slip-glitch-fail"
 scope = ["python/tests/e2e/test_lctt_ad3.py"]
 

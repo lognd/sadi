@@ -7,6 +7,6 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T13:42:49Z"
-updated = "2026-11-09T13:43:13Z"
+updated = "2026-11-09T13:44:53Z"
 scope = ["crates/sadi-proto/tests/sim_device.rs"]
 +++

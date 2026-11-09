@@ -30,7 +30,11 @@ _USBIPD_LINE = re.compile(
 _LINUXISH = (Os.LINUX, Os.WSL)
 _DEV = "/dev"
 _MAC_NODE_PREFIX = "cu.usbserial-"
-_LATENCY_FMT = "/sys/bus/usb-serial/devices/{node}/latency_timer"
+_LATENCY_FMTS = (
+    "/sys/bus/usb-serial/devices/{node}/latency_timer",
+    "/sys/class/tty/{node}/device/latency_timer",
+)
+_TTY_CLASS_FMT = "/sys/class/tty/{node}"
 _UDEV_RULE = "/etc/udev/rules.d/99-sadi.rules"
 _PS_BASE = ("powershell", "-NoProfile", "-NonInteractive", "-Command")
 PS_FTDI = (
@@ -798,13 +802,41 @@ def _usb_060_mm(ctx: Ctx, out: Outcome) -> Fix:
     )
 
 
+def _real_latency_path(ctx: Ctx, node: str, fallback: str) -> str:
+    """Resolve the canonical /sys/devices path of a node's latency_timer, else the fallback."""
+    target = ctx.probes.readlink(_TTY_CLASS_FMT.format(node=node))
+    marker = "/devices/"
+    if target is None or marker not in target:
+        return fallback
+    dev = "/sys" + marker + target.split(marker, 1)[1]
+    tail = f"/tty/{node}"
+    if dev.endswith(tail):
+        dev = dev[: -len(tail)]
+    return f"{dev}/latency_timer"
+
+
+def _latency_read(ctx: Ctx, node: str) -> tuple[str, str] | None:
+    """Return (real path, value) of the first readable latency_timer for a node, else None."""
+    # frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP
+    for fmt in _LATENCY_FMTS:
+        path = fmt.format(node=node)
+        text = ctx.probes.read_text(path)
+        if text is not None:
+            real = _real_latency_path(ctx, node, path)
+            _log.debug("USB-070 %s latency via %s (real %s)", node, path, real)
+            return real, text.strip()
+    _log.debug("USB-070 %s: no readable latency_timer", node)
+    return None
+
+
 @check(
     "USB-070",
     Layer.USB,
     "FTDI latency timer",
     Severity.INFO,
     {"latency-not-2ms": "latency_timer is not 2 ms (hardware-verification.md row 1 is pending)"},
-    "/sys/bus/usb-serial/devices/ttyUSBn/latency_timer (Linux and WSL); report only",
+    "latency_timer under /sys/bus/usb-serial/devices/ttyUSBn or /sys/class/tty/ttyUSBn/device "
+    "(Linux and WSL); report only",
     applies_to=frozenset(_LINUXISH),
     depends_on=("USB-040",),
 )
@@ -814,16 +846,21 @@ def usb_070(ctx: Ctx) -> Outcome:
     if not nodes:
         return skip(SkipReason.PREREQUISITE_FAILED, "No serial node")
     values: dict[str, str] = {}
+    paths: dict[str, str] = {}
     for node in nodes:
-        text = ctx.probes.read_text(_LATENCY_FMT.format(node=node))
-        if text is not None:
-            values[node] = text.strip()
+        found = _latency_read(ctx, node)
+        if found is not None:
+            paths[node], values[node] = found
     if not values:
         return skip(SkipReason.UNVERIFIED, "latency_timer is not readable")
     off = [f"{n}={v}" for n, v in values.items() if v != "2"]
     if off:
+        fix_paths = [paths[n] for n, v in values.items() if v != "2"]
         return warn(
-            "latency-not-2ms", f"latency_timer is {', '.join(off)} (expected 2)", latency=off
+            "latency-not-2ms",
+            f"latency_timer is {', '.join(off)} (expected 2)",
+            latency=off,
+            paths=fix_paths,
         )
     return ok("latency_timer is 2 ms", nodes=nodes)
 
@@ -836,17 +873,23 @@ def _usb_070_latency(ctx: Ctx, out: Outcome) -> Fix:
             "Latency is only read on Linux and WSL",
             (manual("Nothing to do on this OS.", "USB-070 is not applicable."),),
         )
+    raw = out.facts.get("paths")
+    paths = raw if isinstance(raw, list) and raw else [_LATENCY_FMTS[0].format(node="ttyUSB0")]
+    replug = "The value resets on replug"
+    if ctx.os is Os.WSL:
+        replug += "; repeat usbipd attach after every replug"
     return Fix(
         "Set the latency timer to 2 ms",
-        (
+        tuple(
             action(
-                "Write 2 to the latency timer (until the next replug).",
+                f"Write 2 to {path} ({replug}).",
                 "No output.",
-                cmd(ctx.os, "echo 2 | sudo tee /sys/bus/usb-serial/devices/ttyUSB0/latency_timer"),
+                cmd(ctx.os, f"echo 2 | sudo tee {path}"),
                 mutates=Mutates.SYSTEM,
                 changes="Changes the FTDI latency timer until the device is replugged.",
                 alt='Add ATTR{latency_timer}="2" to a udev rule for a permanent change.',
-            ),
+            )
+            for path in paths
         ),
     )
 

@@ -1280,3 +1280,37 @@ def test_render_result_problem_has_fix_and_steps_but_pass_is_one_line() -> None:
     assert any("Expect:" in ln for ln in lines)
     good = next(r for r in report.results if r.status is Status.PASS)
     assert render_result(good) == [f"[PASS] {good.id}  {good.headline}"]
+
+
+_WSL_REAL = "/sys/devices/platform/vhci_hcd.0/usb1/1-1/1-1:1.0/ttyUSB0"
+
+
+# frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+def test_usb_070_resolves_real_wsl_path_in_fix() -> None:
+    """With only the class/tty path readable, the fix cites the resolved /sys/devices path."""
+    p = healthy()
+    p.os = Os.WSL
+    p.files.pop("/sys/bus/usb-serial/devices/ttyUSB0/latency_timer", None)
+    p.files["/sys/class/tty/ttyUSB0/device/latency_timer"] = "16\n"
+    p.links["/sys/class/tty/ttyUSB0"] = f"../..{_WSL_REAL[4:]}/tty/ttyUSB0"
+    report = _run(p, Os.WSL, data_root=ROOT, allow_network_fs=False, api_port=8000)
+    result = next(r for r in report.results if r.id == "USB-070")
+    assert result.mode == "latency-not-2ms"
+    assert result.remediation is not None
+    lines = [c.line for s in result.remediation.steps for c in s.commands]
+    assert f"echo 2 | sudo tee {_WSL_REAL}/latency_timer" in lines
+    text = render(report)
+    assert "resets on replug" in text and "usbipd attach" in text
+
+
+# frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+def test_usb_070_passes_when_class_path_reads_2() -> None:
+    """The class/tty fallback path is read when the usb-serial path is absent."""
+    p = healthy()
+    p.files.pop("/sys/bus/usb-serial/devices/ttyUSB0/latency_timer", None)
+    p.files["/sys/class/tty/ttyUSB0/device/latency_timer"] = "2\n"
+    report = _run(p, Os.LINUX, data_root=ROOT, allow_network_fs=False, api_port=8000)
+    result = next(r for r in report.results if r.id == "USB-070")
+    assert result.status is Status.PASS

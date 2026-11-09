@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor USB-070: fix command uses wrong sysfs path; use find on /sys for latency_timer (WSL path is /sys/devices/platform/vhci_hcd.0/...)"
+type = "bug"
+category = "todo"
+priority = "medium"
+idempotency_key = "lat070"
+at = "2026-11-09T02:13:06Z"
+actor = "lognd"
+rev = 1

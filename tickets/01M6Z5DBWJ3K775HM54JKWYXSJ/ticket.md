@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:25:14Z"
-updated = "2026-11-09T03:28:38Z"
+updated = "2026-11-09T03:29:20Z"
 idempotency_key = "gap-ty-tests-12"
 scope = ["python/sadi/bench/lctt_source.py", "python/tests/bench/test_ad3_fake.py", "python/tests/bench/test_inject_capture_wait.py", "python/tests/doctor/test_ad3_checks.py", "changelog.d/*JKWYXSJ*"]
 

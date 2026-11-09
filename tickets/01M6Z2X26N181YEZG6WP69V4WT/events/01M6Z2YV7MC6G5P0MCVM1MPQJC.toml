@@ -1,0 +1,11 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:42:21Z"
+digest = "2b565374441d731e240e1d03244f0804586a0a80d7fdb8af4b5e1e626e25429c"
+head = "e96dad9dd5ee9b09a164e1006bc3d07df9daeafc"
+provider = "file"
+ref = "docs/bench/ad3.md"
+size = 4933
+status = "measured"
+at = "2026-11-09T02:42:21Z"
+actor = "lognd"
+rev = 1

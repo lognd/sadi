@@ -69,6 +69,34 @@ be = load_backend().unwrap()
 dev = be.open(-1).unwrap()
 ```
 
+## Installing without apt
+
+Use this when `apt install` of the WaveForms `.deb` fails (offline or
+unreachable mirror, huge Qt/GUI dependencies). It mirrors the doctor remedy
+`_deb_workaround_steps()` in `python/sadi/doctor/checks/ad3.py`.
+
+1. Extract the package and point SADI at the library:
+
+   ```sh
+   dpkg-deb -x <path>/digilent.waveforms_*_amd64.deb ~/.local/share/digilent-waveforms
+   export SADI_DWF_LIB=$HOME/.local/share/digilent-waveforms/usr/lib/libdwf.so
+   ```
+
+2. libdwf hardcodes `/usr/share/digilent/waveforms/firmware`, so copy it
+   (needs sudo):
+
+   ```sh
+   sudo mkdir -p /usr/share/digilent
+   sudo cp -r ~/.local/share/digilent-waveforms/usr/share/digilent/waveforms /usr/share/digilent/
+   ```
+
+   Without it, open fails with `Device not supported. No compatible
+   configuration found`.
+3. The Adept runtime must also be installed.
+4. Your shell needs the `dialout` group: relogin, or run via
+   `sg dialout -c '<command>'`.
+5. Always close the device before the process exits.
+
 ## SADI wiring (`sadi.bench.inject.SADI_PINS`)
 
 | AD3 | SADI | Polarity | Route |
@@ -78,6 +106,7 @@ dev = be.open(-1).unwrap()
 | (none) | ACH1 | floating | unused |
 | Scope ch 1 (index 0) | SADI GND and +3V3 | n/a | `supply_scope_channel` |
 
-Source: wiring as described by the bench operator. NOT verified on hardware:
+Source: the pin mapping is from the operator's wiring description and is
+unverified on hardware. NOT verified on hardware:
 the AD3 was not enumerated by WSL during this change (only the SADI serial
 port was present), so no signal or supply voltage was measured.

@@ -7,6 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-09T02:43:08Z"
-updated = "2026-11-09T02:43:09Z"
+updated = "2026-11-09T02:48:43Z"
 idempotency_key = "ad3-facade-hardening"
+scope = ["python/sadi/bench/ad3/**"]
 +++

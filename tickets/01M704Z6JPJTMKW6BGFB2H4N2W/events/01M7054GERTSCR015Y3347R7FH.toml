@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at 58ffddf42f7a (python (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42615655707/job/129154891408): landing the fixes for the red base CI"
+at = "2026-11-09T12:38:49Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,73 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T03:56:21Z"
+digest = "d361f7458ac6d5b80d05b9aad345bd4e711ffa7610fa1bd06a8fee69c29df9b9"
+exit_code = 1
+failed_tests = ["web/src/App.test.tsx::suite$App::test$renders_the_initial_connection_state", "web/src/App.test.tsx::suite$App::test$Doctor_button_precedes_the_wizard_in_DOM__Tab__order_inside_a_labelled_nav"]
+head = "f5452bfce8a8eb7925e9117f234b27a1340cd53c"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{276f} web/src/App.test.tsx (2 tests | 2 failed) 13ms
+   \u{d7} App > renders the initial connection state 10ms
+     \u{2192} Cannot read properties of null (reading 'useCallback')
+   \u{d7} App > Doctor button precedes the wizard in DOM (Tab) order inside a labelled nav 1ms
+     \u{2192} Cannot read properties of null (reading 'useCallback')
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  22:56:21
+   Duration  1.36s (transform 546ms, setup 0ms, collect 835ms, tests 13ms, environment 0ms, prepare 170ms)
+
+JSON report written to /tmp/frob-vitest-750230-0.json
+stderr | web/src/App.test.tsx > App > renders the initial connection state
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+
+stderr | web/src/App.test.tsx > App > Doctor button precedes the wizard in DOM (Tab) order inside a labelled nav
+Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af} Failed Tests 2 \u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}
+
+ FAIL  web/src/App.test.tsx > App > renders the initial connection state
+ FAIL  web/src/App.test.tsx > App > Doctor button precedes the wizard in DOM (Tab) order inside a labelled nav
+TypeError: Cannot read properties of null (reading 'useCallback')
+ \u{276f} Object.process.env.NODE_ENV.exports.useCallback ../../SADI/web/node_modules/react/cjs/react.development.js:1250:33
+ \u{276f} useStore web/node_modules/zustand/esm/react.mjs:8:11
+ \u{276f} useBoundStore web/node_modules/zustand/esm/react.mjs:16:39
+ \u{276f} App web/src/App.tsx:16:22
+     14| /** Root component: probes the backend, shows connection state, the gu\u{2026}
+     15| export function App(): React.JSX.Element {
+     16|   const connection = useStore((s) => s.connection);
+       |                      ^
+     17|   const setConnection = useStore((s) => s.setConnection);
+     18|   const visible = useDoctorRoute((s) => s.visible);
+ \u{276f} Object.react_stack_bottom_frame web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:10371:18
+ \u{276f} renderWithHooks web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5361:19
+ \u{276f} renderElement web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5796:23
+ \u{276f} retryNode web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6783:21
+ \u{276f} performWork web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:7919:19
+ \u{276f} startWork web/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:8807:7
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}[1/2]\u{23af}
+
+'''
+passed = false
+provider = "vitest"
+ref = "web/src/App.test.tsx"
+size = 3548
+status = "measured"
+test_count = 2
+tests_digest = "f50781baa908a3a459bb2f9926aaa6d40b3980903d20854c71c9cae51d091ec5"
+at = "2026-11-09T03:56:21Z"
+actor = "lognd"
+rev = 1

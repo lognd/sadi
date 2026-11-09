@@ -34,7 +34,7 @@ edits return typani `Result`.
 Errors are frozen pydantic values used as the `E` in `Result[T, E]`.
 Families: `DeviceError`, `InputError`, `StoreError`, `ComputeError`,
 `JobError`, each with a typani `ErrorSet` of codes (`DeviceCode`, ...). Member names
-are UPPER_SNAKE; the wire value (problem `type`, stored data) is
+(`DeviceCode` includes PERMISSION_DENIED, BUSY, BINDING_MISSING, BAD_DATA, INTERNAL from the `sadi.core.devfacade` boundary) are UPPER_SNAKE; the wire value (problem `type`, stored data) is
 `wire(code)`, the lowercase name, and `code_from_wire(family, s)` reverses it. Every code
 has a user-facing "what to do" hint (`SadiError.hint`, `hint_for(code)`);
 a test asserts the table is complete.

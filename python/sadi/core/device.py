@@ -2,6 +2,7 @@
 
 # frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6W7R2NWFTQBK7FRWGX511CP
+# frob:ticket 01M6Z3095E9TR8FEQM7Y6MM2ZP
 
 from __future__ import annotations
 
@@ -10,12 +11,12 @@ import threading
 import time
 from collections.abc import Callable
 from enum import StrEnum
-from typing import Final, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
-import sadi_py as sp
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result
 
+from sadi.core.devfacade import close_quietly, default_adc_mode, to_device_error
 from sadi.core.errors import DeviceCode, DeviceError
 from sadi.core.phases import (
     Connected,
@@ -28,6 +29,9 @@ from sadi.core.phases import (
     open_sim_controlled,
 )
 from sadi.logging_setup import get_logger
+
+if TYPE_CHECKING:
+    from sadi.core.devfacade import sp
 
 _log = get_logger(__name__)
 
@@ -195,15 +199,17 @@ class DeviceService:
             _log.error("reconnect gave up after %d attempts", self._backoff.attempts)
             return Err(last or DeviceError(code=DeviceCode.NOT_FOUND, detail="no attempts made"))
 
-    def start_streaming(
-        self, adc_mode: sp.AdcMode = sp.AdcMode.DLL_COMPATIBLE
-    ) -> Result[None, DeviceError]:
-        """Start the device and the reader thread."""
+    def start_streaming(self, adc_mode: sp.AdcMode | None = None) -> Result[None, DeviceError]:
+        """Start the device and the reader thread (default ADC mode: DLL-compatible)."""
         with self._lock:
             if self._connected is None:
                 raise RuntimeError("start_streaming requires an open, non-streaming service")
             conn = self._connected
-            res = conn.start(adc_mode)
+            mode = default_adc_mode() if adc_mode is None else Ok(adc_mode)
+            if isinstance(mode, Err):
+                self._errored = True
+                return Err(mode.danger_err)
+            res = conn.start(mode.danger_ok)
             if isinstance(res, Err):
                 self._errored = True
                 return Err(res.danger_err)
@@ -297,9 +303,7 @@ class DeviceService:
         """Handshake; on failure release the port so a retry can reopen it."""
         res = disc.connect()
         if isinstance(res, Err):
-            closed = disc.close()
-            if isinstance(closed, Err):
-                _log.warning("close after failed connect also failed: %s", closed.danger_err.detail)
+            close_quietly("close after failed connect", disc.close)
         return res
 
     def _resolve_port(self) -> Result[str, DeviceError]:
@@ -320,7 +324,11 @@ class DeviceService:
     def _reader(self, streaming: Streaming) -> None:
         """Reader thread: read blocks into the bounded queue; stop loudly on error or overflow."""
         while not self._stop_evt.is_set():
-            res = streaming.read_block()
+            try:
+                res = streaming.read_block()
+            except Exception as exc:  # noqa: BLE001 - a dead reader thread must still surface a fault
+                _log.exception("reader crashed outside the facade")
+                res = Err(to_device_error(exc))
             match res:
                 case Err(err):
                     _log.error("reader stopping on device error: %s", err.detail)
@@ -371,10 +379,16 @@ class DeviceService:
                 break
         self._held = None
         if self._streaming is not None:
-            stopped = self._streaming.stop()
+            streaming = self._streaming
             self._streaming = None
+            stopped = streaming.stop()
             if isinstance(stopped, Ok):
                 self._log_close(stopped.danger_ok[0].close())
+            else:
+                _log.warning(
+                    "stop failed in teardown (%s); forcing close", stopped.danger_err.detail
+                )
+                self._log_close(streaming.force_close())
         if self._connected is not None:
             self._log_close(self._connected.close())
             self._connected = None

@@ -12,7 +12,7 @@ describe("generated API client", () => {
     const spec = JSON.parse(readFileSync(here("./openapi.json"), "utf-8")) as object;
     const ast = await openapiTS(spec as never);
     const fresh = astToString(ast).trim();
-    const committed = readFileSync(here("./schema.ts"), "utf-8");
+    const committed = readFileSync(here("./schema.ts"), "utf-8").replace(/\r\n/g, "\n");
     expect(committed).toContain(fresh);
   });
 

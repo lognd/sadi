@@ -1,12 +1,15 @@
 //! Pty loopback (unix) and `#[ignore]`d hardware tests for the serial backend.
 #![cfg(feature = "serial")]
 
+#[cfg(unix)]
 use std::time::Duration;
 
 #[cfg(unix)]
 use sadi_proto::serial::RxLimit;
 use sadi_proto::serial::{list_ports, SerialConfig, SerialTransport, FTDI_ALLOW_LIST};
-use sadi_proto::{Transport, TransportError};
+use sadi_proto::Transport;
+#[cfg(unix)]
+use sadi_proto::TransportError;
 
 /// Build a transport on one end of a pty pair; None if ptys are unavailable.
 #[cfg(unix)]

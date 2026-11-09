@@ -89,7 +89,7 @@ def _powershell(ctx: Ctx) -> str | None:
         return "powershell"
     if ctx.os is Os.WSL:
         return next(
-            (p for p in POWERSHELL_PATHS if ctx.probes.which(p) or ctx.probes.exists(p)), None
+            (p for p in POWERSHELL_PATHS if bool(ctx.probes.which(p)) or ctx.probes.exists(p)), None
         )
     return None
 
@@ -128,7 +128,7 @@ def _sysfs_has_ad3(ctx: Ctx) -> bool | None:
 
 def usbipd_busid(ctx: Ctx) -> str | None:
     """Return the usbipd bus id of the AD3 (WSL only), or None when unknown."""
-    exe = next((p for p in USBIPD_PATHS if ctx.probes.which(p) or ctx.probes.exists(p)), None)
+    exe = next((p for p in USBIPD_PATHS if bool(ctx.probes.which(p)) or ctx.probes.exists(p)), None)
     if exe is None:
         return None
     res = ctx.probes.run([exe, "list"])
@@ -137,7 +137,7 @@ def usbipd_busid(ctx: Ctx) -> str | None:
     for line in res.unwrap().stdout_tail.splitlines():
         m = _USBIPD_LINE.match(line.strip())
         if m and m["vidpid"].lower() == f"{AD3_VID}:{AD3_PID}":
-            return m["busid"]
+            return str(m["busid"])
     return None
 
 
@@ -150,7 +150,7 @@ def locate(ctx: Ctx) -> Ad3Where:
             return Ad3Where(side, "unknown", reason="PowerShell Get-PnpDevice failed")
         return Ad3Where(side, "self" if lines else "none")
     seen = _sysfs_has_ad3(ctx)
-    if seen:
+    if seen is True:
         return Ad3Where(side, "self", busid=usbipd_busid(ctx) if ctx.os is Os.WSL else None)
     if seen is None and ctx.os is Os.LINUX:
         return Ad3Where(side, "unknown", reason="/sys/bus/usb/devices is not readable")
@@ -249,7 +249,7 @@ def _dll_present(ctx: Ctx) -> str | None:
     override = ctx.probes.env().get(ENV_LIB_PATH)
     path = {Os.WINDOWS: DLL_WINDOWS, Os.WSL: DLL_VIA_WSL}.get(ctx.os)
     for cand in (override, path):
-        if cand and ctx.probes.exists(cand):
+        if bool(cand) and ctx.probes.exists(cand):
             return cand
     return None
 
@@ -298,7 +298,7 @@ def _ad3_020_use_windows(ctx: Ctx, out: Outcome) -> Fix:
     busid = out.facts.get("busid")
     detach = (
         cmd(ctx.os, f"usbipd.exe detach --busid {busid}", fixable=ctx.os is Os.WSL)
-        if busid
+        if bool(busid)
         else cmd(ctx.os, "usbipd.exe detach --busid <busid>")
     )
     return Fix(

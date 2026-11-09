@@ -1,0 +1,32 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T03:20:28Z"
+digest = "4858a5bea7a064db57633ab460d1db19982be2a8dd1e591e33b4c8e8c61f0711"
+exit_code = 0
+head = "628a07ed996ef0f3a28f39ddcef644dac4ac18b5"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 212 items
+
+python/tests/doctor/test_sadi_doctor.py ................................ [ 15%]
+........................................................................ [ 49%]
+........................................................................ [ 83%]
+....................................                                     [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-563862-0.xml ---------------
+============================= 212 passed in 17.61s =============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py"
+size = 763
+status = "measured"
+test_count = 212
+tests_digest = "94d7e7dae5a55243a0f8a186a5a49d5cd87443fcd82742b68fb27cf05c2d7d77"
+at = "2026-11-09T03:20:28Z"
+actor = "lognd"
+rev = 1

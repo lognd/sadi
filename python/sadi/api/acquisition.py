@@ -15,6 +15,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.core.errors import DeviceError
 from sadi.core.events import PointWindow
 from sadi.core.pipeline import AcquisitionPipeline, BlockLike, PipelineError
 from sadi.core.point_inputs import PointInputs, PointMeta, build_point
@@ -40,13 +41,13 @@ class AcquisitionError(ErrorSet):
 
 
 class BlockSource(Protocol):
-    """The slice of `DeviceService` the driver uses (lets tests use fakes without sadi_py)."""
+    """The slice of `DeviceService` the driver uses (typed `DeviceError` failures)."""
 
-    def next_block(self, timeout: float | None = ...) -> Result[Any, Any]:
+    def next_block(self, timeout: float | None = ...) -> Result[Any, DeviceError]:
         """Pop the next block (Ok(None) on timeout) or return the device fault."""
         ...
 
-    def stop_streaming(self) -> Result[list[Any], Any]:
+    def stop_streaming(self) -> Result[list[Any], DeviceError]:
         """Stop the device; return blocks still queued plus the trailing block."""
         ...
 

@@ -23,6 +23,7 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.core.devfacade import close_quietly
 from sadi.core.events import PointV1
 from sadi.labs.lctt.settle_stream import (
     PointRecord,
@@ -433,16 +434,15 @@ class AcquisitionPipeline:
             self._halted_reason = reason
         _log.error("acquisition HALTED: %s (%s)", reason, hint)
         if self._stop_device is not None:
-            try:
-                self._stop_device()
-            except Exception:  # noqa: BLE001 - halting must finish even if the device call fails
-                _log.exception("stop_device raised during halt")
+            stop_res = close_quietly("pipeline.stop_device", self._stop_device)
+            if stop_res.is_err:  # halting finishes even if the device call fails
+                _log.error("stop_device failed during halt: %s", stop_res.danger_err)
         marker = MarkerV1(
             kind="acquisition_stopped", raw_seq=self._last_raw_seq or None, data={"reason": reason}
         )
-        stop_res = self._wal.submit(json_record(RecordType.MARKER, marker))
-        if stop_res.is_err:
-            _log.error("stop marker not written: %s", stop_res.danger_err)
+        marker_res = self._wal.submit(json_record(RecordType.MARKER, marker))
+        if marker_res.is_err:
+            _log.error("stop marker not written: %s", marker_res.danger_err)
         self.bus.publish(
             PipelineStopped(reason=reason, hint=hint, last_durable_seq=self._wal.durable_seq)
         )

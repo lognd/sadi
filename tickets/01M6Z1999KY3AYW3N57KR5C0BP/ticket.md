@@ -13,5 +13,5 @@ scope = ["docs/doctor-checks.md", "docs/doctor.md", "python/sadi/doctor/checks/u
 
 [[acceptance]]
 text = "Given a WSL ttyUSB node whose latency_timer is not 2, when USB-070 runs, then the fix emits the resolved real sysfs path per node"
-bound = false
+bound = true
 +++

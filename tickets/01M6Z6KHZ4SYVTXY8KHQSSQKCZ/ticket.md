@@ -7,11 +7,11 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:46:05Z"
-updated = "2026-11-09T03:47:03Z"
+updated = "2026-11-09T03:47:40Z"
 idempotency_key = "gap-phases-codec-mapping"
 scope = ["docs/core/device.md", "python/tests/core/test_phases.py"]
 
 [[acceptance]]
 text = "test_kind_mapping[codec] expects BAD_DATA, matching devfacade and docs"
-bound = false
+bound = true
 +++

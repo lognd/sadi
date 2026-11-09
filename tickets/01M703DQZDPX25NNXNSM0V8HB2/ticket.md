@@ -2,12 +2,12 @@
 id = "01M703DQZDPX25NNXNSM0V8HB2"
 title = "ci: windows browser e2e guided-run fails (durability timeouts on windows)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:09:44Z"
+updated = "2026-11-09T12:09:55Z"
 
 [[acceptance]]
 text = "e2e guided run robust on windows; durability never weakened; ubuntu/macos e2e unaffected"

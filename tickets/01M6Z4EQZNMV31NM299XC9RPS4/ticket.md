@@ -2,7 +2,8 @@
 id = "01M6Z4EQZNMV31NM299XC9RPS4"
 title = "inject.capture reads before acquisition done (PREFILL): use wait_acquired; found on real AD3"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

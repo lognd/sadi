@@ -13,5 +13,5 @@ scope = ["python/sadi/api/acquisition.py", "python/sadi/core/pipeline.py", "pyth
 
 [[acceptance]]
 text = "api/acquisition.py and core/pipeline.py import no sadi_py/serial; device failures are typed DeviceError"
-bound = false
+bound = true
 +++

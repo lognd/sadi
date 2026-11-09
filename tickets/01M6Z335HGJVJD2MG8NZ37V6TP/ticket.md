@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-09T02:44:43Z"
 updated = "2026-11-09T03:03:59Z"
 idempotency_key = "dad-parity"
-scope = ["docs/bench/ad3.md"]
+scope = ["docs/bench/ad3.md", "docs/doctor-checks.md"]
 
 [[links]]
 kind = "blocked-by"

@@ -2,7 +2,8 @@
 id = "01M703DQWZ3TFQ5FXAKVYZ1DZT"
 title = "ci: windows crash tests - lock released lazily after kill, manifest.json PermissionError"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

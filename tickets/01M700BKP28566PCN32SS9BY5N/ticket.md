@@ -7,6 +7,6 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:17:11Z"
+updated = "2026-11-09T11:27:21Z"
 scope = ["python/sadi/**"]
 +++

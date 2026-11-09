@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["slip_config_from_adc derives noise_floor from one ADC LSB; quantised hold gives no events, real glitch detected"]
+moved = []
+at = "2026-11-09T03:34:55Z"
+actor = "lognd"
+rev = 1

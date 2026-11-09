@@ -2,7 +2,8 @@
 id = "01M6Z71TQE53116045PRJWKZGZ"
 title = "Fix 9 eslint errors in web: e2e and docs-shots files not covered by tsconfig/project service"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

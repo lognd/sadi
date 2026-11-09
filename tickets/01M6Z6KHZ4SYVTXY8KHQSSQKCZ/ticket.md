@@ -4,6 +4,7 @@ title = "Fix tests/core/test_phases.py::test_kind_mapping[codec]: phases.to_devi
 type = "task"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-09T03:46:05Z"
 updated = "2026-11-09T03:46:05Z"

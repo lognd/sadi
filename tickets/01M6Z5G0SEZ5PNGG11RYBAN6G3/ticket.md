@@ -7,6 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:26:41Z"
-updated = "2026-11-09T03:26:43Z"
+updated = "2026-11-09T03:28:34Z"
 idempotency_key = "gap-ext040-port"
+scope = ["python/sadi/doctor/checks/ext.py", "python/tests/doctor/test_ext_040_port.py", "docs/doctor.md"]
 +++

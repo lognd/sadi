@@ -26,7 +26,7 @@ returns `Err` and leaves the object usable so the caller can retry.
 
 Every fallible method returns a typani `Result[T, DeviceError]`. sadi_py
 exceptions are converted by kind: timeouts -> `TIMEOUT`, closed/io ->
-`DISCONNECTED`, config/scenario -> `NOT_FOUND`, everything else ->
+`DISCONNECTED`, config/scenario -> `NOT_FOUND`, codec (frame decode) -> `BAD_DATA`, everything else ->
 `PROTOCOL`; the error's `hint` is the plain 'what to do' text. The native
 kinds `phase`, `consumed` and `busy` are programmer bugs and are re-raised.
 

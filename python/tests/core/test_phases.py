@@ -93,7 +93,7 @@ class _Fake(sp.SadiError):
         ("transport_timeout", DeviceCode.TIMEOUT),
         ("read_timeout", DeviceCode.TIMEOUT),
         ("transport_closed", DeviceCode.DISCONNECTED),
-        ("codec", DeviceCode.PROTOCOL),
+        ("codec", DeviceCode.BAD_DATA),
         ("scenario", DeviceCode.NOT_FOUND),
         ("never-heard-of-it", DeviceCode.PROTOCOL),
     ],

@@ -131,8 +131,8 @@ def tree_digest(root: Path) -> str:
     for p in sorted(root.rglob("*")):
         h.update(f"{p.relative_to(root).as_posix()}|{p.is_dir()}\n".encode())
         if p.is_file():
-            # frob:ticket ~G24R9GM - a live/held lock file cannot be read on Windows
-            # (byte-range lock); its size still catches any silent rewrite.
+            # frob:ticket 01M700BKTA0N0NYKWBDG24R9GM
+            # A held lock file cannot be read on Windows (byte-range lock); its size still catches any silent rewrite.
             h.update(str(p.stat().st_size).encode() if p.name == LOCK_NAME else p.read_bytes())
     return h.hexdigest()
 
@@ -277,7 +277,8 @@ def power_loss_copy(run: Run, dest_root: Path, rng: random.Random) -> Run:
     """Copy the session, cut the last segment to its last fsynced offset, append garbage."""
     src = session_dirs(run.root)[0]
     dest = dest_root / "sessions" / src.name
-    # frob:ticket ~G24R9GM - skip the lock: byte-range locked on Windows, not WAL/snapshot data
+    # frob:ticket 01M700BKTA0N0NYKWBDG24R9GM
+    # Skip the lock file: byte-range locked on Windows and not WAL/snapshot data.
     shutil.copytree(src, dest, ignore=shutil.ignore_patterns(LOCK_NAME))
     segs = sorted((dest / "wal").glob("seg-*.wal"))
     if segs:

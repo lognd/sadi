@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T02:23:07Z"
-updated = "2026-11-09T02:29:40Z"
+updated = "2026-11-09T02:29:41Z"
 idempotency_key = "dev020-probe"
-scope = ["docs/doctor.md", "python/sadi/doctor/checks/dev.py"]
+scope = ["docs/doctor.md", "python/sadi/doctor/checks/dev.py", "python/sadi/doctor/devprobe.py"]
 +++

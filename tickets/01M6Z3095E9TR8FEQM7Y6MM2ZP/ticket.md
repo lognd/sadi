@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-09T02:43:08Z"
-updated = "2026-11-09T02:47:57Z"
+updated = "2026-11-09T02:47:58Z"
 idempotency_key = "sadi-py-facade"
-scope = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py"]
+scope = ["docs/architecture.md", "docs/core/models.md", "python/sadi/core/devfacade.py", "python/sadi/core/device.py"]
 +++

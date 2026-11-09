@@ -7,5 +7,6 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T21:31:22Z"
-updated = "2026-11-09T21:31:28Z"
+updated = "2026-11-09T21:32:12Z"
+scope = ["crates/sadi-proto/tests/serial_loopback.rs"]
 +++

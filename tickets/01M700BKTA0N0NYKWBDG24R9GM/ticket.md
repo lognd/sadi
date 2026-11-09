@@ -2,7 +2,8 @@
 id = "01M700BKTA0N0NYKWBDG24R9GM"
 title = "ci: crash tests fail on Windows (I4 snapshot changed, locked lock file in copytree)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

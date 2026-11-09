@@ -7,9 +7,10 @@ import json
 import re
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
-from doctor_fakes import HEALTHY_DEVICE, FakeProbes, healthy, ps
+from doctor_fakes import HEALTHY_DEVICE, FakeProbes, ad3_setup, healthy, ps
 from typani import Err, Ok
 
 import sadi.doctor as doctor
@@ -276,6 +277,13 @@ def _simf(**kw: object) -> Mut:
 def _wrk(**kw: object) -> Mut:
     def f(p: FakeProbes) -> None:
         p.workers = WorkerFacts.model_validate(kw)
+
+    return f
+
+
+def _ad3(**kw: Any) -> Mut:
+    def f(p: FakeProbes) -> None:
+        ad3_setup(p, **kw)
 
     return f
 
@@ -586,6 +594,17 @@ CASES: list[tuple[str, str, Os, Mut]] = [
     ("WRK-010", "spawn-fail", Os.WINDOWS, _wrk(spawn_status="fail")),
     ("WRK-010", "spawn-slow", Os.WINDOWS, _wrk(spawn_seconds=12.0)),
     ("WRK-010", "child-imports-store", Os.LINUX, _wrk(imports_store=True)),
+    ("AD3-010", "on-windows-side", Os.WSL, _ad3(pnp=True)),
+    ("AD3-020", "no-libdwf", Os.LINUX, _ad3(sysfs=True)),
+    ("AD3-020", "wsl-use-windows", Os.WSL, _ad3(sysfs=True, dll=True)),
+    ("AD3-020", "no-dwf-dll", Os.WINDOWS, _ad3(pnp=True)),
+    ("AD3-030", "held-by-process", Os.WSL, _ad3(sysfs=True, procs="WaveForms\n")),
+    (
+        "AD3-040",
+        "open-failed",
+        Os.WINDOWS,
+        _ad3(pnp=True, dll=True, open_json={"status": "open-failed", "detail": "busy"}),
+    ),
     ("WRK-020", "orphan-survives", Os.LINUX, _wrk(orphan_survives=True)),
 ]
 
@@ -717,6 +736,7 @@ def test_fault_injection_yields_mode_and_remedy(
         allow_network_fs=False,
         api_port=port,
         open_browser=check_id == "BRW-030",
+        ad3_open=check_id == "AD3-040",
         deep=check_id == "WAL-020",
         stream_seconds=5 if check_id == "DEV-040" else 0,
         with_reset=check_id == "DEV-050",

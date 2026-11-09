@@ -1247,7 +1247,7 @@ export interface components {
          * @description Subsystem a check belongs to; also the run order.
          * @enum {string}
          */
-        Layer: "plat" | "py" | "ext" | "web" | "net" | "data" | "sess" | "wal" | "usb" | "dev" | "sim" | "clk" | "res" | "wrk" | "brw" | "plg";
+        Layer: "plat" | "py" | "ext" | "web" | "net" | "data" | "sess" | "wal" | "usb" | "dev" | "ad3" | "sim" | "clk" | "res" | "wrk" | "brw" | "plg";
         /**
          * LoadChangeOut
          * @description Result of marking a load change: the WAL seq of the durable load-applied marker.
@@ -1592,6 +1592,11 @@ export interface components {
          * @description Flags that shaped the run; recorded so a report is reproducible.
          */
         RunOptions: {
+            /**
+             * Ad3 Open
+             * @default false
+             */
+            ad3_open: boolean;
             /**
              * Allow Network Fs
              * @default false

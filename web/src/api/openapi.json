@@ -262,7 +262,7 @@
             "type": "string"
           },
           "id": {
-            "pattern": "^[A-Z]{2,4}-\\d{3}$",
+            "pattern": "^[A-Z][A-Z0-9]{1,3}-\\d{3}$",
             "title": "Id",
             "type": "string"
           },
@@ -1102,6 +1102,7 @@
           "wal",
           "usb",
           "dev",
+          "ad3",
           "sim",
           "clk",
           "res",
@@ -1588,7 +1589,7 @@
         "description": "Ordered steps for one (check, mode, os) triple.",
         "properties": {
           "check_id": {
-            "pattern": "^[A-Z]{2,4}-\\d{3}$",
+            "pattern": "^[A-Z][A-Z0-9]{1,3}-\\d{3}$",
             "title": "Check Id",
             "type": "string"
           },
@@ -1830,6 +1831,11 @@
         "additionalProperties": false,
         "description": "Flags that shaped the run; recorded so a report is reproducible.",
         "properties": {
+          "ad3_open": {
+            "default": false,
+            "title": "Ad3 Open",
+            "type": "boolean"
+          },
           "allow_network_fs": {
             "default": false,
             "title": "Allow Network Fs",
@@ -1849,7 +1855,7 @@
             "anyOf": [
               {
                 "items": {
-                  "pattern": "^[A-Z]{2,4}-\\d{3}$",
+                  "pattern": "^[A-Z][A-Z0-9]{1,3}-\\d{3}$",
                   "type": "string"
                 },
                 "type": "array"
@@ -1924,7 +1930,7 @@
           "skip": {
             "default": [],
             "items": {
-              "pattern": "^[A-Z]{2,4}-\\d{3}$",
+              "pattern": "^[A-Z][A-Z0-9]{1,3}-\\d{3}$",
               "type": "string"
             },
             "title": "Skip",

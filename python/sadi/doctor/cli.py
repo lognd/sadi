@@ -62,6 +62,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--port", help="serial port of the device to probe (default: first found)")
     p.add_argument(
+        "--ad3-open",
+        action="store_true",
+        help="open the Analog Discovery 3 through the DWF library (enables AD3-040)",
+    )  # frob:ticket 01M6Z1E0F6PK6K2F6B9VC7QQWM
+    p.add_argument(
         "--stream-seconds",
         type=int,
         default=0,
@@ -183,6 +188,7 @@ def _options(args: argparse.Namespace) -> RunOptions:
         running=args.running,
         port=args.port,
         stream_seconds=args.stream_seconds,
+        ad3_open=args.ad3_open,  # frob:ticket 01M6Z1E0F6PK6K2F6B9VC7QQWM
         with_reset=args.with_reset,
         open_browser=args.open_browser,  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     )

@@ -26,6 +26,21 @@ WSL is detected by `microsoft` in `/proc/version`; usbipd steps appear only ther
 A missing library returns `Err(DwfError(LIBRARY_MISSING))` whose `hint` is a
 numbered, per-OS fix list.
 
+## Doctor checks (AD3-nnn)
+
+`sadi doctor` (layer `ad3`) checks the AD3 on whichever side runs it; every
+headline is tagged `[linux]`, `[wsl]` or `[windows]`. All checks are read-only.
+
+| Check | linux | wsl | windows |
+|-------|-------|-----|---------|
+| AD3-010 visible (VID 1443, PID 7003) | sysfs | sysfs, else Windows PnP via `powershell.exe` (WARN: held by Windows) | `Get-PnpDevice` |
+| AD3-020 runtime library | `libdwf.so` (same names as above) | `libdwf.so`; if absent but `/mnt/c/Windows/System32/dwf.dll` exists, headline fix is `usbipd.exe detach --busid <id>` and use Windows `python.exe` (alternative: install the Linux packages) | `C:\Windows\System32\dwf.dll` |
+| AD3-030 WaveForms/Adept process | `pgrep` | `Get-Process` via `powershell.exe` | `Get-Process` |
+| AD3-040 open via backend (`--ad3-open`) | child process | child process | child process |
+
+Without `powershell.exe` under WSL (interop off) the Windows-side checks SKIP
+with a reason. With no AD3 present, checks SKIP (NO_DEVICE).
+
 ## Errors
 
 All fallible calls return typani `Result[T, DwfError]`.

@@ -42,6 +42,7 @@ class Layer(StrEnum):
     WAL = "wal"
     USB = "usb"
     DEV = "dev"
+    AD3 = "ad3"
     SIM = "sim"
     CLK = "clk"
     RES = "res"
@@ -119,7 +120,7 @@ class SkipReason(StrEnum):
     NO_DEVICE = "no-device"
 
 
-CheckId = Annotated[str, StringConstraints(pattern=r"^[A-Z]{2,4}-\d{3}$")]
+CheckId = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9]{1,3}-\d{3}$")]
 ModeId = Annotated[str, StringConstraints(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$")]
 
 _FROZEN = ConfigDict(frozen=True, extra="forbid")
@@ -276,6 +277,7 @@ class RunOptions(BaseModel):
     deep: bool = False
     with_reset: bool = False
     stream_seconds: int = 0
+    ad3_open: bool = False  # frob:ticket 01M6Z1E0F6PK6K2F6B9VC7QQWM
     allow_probe_write: bool = False
     allow_network_fs: bool = False
     render_os: Os | None = None

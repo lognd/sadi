@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 
 from typani import Err, Ok, Result
 
-from sadi.doctor.checks import ext, net, usb
+from sadi.doctor.checks import ad3, ext, net, usb
 from sadi.doctor.devprobe import DeviceFacts, SimFacts
 from sadi.doctor.probes import BindState
 from sadi.doctor.schema import CommandRun, Os, ProbeError
@@ -358,3 +358,43 @@ def _json(value: object) -> Result[CommandRun, ProbeError]:
 
 
 _ = Err  # kept for tests that inject probe errors
+
+
+def ad3_setup(
+    p: FakeProbes,
+    *,
+    sysfs: bool = False,
+    pnp: bool = False,
+    procs: str = "",
+    lib: bool = False,
+    dll: bool = False,
+    open_json: dict[str, str] | None = None,
+) -> None:
+    """Shape a fake machine (p.os already set) for the AD3 checks: where the AD3 is, what runs."""
+    sysd = "/sys/bus/usb/devices"
+    if p.os is Os.WSL:
+        p.tools["powershell.exe"] = "/mnt/c/powershell.exe"
+        p.tools["usbipd.exe"] = "/mnt/c/usbipd.exe"
+        p.commands["list"] = _out(
+            "Connected:\n2-3    1443:7003  USB Test and Measurement Device  Attached\n"
+        )
+    if p.os is Os.WINDOWS:
+        p.tools["powershell"] = "C:\\powershell.exe"
+    if p.os is not Os.WINDOWS:
+        p.dirs[sysd] = ["2-3"] if sysfs else ["usb1"]
+        if sysfs:
+            p.files[f"{sysd}/2-3/idVendor"] = "1443\n"
+            p.files[f"{sysd}/2-3/idProduct"] = "7003\n"
+    if p.os is Os.LINUX:
+        p.commands["-il waveforms|adept"] = Ok(
+            CommandRun(argv=("pgrep",), exit_code=0 if procs else 1, stdout_tail=procs)
+        )
+    else:
+        p.commands[ps(ad3.PS_AD3)] = _out("USB\\VID_1443&PID_7003\\1\n" if pnp else "")
+        p.commands[ps(ad3.PS_PROCS)] = _out(procs)
+    if lib:
+        p.files["/usr/lib/digilent/waveforms/libdwf.so"] = ""
+    if dll:
+        p.files[ad3.DLL_WINDOWS if p.os is Os.WINDOWS else ad3.DLL_VIA_WSL] = ""
+    if open_json is not None:
+        p.commands[f"-c {ad3._OPEN_SCRIPT}"] = _out(json.dumps(open_json))

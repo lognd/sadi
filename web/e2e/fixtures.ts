@@ -1,4 +1,5 @@
-// frob:ticket 01M6X3AVN6BF2D1RNPYDKZDSBS 01M703DQZDPX25NNXNSM0V8HB2
+// frob:ticket 01M6X3AVN6BF2D1RNPYDKZDSBS
+// frob:ticket 01M703DQZDPX25NNXNSM0V8HB2
 // Per-test backend: each test gets its own `sadi --sim` on a fresh temp data dir and port, so sessions never leak between specs.
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";

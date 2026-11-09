@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T02:15:41Z"
-updated = "2026-11-09T02:23:36Z"
+updated = "2026-11-09T02:23:42Z"
 idempotency_key = "doc-ad3win"
 scope = ["docs/bench/ad3.md", "docs/doctor-checks.md", "python/sadi/doctor/**", "python/tests/doctor/**", "web/src/api/**"]
 +++

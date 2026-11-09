@@ -4,9 +4,10 @@ title = "bench: determine real SADI board pin mapping for AD3 injection"
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-08T05:29:56Z"
-updated = "2026-11-08T05:29:56Z"
+updated = "2026-11-09T02:35:21Z"
 labels = ["ws:py", "ad3"]
 scope = ["python/sadi/bench/inject.py"]
 +++

@@ -7,11 +7,11 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:15:17Z"
+updated = "2026-11-09T02:15:33Z"
 idempotency_key = "usb080"
 scope = ["docs/doctor-checks.md", "python/sadi/doctor/checks/usb.py", "python/tests/doctor/test_sadi_doctor.py"]
 
 [[acceptance]]
 text = "Given WSL with usbipd attached and vhci_hcd =m or loaded in sysfs, when USB-080 runs, then it does not report vhci-missing"
-bound = false
+bound = true
 +++

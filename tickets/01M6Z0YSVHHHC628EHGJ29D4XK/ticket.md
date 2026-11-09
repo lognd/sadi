@@ -7,6 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:12:13Z"
+updated = "2026-11-09T02:14:17Z"
 idempotency_key = "usb080"
+scope = ["docs/doctor-checks.md"]
 +++

@@ -8,5 +8,5 @@ points = 2
 reporter = "lognd"
 created = "2026-11-09T13:41:58Z"
 updated = "2026-11-09T13:42:42Z"
-scope = ["python/sadi/webdist.py", "python/sadi/launcher.py"]
+scope = ["python/sadi/webdist.py", "python/sadi/launcher.py", "python/sadi/doctor/probes.py"]
 +++

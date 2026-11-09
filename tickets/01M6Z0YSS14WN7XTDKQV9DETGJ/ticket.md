@@ -2,7 +2,8 @@
 id = "01M6Z0YSS14WN7XTDKQV9DETGJ"
 title = "doctor WRK-010: worker imports sadi.store (found on WSL run)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

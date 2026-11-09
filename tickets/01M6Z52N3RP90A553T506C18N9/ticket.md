@@ -2,7 +2,8 @@
 id = "01M6Z52N3RP90A553T506C18N9"
 title = "Doctor: persist SADI_DWF_LIB story (detect libdwf, give step-by-step export/launcher config)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

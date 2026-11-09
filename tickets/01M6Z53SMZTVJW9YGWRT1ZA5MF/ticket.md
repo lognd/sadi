@@ -12,5 +12,5 @@ idempotency_key = "gap-adcmodel-fullscale"
 
 [[acceptance]]
 text = "AdcModel default full scale equals the real board's +-5.12 V"
-bound = false
+bound = true
 +++

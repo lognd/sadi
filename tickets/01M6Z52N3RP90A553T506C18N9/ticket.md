@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:19:23Z"
-updated = "2026-11-09T03:24:59Z"
+updated = "2026-11-09T03:25:26Z"
 idempotency_key = "gap-dwf-lib-persist"
 scope = ["python/sadi/doctor/checks/ad3.py", "python/tests/doctor/test_ad3_checks.py"]
 

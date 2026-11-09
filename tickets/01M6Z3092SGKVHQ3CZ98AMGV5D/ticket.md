@@ -2,7 +2,8 @@
 id = "01M6Z3092SGKVHQ3CZ98AMGV5D"
 title = "AD3 dwf facade hardening: exhaustive edge cases, no exception escapes the CtypesBackend, Result everywhere"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

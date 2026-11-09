@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:43Z"
-updated = "2026-11-09T12:14:37Z"
+updated = "2026-11-09T12:14:42Z"
 scope = ["python/tests/conftest.py", "python/tests/server/test_spill_isolation.py", "python/tests/store/test_durable.py"]
 
 [[acceptance]]

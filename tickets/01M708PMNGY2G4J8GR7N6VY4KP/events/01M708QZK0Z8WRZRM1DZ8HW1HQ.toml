@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/webdist.py"]
+new = ["python/sadi/webdist.py", "python/sadi/launcher.py"]
+at = "2026-11-09T13:42:42Z"
+actor = "lognd"
+rev = 1

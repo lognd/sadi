@@ -2,7 +2,8 @@
 id = "01M6WT4Z643F7CJDFJT2GQ2J53"
 title = "bench: determine real SADI board pin mapping for AD3 injection"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

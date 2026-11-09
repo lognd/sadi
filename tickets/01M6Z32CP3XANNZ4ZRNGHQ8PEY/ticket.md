@@ -7,6 +7,7 @@ priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-09T02:44:17Z"
-updated = "2026-11-09T02:44:18Z"
+updated = "2026-11-09T02:47:07Z"
 idempotency_key = "lctt-e2e-ad3"
+scope = ["python/sadi/bench/lctt_source.py"]
 +++

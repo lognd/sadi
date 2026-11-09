@@ -4,6 +4,7 @@ title = "Switch test_fault_scenarios.py and test_real_data.py detect_slip calls 
 type = "task"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-09T03:37:31Z"
 updated = "2026-11-09T03:37:31Z"

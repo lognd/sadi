@@ -4,9 +4,10 @@ title = "AD3 LCTT source: replace stand-in raw framing with the real SADI protoc
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T02:51:35Z"
-updated = "2026-11-09T02:51:35Z"
+updated = "2026-11-09T02:55:00Z"
 scope = ["python/sadi/bench/lctt_source.py"]
 +++
 

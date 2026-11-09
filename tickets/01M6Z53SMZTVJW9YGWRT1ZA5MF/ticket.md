@@ -2,7 +2,8 @@
 id = "01M6Z53SMZTVJW9YGWRT1ZA5MF"
 title = "AdcModel default full scale 1.25 V does not match real board (+-5.12 V, ~6400 counts/V); reconcile sim vs hardware"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -1,0 +1,24 @@
+kind = "evidence"
+captured_at = "2026-11-09T11:22:17Z"
+digest = "5d5abf84d3818432237620459890d8074f7ad8d67d2583957aa1e2a10bf7918c"
+exit_code = 0
+head = "8b9024fe49567096cd2150edbff8f16f2b1b4387"
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 56f5ede2-30de-4f70-a0af-f300de67ea01 with nextest profile: default
+    Starting 1 test across 10 binaries (134 tests skipped)
+        PASS [   0.009s] sadi-proto codec::command::tests::command_round_trips
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.012s] 1 test run: 1 passed, 134 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "command_round_trips"
+size = 547
+status = "measured"
+test_count = 1
+tests_digest = "c42a6c1ae5074d684025c03d48a78d72b198eeb71b5cf20591b28bac05e74ba2"
+at = "2026-11-09T11:22:17Z"
+actor = "lognd"
+rev = 1

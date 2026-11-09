@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:33:43Z"
-updated = "2026-11-09T02:37:08Z"
+updated = "2026-11-09T02:37:09Z"
 idempotency_key = "ad3-firmware-dir"
-scope = ["python/sadi/doctor/checks/ad3.py"]
+scope = ["python/sadi/doctor/checks/ad3.py", "python/tests/doctor/test_ad3_checks.py"]
 +++

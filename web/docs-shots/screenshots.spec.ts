@@ -74,7 +74,9 @@ test("capture user-guide screenshots against the simulator", async ({
     for (let i = 0; i < points; i += 1) {
       await acceptWhenSettled(page, inputsFor(phase, i));
       if (i === 0 && phase === "LVDT calibration") {
-        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.evaluate(() => {
+          window.scrollTo(0, 0);
+        });
         await page.screenshot({ path: `${out}/run-capture.png` });
       }
     }

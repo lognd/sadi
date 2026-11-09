@@ -7,7 +7,7 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
-      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+      parserOptions: { project: ["./tsconfig.json", "./tsconfig.e2e.json"], tsconfigRootDir: import.meta.dirname },
     },
     rules: {
       "no-console": "error",

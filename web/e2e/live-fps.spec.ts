@@ -37,7 +37,7 @@ test("live trace keeps animating at 60 fps on the sim stream", async ({ page }) 
   }, SECONDS * 1000);
 
   const stats = summarize(intervals(run.stamps));
-  console.log(`live-fps ${JSON.stringify({ ...stats, distinctCanvasSamples: run.distinct, budgetMs: BUDGET_60_MS })}`);
+  process.stdout.write(`live-fps ${JSON.stringify({ ...stats, distinctCanvasSamples: run.distinct, budgetMs: BUDGET_60_MS })}\n`);
   expect(run.distinct, "canvas content must change while streaming").toBeGreaterThan(1);
   // Headless chromium on a shared CI box: gate on the same criterion as the node harness (mean >= 58 fps, p95 <= 1.25 budgets).
   expect(meets60fps(stats), JSON.stringify(stats)).toBe(true);

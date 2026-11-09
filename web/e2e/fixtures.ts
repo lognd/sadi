@@ -18,8 +18,14 @@ async function freePort(): Promise<number> {
     const port = nextPort++;
     const ok = await new Promise<boolean>((done) => {
       const srv = createServer();
-      srv.once("error", () => done(false));
-      srv.listen(port, "127.0.0.1", () => srv.close(() => done(true)));
+      srv.once("error", () => {
+        done(false);
+      });
+      srv.listen(port, "127.0.0.1", () => {
+        srv.close(() => {
+          done(true);
+        });
+      });
     });
     if (ok) return port;
   }
@@ -38,10 +44,12 @@ async function waitReady(url: string, child: ChildProcess): Promise<void> {
 
 /** Playwright `test` whose `baseURL` points at a private backend started and torn down per test. */
 export const test = base.extend({
+  // Playwright requires fixtures to destructure their first argument, even when empty.
+  // eslint-disable-next-line no-empty-pattern
   baseURL: async ({}, use) => {
     const port = await freePort();
     const dataDir = mkdtempSync(join(tmpdir(), "sadi-e2e-")); // temp only; real data dirs are never touched
-    const url = `http://127.0.0.1:${port}`;
+    const url = `http://127.0.0.1:${String(port)}`;
     const child = spawn(
       "uv",
       ["run", "--project", py, "sadi", "--sim", "--no-browser", "--skip-preflight", "--port", String(port), "--data-dir", dataDir, "--web-dist", dist],
@@ -52,7 +60,10 @@ export const test = base.extend({
       await use(url);
     } finally {
       child.kill("SIGTERM");
-      await new Promise((r) => (child.exitCode !== null ? r(null) : child.once("exit", r)));
+      await new Promise((r) => {
+        if (child.exitCode !== null) r(null);
+        else child.once("exit", r);
+      });
       rmSync(dataDir, { recursive: true, force: true });
     }
   },

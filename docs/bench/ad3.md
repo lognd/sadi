@@ -163,3 +163,13 @@ block of `buffer_size` samples, so waveform phase carries across polls; re-armin
 restarts the stream. OVERSAMPLE is rejected with `CALL_FAILED`.
 
 See also: [LCTT test flow driven by the AD3](lctt-ad3-matrix.md).
+
+## Launcher integration
+
+`sadi serve --ad3` (or `SADI_AD3=1|true|yes`) opens the AD3 through `sadi.bench.ad3.launch`:
+`open_managed_ad3()` loads libdwf, opens the device and returns an `Ad3Guard`. The guard
+closes the device exactly once (`FDwfDeviceClose`; skipping it makes Adept segfault at
+process exit) on context exit, on an exception, via `atexit`, and on SIGTERM/SIGHUP (the
+handler closes, then raises `SystemExit(128+signum)`). A missing library or absent device
+is a clean `Err(str)` with numbered fix steps; the launcher prints it and exits 7
+(`EXIT_AD3`). Tests use `FakeDwf` via an injectable loader.

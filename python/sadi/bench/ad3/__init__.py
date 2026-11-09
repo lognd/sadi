@@ -22,9 +22,11 @@ from sadi.bench.ad3.consts import (
 )
 from sadi.bench.ad3.device import Ad3Closed, Ad3Session, open_ad3
 from sadi.bench.ad3.dll import CtypesBackend, load_backend, load_library
+from sadi.bench.ad3.launch import Ad3Guard, ad3_requested, open_managed_ad3
 
 __all__ = [
     "Ad3Closed",
+    "Ad3Guard",
     "Ad3Session",
     "AcqMode",
     "AcqState",
@@ -40,7 +42,9 @@ __all__ = [
     "OpenDevice",
     "OutNode",
     "WaveFunction",
+    "ad3_requested",
     "load_backend",
     "load_library",
     "open_ad3",
+    "open_managed_ad3",
 ]

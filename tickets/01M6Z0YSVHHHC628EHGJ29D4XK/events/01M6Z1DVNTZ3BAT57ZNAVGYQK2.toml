@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T02:15:33Z"
+digest = "0bb5fafdfc3664bad48cf72104a37bde3b16733b80399c4e8c0a85ffa8842441"
+exit_code = 0
+head = "4f99a41762faaee8cc839952e952c2793c3972de"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/doctor/test_sadi_doctor.py ..                               [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-101355-0.xml ---------------
+============================== 2 passed in 1.88s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_usb_080_accepts_vhci_module_or_sysfs"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "2d633d044958bbb584ad3275daaa41f4198e5c3ef6d47dd57e4df20d60fc3215"
+at = "2026-11-09T02:15:33Z"
+actor = "lognd"
+rev = 1

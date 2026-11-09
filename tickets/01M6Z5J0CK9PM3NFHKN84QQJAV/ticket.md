@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:27:46Z"
-updated = "2026-11-09T03:31:05Z"
+updated = "2026-11-09T03:31:11Z"
 idempotency_key = "gap-ad3guard-signals"
 scope = ["python/sadi/bench/ad3/launch.py", "python/tests/bench/test_ad3_launch_signals.py"]
 

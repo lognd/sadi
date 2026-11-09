@@ -2,7 +2,8 @@
 id = "01M6Z5J0CK9PM3NFHKN84QQJAV"
 title = "Verify Ad3Guard SIGTERM/SIGHUP handlers coexist with uvicorn shutdown (restore prior handlers, close exactly once, test with subprocess)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

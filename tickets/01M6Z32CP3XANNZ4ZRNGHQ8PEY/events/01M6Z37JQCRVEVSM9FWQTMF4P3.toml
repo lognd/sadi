@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/bench/lctt_source.py", "python/tests/e2e/**"]
+new = ["python/sadi/bench/lctt_source.py", "python/tests/e2e/**", "python/tests/bench/**"]
+at = "2026-11-09T02:47:07Z"
+actor = "lognd"
+rev = 1

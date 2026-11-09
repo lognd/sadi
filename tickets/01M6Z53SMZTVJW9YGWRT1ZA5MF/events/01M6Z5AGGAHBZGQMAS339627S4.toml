@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/bench/*.py", "python/tests/bench/test_lctt_source.py", "docs/bench/lctt-ad3-matrix.md"]
+at = "2026-11-09T03:23:40Z"
+actor = "lognd"
+rev = 1

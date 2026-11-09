@@ -7,8 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:20:00Z"
-updated = "2026-11-09T03:23:17Z"
+updated = "2026-11-09T03:23:40Z"
 idempotency_key = "gap-adcmodel-fullscale"
+scope = ["python/sadi/bench/*.py", "python/tests/bench/test_lctt_source.py", "docs/bench/lctt-ad3-matrix.md"]
 
 [[acceptance]]
 text = "AdcModel default full scale equals the real board's +-5.12 V"

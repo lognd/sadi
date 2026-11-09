@@ -4,8 +4,9 @@ title = "doctor: AD3 checks - libdwf in WSL, Windows-side dwf.dll/WaveForms via 
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-09T02:15:41Z"
-updated = "2026-11-09T02:15:41Z"
+updated = "2026-11-09T02:15:43Z"
 idempotency_key = "doc-ad3win"
 +++

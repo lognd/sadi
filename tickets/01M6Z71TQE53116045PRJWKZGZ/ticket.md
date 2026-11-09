@@ -7,11 +7,11 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:53:53Z"
-updated = "2026-11-09T03:56:25Z"
+updated = "2026-11-09T03:56:29Z"
 idempotency_key = "gap-web-eslint-e2e"
 scope = ["web/docs-shots/**", "web/e2e/**", "web/eslint.config.js", "web/package.json", "web/tsconfig.e2e.json"]
 
 [[acceptance]]
 text = "eslint . is clean in web"
-bound = false
+bound = true
 +++

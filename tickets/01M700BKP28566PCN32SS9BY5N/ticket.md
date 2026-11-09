@@ -7,10 +7,10 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:28:05Z"
+updated = "2026-11-09T11:28:06Z"
 scope = ["python/sadi/**"]
 
 [[acceptance]]
 text = "Given the sadi package, when python -m typani.lint sadi runs, then it reports no TYP004 findings and the store, concurrency and full pytest suites pass"
-bound = false
+bound = true
 +++

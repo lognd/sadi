@@ -4,8 +4,9 @@ title = "Fix 12 ty errors in tests (FakeDwf arg types, Ok type args, skip_reason
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:25:14Z"
-updated = "2026-11-09T03:25:14Z"
+updated = "2026-11-09T03:25:16Z"
 idempotency_key = "gap-ty-tests-12"
 +++

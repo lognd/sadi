@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T12:09:44Z"
-updated = "2026-11-09T12:13:12Z"
+updated = "2026-11-09T12:13:30Z"
 scope = ["python/tests/crash/**"]
 
 [[acceptance]]

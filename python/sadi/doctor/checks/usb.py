@@ -905,6 +905,14 @@ def _kernel_config(ctx: Ctx) -> str | None:
     return _stdout(ctx, ["grep", "-E", _KCONFIG, f"/boot/config-{release.strip()}"])
 
 
+def _vhci_loaded(ctx: Ctx) -> bool:
+    """Report whether vhci_hcd is loaded or built in, judged from sysfs rather than the config."""
+    if ctx.probes.is_dir("/sys/module/vhci_hcd"):
+        return True
+    entries = ctx.probes.listdir("/sys/devices/platform") or []
+    return any(name.startswith("vhci_hcd") for name in entries)
+
+
 @check(
     "USB-080",
     Layer.USB,
@@ -912,7 +920,7 @@ def _kernel_config(ctx: Ctx) -> str | None:
     Severity.ERROR,
     {
         "attached-no-node": "usbipd shows Attached but no /dev/ttyUSB node exists",
-        "vhci-missing": "The WSL kernel lacks vhci_hcd (no USB/IP client)",
+        "vhci-missing": "The WSL kernel lacks vhci_hcd (no USB/IP client; =y, =m or a loaded module count as present)",
         "attach-dropped": "dmesg shows the USB/IP attach was dropped",
     },
     "usbipd list Attached row; kernel config from /proc/config.gz or /boot/config-$(uname -r); "
@@ -928,8 +936,13 @@ def usb_080(ctx: Ctx) -> Outcome:
     if not any(state.lower().startswith("attached") for _, state in rows):
         return skip(SkipReason.PREREQUISITE_FAILED, "No attached usbipd device (see USB-020)")
     config = _kernel_config(ctx)
-    if config is not None and not re.search(r"^CONFIG_USB_VHCI_HCD=[ym]", config, re.MULTILINE):
-        return fail("vhci-missing", "The kernel config lacks CONFIG_USB_VHCI_HCD")
+    if not config:
+        _log.info("USB-080: kernel config unreadable; not judging vhci_hcd from it")
+    elif not re.search(r"^CONFIG_USB_VHCI_HCD=[ym]", config, re.MULTILINE):
+        if _vhci_loaded(ctx):
+            _log.info("USB-080: config lacks VHCI_HCD but vhci_hcd is present in sysfs; accepting")
+        else:
+            return fail("vhci-missing", "The kernel config lacks CONFIG_USB_VHCI_HCD")
     log = _stdout(ctx, ["dmesg"]) or ""
     dropped = [ln for ln in log.splitlines()[-_DMESG_LINES:] if _DROP.search(ln)]
     if dropped:

@@ -26,19 +26,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from typani import Err, Ok, Result
 
-from sadi.core.pipeline import Bus
-from sadi.core.registry import LabRegistry
 from sadi.doctor import exit_code, run
 from sadi.doctor.cli import main as doctor_main
 from sadi.doctor.render_text import render
 from sadi.doctor.schema import DoctorReport, RunOptions
 from sadi.logging_setup import get_logger
-from sadi.plugins.builtin import builtin_source
-from sadi.plugins.registry import PluginRegistry, PluginState
-from sadi.server.app import AppSettings, RootLockStartupError, create_app
-from sadi.server.live import LiveAcquisition
 
+# Heavy modules (sadi.store via core/server/plugins) are imported lazily inside functions:
+# a spawn-context worker re-imports the entry script, and WRK-010 requires that child to
+# stay free of sadi.store.
 if TYPE_CHECKING:
+    from sadi.core.registry import LabRegistry
+    from sadi.plugins.registry import PluginRegistry
     from sadi.core.device import DeviceService
 
 _log = get_logger(__name__)
@@ -248,6 +247,10 @@ def load_builtin_plugins() -> tuple[PluginRegistry, LabRegistry]:
     Never raises: a plugin that fails to load stays visible in the plugin registry (and
     `/api/plugins`) as failed, and is reported on stderr, but the app still starts.
     """
+    from sadi.core.registry import LabRegistry
+    from sadi.plugins.builtin import builtin_source
+    from sadi.plugins.registry import PluginRegistry, PluginState
+
     plugins = PluginRegistry.discover([builtin_source()])
     for rec in plugins.records():
         if rec.state is PluginState.ENABLED:
@@ -344,6 +347,10 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _err(f"sadi: {opened.danger_err}\n")
             return EXIT_DEVICE
         device = opened.danger_ok
+    from sadi.core.pipeline import Bus
+    from sadi.server.app import AppSettings, RootLockStartupError, create_app
+    from sadi.server.live import LiveAcquisition
+
     plugins, labs = load_builtin_plugins()
     live = LiveAcquisition(device, Bus()) if device is not None else None
     app = create_app(

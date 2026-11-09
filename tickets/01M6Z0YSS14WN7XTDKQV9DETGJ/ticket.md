@@ -2,11 +2,17 @@
 id = "01M6Z0YSS14WN7XTDKQV9DETGJ"
 title = "doctor WRK-010: worker imports sadi.store (found on WSL run)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T02:07:22Z"
-updated = "2026-11-09T02:12:12Z"
+updated = "2026-11-09T02:19:03Z"
 idempotency_key = "wrk010"
+scope = ["python/sadi/doctor/cli.py", "python/sadi/launcher.py", "python/tests/doctor/test_entry_imports.py", "python/tests/cli/test_launcher.py"]
+
+[[acceptance]]
+text = "Given the sadi entry modules, when a spawned worker imports them, then sadi.store is not loaded and doctor WRK-010 passes"
+bound = true
 +++

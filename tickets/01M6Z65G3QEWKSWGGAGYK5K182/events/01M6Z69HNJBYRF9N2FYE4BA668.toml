@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["docs/bench/ad3.md", "python/sadi/bench/ad3/launch.py", "python/tests/bench/test_ad3_launch_signals.py"]
+at = "2026-11-09T03:40:37Z"
+actor = "lognd"
+rev = 1

@@ -1245,13 +1245,19 @@ def test_web_bundle_version_reads_version_json(
 ) -> None:
     """version.json's sadi field is returned; absent or malformed files give None."""
     dist = tmp_path / "web" / "dist"
+    ui = tmp_path / "python" / "sadi" / "_ui"
     dist.mkdir(parents=True)
-    monkeypatch.setattr(hostprobe, "__file__", str(tmp_path / "doctor" / "hostprobe.py"))
+    ui.mkdir(parents=True)
+    monkeypatch.setattr(
+        hostprobe, "__file__", str(tmp_path / "python" / "sadi" / "doctor" / "hostprobe.py")
+    )
     assert hostprobe.web_bundle_version() is None
     (dist / "version.json").write_text("{not json", encoding="utf-8")
     assert hostprobe.web_bundle_version() is None
     (dist / "version.json").write_text('{"sadi": "1.2.3"}', encoding="utf-8")
     assert hostprobe.web_bundle_version() == "1.2.3"
+    (ui / "version.json").write_text('{"sadi": "2.0.0"}', encoding="utf-8")
+    assert hostprobe.web_bundle_version() == "2.0.0"
 
 
 # frob:tests python/sadi/doctor/hostprobe.py::build_target

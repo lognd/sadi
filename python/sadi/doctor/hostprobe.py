@@ -10,6 +10,7 @@ import sys
 import webbrowser
 from pathlib import Path
 
+from sadi.core import devfacade
 from sadi.logging_setup import get_logger
 
 _log = get_logger(__name__)
@@ -129,23 +130,28 @@ def windows_default_browser() -> tuple[str, int] | None:
 
 
 def web_bundle_version() -> str | None:
-    """Return the `sadi` field of sadi/web/dist/version.json, or None when absent or bad."""
-    path = Path(__file__).resolve().parent.parent / "web" / "dist" / "version.json"
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    value = data.get("sadi") if isinstance(data, dict) else None
-    return value if isinstance(value, str) else None
+    """Return the `sadi` field of version.json in sadi/_ui, else web/dist; None when absent or bad."""
+    pkg = Path(__file__).resolve().parent.parent
+    for path in (
+        pkg / "_ui" / "version.json",
+        pkg.parent.parent / "web" / "dist" / "version.json",
+    ):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        value = data.get("sadi") if isinstance(data, dict) else None
+        if isinstance(value, str):
+            return value
+    return None
 
 
 def build_target() -> str | None:
     """Return sadi_py.BUILD_TARGET when the extension exposes it, else None."""
-    try:
-        import sadi_py  # type: ignore[import-not-found]
-    except ImportError:
+    bound = devfacade.binding()
+    if bound.is_err:
         return None
-    value = getattr(sadi_py, "BUILD_TARGET", None)
+    value = getattr(bound.danger_ok, "BUILD_TARGET", None)
     return value if isinstance(value, str) else None
 
 

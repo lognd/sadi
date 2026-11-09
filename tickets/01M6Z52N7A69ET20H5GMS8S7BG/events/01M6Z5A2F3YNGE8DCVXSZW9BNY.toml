@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/launcher.py", "python/sadi/bench/ad3/**", "python/tests/bench/test_ad3_launch.py", "python/tests/cli/test_launcher_ad3.py", "docs/bench/ad3.md", "docs/server/launcher.md"]
+at = "2026-11-09T03:23:26Z"
+actor = "lognd"
+rev = 1

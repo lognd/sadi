@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = [".gitattributes", "crates/sadi-proto/tests/serial_loopback.rs", "web/src/api/schema.test.ts"]
+at = "2026-11-09T11:43:49Z"
+actor = "lognd"
+rev = 1

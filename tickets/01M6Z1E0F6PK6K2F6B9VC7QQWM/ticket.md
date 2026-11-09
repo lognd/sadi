@@ -2,7 +2,8 @@
 id = "01M6Z1E0F6PK6K2F6B9VC7QQWM"
 title = "doctor: AD3 checks - libdwf in WSL, Windows-side dwf.dll/WaveForms via powershell.exe, attached-to-WSL vs Windows, WaveForms process holding device"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

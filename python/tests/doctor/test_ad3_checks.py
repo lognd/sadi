@@ -175,3 +175,46 @@ def test_deb_workaround_text_in_remedies() -> None:
     r = _res_of(_run(p, ad3_open=True), "AD3-040")
     assert r.remediation is not None
     assert "dpkg-deb -x" in " ".join(st.text for st in r.remediation.steps)
+
+
+# frob:tests python/sadi/doctor/checks/ad3.py::ad3_050
+def test_override_ok_unset_and_missing() -> None:
+    """AD3-050 passes when unset or pointing at a real file, warns otherwise."""
+    p = _machine(Os.LINUX, sysfs=True, lib=True)
+    assert _res_of(_run(p), "AD3-050").status is Status.PASS
+    p.files["/opt/libdwf.so"] = ""
+    ad3_setup(p, lib_override="/opt/libdwf.so")
+    assert _res_of(_run(p), "AD3-050").status is Status.PASS
+    ad3_setup(p, lib_override="/gone/libdwf.so")
+    assert _res_of(_run(p), "AD3-050").status is Status.WARN
+    assert get_remedy("AD3-050", "override-missing") is not None
+
+
+# frob:tests python/sadi/doctor/checks/ad3.py::ad3_060
+# frob:tests python/sadi/doctor/checks/ad3.py::ad3_070
+def test_dialout_and_firmware() -> None:
+    """AD3-060/070 pass on a configured Linux box, skip on Windows."""
+    p = _machine(Os.LINUX, sysfs=True, lib=True, groups="u dialout\n", firmware=True)
+    assert _res_of(_run(p), "AD3-060").status is Status.PASS
+    assert _res_of(_run(p), "AD3-070").status is Status.PASS
+    q = _machine(Os.LINUX, sysfs=True, lib=True, groups="u adm\n")
+    assert _res_of(_run(q), "AD3-060").status is Status.WARN
+    assert _res_of(_run(q), "AD3-070").status is Status.FAIL
+    n = _machine(Os.LINUX)
+    assert _res_of(_run(n), "AD3-060").skip_reason is SkipReason.NO_DEVICE
+    assert get_remedy("AD3-060", "no-dialout") is not None
+    assert get_remedy("AD3-070", "no-firmware") is not None
+
+
+# frob:tests python/sadi/doctor/checks/ad3.py::ad3_080
+def test_session_is_opt_in_and_maps_statuses() -> None:
+    """AD3-080 runs only with ad3_open and maps child statuses."""
+    p = _machine(Os.WINDOWS, pnp=True, dll=True)
+    assert _res_of(_run(p), "AD3-080").status is Status.SKIP
+    for status, want in (("ok", Status.PASS), ("session-failed", Status.FAIL)):
+        ad3_setup(p, session_json={"status": status, "detail": "1.2"})
+        assert _res_of(_run(p, ad3_open=True), "AD3-080").status is want
+    ad3_setup(p, session_json={"status": "no-device", "detail": ""})
+    r = _res_of(_run(p, ad3_open=True), "AD3-080")
+    assert r.skip_reason is SkipReason.NO_DEVICE
+    assert get_remedy("AD3-080", "session-failed") is not None

@@ -609,6 +609,15 @@ CASES: list[tuple[str, str, Os, Mut]] = [
         Os.WINDOWS,
         _ad3(pnp=True, dll=True, open_json={"status": "open-failed", "detail": "busy"}),
     ),
+    ("AD3-050", "override-missing", Os.LINUX, _ad3(lib_override="/nope/libdwf.so")),
+    ("AD3-060", "no-dialout", Os.LINUX, _ad3(sysfs=True, lib=True, groups="logan adm\n")),
+    ("AD3-070", "no-firmware", Os.LINUX, _ad3(sysfs=True, lib=True)),
+    (
+        "AD3-080",
+        "session-failed",
+        Os.WINDOWS,
+        _ad3(pnp=True, dll=True, session_json={"status": "session-failed", "detail": "busy"}),
+    ),
     ("WRK-020", "orphan-survives", Os.LINUX, _wrk(orphan_survives=True)),
 ]
 
@@ -741,7 +750,7 @@ def test_fault_injection_yields_mode_and_remedy(
         allow_network_fs=False,
         api_port=port,
         open_browser=check_id == "BRW-030",
-        ad3_open=check_id == "AD3-040",
+        ad3_open=check_id in ("AD3-040", "AD3-080"),
         deep=check_id == "WAL-020",
         stream_seconds=5 if check_id == "DEV-040" else 0,
         with_reset=check_id == "DEV-050",

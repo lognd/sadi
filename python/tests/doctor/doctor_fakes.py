@@ -369,6 +369,10 @@ def ad3_setup(
     lib: bool = False,
     dll: bool = False,
     open_json: dict[str, str] | None = None,
+    session_json: dict[str, str] | None = None,
+    groups: str | None = None,
+    firmware: bool = False,
+    lib_override: str | None = None,
 ) -> None:
     """Shape a fake machine (p.os already set) for the AD3 checks: where the AD3 is, what runs."""
     sysd = "/sys/bus/usb/devices"
@@ -398,3 +402,11 @@ def ad3_setup(
         p.files[ad3.DLL_WINDOWS if p.os is Os.WINDOWS else ad3.DLL_VIA_WSL] = ""
     if open_json is not None:
         p.commands[f"-c {ad3._OPEN_SCRIPT}"] = _out(json.dumps(open_json))
+    if session_json is not None:
+        p.commands[f"-c {ad3._SESSION_SCRIPT}"] = _out(json.dumps(session_json))
+    if groups is not None:
+        p.commands["-nG"] = _out(groups)
+    if firmware:
+        p.dirs[ad3.FIRMWARE_DIR] = []
+    if lib_override is not None:
+        p.environ[ad3.ENV_LIB_PATH] = lib_override

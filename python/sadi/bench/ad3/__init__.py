@@ -20,9 +20,12 @@ from sadi.bench.ad3.consts import (
     OutNode,
     WaveFunction,
 )
+from sadi.bench.ad3.device import Ad3Closed, Ad3Session, open_ad3
 from sadi.bench.ad3.dll import CtypesBackend, load_backend, load_library
 
 __all__ = [
+    "Ad3Closed",
+    "Ad3Session",
     "AcqMode",
     "AcqState",
     "Channel",
@@ -39,4 +42,5 @@ __all__ = [
     "WaveFunction",
     "load_backend",
     "load_library",
+    "open_ad3",
 ]

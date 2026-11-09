@@ -37,9 +37,30 @@ headline is tagged `[linux]`, `[wsl]` or `[windows]`. All checks are read-only.
 | AD3-020 runtime library | `libdwf.so` (same names as above) | `libdwf.so`; if absent but `/mnt/c/Windows/System32/dwf.dll` exists, headline fix is `usbipd.exe detach --busid <id>` and use Windows `python.exe` (alternative: install the Linux packages) | `C:\Windows\System32\dwf.dll` |
 | AD3-030 WaveForms/Adept process | `pgrep` | `Get-Process` via `powershell.exe` | `Get-Process` |
 | AD3-040 open via backend (`--ad3-open`) | child process | child process | child process |
+| AD3-050 `SADI_DWF_LIB` override exists | env + path check | env + path check | env + path check |
+| AD3-060 user in `dialout` | `id -nG` | `id -nG` | n/a |
+| AD3-070 firmware dir `/usr/share/digilent/waveforms/firmware` | path check | path check | n/a |
+| AD3-080 wrapper session open/version/close (`--ad3-open`) | child process | child process | child process |
 
 Without `powershell.exe` under WSL (interop off) the Windows-side checks SKIP
 with a reason. With no AD3 present, checks SKIP (NO_DEVICE).
+
+## High-level wrapper
+
+`sadi.bench.ad3.device` layers a typestate API over the backend. `Ad3Closed`
+(`from_library()`, `enumerate()`, `open()`) yields an `Ad3Session` on success;
+`Ad3Session.close()` returns the `Ad3Closed` again, and leaving the `with` block
+closes it too. Every call returns `Result[T, DwfError]`; bad arguments are
+rejected as `BAD_ARGUMENT` before any FFI call, and each error carries a hint.
+
+```python
+from sadi.bench.ad3 import open_ad3
+
+with open_ad3().unwrap() as dev:
+    dev.set_supply("positive", 3.3).unwrap()
+    dev.wave(1, "sine", 1000.0, 1.0).unwrap()
+    samples = dev.capture(1, 10000.0, 256).unwrap()
+```
 
 ## Errors
 

@@ -524,3 +524,204 @@ def _ad3_040_open(ctx: Ctx, out: Outcome) -> Fix:
             *deb,
         ),
     )
+
+
+@check(
+    "AD3-050",
+    Layer.AD3,
+    "SADI_DWF_LIB override points at a real file",
+    Severity.WARNING,
+    {"override-missing": "SADI_DWF_LIB is set but the file does not exist"},
+    "Environment variable SADI_DWF_LIB, then an existence check of that path",
+    applies_to=frozenset({Os.LINUX, Os.WSL, Os.WINDOWS}),
+)
+def ad3_050(ctx: Ctx) -> Outcome:
+    """Warn when the library override names a path that is not there (it would be ignored)."""
+    side = side_of(ctx)
+    override = ctx.probes.env().get(ENV_LIB_PATH)
+    if override is None or override == "":
+        return ok(f"[{side}] {ENV_LIB_PATH} is not set (default discovery)", side=side)
+    if ctx.probes.exists(override):
+        return ok(f"[{side}] {ENV_LIB_PATH} points at {override}", side=side, path=override)
+    return warn(
+        "override-missing",
+        f"[{side}] {ENV_LIB_PATH}={override} does not exist",
+        side=side,
+        path=override,
+    )
+
+
+@remedy("AD3-050", "override-missing")
+def _ad3_050_override(ctx: Ctx, out: Outcome) -> Fix:
+    """Fix or clear the override."""
+    return Fix(
+        "Repair the library override",
+        (
+            manual(
+                f"Set {ENV_LIB_PATH} to the full path of an existing libdwf (dwf.dll on Windows), "
+                f"or unset it to use default discovery (was {out.facts.get('path')}).",
+                "The path exists and AD3-020 passes.",
+            ),
+        ),
+    )
+
+
+_LINUX_ACCESS = frozenset({Os.LINUX, Os.WSL})
+FIRMWARE_DIR = "/usr/share/digilent/waveforms/firmware"
+
+
+def _linux_ready(ctx: Ctx) -> Outcome | None:
+    """Return a SKIP unless the AD3 is on this Linux/WSL side (windows-held devices are not ours)."""
+    where = locate(ctx)
+    if (none := _unless_present(ctx, where)) is not None:
+        return none
+    if where.holder == "windows":
+        return skip(SkipReason.PREREQUISITE_FAILED, f"[{where.side}] The AD3 is held by Windows")
+    return None
+
+
+@check(
+    "AD3-060",
+    Layer.AD3,
+    "User may access the AD3 USB device (dialout)",
+    Severity.WARNING,
+    {"no-dialout": "The user is not in the dialout group, so opening the AD3 may be denied"},
+    "Linux/WSL: `id -nG` must list dialout",
+    applies_to=_LINUX_ACCESS,
+    depends_on=_DEPS,
+)
+def ad3_060(ctx: Ctx) -> Outcome:
+    """Warn when the user lacks the dialout group the Adept runtime relies on."""
+    if (none := _linux_ready(ctx)) is not None:
+        return none
+    side = side_of(ctx)
+    res = ctx.probes.run(["id", "-nG"])
+    if res.is_err or res.unwrap().exit_code != 0 or not res.unwrap().stdout_tail.strip():
+        return skip(SkipReason.TOOL_MISSING, f"[{side}] cannot list the user's groups")
+    groups = res.unwrap().stdout_tail.split()
+    if "dialout" in groups:
+        return ok(f"[{side}] The user is in the dialout group", side=side)
+    return warn(
+        "no-dialout", f"[{side}] The user is not in the dialout group", side=side, groups=groups
+    )
+
+
+@remedy("AD3-060", "no-dialout")
+def _ad3_060_dialout(ctx: Ctx, out: Outcome) -> Fix:
+    """Add the user to dialout (manual: needs sudo and a new login)."""
+    return Fix(
+        "Join the dialout group",
+        (
+            manual(
+                "Run `sudo usermod -aG dialout $USER`, then log out and in again "
+                "(or run commands via `sg dialout -c '<command>'`).",
+                "`id -nG` lists dialout.",
+                mutates=Mutates.SYSTEM,
+                changes="Adds your account to the dialout group (needs sudo).",
+            ),
+        ),
+    )
+
+
+@check(
+    "AD3-070",
+    Layer.AD3,
+    "WaveForms firmware directory installed",
+    Severity.ERROR,
+    {"no-firmware": f"{FIRMWARE_DIR} is missing, so the AD3 cannot be configured"},
+    f"Linux/WSL: {FIRMWARE_DIR} exists (libdwf hardcodes this path)",
+    applies_to=_LINUX_ACCESS,
+    depends_on=("AD3-010", "AD3-020"),
+)
+def ad3_070(ctx: Ctx) -> Outcome:
+    """Fail when the libdwf firmware directory is absent (open fails with 'no compatible configuration')."""
+    if (none := _linux_ready(ctx)) is not None:
+        return none
+    side = side_of(ctx)
+    if ctx.probes.exists(FIRMWARE_DIR):
+        return ok(f"[{side}] Firmware directory present", side=side)
+    return fail("no-firmware", f"[{side}] {FIRMWARE_DIR} is missing", side=side)
+
+
+@remedy("AD3-070", "no-firmware")
+def _ad3_070_firmware(ctx: Ctx, out: Outcome) -> Fix:
+    """Install WaveForms properly, or copy the firmware directory out of the extracted package."""
+    return Fix("Install the WaveForms firmware", _deb_workaround_steps())
+
+
+_SESSION_SCRIPT = (
+    "import json\n"
+    "from sadi.bench.ad3 import Ad3Closed\n"
+    "r = Ad3Closed.from_library()\n"
+    "if r.is_err:\n"
+    "    print(json.dumps({'status': 'no-library', 'detail': str(r.unwrap_err().detail)}))\n"
+    "    raise SystemExit(0)\n"
+    "c = r.unwrap()\n"
+    "e = c.enumerate()\n"
+    "if e.is_err or not e.unwrap():\n"
+    "    print(json.dumps({'status': 'no-device', 'detail': ''}))\n"
+    "    raise SystemExit(0)\n"
+    "o = c.open()\n"
+    "if o.is_err:\n"
+    "    print(json.dumps({'status': 'session-failed', 'detail': o.unwrap_err().hint}))\n"
+    "    raise SystemExit(0)\n"
+    "s = o.unwrap()\n"
+    "v = s.version()\n"
+    "s.close()\n"
+    "if v.is_err:\n"
+    "    print(json.dumps({'status': 'session-failed', 'detail': v.unwrap_err().hint}))\n"
+    "else:\n"
+    "    print(json.dumps({'status': 'ok', 'detail': v.unwrap()}))\n"
+)
+
+
+@check(
+    "AD3-080",
+    Layer.AD3,
+    "AD3 wrapper session opens, reads the version and closes",
+    Severity.ERROR,
+    {"session-failed": "The high-level Ad3Session could not open or query the AD3"},
+    "Only with --ad3-open: sadi.bench.ad3.Ad3Closed.open() in a child, version(), close()",
+    applies_to=frozenset({Os.LINUX, Os.WSL, Os.WINDOWS}),
+    depends_on=("AD3-010", "AD3-020", "AD3-040"),
+    opt_in_flag="ad3_open",
+)
+def ad3_080(ctx: Ctx) -> Outcome:
+    """Exercise the typestate wrapper end to end in a child process."""
+    side = side_of(ctx)
+    res = child_json(ctx, _SESSION_SCRIPT)
+    if res.is_err:
+        return skip(
+            SkipReason.TOOL_MISSING,
+            f"[{side}] session probe failed",
+            detail=res.unwrap_err().detail,
+        )
+    data = res.unwrap()
+    status = data.get("status")
+    detail = str(data.get("detail", ""))
+    if status == "ok":
+        return ok(f"[{side}] The AD3 session works (DWF {detail})", side=side, version=detail)
+    if status == "no-device":
+        return skip(SkipReason.NO_DEVICE, f"[{side}] The DWF library enumerates no device")
+    if status == "no-library":
+        return skip(SkipReason.TOOL_MISSING, f"[{side}] No DWF library to load", detail=detail)
+    return fail("session-failed", f"[{side}] The AD3 session failed", detail=detail, side=side)
+
+
+@remedy("AD3-080", "session-failed")
+def _ad3_080_session(ctx: Ctx, out: Outcome) -> Fix:
+    """Read the numbered hint in the detail and free the device."""
+    return Fix(
+        "Fix the AD3 session",
+        (
+            manual(
+                "Follow the numbered hint shown in the failure detail; it is specific to the "
+                "error code (busy, device lost, not supported, ...).",
+                "AD3-080 passes with --ad3-open.",
+            ),
+            manual(
+                "Close WaveForms and other SADI processes, then unplug and replug the AD3.",
+                "AD3-030 passes.",
+            ),
+        ),
+    )

@@ -2,7 +2,8 @@
 id = "01M6Z1VM8TA5ZF8F05QG0ZFJH3"
 title = "doctor DEV-020: board does not answer on /dev/ttyUSB1; probe both FT2232 channels and framing"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

@@ -7,7 +7,8 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T11:41:11Z"
-updated = "2026-11-09T11:41:14Z"
+updated = "2026-11-09T11:45:09Z"
+scope = ["python/sadi/store/lock.py", "python/tests/crash/harness.py", "python/tests/store/test_lock.py"]
 
 [[acceptance]]
 text = "ruff check python passes; crash tests pass on Linux and logic is sound for Windows; no invariant weakened"

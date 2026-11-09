@@ -7,8 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:33:55Z"
-updated = "2026-11-09T03:34:55Z"
+updated = "2026-11-09T03:35:29Z"
 idempotency_key = "gap-slip-noise-floor"
+scope = ["docs/lctt/slip.md", "python/sadi/labs/lctt/slip.py", "python/tests/e2e/test_lctt_ad3.py", "python/tests/labs/lctt/test_slip.py"]
 
 [[acceptance]]
 text = "slip_config_from_adc derives noise_floor from one ADC LSB; quantised hold gives no events, real glitch detected"

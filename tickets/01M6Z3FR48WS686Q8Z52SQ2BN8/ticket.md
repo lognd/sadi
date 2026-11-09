@@ -7,8 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T02:51:35Z"
-updated = "2026-11-09T03:16:20Z"
-scope = ["python/tests/bench/test_lctt_ad3_hw.py", "python/sadi/bench/sadi_readback.py", "docs/bench/lctt-ad3-matrix.md", "docs/bench/ad3.md"]
+updated = "2026-11-09T03:18:08Z"
+scope = ["python/tests/bench/test_lctt_ad3_hw.py", "python/sadi/bench/sadi_readback.py", "docs/bench/lctt-ad3-matrix.md", "docs/bench/ad3.md", "python/tests/bench/test_sadi_readback.py"]
+
+[[acceptance]]
+text = "ad3_hw tests read DC levels back from the SADI board over the serial facade and assert the AD3 scope supply monitor reads ~3.3 V"
+bound = true
 +++
 
 found while working GHQ8PEY

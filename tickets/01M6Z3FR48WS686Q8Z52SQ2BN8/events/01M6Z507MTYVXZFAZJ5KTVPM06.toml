@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/tests/bench/test_lctt_ad3_hw.py", "python/sadi/bench/sadi_readback.py", "docs/bench/lctt-ad3-matrix.md", "docs/bench/ad3.md"]
+new = ["python/tests/bench/test_lctt_ad3_hw.py", "python/sadi/bench/sadi_readback.py", "docs/bench/lctt-ad3-matrix.md", "docs/bench/ad3.md", "python/tests/bench/test_sadi_readback.py"]
+at = "2026-11-09T03:18:04Z"
+actor = "lognd"
+rev = 1

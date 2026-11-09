@@ -46,6 +46,20 @@ signal.pause()
 """
 )
 
+_REENTRANT = (
+    _PRELUDE
+    + """
+import logging
+class Boom(logging.Handler):
+    def emit(self, record):
+        raise RuntimeError("reentrant call inside <_io.BufferedWriter name='<stdout>'>")
+logging.getLogger().addHandler(Boom())
+logging.getLogger().setLevel(logging.DEBUG)
+_ready()
+signal.pause()
+"""
+)
+
 _UVICORN = (
     _PRELUDE
     + """
@@ -95,6 +109,13 @@ def _run_and_term(code: str, tmp_path: Path, sig: int) -> tuple[int, str]:
 def test_sigterm_subprocess_single_close_exit_code(tmp_path: Path) -> None:
     """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
     code, out = _run_and_term(_PLAIN, tmp_path, signal.SIGTERM)
+    assert out.splitlines().count("CLOSE") == 1
+    assert code == 128 + signal.SIGTERM
+
+
+def test_sigterm_with_raising_log_handler_still_closes(tmp_path: Path) -> None:
+    """frob:tests sadi.bench.ad3.launch.Ad3Guard._on_signal"""
+    code, out = _run_and_term(_REENTRANT, tmp_path, signal.SIGTERM)
     assert out.splitlines().count("CLOSE") == 1
     assert code == 128 + signal.SIGTERM
 

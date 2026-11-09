@@ -170,6 +170,8 @@ See also: [LCTT test flow driven by the AD3](lctt-ad3-matrix.md).
 `open_managed_ad3()` loads libdwf, opens the device and returns an `Ad3Guard`. The guard
 closes the device exactly once (`FDwfDeviceClose`; skipping it makes Adept segfault at
 process exit) on context exit, on an exception, via `atexit`, and on SIGTERM/SIGHUP (the
-handler closes, then raises `SystemExit(128+signum)`). A missing library or absent device
+handler closes, then raises `SystemExit(128+signum)`). The close always runs first; the signal path logs only
+afterwards through a never-raising helper, so a reentrant stdout write (or a failing log
+handler) cannot skip or abort the device close. A missing library or absent device
 is a clean `Err(str)` with numbered fix steps; the launcher prints it and exits 7
 (`EXIT_AD3`). Tests use `FakeDwf` via an injectable loader.

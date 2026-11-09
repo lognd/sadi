@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import atexit
+import contextlib
+import logging
 import os
 import signal
 import threading
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Generator, Mapping
 from types import FrameType, TracebackType
 
 from typani import Err, Ok, Result
@@ -32,6 +34,25 @@ def ad3_requested(flag: bool, env: Mapping[str, str] | None = None) -> bool:
     """Return whether an AD3 is wanted: the `--ad3` flag or `SADI_AD3` set to 1/true/yes."""
     values = os.environ if env is None else env
     return flag or values.get(AD3_ENV, "").strip().lower() in _TRUTHY
+
+
+def _safe_log(level: int, msg: str, *args: object) -> None:
+    """Log without ever raising: a signal can land mid-write and make a handler re-enter."""
+    try:
+        _log.log(level, msg, *args)
+    except Exception:  # noqa: BLE001 - logging must never abort or mask a device close
+        pass
+
+
+@contextlib.contextmanager
+def _logging_muted() -> Generator[None]:
+    """Mute logging during a signal-driven close; a log call there can re-enter a stream."""
+    prev = logging.root.manager.disable
+    logging.disable(logging.CRITICAL)
+    try:
+        yield
+    finally:
+        logging.disable(prev)
 
 
 class Ad3Guard:
@@ -66,9 +87,9 @@ class Ad3Guard:
             self._closing = False
         self._restore_signals()
         if isinstance(res, Err):
-            _log.error("ad3 guard close failed: %s", res.unwrap_err().code.value)
+            _safe_log(logging.ERROR, "ad3 guard close failed: %s", res.unwrap_err().code.value)
             return Err(res.unwrap_err())
-        _log.info("ad3 guard closed device")
+        _safe_log(logging.INFO, "ad3 guard closed device")
         return Ok(None)
 
     def install_signal_handlers(self) -> None:
@@ -82,13 +103,19 @@ class Ad3Guard:
             self._prev[sig] = signal.signal(sig, self._on_signal)
 
     def _on_signal(self, signum: int, _frame: FrameType | None) -> None:
-        """Close the device now, then leave via SystemExit(128+signum)."""
+        """Close the device FIRST, log after (never raising), then SystemExit(128+signum)."""
         if self._closing:
-            _log.warning("signal %d during ad3 close; letting the close finish", signum)
+            _safe_log(logging.WARNING, "signal %d during ad3 close; letting it finish", signum)
             return
-        _log.warning("signal %d received; closing ad3 before exit", signum)
-        if self.close().is_err:
-            _log.error("ad3 close during signal %d failed", signum)
+        failed = True
+        try:
+            with _logging_muted():  # backend/session log calls could re-enter stdout too
+                failed = self.close().is_err
+        finally:
+            # Logging only after the close: a reentrant stream write must not skip it.
+            _safe_log(logging.WARNING, "signal %d received; ad3 closed before exit", signum)
+            if failed:
+                _safe_log(logging.ERROR, "ad3 close during signal %d failed", signum)
         raise SystemExit(128 + signum)
 
     def _restore_signals(self) -> None:

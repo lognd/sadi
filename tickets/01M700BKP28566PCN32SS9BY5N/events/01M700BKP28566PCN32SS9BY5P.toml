@@ -1,0 +1,8 @@
+kind = "create"
+title = "ci: typani lint TYP004 propagation findings (69) across store, server, cli, doctor"
+type = "bug"
+category = "todo"
+priority = "medium"
+at = "2026-11-09T11:16:08Z"
+actor = "lognd"
+rev = 1

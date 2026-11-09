@@ -4,6 +4,7 @@ title = "E2E: run the full LCTT test flow (calibration, zero, load ramp, hold, u
 type = "task"
 category = "todo"
 priority = "medium"
+points = 8
 reporter = "lognd"
 created = "2026-11-09T02:44:17Z"
 updated = "2026-11-09T02:44:17Z"

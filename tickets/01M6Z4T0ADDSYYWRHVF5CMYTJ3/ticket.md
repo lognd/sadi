@@ -13,5 +13,5 @@ scope = ["python/sadi/doctor/checks/ad3.py"]
 
 [[acceptance]]
 text = "ty reports no diagnostics in doctor/checks/ad3.py and usb.py; doctor tests pass"
-bound = false
+bound = true
 +++

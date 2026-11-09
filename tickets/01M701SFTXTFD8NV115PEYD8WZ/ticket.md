@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T11:41:11Z"
-updated = "2026-11-09T11:44:28Z"
+updated = "2026-11-09T11:44:30Z"
 scope = [".gitattributes", "crates/sadi-proto/tests/serial_loopback.rs", "web/src/api/schema.test.ts"]
 
 [[acceptance]]

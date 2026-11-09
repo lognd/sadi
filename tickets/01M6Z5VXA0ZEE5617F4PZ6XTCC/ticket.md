@@ -7,6 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:33:11Z"
-updated = "2026-11-09T03:33:38Z"
+updated = "2026-11-09T03:36:25Z"
 idempotency_key = "gap-ad3-signal-flake"
+
+[[acceptance]]
+text = "SIGTERM/SIGHUP/uvicorn subprocess tests pass 120 consecutive runs under 12-way CPU contention"
+bound = false
 +++

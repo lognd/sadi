@@ -4,8 +4,9 @@ title = "Fix 9 eslint errors in web: e2e and docs-shots files not covered by tsc
 type = "task"
 category = "todo"
 priority = "medium"
+points = 1
 reporter = "lognd"
 created = "2026-11-09T03:53:53Z"
-updated = "2026-11-09T03:53:53Z"
+updated = "2026-11-09T03:53:55Z"
 idempotency_key = "gap-web-eslint-e2e"
 +++

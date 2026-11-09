@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T03:06:13Z"
-updated = "2026-11-09T03:08:55Z"
+updated = "2026-11-09T03:11:32Z"
 idempotency_key = "launcher-i001"
 scope = ["python/sadi/launcher.py"]
 +++

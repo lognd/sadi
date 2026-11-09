@@ -27,7 +27,7 @@ from typani import Err, Ok, Result, propagate
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
 from sadi.store.failpoints import failpoint
-from sadi.store.lock import DataRootLock, LockError, acquire
+from sadi.store.lock import DataRootLock, LockError, acquire, try_lock_fd, unlock_fd
 from sadi.store.manifest import (
     Manifest,
     ManifestInvalid,
@@ -182,31 +182,13 @@ def _lock_line() -> bytes:
 
 def _try_os_lock(fd: int) -> bool:
     """Take the process-scoped exclusive non-blocking OS lock on `fd`; False if held elsewhere."""
-    try:
-        if _IS_WIN:
-            import msvcrt  # noqa: PLC0415 - platform-specific
-
-            os.lseek(fd, 0, os.SEEK_SET)
-            msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)  # type: ignore[attr-defined]
-        else:
-            import fcntl  # noqa: PLC0415 - platform-specific
-
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        return False
-    return True
+    return try_lock_fd(fd)
 
 
 def _release_os_lock(fd: int) -> None:
     """Release the OS lock and close the fd (the lock file itself is never deleted)."""
     try:
-        if _IS_WIN:
-            import msvcrt  # noqa: PLC0415
-
-            os.lseek(fd, 0, os.SEEK_SET)
-            msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)  # type: ignore[attr-defined]
-    except OSError as exc:
-        _log.warning("unlock failed: %s", exc)
+        unlock_fd(fd)
     finally:
         os.close(fd)
 
@@ -258,15 +240,7 @@ def probe_lock(session_dir: Path) -> Result[None, Locked]:
 
 def _release_os_lock_keep(fd: int) -> None:
     """Unlock `fd` without closing it (the caller closes)."""
-    if _IS_WIN:
-        import msvcrt  # noqa: PLC0415
-
-        os.lseek(fd, 0, os.SEEK_SET)
-        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)  # type: ignore[attr-defined]
-    else:
-        import fcntl  # noqa: PLC0415
-
-        fcntl.flock(fd, fcntl.LOCK_UN)
+    unlock_fd(fd)
 
 
 @dataclass

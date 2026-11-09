@@ -73,6 +73,7 @@ def _open(tmp_path: Path, seg_bytes: int) -> tuple[Path, WalWriter]:
     h = create_session(tmp_path, SessionMeta(slug="inc"), NOW).danger_ok
     cfg = WalConfig(segment_max_bytes=seg_bytes)
     w = WalWriter.open(h.path / "wal", uuid.UUID(h.manifest.session_uuid), 1, cfg).danger_ok
+    h.close().expect("release session lock")  # Windows cannot delete an open lock file
     return h.path, w
 
 

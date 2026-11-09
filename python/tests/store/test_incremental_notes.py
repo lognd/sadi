@@ -43,9 +43,9 @@ def _open(root: Path, seg: int) -> tuple[Path, WalWriter]:
     """Session plus a small-segment writer."""
     h = create_session(root, SessionMeta(slug="nn"), NOW).danger_ok
     cfg = WalConfig(segment_max_bytes=seg)
-    return h.path, WalWriter.open(
-        h.path / "wal", uuid.UUID(h.manifest.session_uuid), 1, cfg
-    ).danger_ok
+    w = WalWriter.open(h.path / "wal", uuid.UUID(h.manifest.session_uuid), 1, cfg).danger_ok
+    h.close().expect("release session lock")  # Windows cannot delete an open lock file
+    return h.path, w
 
 
 # frob:tests python/sadi/store/incremental.py::IncrementalReplay.notes

@@ -4,8 +4,9 @@ title = "doctor AD3-020/040: when apt install of WaveForms fails, document extra
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T02:33:43Z"
-updated = "2026-11-09T02:33:43Z"
+updated = "2026-11-09T02:36:31Z"
 idempotency_key = "ad3-firmware-dir"
 +++

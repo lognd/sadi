@@ -2,7 +2,8 @@
 id = "01M6Z2X26N181YEZG6WP69V4WT"
 title = "docs/bench/ad3.md: add 'Installing without apt' section (extract deb, SADI_DWF_LIB, firmware copy, dialout, close device)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

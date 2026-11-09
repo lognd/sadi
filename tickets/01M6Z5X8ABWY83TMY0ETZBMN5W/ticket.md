@@ -4,8 +4,9 @@ title = "detect_slip: production callers must set noise_floor to one ADC LSB (de
 type = "task"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-09T03:33:55Z"
-updated = "2026-11-09T03:33:55Z"
+updated = "2026-11-09T03:33:57Z"
 idempotency_key = "gap-slip-noise-floor"
 +++

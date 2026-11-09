@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given the sadi package, when python -m typani.lint sadi runs, then it reports no TYP004 findings and the store, concurrency and full pytest suites pass"]
+moved = []
+at = "2026-11-09T11:28:05Z"
+actor = "lognd"
+rev = 1

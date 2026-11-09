@@ -1,0 +1,30 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:19:00Z"
+digest = "e803f4235e35500eb32988758d05928f2e778d17c2f96a0eaac2f4403eb6c722"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 195 items
+
+python/tests/doctor/test_sadi_doctor.py ................................ [ 16%]
+........................................................................ [ 53%]
+........................................................................ [ 90%]
+...................                                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-116585-0.xml ---------------
+============================= 195 passed in 18.80s =============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_browser_parsers python/tests/doctor/test_sadi_doctor.py::test_build_target_is_none_without_attribute python/tests/doctor/test_sadi_doctor.py::test_catalog_docs_are_current python/tests/doctor/test_sadi_doctor.py::test_cli_json_on_real_machine python/tests/doctor/test_sadi_doctor.py::test_cli_list_explain_and_usage python/tests/doctor/test_sadi_doctor.py::test_crashing_check_becomes_probe_error python/tests/doctor/test_sadi_doctor.py::test_data_020_probes_windows_and_macos python/tests/doctor/test_sadi_doctor.py::test_data_040_is_skipped_without_the_opt_in python/tests/doctor/test_sadi_doctor.py::test_data_root_resolution python/tests/doctor/test_sadi_doctor.py::test_declared_modes_are_all_injected python/tests/doctor/test_sadi_doctor.py::test_dev_sim_wrk_modes_yield_remedies_on_their_os python/tests/doctor/test_sadi_doctor.py::test_doctor_is_read_only python/tests/doctor/test_sadi_doctor.py::test_every_mode_has_a_remedy_for_every_os python/tests/doctor/test_sadi_doctor.py::test_exit_codes_and_verdict python/tests/doctor/test_sadi_doctor.py::test_fault_injection_yields_mode_and_remedy python/tests/doctor/test_sadi_doctor.py::test_healthy_machine_is_ready python/tests/doctor/test_sadi_doctor.py::test_json_round_trip python/tests/doctor/test_sadi_doctor.py::test_launch_hit_true_when_browser_connects python/tests/doctor/test_sadi_doctor.py::test_missing_binding_skips_sim_checks python/tests/doctor/test_sadi_doctor.py::test_mount_fstype_picks_longest_prefix python/tests/doctor/test_sadi_doctor.py::test_no_device_is_informational_skip python/tests/doctor/test_sadi_doctor.py::test_plat_020_skips_without_build_target python/tests/doctor/test_sadi_doctor.py::test_prerequisite_failure_skips_dependants python/tests/doctor/test_sadi_doctor.py::test_real_package_integrity_returns_two_lists python/tests/doctor/test_sadi_doctor.py::test_real_probes_answer_the_new_facts python/tests/doctor/test_sadi_doctor.py::test_real_probes_degrade_and_workers_stay_clean python/tests/doctor/test_sadi_doctor.py::test_real_probes_delegate_to_hostprobe python/tests/doctor/test_sadi_doctor.py::test_real_probes_full_run_is_valid python/tests/doctor/test_sadi_doctor.py::test_real_volume_probes_flush_lock_and_clean_up python/tests/doctor/test_sadi_doctor.py::test_render_result_problem_has_fix_and_steps_but_pass_is_one_line python/tests/doctor/test_sadi_doctor.py::test_selection_and_unknown_ids python/tests/doctor/test_sadi_doctor.py::test_severity_enum_has_blocker python/tests/doctor/test_sadi_doctor.py::test_stream_and_reset_checks_are_opt_in python/tests/doctor/test_sadi_doctor.py::test_usb_070_passes_when_class_path_reads_2 python/tests/doctor/test_sadi_doctor.py::test_usb_070_resolves_real_wsl_path_in_fix python/tests/doctor/test_sadi_doctor.py::test_web_020_skips_without_version_json python/tests/doctor/test_sadi_doctor.py::test_web_bundle_version_reads_version_json python/tests/doctor/test_sadi_doctor.py::test_windows_readers_answer_none_off_windows"
+size = 763
+status = "measured"
+test_count = 195
+tests_digest = "6032cd64b8ce51950f8e13e28f1a3b818e7939b34ed9b7e568c0c78abfe46861"
+at = "2026-11-09T02:19:00Z"
+actor = "lognd"
+rev = 1

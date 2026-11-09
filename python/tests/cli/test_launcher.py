@@ -359,7 +359,7 @@ def test_load_builtin_plugins_failure_is_surfaced(
         def discover(self) -> object:
             raise RuntimeError("boom")
 
-    monkeypatch.setattr(launcher, "builtin_source", Broken)
+    monkeypatch.setattr("sadi.plugins.builtin.builtin_source", Broken)
     plugins, labs = launcher.load_builtin_plugins()
     assert labs.ids() == []
     assert plugins.source_errors()

@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:23:36Z"
+digest = "a5393924c73d5cdac3dc9698364f2b097ff7538b662e3b2db3fad86e68ba8055"
+exit_code = 0
+head = "ac3fd8732e168f4e08994a2a7642607e67daad6b"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 10 items
+
+python/tests/doctor/test_ad3_checks.py ..........                        [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-175899-0.xml ---------------
+============================== 10 passed in 3.06s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_ad3_checks.py"
+size = 522
+status = "measured"
+test_count = 10
+tests_digest = "a2266c0ff40134d38f86109e0b7da9b00bb1b7a1d713b767b16911ca4775be17"
+at = "2026-11-09T02:23:36Z"
+actor = "lognd"
+rev = 1

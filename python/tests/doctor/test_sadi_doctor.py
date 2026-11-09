@@ -226,6 +226,10 @@ def _wsl_attached(config: str, dmesg: str = "") -> Mut:
 _KCONF_OK = "CONFIG_USB_SERIAL_FTDI_SIO=y\nCONFIG_USB_VHCI_HCD=y\n"
 
 
+def _vhci_sysfs(p: FakeProbes) -> None:
+    p.dirs["/sys/module/vhci_hcd"] = []
+
+
 def _no_group(p: FakeProbes) -> None:
     p.node_ok = (False, "dialout")
     p.groups = ["users"]
@@ -641,6 +645,7 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/usb.py::usb_060
 # frob:tests python/sadi/doctor/checks/usb.py::usb_070
 # frob:tests python/sadi/doctor/checks/usb.py::usb_080
+# frob:tests python/sadi/doctor/checks/usb.py::_vhci_loaded
 # frob:tests python/sadi/doctor/checks/net.py::net_030
 # frob:tests python/sadi/doctor/checks/net.py::net_040
 # frob:tests python/sadi/doctor/checks/net.py::health_script
@@ -754,6 +759,28 @@ def test_fault_injection_yields_mode_and_remedy(
     text = render(report)
     assert f"{check_id}" in text and "Expect:" in text
     assert text.isascii()
+
+
+@pytest.mark.parametrize(
+    "config", ["CONFIG_USB_VHCI_HCD=m\n", "CONFIG_USB_SERIAL_FTDI_SIO=y\n"], ids=["module", "sysfs"]
+)
+def test_usb_080_accepts_vhci_module_or_sysfs(config: str) -> None:
+    """VHCI built as =m, or proven loaded via sysfs, does not FAIL USB-080."""
+    p = healthy()
+    p.os = Os.WSL
+    _all(_wsl_attached(config), _vhci_sysfs)(p)
+    result = next(r for r in _run(p, Os.WSL, data_root=ROOT).results if r.id == "USB-080")
+    assert result.mode != "vhci-missing", result.headline
+
+
+def test_usb_080_unreadable_config_is_not_a_failure() -> None:
+    """An unreadable kernel config must not produce vhci-missing."""
+    p = healthy()
+    p.os = Os.WSL
+    _wsl_attached("")(p)
+    p.commands.pop("-E " + usb._KCONFIG + " /proc/config.gz", None)
+    result = next(r for r in _run(p, Os.WSL, data_root=ROOT).results if r.id == "USB-080")
+    assert result.mode != "vhci-missing", result.headline
 
 
 def test_declared_modes_are_all_injected() -> None:
@@ -1300,3 +1327,37 @@ def test_render_result_problem_has_fix_and_steps_but_pass_is_one_line() -> None:
     assert any("Expect:" in ln for ln in lines)
     good = next(r for r in report.results if r.status is Status.PASS)
     assert render_result(good) == [f"[PASS] {good.id}  {good.headline}"]
+
+
+_WSL_REAL = "/sys/devices/platform/vhci_hcd.0/usb1/1-1/1-1:1.0/ttyUSB0"
+
+
+# frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+def test_usb_070_resolves_real_wsl_path_in_fix() -> None:
+    """With only the class/tty path readable, the fix cites the resolved /sys/devices path."""
+    p = healthy()
+    p.os = Os.WSL
+    p.files.pop("/sys/bus/usb-serial/devices/ttyUSB0/latency_timer", None)
+    p.files["/sys/class/tty/ttyUSB0/device/latency_timer"] = "16\n"
+    p.links["/sys/class/tty/ttyUSB0"] = f"../..{_WSL_REAL[4:]}/tty/ttyUSB0"
+    report = _run(p, Os.WSL, data_root=ROOT, allow_network_fs=False, api_port=8000)
+    result = next(r for r in report.results if r.id == "USB-070")
+    assert result.mode == "latency-not-2ms"
+    assert result.remediation is not None
+    lines = [c.line for s in result.remediation.steps for c in s.commands]
+    assert f"echo 2 | sudo tee {_WSL_REAL}/latency_timer" in lines
+    text = render(report)
+    assert "resets on replug" in text and "usbipd attach" in text
+
+
+# frob:ticket 01M6Z1999KY3AYW3N57KR5C0BP
+# frob:tests python/sadi/doctor/checks/usb.py::usb_070
+def test_usb_070_passes_when_class_path_reads_2() -> None:
+    """The class/tty fallback path is read when the usb-serial path is absent."""
+    p = healthy()
+    p.files.pop("/sys/bus/usb-serial/devices/ttyUSB0/latency_timer", None)
+    p.files["/sys/class/tty/ttyUSB0/device/latency_timer"] = "2\n"
+    report = _run(p, Os.LINUX, data_root=ROOT, allow_network_fs=False, api_port=8000)
+    result = next(r for r in report.results if r.id == "USB-070")
+    assert result.status is Status.PASS

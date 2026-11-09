@@ -12,7 +12,6 @@ from pathlib import Path
 from typani import Ok
 
 from sadi.doctor import Budget, exit_code, run
-from sadi.doctor.bundle import capture_log, write_bundle
 from sadi.doctor.fix import fix
 from sadi.doctor.probes import RealProbes
 from sadi.doctor.registry import all_checks
@@ -231,6 +230,8 @@ def _fix(args: argparse.Namespace, options: RunOptions) -> int:
 
 def _run(args: argparse.Namespace, options: RunOptions) -> int:
     """Run the checks, print the report and optionally write the bundle."""
+    from sadi.doctor.bundle import capture_log, write_bundle  # lazy: bundle pulls sadi.store
+
     try:
         with capture_log() as captured:
             result = run(

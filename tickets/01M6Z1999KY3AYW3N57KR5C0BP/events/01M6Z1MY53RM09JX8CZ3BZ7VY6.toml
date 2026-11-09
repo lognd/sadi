@@ -1,0 +1,28 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:19:24Z"
+digest = "cdceb3b48ec4dd82e6643ce8db1db14d60b9cb1d3f0ca0549bd038b8c127e4c3"
+exit_code = 0
+head = "fe398d8a7451069d977346994559c5b4e722945e"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/doctor/test_sadi_doctor.py .                                [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-128897-0.xml ---------------
+============================== 1 passed in 2.59s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor/test_sadi_doctor.py::test_usb_070_resolves_real_wsl_path_in_fix"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "6190cbfbbce19d8ee5b596fba284714fd54f1c0a31b7b01fe1552bd588f36096"
+at = "2026-11-09T02:19:24Z"
+actor = "lognd"
+rev = 1

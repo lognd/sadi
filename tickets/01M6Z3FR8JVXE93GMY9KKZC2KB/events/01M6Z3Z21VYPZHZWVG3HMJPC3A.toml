@@ -1,0 +1,49 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-09T02:59:52Z"
+digest = "0c8e55769935e83e21a49958b5d9935db2aca379e51ae2cbca2234cc4fce2d5d"
+exit_code = 0
+head = "bf3874fa88389f73475130366f5bcbb77cb4e379"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/e2e/test_lctt_ad3_yield_mc.py ...                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-353789-0.xml ---------------
+============================== 3 passed in 4.01s ===============================
+forgot 662edb51cdfb426f80c3ea854c85a4f4
+forgot aeee6afe14884b3194239e417d60a4d8
+forgot f1ebee7d72674ccea6fb2fc537ba8d11
+forgot c82117fe86ae48b380615b5cc9075c2b
+forgot 6254604778224796b77e0ed59dc8b55d
+forgot be1aff7da1204637a58677deee9b6e8b
+forgot cf8731942fae4389b5c4640487b78e3f
+forgot f9294bf701b341aaa90192d6620b2630
+forgot f682d313fcb442218be334da1c47e647
+forgot 15c24aabc9c44aa18c3136dfceaf92ee
+forgot 3c0e7e47e8ff4e52923e5054f38cd00d
+forgot c5924871afba4ffb99e29d1debe349c2
+forgot 7cfff75cd8354a0ebd9bb0e4598e3093
+forgot 0f7d06000ca546d59ae6e4c111116aae
+forgot 67e42eb2a23a42379830cf4fb80897d9
+forgot d304da624f494ebc933093979b4d5725
+forgot 0eeec349cfa0430b9b986cc359afc68e
+forgot 07bd0491cd5e4b0b8121b1320ed26faa
+forgot fb0629a493b24c69bf9a140af0600538
+forgot 4af823084dbd4898b91fa83c17e7b5d2
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_lctt_ad3_yield_mc.py"
+size = 1321
+status = "measured"
+test_count = 3
+tests_digest = "326bbd0ca1b9cade330fbab9802d7b539e61d02cc7692e138de10713f2c02edc"
+at = "2026-11-09T02:59:52Z"
+actor = "lognd"
+rev = 1

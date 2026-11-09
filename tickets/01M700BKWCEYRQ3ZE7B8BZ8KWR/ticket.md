@@ -7,5 +7,6 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:22:15Z"
+updated = "2026-11-09T11:24:21Z"
+scope = ["README.md"]
 +++

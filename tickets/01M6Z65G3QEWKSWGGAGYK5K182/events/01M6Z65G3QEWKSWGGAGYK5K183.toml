@@ -1,0 +1,9 @@
+kind = "create"
+title = "Audit Ad3Guard._on_signal/close for logging reentrancy: a signal during a logging stream write can raise RuntimeError (reentrant BufferedWriter) and skip the device close"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "gap-guard-log-reentrancy"
+at = "2026-11-09T03:38:25Z"
+actor = "lognd"
+rev = 1

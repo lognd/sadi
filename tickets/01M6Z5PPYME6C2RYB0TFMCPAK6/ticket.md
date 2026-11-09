@@ -12,5 +12,5 @@ idempotency_key = "gap-e2e-slip-glitch-fail"
 
 [[acceptance]]
 text = "test_slip_like_glitch_is_detected_and_clean_hold_is_not passes"
-bound = false
+bound = true
 +++

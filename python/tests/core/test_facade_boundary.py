@@ -27,8 +27,8 @@ def _imported_roots(mod: ModuleType) -> set[str]:
     return roots
 
 
-# frob:tests sadi.api.acquisition
-# frob:tests sadi.core.pipeline
+# frob:tests python/sadi/core/pipeline.py::BlockLike
+# frob:tests python/sadi/api/acquisition.py::BlockSource
 def test_modules_do_not_import_sadi_py_or_serial() -> None:
     """Neither module may import the raw device layer."""
     for mod in (acq, pl):

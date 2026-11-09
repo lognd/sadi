@@ -1,0 +1,9 @@
+kind = "create"
+title = "doctor child_json: parse last JSON line so backend log lines on stdout do not break AD3-040 open probe"
+type = "task"
+category = "todo"
+priority = "medium"
+idempotency_key = "child-json-log-lines"
+at = "2026-11-09T02:35:07Z"
+actor = "lognd"
+rev = 1

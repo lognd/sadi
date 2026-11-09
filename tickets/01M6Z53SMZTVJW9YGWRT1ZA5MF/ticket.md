@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-09T03:20:00Z"
-updated = "2026-11-09T03:23:40Z"
+updated = "2026-11-09T03:24:02Z"
 idempotency_key = "gap-adcmodel-fullscale"
 scope = ["python/sadi/bench/*.py", "python/tests/bench/test_lctt_source.py", "docs/bench/lctt-ad3-matrix.md"]
 

@@ -7,6 +7,10 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T11:16:08Z"
-updated = "2026-11-09T11:19:17Z"
+updated = "2026-11-09T11:19:21Z"
 scope = [".github/workflows/e2e.yml", "web/e2e/fixtures.ts"]
+
+[[acceptance]]
+text = "given sadi_py built by the e2e workflow, when uv run --no-sync launches sadi --sim, then sadi_py imports"
+bound = false
 +++

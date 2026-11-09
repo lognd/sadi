@@ -47,18 +47,24 @@ SELFTEST_SCRIPT = "import sadi_py\nsadi_py.selftest()"
 
 
 def child_json(ctx: Ctx, script: str, timeout: float = CHILD_TIMEOUT_S) -> Result[Any, ProbeError]:
-    """Run `python -c script` and parse its stdout as JSON; any failure is a ProbeError."""
+    """Run `python -c script` and parse the last JSON line of its stdout (earlier log lines are ignored); any failure is a ProbeError."""
     res = ctx.probes.run((ctx.probes.python_exe(), "-c", script), timeout)
     if res.is_err:
         return Err(res.unwrap_err())
     run: CommandRun = res.unwrap()
     if run.exit_code != 0:
         return Err(ProbeError(kind="exception", detail=run.stderr_tail[-300:] or "non-zero exit"))
-    try:
-        return Ok(json.loads(run.stdout_tail))
-    except ValueError:
-        _log.warning("child output is not JSON: %r", run.stdout_tail[-80:])
-        return Err(ProbeError(kind="exception", detail="child output is not JSON"))
+    # frob:ticket 01M6Z2HK9VCDRFZV4Z3WKD8T9Z
+    for line in reversed(run.stdout_tail.splitlines()):
+        text = line.strip()
+        if not text:
+            continue
+        try:
+            return Ok(json.loads(text))
+        except ValueError:
+            _log.debug("skipping non-JSON child line: %r", text[-80:])
+    _log.warning("child output is not JSON: %r", run.stdout_tail[-80:])
+    return Err(ProbeError(kind="exception", detail="child output is not JSON"))
 
 
 @check(

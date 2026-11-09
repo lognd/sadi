@@ -225,6 +225,10 @@ def _wsl_attached(config: str, dmesg: str = "") -> Mut:
 _KCONF_OK = "CONFIG_USB_SERIAL_FTDI_SIO=y\nCONFIG_USB_VHCI_HCD=y\n"
 
 
+def _vhci_sysfs(p: FakeProbes) -> None:
+    p.dirs["/sys/module/vhci_hcd"] = []
+
+
 def _no_group(p: FakeProbes) -> None:
     p.node_ok = (False, "dialout")
     p.groups = ["users"]
@@ -622,6 +626,7 @@ def test_healthy_machine_is_ready() -> None:
 # frob:tests python/sadi/doctor/checks/usb.py::usb_060
 # frob:tests python/sadi/doctor/checks/usb.py::usb_070
 # frob:tests python/sadi/doctor/checks/usb.py::usb_080
+# frob:tests python/sadi/doctor/checks/usb.py::_vhci_loaded
 # frob:tests python/sadi/doctor/checks/net.py::net_030
 # frob:tests python/sadi/doctor/checks/net.py::net_040
 # frob:tests python/sadi/doctor/checks/net.py::health_script
@@ -734,6 +739,28 @@ def test_fault_injection_yields_mode_and_remedy(
     text = render(report)
     assert f"{check_id}" in text and "Expect:" in text
     assert text.isascii()
+
+
+@pytest.mark.parametrize(
+    "config", ["CONFIG_USB_VHCI_HCD=m\n", "CONFIG_USB_SERIAL_FTDI_SIO=y\n"], ids=["module", "sysfs"]
+)
+def test_usb_080_accepts_vhci_module_or_sysfs(config: str) -> None:
+    """VHCI built as =m, or proven loaded via sysfs, does not FAIL USB-080."""
+    p = healthy()
+    p.os = Os.WSL
+    _all(_wsl_attached(config), _vhci_sysfs)(p)
+    result = next(r for r in _run(p, Os.WSL, data_root=ROOT).results if r.id == "USB-080")
+    assert result.mode != "vhci-missing", result.headline
+
+
+def test_usb_080_unreadable_config_is_not_a_failure() -> None:
+    """An unreadable kernel config must not produce vhci-missing."""
+    p = healthy()
+    p.os = Os.WSL
+    _wsl_attached("")(p)
+    p.commands.pop("-E " + usb._KCONFIG + " /proc/config.gz", None)
+    result = next(r for r in _run(p, Os.WSL, data_root=ROOT).results if r.id == "USB-080")
+    assert result.mode != "vhci-missing", result.headline
 
 
 def test_declared_modes_are_all_injected() -> None:

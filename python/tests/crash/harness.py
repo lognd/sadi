@@ -13,12 +13,13 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from sadi.store import events, snapshot
-from sadi.store.lock import LOCK_FILENAME
+from sadi.store.lock import LOCK_FILENAME, LockHeld
 from sadi.store.manifest import read_manifest
 from sadi.store.records import RecordType
-from sadi.store.session import open_readonly, resume_session
+from sadi.store.session import RootLockFailed, open_readonly, resume_session
 from sadi.store.wal import SEGMENT_HEADER_LEN, ScanReport, WalReader
 
 from .crashee import block_packets, block_payload
@@ -30,6 +31,9 @@ ARTIFACT_ENV = "SADI_CRASH_ARTIFACTS"
 SEG_BYTES = 6000
 BIG_SEG_BYTES = 1 << 20
 MAX_RECORDS = 60
+RETRY_BUDGET_S = 15.0
+RETRY_FIRST_DELAY_S = 0.01
+RETRY_MAX_DELAY_S = 0.25
 LOCK_NAME = "lock"
 
 
@@ -126,6 +130,22 @@ def run_crashee(
     return Run(root, oracle_path, seed, rc, oracle, seg_bytes)
 
 
+# frob:ticket 01M703DQWZ3TFQ5FXAKVYZ1DZT
+def _read_bytes_retry(path: Path) -> bytes:
+    """Read `path`, retrying PermissionError with bounded backoff (Windows replace/AV windows)."""
+    deadline = time.monotonic() + RETRY_BUDGET_S
+    delay = RETRY_FIRST_DELAY_S
+    while True:
+        try:
+            return path.read_bytes()
+        except PermissionError:
+            if time.monotonic() >= deadline:
+                raise
+            _log.warning("read of %s denied; retrying in %.3fs", path, delay)
+            time.sleep(delay)
+            delay = min(delay * 2, RETRY_MAX_DELAY_S)
+
+
 def tree_digest(root: Path) -> str:
     """Hash every relative path and file content under `root` (mtimes excluded)."""
     h = hashlib.sha256()
@@ -135,7 +155,9 @@ def tree_digest(root: Path) -> str:
             # frob:ticket 01M700BKTA0N0NYKWBDG24R9GM
             # A held lock file cannot be read on Windows (byte-range lock);
             # its size still catches any silent rewrite.
-            h.update(str(p.stat().st_size).encode() if p.name == LOCK_NAME else p.read_bytes())
+            h.update(
+                str(p.stat().st_size).encode() if p.name == LOCK_NAME else _read_bytes_retry(p)
+            )
     return h.hexdigest()
 
 
@@ -244,7 +266,7 @@ def verify_recovery(run: Run, *, check_resume: bool = True) -> list[str]:
         _check_state(sdir, out)
     elif run.oracle.max_ack:
         out.append("I2: acknowledged records but no segment files")
-    manifest = read_manifest(sdir)
+    manifest = _read_manifest_retry(sdir)
     if manifest.is_err:
         out.append(f"I5: manifest torn or invalid: {manifest.danger_err}")
     ro = open_readonly(sdir)
@@ -257,13 +279,49 @@ def verify_recovery(run: Run, *, check_resume: bool = True) -> list[str]:
     return out
 
 
+# frob:ticket 01M703DQWZ3TFQ5FXAKVYZ1DZT
+def _read_manifest_retry(sdir: Path) -> Any:
+    """read_manifest, retried while the OS denies access (killed writer's handle not yet gone)."""
+    deadline = time.monotonic() + RETRY_BUDGET_S
+    delay = RETRY_FIRST_DELAY_S
+    while True:
+        got = read_manifest(sdir)
+        if got.is_ok or "denied" not in str(got.danger_err).lower() or time.monotonic() >= deadline:
+            return got
+        time.sleep(delay)
+        delay = min(delay * 2, RETRY_MAX_DELAY_S)
+
+
+# frob:ticket 01M703DQWZ3TFQ5FXAKVYZ1DZT
+def _resume_waiting_for_lock(sdir: Path, *, recover_stale: bool) -> Any:
+    """resume_session, polling with bounded backoff while the OS still reports the lock held.
+
+    Windows frees a killed process's byte-range lock lazily; a lock that stays held past the
+    budget is still reported as LockHeld, never broken.
+    """
+    deadline = time.monotonic() + RETRY_BUDGET_S
+    delay = RETRY_FIRST_DELAY_S
+    while True:
+        got = resume_session(sdir, recover_stale=recover_stale)
+        held = (
+            got.is_err
+            and isinstance(got.danger_err, RootLockFailed)
+            and isinstance(got.danger_err.error, LockHeld)
+        )
+        if not held or time.monotonic() >= deadline:
+            return got
+        _log.warning("data-root lock still held; retrying in %.3fs", delay)
+        time.sleep(delay)
+        delay = min(delay * 2, RETRY_MAX_DELAY_S)
+
+
 def _check_resume(sdir: Path, before: str) -> list[str]:
     """Resume as a new version; the stale lock must be reported, never silently broken."""
     out: list[str] = []
-    refused = resume_session(sdir)
+    refused = _resume_waiting_for_lock(sdir, recover_stale=False)
     if refused.is_ok:
         refused.danger_ok.close()
-    resumed = refused if refused.is_ok else resume_session(sdir, recover_stale=True)
+    resumed = refused if refused.is_ok else _resume_waiting_for_lock(sdir, recover_stale=True)
     if resumed.is_err:
         out.append(f"resume failed even with recover_stale: {resumed.danger_err}")
         return out

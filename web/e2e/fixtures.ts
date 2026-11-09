@@ -1,4 +1,5 @@
 // frob:ticket 01M6X3AVN6BF2D1RNPYDKZDSBS
+// frob:ticket 01M703DQZDPX25NNXNSM0V8HB2
 // Per-test backend: each test gets its own `sadi --sim` on a fresh temp data dir and port, so sessions never leak between specs.
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -42,6 +43,26 @@ async function waitReady(url: string, child: ChildProcess): Promise<void> {
   throw new Error("backend did not become ready within 120 s");
 }
 
+/** Stop the backend; on Windows kill the whole tree because `child.kill` only ends the `uv` launcher and orphans python (which keeps the data-dir lock). */
+async function stopBackend(child: ChildProcess): Promise<void> {
+  const exited = new Promise<void>((r) => {
+    if (child.exitCode !== null) r();
+    else child.once("exit", () => {
+      r();
+    });
+  });
+  if (process.platform === "win32" && child.pid !== undefined) {
+    await new Promise<void>((r) => {
+      spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" }).once("close", () => {
+        r();
+      });
+    });
+  } else {
+    child.kill("SIGTERM");
+  }
+  await exited;
+}
+
 /** Playwright `test` whose `baseURL` points at a private backend started and torn down per test. */
 export const test = base.extend({
   // Playwright requires fixtures to destructure their first argument, even when empty.
@@ -59,12 +80,9 @@ export const test = base.extend({
       await waitReady(url, child);
       await use(url);
     } finally {
-      child.kill("SIGTERM");
-      await new Promise((r) => {
-        if (child.exitCode !== null) r(null);
-        else child.once("exit", r);
-      });
-      rmSync(dataDir, { recursive: true, force: true });
+      await stopBackend(child);
+      // Windows can hold the data-dir lock for a moment after the process tree dies, so retry the removal.
+      rmSync(dataDir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
     }
   },
 });

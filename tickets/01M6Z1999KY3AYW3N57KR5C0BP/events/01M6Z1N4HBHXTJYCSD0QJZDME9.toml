@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given a WSL ttyUSB node whose latency_timer is not 2, when USB-070 runs, then the fix emits the resolved real sysfs path per node"]
+moved = []
+at = "2026-11-09T02:19:34Z"
+actor = "lognd"
+rev = 1

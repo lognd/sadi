@@ -7,7 +7,11 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T02:13:06Z"
-updated = "2026-11-09T02:18:32Z"
+updated = "2026-11-09T02:19:34Z"
 idempotency_key = "lat070"
 scope = ["docs/doctor-checks.md", "docs/doctor.md", "python/sadi/doctor/checks/usb.py", "python/tests/doctor/test_sadi_doctor.py"]
+
+[[acceptance]]
+text = "Given a WSL ttyUSB node whose latency_timer is not 2, when USB-070 runs, then the fix emits the resolved real sysfs path per node"
+bound = true
 +++

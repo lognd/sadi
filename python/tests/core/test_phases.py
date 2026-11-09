@@ -40,7 +40,7 @@ def test_full_lifecycle_against_simulator() -> None:
 # frob:tests python/sadi/core/phases.py::_Phase.spent
 # frob:tests python/sadi/core/phases.py::_Phase._live
 # frob:tests python/sadi/core/phases.py::_Phase._spend
-# frob:tests python/sadi/core/phases.py::SpentPhaseError
+# frob:tests python/sadi/core/devfacade.py::SpentPhaseError
 def test_transition_spends_previous_object() -> None:
     conn = _connected()
     streaming = conn.start(sp.AdcMode.DLL_COMPATIBLE).unwrap()
@@ -70,8 +70,8 @@ def test_query_disconnect_close() -> None:
     assert disc.spent
 
 
-# frob:tests python/sadi/core/phases.py::guard
-# frob:tests python/sadi/core/phases.py::to_device_error
+# frob:tests python/sadi/core/devfacade.py::guard
+# frob:tests python/sadi/core/devfacade.py::to_device_error
 def test_bad_scenario_becomes_err_with_hint() -> None:
     res = phases.open_sim("no-such-scenario")
     assert isinstance(res, Err)
@@ -98,12 +98,12 @@ class _Fake(sp.SadiError):
         ("never-heard-of-it", DeviceCode.PROTOCOL),
     ],
 )
-# frob:tests python/sadi/core/phases.py::to_device_error
+# frob:tests python/sadi/core/devfacade.py::to_device_error
 def test_kind_mapping(kind: str, code: DeviceCode) -> None:
     assert phases.to_device_error(_Fake(kind)).code == code
 
 
-# frob:tests python/sadi/core/phases.py::guard
+# frob:tests python/sadi/core/devfacade.py::guard
 def test_guard_reraises_programmer_bugs() -> None:
     def boom() -> None:
         raise _Fake("phase")

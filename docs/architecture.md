@@ -64,6 +64,15 @@ and event log.
    typani `Result[T, E]` with the error taxonomy of `sadi.core.errors`; each
    error carries a user-facing "what to do" hint. Exceptions remain only for
    programmer bugs.
+   The only module that touches the third-party device layer is
+   `sadi.core.devfacade` (lazy `sadi_py` binding, `guard`, `close_quietly`,
+   `check_block`). `guard` turns every OSError, SerialException-like I/O
+   failure, ImportError, ValueError, UnicodeDecodeError, timeout and PyO3
+   panic into an `Err` with a distinct `DeviceCode` and hint; only
+   KeyboardInterrupt/SystemExit and phase-contract bugs propagate. Blocks
+   are validated (NaN/inf, length mismatch) before callers see them, and
+   sessions are closed on every path. Callers above the facade consume
+   Results only.
 4. HTTP: FastAPI maps `Err` values to RFC 7807 problem JSON (`type`,
    `title`, `status`, `detail`, plus the hint). The UI renders the hint.
 

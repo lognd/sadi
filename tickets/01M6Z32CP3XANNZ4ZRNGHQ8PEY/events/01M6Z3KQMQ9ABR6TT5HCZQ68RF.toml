@@ -1,0 +1,56 @@
+kind = "evidence"
+captured_at = "2026-11-09T02:53:37Z"
+digest = "ceee7973de5e0cd9017245b59cddc009daeff93a04db4e4a354b04d5ec8eed65"
+exit_code = 0
+head = "9c53fd758e1c10f3bbbda5407a0221b8fdfe1856"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 16 items
+
+python/tests/e2e/test_lctt_ad3.py ...........                            [ 68%]
+python/tests/bench/test_lctt_source.py .....                             [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-343026-0.xml ---------------
+============================== 16 passed in 7.96s ==============================
+forgot 055b2b75e9ee4f70b2e920a8c81a2715
+forgot 00c60b8d5d0a451382d42f65f7f9cd9e
+forgot 4448d23c1aed49feaef1193f36061421
+forgot 62c56841e86248d3baa20d25e4ae5596
+forgot d36ccfe2df724b0bb3ede50136150751
+forgot 778011cb07b5487e8b8bfb6a024fa36b
+forgot 411d87bc1a4340a8987dc6973dce27c8
+forgot 1bd5e80b93524b928346e19a87ca79bd
+forgot 8886491fdedb4d56bab3b583b812838b
+forgot e66532367c494aefa1e54d6b5ab0c911
+forgot a1aea618e5384d3781c748e603941cb1
+forgot 7dedab51dd3f4046a5eb78efea1706d5
+forgot ea8997654ea746ec94c8bf9a99101a20
+forgot b3af04a6114f40cbb78b97c523461324
+forgot 5b53b49819334879a4040a8f77576a2a
+forgot c0c828b9c5d5495d9940d1f52bae4cff
+forgot 6a6369c8eea041699b3a1aca8f9ec821
+forgot 5e2cbf127bb943b3a6fe9edfbd36c1ae
+forgot 386926aa886340c4bb49cad5301694cf
+forgot 60376fd9d5d24d83972aecfefdf9150d
+forgot e3b0adfa40f14394a207ddd68f8a57ec
+forgot 1488e8f2fd1f4dec9b83177006669c34
+forgot 692a97ee2a66480db135ee0528e92970
+forgot 983c03b208a44332b5035774cfae3a00
+forgot 337b3f43113c473291f8e8c5389d935c
+forgot 3a1eeb51830d4a3ba1053f08e2fffa66
+forgot 117f1e3b563e4393b3c9f7534f6d9da1
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/e2e/test_lctt_ad3.py python/tests/bench/test_lctt_source.py"
+size = 1682
+status = "measured"
+test_count = 16
+tests_digest = "c5e5b097ad7c8211a9a7276831b0628e83e47a59ca0f77581033fcd8db174d83"
+at = "2026-11-09T02:53:37Z"
+actor = "lognd"
+rev = 1

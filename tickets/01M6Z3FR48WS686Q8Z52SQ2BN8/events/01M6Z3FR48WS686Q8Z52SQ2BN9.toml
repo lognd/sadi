@@ -1,0 +1,10 @@
+kind = "create"
+title = "AD3 LCTT hardware: SADI read-back over serial facade for ad3_hw tests (scope ch0 is supply monitor)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/tests/bench/test_lctt_ad3_hw.py"]
+body = "found while working GHQ8PEY"
+at = "2026-11-09T02:51:35Z"
+actor = "lognd"
+rev = 1

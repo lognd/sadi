@@ -4,10 +4,11 @@ title = "Web: LabVIEW-style front panel with persistent live readout on every st
 type = "story"
 category = "todo"
 priority = "high"
+points = 8
 parent = "01M6W7RAH93KKNK1WH67KWS2S7"
 reporter = "lognd"
 created = "2026-11-10T03:35:19Z"
-updated = "2026-11-10T03:35:19Z"
+updated = "2026-11-10T03:35:24Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]

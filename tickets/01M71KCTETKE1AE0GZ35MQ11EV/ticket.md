@@ -7,7 +7,7 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:05Z"
-updated = "2026-11-10T02:13:47Z"
+updated = "2026-11-10T02:34:47Z"
 labels = ["model:sonnet", "creates:python/sadi/labs/lctt/gp_suggester.py", "creates:python/tests/labs/lctt/test_gp_suggester.py", "creates:docs/labs/lctt-gp-selector.md"]
 scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "python/sadi/labs/lctt/gp_suggester.py", "python/tests/labs/lctt/test_gp_suggester.py", "docs/labs/lctt-gp-selector.md", "docs/index.md", "docs/lctt/guidance.md"]
 

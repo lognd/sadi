@@ -157,10 +157,12 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
 #: Plausibility limits for captured inputs (SI units); see `check_ranges`.
 MIN_DIAMETER_M = 0.05e-3
 MAX_DIAMETER_M = 5e-3
-MAX_HEIGHT_M = 1.0
+#: LVDT stroke is a few centimetres; a metre-scale height is a unit slip (mm typed as m).
+MAX_HEIGHT_M = 0.1
 #: Heights are measured relative to a zero reference, so small noise below zero is legitimate.
 MIN_HEIGHT_M = -1e-3
-MAX_MASS_KG = 1000.0
+#: Hanging masses are a few kg at most; larger values are probably grams typed as kg.
+MAX_MASS_KG = 20.0
 MAX_VOLTS = 100.0
 MAX_STRAIN_ZERO = 1.0
 MAX_TARE_N = 100_000_000

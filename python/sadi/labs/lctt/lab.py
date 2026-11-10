@@ -80,6 +80,11 @@ ELASTIC_RESULTS = ("E", "r2")
 PLASTIC_RESULTS = ("yield_stress",)
 #: Nominal wire diameter (m) used for stress until the specimen geometry is supplied.
 NOMINAL_DIAMETER_M = 0.006
+#: Relative standard uncertainty charged to the assumed diameter (so results never show +/- 0).
+ASSUMED_DIAMETER_REL_UNC = 0.2
+#: Calibration quality-gate thresholds (r^2 floor, outlier residual in standard errors).
+CAL_MIN_R2 = 0.999
+CAL_OUTLIER_K = 3.0
 
 
 class LabError(ErrorSet):
@@ -100,9 +105,24 @@ def _guide(text: str):  # type: ignore[no-untyped-def]  # noqa: ANN202
     return guidance
 
 
+def _worst_calibration_point(
+    volts: list[float], heights: list[float], residuals: Sequence[float]
+) -> int:
+    """Index of the point whose removal gives the best r2 (leave-one-out); residual fallback."""
+    n = len(volts)
+    best, best_r2 = max(range(n), key=lambda i: abs(residuals[i])), -math.inf
+    if n <= MIN_POINTS:
+        return best
+    for i in range(n):
+        sub = fit_calibration(volts[:i] + volts[i + 1 :], heights[:i] + heights[i + 1 :])
+        if sub.is_ok and sub.danger_ok.r2 > best_r2:
+            best, best_r2 = i, sub.danger_ok.r2
+    return best
+
+
 def calibration_gate(points: list[dict[str, Any]]) -> str | None:
-    """Quality gate for the calibrate step: the active points must give a valid LVDT fit."""
-    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    """Quality gate for the calibrate step: a valid, tight, monotone LVDT fit with no outlier."""
+    # frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
     volts: list[float] = []
     heights: list[float] = []
     for inputs in points:
@@ -114,6 +134,18 @@ def calibration_gate(points: list[dict[str, Any]]) -> str | None:
     fit = fit_calibration(volts, heights)
     if fit.is_err:
         return f"Calibration has no valid fit: {fit.danger_err.description}"
+    f = fit.danger_ok
+    worst = _worst_calibration_point(volts, heights, f.residuals)
+    where = (
+        f"point {worst + 1} (volts {volts[worst]:g}, height {heights[worst]:g} m) fits worst; "
+        "exclude or recapture it (a height typed in mm instead of m is the usual cause)"
+    )
+    if f.slope.value <= 0:
+        return f"Calibration slope is not positive ({f.slope.value:g} m/V); {where}"
+    if f.r2 < CAL_MIN_R2:
+        return f"Calibration fit is poor (r2 {f.r2:.4f}, need at least {CAL_MIN_R2}); {where}"
+    if f.se_regression > 0 and abs(f.residuals[worst]) > CAL_OUTLIER_K * f.se_regression:
+        return f"Calibration has an outlier; {where}"
     return None
 
 
@@ -391,7 +423,7 @@ class LoadingContext(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     diameter_m: float = NOMINAL_DIAMETER_M
-    u_diameter_m: float = 0.0
+    u_diameter_m: float = ASSUMED_DIAMETER_REL_UNC * NOMINAL_DIAMETER_M
     hanger_kg: float = 0.0
     l0_m: float = SHORT_L0_M
     slope_m_per_v: float | None = None
@@ -405,6 +437,7 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
     three or more calibration points a fitted slope, and the last load point's phase the gauge
     length (elastic = long). Anything missing keeps the nominal default or omits strain.
     """
+    # frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
     ctx: dict[str, Any] = {}
     cal_v: list[float] = []
     cal_h: list[float] = []
@@ -428,6 +461,15 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
             _log.info("lctt context: calibration fit unavailable: %s", fit.danger_err.name)
     _log.debug("lctt context from %d inputs: keys=%s", len(inputs), sorted(ctx))
     return LoadingContext(**ctx)
+
+
+def diameter_assumed_note() -> str:
+    """Result note stating the nominal diameter was used because none was entered."""
+    return (
+        f"diameter assumed {NOMINAL_DIAMETER_M * 1e3:g} mm "
+        f"(+/- {ASSUMED_DIAMETER_REL_UNC * 100:g} %) because no specimen diameter was entered; "
+        "enter the measured diameter on the Tare step"
+    )
 
 
 def _meas(value: float, unc: float, unit: str) -> Measured | None:
@@ -588,6 +630,18 @@ class LcttLab:
         `yield_stress`; a combine failure is logged and the single-point values still return.
         """
         # frob:ticket 01M6WSH43VHA5WGRPQ20X1NQA9
+        res = self._analyze(points, inputs)
+        if res.is_err or any(isinstance(i, SpecimenInputs) for i in inputs):
+            return res
+        note = diameter_assumed_note()
+        _log.warning("lctt analyze: %s", note)
+        ok = res.danger_ok
+        return Ok(ok.model_copy(update={"notes": (note, *ok.notes)}))
+
+    def _analyze(
+        self, points: tuple[CapturedPoint, ...], inputs: Sequence[PointInputs]
+    ) -> Result[AnalysisResult, ComputeError]:
+        """Analysis body of `analyze`, before the assumed-diameter note is added."""
         base = LcttLab(context_from_inputs(inputs)).recompute(points)
         if isinstance(base, Err):
             return base

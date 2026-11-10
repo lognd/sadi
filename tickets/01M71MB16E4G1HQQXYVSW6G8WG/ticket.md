@@ -2,7 +2,8 @@
 id = "01M71MB16E4G1HQQXYVSW6G8WG"
 title = "Fix test_readme_links_jobs_tasks: docs/README.md must link (jobs/tasks.md)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 1
 reporter = "lognd"

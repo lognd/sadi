@@ -822,11 +822,17 @@ class SessionService:
         state = replayed.danger_ok
         if not cur.cadence.due(state.covers_seq, forced):
             return
+        # frob:ticket 01M72Y6ZT01R2CXQT2XM4CMVZT
+        running = cur.replayer.prefix_hash_at(state.covers_seq)
+        if running is None:
+            # never fall back to a whole-WAL prefix_hash walk while holding the service lock
+            _log.info("snapshot at seq %d deferred: no running prefix hash", state.covers_seq)
+            return
         wrote = write_snapshot(
             cur.handle,
             state,
             state.covers_seq,
-            prefix_hash_hex=cur.replayer.prefix_hash_at(state.covers_seq),
+            prefix_hash_hex=running,
             lab_module=str(cur.lab.id),
         )
         if wrote.is_err:

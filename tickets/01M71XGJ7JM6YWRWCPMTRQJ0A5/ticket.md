@@ -2,7 +2,8 @@
 id = "01M71XGJ7JM6YWRWCPMTRQJ0A5"
 title = "Audit1 #10 #11 #33 #16 #37 #38 #39: data-root in Doctor/UI, Doctor must not probe the port, shell UI (backend-down, polling, focus order, doctor verdict)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

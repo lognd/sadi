@@ -7,13 +7,13 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:17:59Z"
-updated = "2026-11-10T15:18:04Z"
+updated = "2026-11-10T15:19:56Z"
 labels = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
 scope = ["examples/**", "python/tests/plugins/test_example_plugin.py", "docs/plugins.md"]
 
 [[acceptance]]
 text = "examples/plugins/example-lab/ has sadi_plugin.toml and a package contributing one small lab using only the public core API"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "A test loads it via LocalDirSource/SADI_PLUGIN_PATH and asserts it is discovered, enabled and its lab steps run"

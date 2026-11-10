@@ -48,6 +48,7 @@ from sadi.server.routes.results import (
     make_results_router,
 )
 from sadi.server.routes.sessions import make_sessions_router
+from sadi.server.routes.weight_plan import make_weight_plan_router
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_health import make_health_router
 from sadi.server.routes_plugins import make_plugins_router
@@ -250,6 +251,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
     app.include_router(make_design_router(app.state.sessions))
+    app.include_router(make_weight_plan_router(app.state.sessions))
     # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
     app.include_router(
         make_acquisition_router(

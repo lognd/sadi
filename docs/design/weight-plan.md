@@ -40,3 +40,18 @@ heavier loads are planned.
 
 Note: a 32 AWG copper wire breaks near 4.2 N (about 0.43 kg), so heavy inventory weights are dropped
 by the capacity rule.
+
+## Route and UI
+
+`POST /api/weight-plan` (python/sadi/server/routes/weight_plan.py) takes weights (mass, optional
+uncertainty), wire diameter and L0 with uncertainties, and an optional LVDT calibration slope
+(V per m). It is stateless and needs no lab or open session. When the slope is omitted it is fitted
+from the current session's LVDT calibration points; with neither, the route answers 422 with a hint.
+`GET /api/weight-plan/defaults` reports that default and where it comes from. The reply carries the
+ordered hangs and the uncertainty from `sadi.labs.lctt.propagate` (stress per hang, E, yield) for
+the elastic plan. Planner refusals (`PlanError`) are 422 problems.
+
+The "Weight plan" button in the app header opens `WeightPlanPanel` (web/src/screens/setup), which
+accepts weights one per line (g or kg), keeps the form in the browser's localStorage, and shows each
+hang with total mass, tension, predicted volts and the planner's reason. It is not yet wired into the
+Run screen's replanning and does not write inventory events.

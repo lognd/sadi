@@ -2,7 +2,8 @@
 id = "01M72XNR6Q58FDDMHYEVBPNC2P"
 title = "Restyle the web UI as a terminal: monospace font, dark-on-phosphor look, square plots kept"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

@@ -2,10 +2,16 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { SessionSetup, slugFrom, specimenFrom } from "./SessionSetup";
+import { SessionSetup, isRecoverable, slugFrom, specimenFrom } from "./SessionSetup";
 import { closedExportUrl, csvFormatFor, downloadClosedExport, downloadFailureText, failureText } from "./sessionApi";
 
 describe("SessionSetup", () => {
+  it("offers recovered-data download only for open or incomplete sessions", () => {
+    expect(isRecoverable("open")).toBe(true);
+    expect(isRecoverable("incomplete")).toBe(true);
+    expect(isRecoverable("closed")).toBe(false);
+  });
+
   it("renders the resume list and the new-session form", () => {
     const html = renderToString(<SessionSetup onOpened={() => undefined} />);
     expect(html).toContain("Session setup");

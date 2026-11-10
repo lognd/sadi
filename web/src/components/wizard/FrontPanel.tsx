@@ -1,5 +1,6 @@
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
 // frob:accept COV001 because="covered by wizard.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 
 /** Slots of the LabVIEW-style front panel; every wizard step fills the same slots. */
@@ -22,8 +23,10 @@ export interface FrontPanelProps {
   readonly next: React.ReactNode;
   /** Header controls such as Close session, or null. */
   readonly actions?: React.ReactNode;
-  /** Main column: the step content. */
+  /** Main column: the step content (capture card), shown between the guide and the next-action panel. */
   readonly children?: React.ReactNode;
+  /** Main column, below the next-action panel: bulky extras such as the live plot. */
+  readonly after?: React.ReactNode;
 }
 
 /** Persistent three-column layout: step rail left, step content centre, live instrument right. */
@@ -38,8 +41,9 @@ export function FrontPanel(p: FrontPanelProps): React.JSX.Element {
       {/* DOM order is focus order: step content first, rail after; CSS grid-area keeps the layout (audit #39). */}
       <main className="fp-main">
         {p.guide}
-        {p.next}
         {p.children}
+        {p.next}
+        {p.after}
       </main>
       <div className="fp-side">
         {p.rail}

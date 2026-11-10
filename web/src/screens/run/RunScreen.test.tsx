@@ -11,8 +11,11 @@ import { parseMessage, type ServerMessage } from "../../ws/messages";
 import { encodeTrace } from "../../ws/testframes";
 import { buildBody, decide, postCapture } from "./capture";
 import { postLoadChange } from "./loadChange";
+import { PHASES } from "./phases";
+import { countPhasePoints, finishBlockedWhy } from "./pointCount";
+import type { PointView } from "../review/types";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
-import { RunView, settleText, type RunViewProps } from "./RunView";
+import { RunPlot, RunView, settleText, type RunViewProps } from "./RunView";
 import { guidanceText } from "./RunScreen";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
@@ -44,7 +47,7 @@ const flat = (n: number, v: number): number[] => Array.from({ length: n }, () =>
 const view = (o: Partial<LiveView> = {}): LiveView =>
   ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
 const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
-  phase: "calibrate", view: view(), plot: null, blockedWhy: null,
+  phase: "calibrate", view: view(), blockedWhy: null,
   confirming: false, message: null, fields: {}, onField: () => undefined, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
 });
 
@@ -153,8 +156,9 @@ describe("RunView", () => {
   });
   it("per-phase plot: stress-strain for elastic, none for tare", () => {
     const data = { points: [], fit: null, yield: null };
-    expect(html(<RunView {...props({ phase: "elastic", plot: { kind: "stress-strain", data } })} />)).toContain("Stress-strain");
-    expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Record tare");
+    expect(html(<RunPlot plot={{ kind: "stress-strain", data }} />)).toContain("Stress-strain");
+    expect(html(<RunPlot plot={null} />)).toBe("");
+    expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Accept point (Space)");
   });
 });
 
@@ -178,8 +182,10 @@ describe("run F3 export", () => {
 
 describe("mark load change", () => {
   it("RunView renders the Mark load change button", () => {
-    expect(html(<RunView {...props()} />)).toContain("Mark load change");
+    expect(html(<RunView {...props()} />)).toContain("I moved to a new gauge block");
     expect(html(<RunView {...props()} />)).toContain("Settled cannot show until you do");
+    expect(html(<RunView {...props({ phase: "elastic" })} />)).toContain("I added a weight");
+    expect(html(<RunView {...props()} />)).not.toContain("Mark load change");
   });
   it("postLoadChange posts to the route and returns the marker seq", async () => {
     const calls: string[] = [];
@@ -232,5 +238,29 @@ describe("audit1 run-screen fixes", () => {
   it("RunView warns on an implausible diameter and offers metres", () => {
     const out = html(<RunView {...props({ phase: "tare", fields: { diameter: "0.2" } })} />);
     expect(out).toContain('data-testid="plausible-diameter"');
+  });
+});
+
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
+describe("capture card vocabulary and Finish gate", () => {
+  it("every phase names its action Accept point and its mark button for the phase", () => {
+    for (const ph of ["calibrate", "tare", "elastic", "plastic"] as const) {
+      const out = html(<RunView {...props({ phase: ph })} />);
+      expect(out).toContain("Accept point (Space)");
+      expect(out).toContain(PHASES[ph].markLabel);
+      expect(PHASES[ph].instruction).toContain(PHASES[ph].markLabel.length > 0 ? "Accept point" : "");
+    }
+  });
+  it("shows the accepted point count against the minimum", () => {
+    expect(html(<RunView {...props({ pointCount: 1 })} />)).toContain("Accepted points: 1 (at least 3 needed");
+  });
+  it("counts only non-excluded points of the phase", () => {
+    const pt = (phase: string, excluded: boolean): PointView => ({ point_id: "x", seq: 1, phase, excluded, inputs: {}, window: {} as PointView["window"], history: [] });
+    expect(countPhasePoints([pt("calibration", false), pt("calibration", true), pt("tare", false)], "calibrate")).toBe(1);
+  });
+  it("Finish is blocked below the minimum and open at or above it or while unknown", () => {
+    expect(finishBlockedWhy("calibrate", 1)).toContain("at least 3 points");
+    expect(finishBlockedWhy("calibrate", 3)).toBeNull();
+    expect(finishBlockedWhy("calibrate", null)).toBeNull();
   });
 });

@@ -2,7 +2,8 @@
 id = "01M72VM5X86QRPEWSW65Q9RBD8"
 title = "Live trace sized from container (square, readable text); setup helper text; gauge height units"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

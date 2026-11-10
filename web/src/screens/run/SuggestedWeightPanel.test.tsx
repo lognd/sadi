@@ -28,7 +28,18 @@ describe("suggested weight", () => {
     expect(rts(<SuggestedWeightView advice={null} failed />)).toContain("unavailable");
   });
   it("formats heights without newtons", () => {
-    expect(loadText(0.01, "m")).toBe("0.0100 m");
+    expect(loadText(0.01, "m")).toBe("10.0 mm");
+  });
+  it("uses gauge height wording on the LVDT calibration step", () => {
+    const cal: DesignAdvice = { ...advice, suggestion: { ...advice.suggestion!, x: 0.01, unit: "m", alternatives: [] } };
+    const h = rts(<SuggestedWeightView advice={cal} phase="lvdt_cal" />).replaceAll("<!-- -->", "");
+    expect(h).toContain("Suggested next gauge height");
+    expect(h).toContain("10.0 mm");
+    expect(h).not.toContain("which weight");
+  });
+  it("explains a missing yield suggestion", () => {
+    expect(indicatorText(ind({ reasons: ["no_elastic_fit"] }))).toContain("elastic points");
+    expect(indicatorText(ind({ reasons: ["no_calibration"] }))).toContain("calibration");
   });
   it("fetches the read-only route", async () => {
     let url = "";

@@ -2,7 +2,8 @@
 id = "01M71WYRCBRPNWFTS4PNNYWM9Z"
 title = "Audit1 #14 #17 #24 #25 #26 #29 #31: run-screen UI fixes (double submit, stale readout, tare fields, trace scale, saved state)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

@@ -103,7 +103,8 @@ def session_events(
 ) -> Result[list[LiveEvent], str]:
     """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags.
 
-    Excluded load points are kept and flagged (ExcludePoint); excluded cal/tare/specimen are omitted.
+    Excluded load points are kept and flagged (ExcludePoint); excluded cal/tare/specimen are
+    omitted.
 
     With `replayer` (tracking `sdir`) the fold is incremental yet equal to a full replay.
     """

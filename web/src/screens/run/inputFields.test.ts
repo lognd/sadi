@@ -5,6 +5,12 @@ import { describe, expect, it } from "vitest";
 import { capturedMessage } from "./capture";
 import { PHASE_FIELDS, collectInputs, plausibilityNote, splitSpecimen } from "./inputFields";
 
+/** Unwrap a fixture lookup; a miss is a test bug. */
+function required<T>(v: T | undefined): T {
+  if (v === undefined) throw new Error("fixture field missing");
+  return v;
+}
+
 describe("collectInputs", () => {
   it("calibration: live volts when blank, typed height in SI", () => {
     const r = collectInputs("calibrate", { height: "0.0125" }, 1.5);
@@ -51,18 +57,18 @@ describe("splitSpecimen", () => {
 
 // regression test for audit1#6 UI half: unit shown and implausible diameter warned with an mm suggestion
 describe("plausibilityNote", () => {
-  const dia = PHASE_FIELDS.tare.find((f) => f.key === "diameter");
+  const dia = required(PHASE_FIELDS.tare.find((f) => f.key === "diameter"));
   it("is silent for a plausible wire diameter and blanks", () => {
-    expect(plausibilityNote(dia!, "0.0006")).toBeNull();
-    expect(plausibilityNote(dia!, "")).toBeNull();
+    expect(plausibilityNote(dia, "0.0006")).toBeNull();
+    expect(plausibilityNote(dia, "")).toBeNull();
   });
   it("offers millimetres converted to metres", () => {
-    const n = plausibilityNote(dia!, "0.6");
+    const n = plausibilityNote(dia, "0.6");
     expect(n?.suggest).toBe("0.0006");
     expect(n?.message).toContain("millimetres");
   });
   it("warns without a suggestion when no conversion fits", () => {
-    const n = plausibilityNote(dia!, "1e-9");
+    const n = plausibilityNote(dia, "1e-9");
     expect(n).not.toBeNull();
     expect(n?.suggest).toBeNull();
   });
@@ -85,7 +91,7 @@ describe("user-facing wording (audit1 #15 #32)", () => {
 
 // frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
 describe("unit-slip ranges and required diameter (audit2 H3/H4)", () => {
-  const field = (ph: "calibrate" | "elastic", k: string) => PHASE_FIELDS[ph].find((f) => f.key === k)!;
+  const field = (ph: "calibrate" | "elastic", k: string) => required(PHASE_FIELDS[ph].find((f) => f.key === k));
   it("1 typed for a 1 mm block suggests millimetres", () => {
     const n = plausibilityNote(field("calibrate", "height"), "1");
     expect(n?.suggest).toBe("0.001");

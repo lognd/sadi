@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
 
 const reply = (headers: Record<string, string>, status = 200): typeof fetch =>
-  (() => Promise.resolve(new Response("a,b\n1,2\n", { status, headers }))) as typeof fetch;
+  () => Promise.resolve(new Response("a,b\n1,2\n", { status, headers }));
 
 describe("fetchRunExport filename", () => {
   it("uses the Content-Disposition name from the server", async () => {
@@ -36,7 +36,7 @@ describe("fetchRunExport failures", () => {
   });
 
   it("returns a network error instead of throwing", async () => {
-    const r = await fetchRunExport("lctt-csv", (() => Promise.reject(new Error("down"))) as typeof fetch);
+    const r = await fetchRunExport("lctt-csv", () => Promise.reject(new Error("down")));
     expect(!r.ok && exportErrorText(r.error)).toContain("down");
   });
 });

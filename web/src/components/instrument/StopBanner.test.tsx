@@ -68,7 +68,7 @@ describe("Resume live readings", () => {
   });
   it("postResume POSTs the resume path and maps 409 to an http error", async () => {
     const f = vi.fn().mockResolvedValue(new Response(JSON.stringify({ hint: "h" }), { status: 409 }));
-    const r = await postResume(f as unknown as typeof fetch);
+    const r = await postResume(f);
     expect(f).toHaveBeenCalledWith("/api/acquisition/resume", expect.objectContaining({ method: "POST" }));
     expect(r).toMatchObject({ ok: false, error: { kind: "http", status: 409 } });
     const g = vi.fn().mockResolvedValue(new Response(JSON.stringify({ streaming: true }), { status: 200 }));

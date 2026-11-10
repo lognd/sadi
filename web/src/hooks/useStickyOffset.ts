@@ -21,7 +21,7 @@ export function trackStickyHeight(el: HTMLElement, root: StyleRoot = document.do
   const apply = (h: number): void => {
     if (!isSticky(el)) { root.style.removeProperty(STICKY_VAR); log.debug("sticky offset cleared; element is static"); return; }
     if (!(h > 0)) return; // unmeasured (jsdom, display:none): keep the CSS fallback
-    root.style.setProperty(STICKY_VAR, `${Math.ceil(h)}px`);
+    root.style.setProperty(STICKY_VAR, `${String(Math.ceil(h))}px`);
     log.debug("sticky offset", { px: Math.ceil(h) });
   };
   apply(el.getBoundingClientRect().height);
@@ -45,7 +45,7 @@ export function watchStickyTop(find: () => HTMLElement | null, root?: StyleRoot,
     const el = find();
     if (el) { stop = trackStickyHeight(el, root, isSticky); return; }
     if (left <= 0) { log.warn("sticky element never mounted; keeping CSS fallback"); return; }
-    requestAnimationFrame(() => tick(left - 1));
+    requestAnimationFrame(() => { tick(left - 1); });
   };
   tick(maxFrames);
   return () => { cancelled = true; stop?.(); };

@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:40:35Z"
-updated = "2026-11-10T15:49:05Z"
+updated = "2026-11-10T15:49:08Z"
 labels = ["creates:python/tests/server/test_weight_plan_persist.py", "creates:web/src/screens/run/NextHangPanel.tsx", "creates:web/src/screens/run/NextHangPanel.test.tsx"]
 scope = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**", "python/tests/server/test_weight_plan_persist.py", "docs/design/weight-plan.md"]
 
@@ -21,5 +21,5 @@ bound = true
 
 [[acceptance]]
 text = "Run screen shows next planned hang and replans from captured points."
-bound = false
+bound = true
 +++

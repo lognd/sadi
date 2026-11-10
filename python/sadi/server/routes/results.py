@@ -192,16 +192,19 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     analysis = analyze(lab, active)
     values = []
     notes: list[str] = []
+    pending: tuple[str, ...] = ()
     if analysis.is_err and analysis.danger_err.code == ComputeCode.TOO_FEW_POINTS:
         # Not enough captured input yet: an empty live panel with the reason, not a failure.
         _log.info("recompute waiting for inputs for lab %s: %s", lab.id, analysis.danger_err)
-        notes.append(str(analysis.danger_err))
+        notes.append(analysis.danger_err.detail)  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
         quantities: dict[str, Quantity] = {}
     elif analysis.is_err:
         _log.warning("recompute failed for lab %s: %s", lab.id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))
     else:
         quantities = analysis.danger_ok.values
+        pending = analysis.danger_ok.pending  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+        notes.extend(analysis.danger_ok.notes)
     for name, q in quantities.items():
         made = make_result(name, q.value, q.standard_uncertainty, q.unit)
         if made.is_err:
@@ -216,6 +219,7 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
         ResultsView(
             n_points=len(loads),
             values=tuple(values),
+            pending=pending,
             notes=tuple(notes),
             provenance=prov,
             data_provenance=svc.provenance(),

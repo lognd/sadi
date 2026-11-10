@@ -117,7 +117,12 @@ class EvenScheduleSuggester:
         k = min(results.n_points, cap - 1)
         span = load_range.max_kg - load_range.min_kg
         kg = min(load_range.max_kg, load_range.min_kg + span * (k + 1) / cap)
-        return Ok(LoadSuggestion(load_kg=kg, text=f"Hang a total of {kg:.3f} kg"))
+        return Ok(
+            LoadSuggestion(
+                load_kg=kg,
+                text=f"Add {kg:.3f} kg of masses to the hanger (hanger is added for you)",
+            )
+        )
 
 
 class GuidanceConfig(BaseModel):

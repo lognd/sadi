@@ -77,6 +77,10 @@ class AnalysisResult(_Frozen):
     """Named quantities a lab's analysis produced (SI, with uncertainty)."""
 
     values: dict[str, Quantity]
+    #: Names the lab could not compute yet (shown to the student, never dropped).
+    pending: tuple[str, ...] = ()  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    #: Human-readable reasons / caveats that go with the values.
+    notes: tuple[str, ...] = ()  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
 
 
 #: Renders one export payload from a run and its analysis.

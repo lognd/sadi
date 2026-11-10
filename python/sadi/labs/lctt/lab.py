@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
@@ -443,6 +444,60 @@ def _quantity(m: Measured, unit: str) -> Quantity:
     return Quantity(value=m.value, standard_uncertainty=m.std_unc, unit=unit)
 
 
+#: Relative allowance for creep / incomplete settling in the fitted E (synthetic copper creeps
+#: about 1-4 % of the elastic strain over the loading range, biasing E low; this keeps the
+#: stated interval honest until the creep term is modelled explicitly).
+CREEP_REL_ALLOWANCE = 0.03
+
+
+def _calibration_quantities(
+    inputs: Sequence[PointInputs], ctx: LoadingContext
+) -> dict[str, Quantity]:
+    """Calibration slope (m/V), intercept (m) and tare (V) as named results, when available."""
+    # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    out: dict[str, Quantity] = {}
+    cal = [i for i in inputs if isinstance(i, CalibrationInputs)]
+    if len(cal) >= MIN_POINTS:
+        fit = fit_calibration([c.volts for c in cal], [c.height for c in cal])
+        if isinstance(fit, Ok):
+            f = fit.danger_ok
+            out["slope"] = _quantity(f.slope, "m/V")
+            out["intercept"] = _quantity(f.intercept, "m")
+    if ctx.tare_v is not None:
+        tare = [i for i in inputs if isinstance(i, TareInputs)][-1]
+        out["tare"] = Quantity(value=tare.mean, standard_uncertainty=tare.sd, unit="V")
+    _log.debug("lctt calibration quantities: %s", sorted(out))
+    return out
+
+
+def _with_calibration(res: AnalysisResult, inputs: Sequence[PointInputs]) -> AnalysisResult:
+    """Return `res` plus the calibration/tare quantities derived from `inputs`."""
+    ctx = context_from_inputs(inputs)
+    return res.model_copy(update={"values": {**res.values, **_calibration_quantities(inputs, ctx)}})
+
+
+def _inflate_modulus_unc(
+    value: float, unc: float, inputs: Sequence[PointInputs], ctx: LoadingContext
+) -> float:
+    """Add systematic terms (calibration slope, diameter, creep) to E's regression SE in quadrature.
+
+    The OLS standard error alone ignores everything that scales the whole curve, which made
+    the reported interval miss the truth most of the time.
+    """
+    # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    rel2 = CREEP_REL_ALLOWANCE**2
+    if ctx.diameter_m > 0:
+        rel2 += (2.0 * ctx.u_diameter_m / ctx.diameter_m) ** 2
+    cal = [i for i in inputs if isinstance(i, CalibrationInputs)]
+    if len(cal) >= MIN_POINTS:
+        fit = fit_calibration([c.volts for c in cal], [c.height for c in cal])
+        if isinstance(fit, Ok) and fit.danger_ok.slope.value != 0:
+            rel2 += (fit.danger_ok.slope.std_unc / abs(fit.danger_ok.slope.value)) ** 2
+    total = math.sqrt(unc**2 + (value * value) * rel2)
+    _log.info("lctt E uncertainty: regression %g -> %g with systematics", unc, total)
+    return total
+
+
 class LcttLab:
     """The LCTT lab: calibration, then an elastic (long) and a plastic (short) specimen run."""
 
@@ -523,7 +578,7 @@ class LcttLab:
         loads = [i for i in inputs if isinstance(i, LoadInputs)]
         by_role = {role: tuple(i for i in loads if i.phase == role.value) for role in SpecimenRole}
         if not all(by_role.values()):
-            return base
+            return Ok(_with_calibration(base.danger_ok, inputs))
         shared = tuple(i for i in inputs if not isinstance(i, LoadInputs))
         combined = combine_runs(
             SpecimenRun(
@@ -536,13 +591,22 @@ class LcttLab:
         )
         if isinstance(combined, Err):
             _log.warning("lctt analyze: combine_runs failed: %s", combined.danger_err)
-            return base
+            return Ok(_with_calibration(base.danger_ok, inputs))
+        ctx = LcttLab(context_from_inputs(inputs)).context
         values = dict(base.danger_ok.values)
+        values.update(_calibration_quantities(inputs, ctx))
         for sv in combined.danger_ok.values:
             r = sv.result
-            values[r.name] = Quantity(value=r.value, standard_uncertainty=r.std_unc, unit=r.unit)
+            unc = r.std_unc
+            if r.name == "E":
+                unc = _inflate_modulus_unc(r.value, unc, inputs, ctx)
+            values[r.name] = Quantity(value=r.value, standard_uncertainty=unc, unit=r.unit)
         _log.info("lctt analyze: %d values incl. two-specimen results", len(values))
-        return Ok(AnalysisResult(values=values))
+        return Ok(
+            AnalysisResult(
+                values=values, pending=combined.danger_ok.pending, notes=combined.danger_ok.notes
+            )
+        )
 
     def budgets(self) -> list[LabBudget]:
         """Return nominal stress and modulus budgets from the public uncertainty engine."""

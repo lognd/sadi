@@ -7,9 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:25:31Z"
+updated = "2026-11-10T13:26:32Z"
 labels = ["creates:none"]
-scope = ["web/src/styles.css", "web/src/plots/theme.ts", "web/src/screens/run/inputFields.ts"]
+scope = ["web/src/styles.css", "web/src/plots/theme.ts", "web/src/screens/run/inputFields.ts", "web/src/plots/core/export.ts", "web/src/plots/core/index.ts", "web/src/plots/core/plots.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/inputFields.test.ts", "web/src/screens/run/RunScreen.test.tsx", "docs/web/design-system.md"]
 
 [[acceptance]]
 text = "Labels over 3 words or instruction-bearing use sentence case at --text-sm; hanger clause moved to helper text; exportScene uses white background and sans font stack; snapshots updated"

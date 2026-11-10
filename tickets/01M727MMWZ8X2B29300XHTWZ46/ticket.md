@@ -2,7 +2,8 @@
 id = "01M727MMWZ8X2B29300XHTWZ46"
 title = "Web: Resume live readings button calling POST /api/acquisition/resume"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

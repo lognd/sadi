@@ -98,6 +98,8 @@ def session_events(
 ) -> Result[list[LiveEvent], str]:
     """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags.
 
+    Excluded load points are kept and flagged (ExcludePoint); excluded cal/tare/specimen are omitted.
+
     With `replayer` (tracking `sdir`) the fold is incremental yet equal to a full replay.
     """
     state: Result[ReplayState, object] = (
@@ -111,6 +113,12 @@ def session_events(
             continue
         if isinstance(ev, LoadPoint) and ev.forced_early:
             _log.warning("curve source: point %s was forced early", cp.point.point_id)
+        if cp.excluded and not isinstance(ev, LoadPoint):
+            # frob:ticket 01M7230XQFMBWVCNP4NASD05SE
+            # Cal/tare/specimen carry no id in the fold: leave them out of the events (the WAL
+            # keeps them) so export and plots agree with the results.
+            _log.info("curve source: excluded %s point %s left out", ev.kind, cp.point.point_id)
+            continue
         events.append(ev)
         if cp.excluded and isinstance(ev, LoadPoint):
             events.append(ExcludePoint(point_id=ev.point_id))

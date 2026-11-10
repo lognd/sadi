@@ -207,13 +207,9 @@ def test_state_carries_drift_window_and_simulated() -> None:
     for ev in (upd(5, 1, 0.25), upd(6, 1, None), upd(7, 2, 0.5)):
         bus.publish(ev)
     hub.poll()
-    msgs = list(c.msgs)
-    assert [m["drift_vps"] for m in msgs] == [0.25, None, 0.5]
-    assert [m["window"] for m in msgs] == [
-        {"first_raw_seq": 5, "last_raw_seq": 5},
-        {"first_raw_seq": 5, "last_raw_seq": 6},
-        {"first_raw_seq": 7, "last_raw_seq": 7},
-    ]
+    msgs = list(c.msgs)  # state is coalesced (ticket 9SST7TB): only the latest of the burst
+    assert [m["drift_vps"] for m in msgs] == [0.5]
+    assert [m["window"] for m in msgs] == [{"first_raw_seq": 7, "last_raw_seq": 7}]
     assert all(m["simulated"] is True for m in msgs)
     assert hub.hello()["simulated"] is True
 

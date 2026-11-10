@@ -17,6 +17,7 @@ import numpy as np
 from typani import Err, ErrorSet, Result
 
 from sadi.api.acquisition import AcquisitionDriver, DriverFault
+from sadi.core.device import DEVICE_RATE_HZ
 from sadi.core.pipeline import AcquisitionPipeline, Bus, PipelineConfig, PipelineError
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import StreamConfig
@@ -31,8 +32,6 @@ if TYPE_CHECKING:
 
 _log = get_logger(__name__)
 
-#: Device sample rate of the SADI board and simulator, Hz.
-DEVICE_RATE_HZ: Final[float] = 50_000.0
 #: Analysis/display decimation: every Nth device sample is analysed (raw stays complete in WAL).
 DECIMATE: Final[int] = 25
 #: Bytes in one device packet (the pipeline's alignment check).

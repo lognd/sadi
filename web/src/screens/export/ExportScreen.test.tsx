@@ -4,7 +4,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
 import { FormatList, ProblemAlert, ReportView, quantityLabel, sampleSpan, exportFigureFormat, figureFileName } from "./ExportScreen";
-import { exportUrl, getExportFormats, toProblem } from "./api";
+import { downloadExport, exportUrl, getExportFormats, savedMessage, toProblem } from "./api";
 import type { ResultSet } from "./types";
 
 const rs: ResultSet = {
@@ -116,5 +116,36 @@ describe("export screen", () => {
     expect(sampleSpan({ name: "x", point_ids: [], first_sample: 0, last_sample: 0, algorithm: "a" })).toBe("-");
     expect(quantityLabel("secant_modulus")).toBe("Secant modulus at last point");
     expect(renderToString(<ReportView results={rs} />)).toContain("overflow-x:auto");
+  });
+});
+
+// frob:ticket 01M7230XGWSR1B8D93KW5M4P7D
+describe("download via fetch", () => {
+  it("non-2xx returns an error that becomes a problem with detail and hint", async () => {
+    const body = JSON.stringify({ title: "Not ready", detail: "NotReady: calibration needed", hint: "Finish calibration." });
+    const r = await downloadExport("lctt-csv", (() => Promise.resolve(new Response(body, { status: 422 }))));
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    const p = toProblem(r.error);
+    expect(p.detail).toContain("calibration needed");
+    expect(p.hint).toBe("Finish calibration.");
+    expect(renderToString(<ProblemAlert p={p} />)).toContain("Hint: Finish calibration.");
+  });
+
+  it("success carries the saved-copy header and a message", async () => {
+    const res = new Response("a,b\n", { status: 200, headers: { "X-SADI-Saved": "exports/lctt-csv/x.csv", "Content-Disposition": 'attachment; filename="x.csv"' } });
+    const r = await downloadExport("lctt-csv", (() => Promise.resolve(res)));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.value.saved).toBe("exports/lctt-csv/x.csv");
+    expect(r.value.filename).toContain("x.csv");
+    expect(savedMessage(r.value.saved)).toBe("Saved a copy in exports/lctt-csv/x.csv");
+    expect(savedMessage("failed")).toContain("could not keep");
+    expect(savedMessage("")).toBe("");
+  });
+
+  it("network failure becomes a network error", async () => {
+    const r = await downloadExport("lctt-csv", (() => Promise.reject(new Error("down"))));
+    expect(r.ok).toBe(false);
   });
 });

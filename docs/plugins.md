@@ -183,6 +183,10 @@ session still opens. Details: [Data safety 8.4.1](data-safety.md).
 4. Run `python -m sadi.cli.plugins list`; the plugin should show `enabled`. If it shows
    `failed`, run `info my-lab` or `sadi doctor` for numbered fix steps.
 
+A complete, tracked example lives in `examples/plugins/example-lab/` (see
+`examples/plugins/README.md`); `SADI_PLUGIN_PATH=examples/plugins` makes `sadi plugins list`
+show it. It is exercised by `python/tests/plugins/test_example_plugin.py`.
+
 ## 12. Known gaps
 
 - The lctt `LcttLab.recompute` is still a stub (~9T1EX41, blocked on a core contract decision).

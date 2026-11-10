@@ -1,0 +1,7 @@
+# EXAMPLE plugin manifest: shows how a lab is packaged. Copy and rename to start your own.
+id = "example-lab"
+version = "0.1.0"
+api_version = ">=1.0,<2"
+
+[contributions]
+labs = ["plugin:make_lab"]

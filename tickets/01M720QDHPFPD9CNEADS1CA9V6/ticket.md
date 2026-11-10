@@ -2,7 +2,8 @@
 id = "01M720QDHPFPD9CNEADS1CA9V6"
 title = "Audit1 #4 #2 #21: wire Save/WAL indicator to real writer; provenance for --sim; manifest/WAL-based synthetic provenance"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

@@ -51,6 +51,9 @@ class SessionSummary(BaseModel):
     state: str
     parent: str | None = None
     provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    latest: bool = True  # True for the newest version of its family
+    latest_name: str | None = None  # directory of the newest version when this one is not it
 
 
 class SessionInfo(BaseModel):
@@ -62,6 +65,8 @@ class SessionInfo(BaseModel):
     parent_last_seq: int | None = None
     durable_seq: int
     provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    newer_versions: list[str] = []  # newer versions of the resumed family that exist on disk
 
 
 class StepRef(_Body):

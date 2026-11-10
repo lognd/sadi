@@ -6,7 +6,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from pathlib import Path
+
+from fastapi import APIRouter, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result, propagate
@@ -17,8 +19,9 @@ from sadi.core.models import RunState
 from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.server.curve_source import SessionReplayCache
-from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
+from sadi.server.routes.problem import ApiProblem, ProblemError, from_sadi, not_found, unwrap
 from sadi.server.service import SessionService
+from sadi.store.exports import ExportError, write_export
 from sadi.server.session_points import active_points, analyze, to_captured
 from sadi.synthetic.provenance import EXPORT_PREFIX, PROVENANCE_HEADER, stamp_export
 
@@ -103,6 +106,49 @@ def render_export(
     return Ok((fmt, name, body.danger_ok))
 
 
+#: Response header naming the copy kept in the session folder ("failed" when it could not be kept).
+SAVED_HEADER = "X-SADI-Saved"
+#: Largest figure upload accepted (bytes); a 600 dpi plot is a few MB.
+MAX_FIGURE_BYTES = 64 * 1024 * 1024
+_PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
+
+def _save_copy(  # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    svc: SessionService, kind: str, basename: str, ext: str, body: bytes
+) -> str:
+    """Keep an atomic, never-overwritten copy in the session's exports/ folder; return its path or ''."""
+    path = svc.session_path()
+    info = svc.info()
+    if path.is_err or info.is_err:
+        _log.error("export copy skipped: no open session")
+        return ""
+    # `ExportError` details are logged by write_export; the download itself must not fail.
+    written = write_export(
+        _Dir(path.danger_ok),
+        kind,
+        basename,
+        ext,
+        body,
+        covers_seq=info.danger_ok.durable_seq or None,
+        lab_module=info.danger_ok.lab,
+    )
+    if written.is_err:
+        err: ExportError = written.danger_err
+        _log.error("export copy of %s/%s not kept: %s", kind, basename, err)
+        return ""
+    rel = written.danger_ok.path.relative_to(path.danger_ok).as_posix()
+    _log.info("export copy kept at %s", rel)
+    return rel
+
+
+class _Dir:
+    """Minimal `_HasPath` for write_export: just a session directory."""
+
+    def __init__(self, path: Path) -> None:
+        """Remember the session directory."""
+        self.path = path
+
+
 def make_export_router(
     svc: SessionService, labs: LabRegistry, cache: SessionReplayCache | None = None
 ) -> APIRouter:
@@ -122,17 +168,39 @@ def make_export_router(
         fmt, name, body = unwrap(render_export(svc, labs, format_id, replays))
         headers: dict[str, str] = {}
         prov = svc.provenance()
+        if prov.synthetic:
+            body = stamp_export(body, fmt.media_type, prov)
+            headers[PROVENANCE_HEADER] = "synthetic"
+        else:
+            headers[PROVENANCE_HEADER] = "real"
         if _is_download(fmt):
             ext = _EXT.get(fmt.media_type, "bin")
             fname = f"{name}-{fmt.id}.{ext}"
             if prov.synthetic:
                 fname = EXPORT_PREFIX + fname
             headers["Content-Disposition"] = f'attachment; filename="{fname}"'
-        if prov.synthetic:
-            body = stamp_export(body, fmt.media_type, prov)
-            headers[PROVENANCE_HEADER] = "synthetic"
-        else:
-            headers[PROVENANCE_HEADER] = "real"
+            saved = _save_copy(svc, fmt.id, f"{name}-{fmt.id}", ext, body)
+            headers[SAVED_HEADER] = saved or "failed"
         return Response(content=body, media_type=fmt.media_type, headers=headers)
+
+    @r.post("/export/figure/{figure_id}")
+    async def save_figure(figure_id: str, request: Request) -> dict[str, str]:
+        """Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites)."""
+        # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+        name, _ = unwrap(_open_lab(svc, labs))  # 409 when no session is open
+        data = await request.body()
+        if not data or len(data) > MAX_FIGURE_BYTES:
+            raise ProblemError(
+                ApiProblem(
+                    type="urn:sadi:error:input:bad_figure",
+                    title="bad figure",
+                    status=400,
+                    detail=f"figure {figure_id}: empty or larger than {MAX_FIGURE_BYTES} bytes",
+                    hint="Export the figure again at a lower DPI, or as SVG.",
+                )
+            )
+        ext = "png" if data.startswith(_PNG_MAGIC) else "svg"
+        saved = _save_copy(svc, "figure", f"{name}-{figure_id}", ext, data)
+        return {"saved": saved or "failed"}
 
     return r

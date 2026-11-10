@@ -27,6 +27,28 @@ export function getFigureData(formatId: string, fetchImpl: typeof fetch = fetch)
   return getJson<unknown>(exportUrl(formatId), fetchImpl);
 }
 
+/** Best-effort open session name for file names; "" when there is none or the call fails. */
+export async function getSessionName(fetchImpl: typeof fetch = fetch): Promise<string> {
+  const r = await getJson<{ name?: unknown }>("/api/session", fetchImpl);
+  if (!r.ok) {
+    log.warn("session name unavailable", { kind: r.error.kind });
+    return "";
+  }
+  return typeof r.value.name === "string" ? r.value.name : "";
+}
+
+/** Keep a rendered figure in the session folder (POST /api/export/figure/{id}); true when the server saved it. */
+export async function keepFigure(figureId: string, blob: Blob, fetchImpl: typeof fetch = fetch): Promise<boolean> {
+  try {
+    const res = await fetchImpl(`/api/export/figure/${encodeURIComponent(figureId)}`, { method: "POST", body: blob });
+    if (!res.ok) log.warn("figure copy not kept", { figureId, status: res.status });
+    return res.ok;
+  } catch (e) {
+    log.warn("figure copy upload failed", { figureId, error: String(e) });
+    return false;
+  }
+}
+
 /** Turn an ApiError into a Problem, reading problem+json fields when the body has them. */
 export function toProblem(e: ApiError): Problem {
   if (e.kind === "network") {

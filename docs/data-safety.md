@@ -765,6 +765,22 @@ Procedure (`write_export(session, kind, basename, ext, payload: bytes)`):
 4. fsync(dir).
 5. Enqueue `EXPORT_REF`.
 
+Server wiring (audit1 #22): every download from `GET /api/export/{id}`
+is also written through `write_export` into `exports/<id>/`, and the
+response carries `X-SADI-Saved` (the relative path, or `failed`; a failed
+copy never blocks the download). Rendered figures are uploaded by the UI to
+`POST /api/export/figure/{figure_id}` and kept under `exports/figure/` with
+the session name in the basename. Snapshots (`snapshot.write_snapshot`) are
+not yet called by the server; that is tracked separately.
+
+Session families (audit1 #12, #34, #41): the slug is ASCII-folded; two
+sessions created in the same second with the same slug become distinct
+families (`name`, `name-2`, ...) instead of silently becoming versions of
+one family. `GET /api/sessions` marks older versions `latest: false` with
+`latest_name`, and `POST /api/sessions/resume` returns `newer_versions`
+when a later version exists. A clean close records `last_seq` in the
+manifest so closed sessions are not reported stale.
+
 `ExportProvenanceV1`: `v`, `kind`, `path`, `sha256` (of the export bytes),
 `size`, `created`, `covers_seq`, `prefix_hash`, `snapshot_path` (or null),
 `code_version`, `lab_module`, `parameters` (dict: fit window, units, sig

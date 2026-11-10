@@ -75,3 +75,20 @@ def test_resume_folds_points_and_wizard(client: TestClient, tmp_path: Path) -> N
     assert _digest(parent_dir) == before
     child = recover_state(tmp_path / "sessions" / res.json()["name"]).danger_ok
     assert len(child.points) == 2 and len(child.edits) == 1
+
+
+# frob:tests python/sadi/server/service.py::SessionService.list_sessions
+# frob:tests python/sadi/server/service.py::SessionService.resume
+def test_versions_grouped_latest_marked_and_old_resume_warns(client: TestClient) -> None:
+    """Audit1 #12: the newest version is marked; resuming an older one reports newer work."""
+    v1 = client.post("/api/sessions", json={"lab": "lctt", "slug": "t"}).json()["name"]
+    client.post("/api/session/close")
+    v2 = client.post("/api/sessions/resume", json={"name": v1}).json()
+    assert v2["newer_versions"] == []
+    client.post("/api/session/close")
+    listed = {s["name"]: s for s in client.get("/api/sessions").json()}
+    assert listed[v2["name"]]["latest"] is True
+    assert listed[v1]["latest"] is False and listed[v1]["latest_name"] == v2["name"]
+    v3 = client.post("/api/sessions/resume", json={"name": v1}).json()
+    assert v3["newer_versions"] == [v2["name"]]
+    client.post("/api/session/close")

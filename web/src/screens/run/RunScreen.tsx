@@ -16,7 +16,7 @@ import type { KeyAction } from "../../keys/keymap";
 import type { WizardState } from "../../components/wizard/types";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, WHY_SAME_LOAD, type Confirm, type FrozenAttempt } from "./capture";
+import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, wroteNothing, WHY_SAME_LOAD, type Confirm, type FrozenAttempt } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
@@ -100,7 +100,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
       const sp = await postCapture(cur.specimen, p.fetchImpl);
       if (!sp.ok) {
         setConfirm("idle");
-        if (isRequestIdReused(sp.error)) attempt.current = null;
+        if (isRequestIdReused(sp.error) || wroteNothing(sp.error)) attempt.current = null; // frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
         setMessage(problemText(sp.error, "Specimen capture"));
         return;
       }
@@ -110,7 +110,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     setConfirm("idle");
     if (r.ok) { attempt.current = null; loadRecorded.current = true; setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
     else {
-      if (isRequestIdReused(r.error)) attempt.current = null; // id used for a different point: next try builds a fresh attempt
+      if (isRequestIdReused(r.error) || wroteNothing(r.error)) attempt.current = null; // reused id or nothing written: rebuild from live data. frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
       setMessage(problemText(r.error, "Capture"));
     }
   }, [p, side.rawSeq, view, fields]);

@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:10:34Z"
-updated = "2026-11-10T15:20:58Z"
+updated = "2026-11-10T15:22:55Z"
 labels = ["creates:python/tests/design/test_height_plan.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 
@@ -17,7 +17,7 @@ target = "01M7301MDWNXK9Z0D8TBDBNP4G"
 
 [[acceptance]]
 text = "Planner accepts an inventory of available gauge heights (m) each with its own uncertainty, GUI table and CLI --heights h:u,..."
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Returns the ordered subset of heights to use for calibration, accounting for LVDT saturation and the GP selector, same as weights"

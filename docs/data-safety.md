@@ -775,8 +775,16 @@ is also written through `write_export` into `exports/<id>/`, and the
 response carries `X-SADI-Saved` (the relative path, or `failed`; a failed
 copy never blocks the download). Rendered figures are uploaded by the UI to
 `POST /api/export/figure/{figure_id}` and kept under `exports/figure/` with
-the session name in the basename. Snapshots (`snapshot.write_snapshot`) are
-not yet called by the server; that is tracked separately.
+the session name in the basename. Snapshots: `SessionService` calls
+`snapshot.write_snapshot` after each durable command that appended a `POINT`
+or `EDIT`, after any other command at most every `SNAPSHOT_MIN_INTERVAL_S`
+(5 s), and once at session close (after the writer drained). The server does not
+enqueue the informational `SNAPSHOT_REF` (it would change the WAL record
+count of the recording). A snapshot of an
+already-snapshotted `covers_seq` is skipped; names are never replaced. A
+failed snapshot is logged and never fails or blocks the request (derived
+data, I7); after SIGKILL recovery uses the newest snapshot whose prefix hash
+matches and replays the WAL tail.
 
 Session families (audit1 #12, #34, #41): the slug is ASCII-folded; two
 sessions created in the same second with the same slug become distinct

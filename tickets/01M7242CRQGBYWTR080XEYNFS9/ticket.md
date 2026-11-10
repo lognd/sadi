@@ -2,12 +2,12 @@
 id = "01M7242CRQGBYWTR080XEYNFS9"
 title = "Audit2 H8a: start real mode without a board (status disconnected) instead of exit 6"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T06:59:29Z"
-updated = "2026-11-10T06:59:32Z"
+updated = "2026-11-10T06:59:33Z"
 labels = ["creates:python/tests/test_launcher_no_device.py"]
 scope = ["python/sadi/launcher.py", "python/tests/test_launcher_no_device.py"]
 

@@ -1,14 +1,21 @@
 """Weight-plan route: plan which inventory weights to hang, in order, with propagated uncertainty.
 
-Stateless and read-only: it needs no open session or lab, so the operator can plan weights and
-heights before anything is connected. The calibration slope defaults from the current session's
-LVDT calibration points when there are any; otherwise the caller supplies it.
+`POST /weight-plan` is stateless and read-only: it needs no open session or lab, so the operator
+can plan weights and heights before anything is connected. The calibration slope defaults from the
+current session's LVDT calibration points when there are any; otherwise the caller supplies it.
+
+Persistence is separate and explicit: `POST /weight-plan/inventory` appends the entered inventory as
+an append-only NOTE event in the session WAL (durable before the response, never overwritten; an
+edit is a later event and the latest wins), and `GET /weight-plan/next` replans from the latest
+saved inventory and the session's captured elastic points.
 """
 
 # frob:ticket 01M72X7ZB936PEBXHRGX06FSAD
+# frob:ticket 01M72YENT6PZMVDMYGZ2BWDNK9
 
 from __future__ import annotations
 
+import json
 import math
 from typing import Literal
 
@@ -17,19 +24,29 @@ from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, Result
 
-from sadi.design.models import DesignPhase, PlanConfig, PlanRequest, Weight, WeightPlan
+from sadi.design.models import (
+    CapturedPoint,
+    DesignPhase,
+    Hang,
+    PlanConfig,
+    PlanRequest,
+    Weight,
+    WeightPlan,
+)
 from sadi.design.plan import PlanError, plan
 from sadi.labs.lctt.loading import SHORT_L0_M
 from sadi.labs.lctt.propagate import Hang as PropHang
 from sadi.labs.lctt.propagate import PropagationInputs, propagate
 from sadi.logging_setup import get_logger
 from sadi.server.routes.design import design_obs
-from sadi.server.routes.problem import ApiProblem, ProblemError
+from sadi.server.routes.problem import ApiProblem, ProblemError, unwrap
 from sadi.server.service import SessionService
 from sadi.uncertainty import Measured
 
 _log = get_logger(__name__)
 
+#: Tag marking a NOTE payload as a saved weight-plan inventory event (separate from plugin events).
+NOTE_KIND = "weight_plan_inventory"
 #: Default standard uncertainty (V) of one predicted LVDT reading.
 DEFAULT_U_VOLTS = 0.001
 #: Default wire diameter (m) shown to the operator (32 AWG copper); they should measure and replace it.
@@ -102,6 +119,32 @@ class WeightPlanOut(BaseModel):
     cal_source: Literal["entered", "session"]
     propagated: PropagatedView | None = None
     propagation_note: str = ""
+
+
+class SavedInventory(BaseModel):
+    """The saved inventory: how many events exist and the latest entered inputs (None if none)."""
+
+    model_config = ConfigDict(frozen=True)
+    events: int
+    latest: WeightPlanBody | None = None
+
+
+class InventorySaved(BaseModel):
+    """Result of a save: its WAL seq (None when identical to the latest event, so nothing new)."""
+
+    model_config = ConfigDict(frozen=True)
+    seq: int | None
+    appended: bool
+    events: int
+
+
+class NextHang(BaseModel):
+    """The replanned remainder: the next hang to apply (None when nothing usable remains)."""
+
+    model_config = ConfigDict(frozen=True)
+    captured: int
+    next_hang: Hang | None
+    reply: WeightPlanOut
 
 
 def _problem(kind: str, title: str, detail: str, hint: str, status: int = 422) -> ProblemError:
@@ -207,6 +250,72 @@ def _build_weights(body: WeightPlanBody) -> list[Weight]:
     ]
 
 
+def _plan_reply(
+    svc: SessionService, body: WeightPlanBody, captured: tuple[CapturedPoint, ...]
+) -> WeightPlanOut:
+    """Plan `body` (skipping what `captured` covers); raises a 4xx problem when it cannot plan."""
+    slope, source = body.cal_slope_v_per_m, "entered"
+    if slope is None:
+        slope, source = session_slope(svc), "session"
+    if slope is None or not math.isfinite(slope) or slope == 0.0:
+        raise _problem(
+            "no_calibration",
+            "no calibration slope",
+            "No LVDT calibration slope was entered and none exists in the session.",
+            "Enter the LVDT slope (volts per metre), or complete the calibration step first.",
+        )
+    weights = _build_weights(body)
+    req = PlanRequest(
+        weights=tuple(weights),
+        diameter_m=body.diameter_m,
+        u_diameter_m=body.u_diameter_m,
+        length_m=body.length_m,
+        u_length_m=body.u_length_m,
+        cal_slope_v_per_m=slope,
+        cal_offset_v=body.cal_offset_v,
+        captured=captured,
+        config=PlanConfig(),
+    )
+    res: Result[WeightPlan, PlanError] = plan(req)
+    if isinstance(res, Err):
+        err = res.unwrap_err()
+        _log.info("weight-plan refused: %s", err)
+        raise _problem("refused", "no plan", str(err), str(err))
+    out = res.danger_ok
+    view, note = _propagate(body, weights, out, slope)
+    _log.info("weight-plan ok: %d hangs, %d captured (%s)", len(out.hangs), len(captured), source)
+    return WeightPlanOut(
+        plan=out,
+        cal_slope_v_per_m=slope,
+        cal_source="entered" if source == "entered" else "session",
+        propagated=view,
+        propagation_note=note,
+    )
+
+
+def _saved_events(svc: SessionService) -> list[WeightPlanBody]:
+    """Every saved inventory event of the open session, oldest first; 409 problem if none open."""
+    out: list[WeightPlanBody] = []
+    for text in unwrap(svc.notes()):  # typani: ignore[TYP001]
+        try:
+            obj = json.loads(text)
+        except ValueError:
+            continue
+        if not isinstance(obj, dict) or obj.get("kind") != NOTE_KIND:
+            continue
+        try:
+            out.append(WeightPlanBody.model_validate(obj["event"]))
+        except (ValueError, KeyError):
+            _log.warning("skipping unreadable weight-plan inventory event")
+    return out
+
+
+def _captured(svc: SessionService) -> tuple[CapturedPoint, ...]:
+    """Settled elastic points of the session as replanning input."""
+    obs = design_obs(unwrap(svc.points()), DesignPhase.ELASTIC)
+    return tuple(CapturedPoint(mass_kg=max(o.x, 0.0), volts=o.y, u_volts=o.u) for o in obs)
+
+
 def make_weight_plan_router(svc: SessionService) -> APIRouter:
     """Build the weight-plan router; reads the session only for the calibration default."""
     r = APIRouter(prefix="/api")
@@ -234,41 +343,43 @@ def make_weight_plan_router(svc: SessionService) -> APIRouter:
     @r.post("/weight-plan")
     def make_plan(body: WeightPlanBody) -> WeightPlanOut:
         """Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing."""
-        slope, source = body.cal_slope_v_per_m, "entered"
-        if slope is None:
-            slope, source = session_slope(svc), "session"
-        if slope is None or not math.isfinite(slope) or slope == 0.0:
+        return _plan_reply(svc, body, ())
+
+    @r.get("/weight-plan/inventory")
+    def saved_inventory() -> SavedInventory:
+        """The latest saved inventory inputs and how many events the session holds."""
+        evs = _saved_events(svc)
+        return SavedInventory(events=len(evs), latest=evs[-1] if evs else None)
+
+    @r.post("/weight-plan/inventory", status_code=201)
+    def save_inventory(body: WeightPlanBody) -> InventorySaved:
+        """Append the inventory as a durable NOTE event; identical re-saves write nothing."""
+        evs = _saved_events(svc)
+        if evs and evs[-1] == body:
+            _log.info("weight-plan inventory unchanged; not appended")
+            return InventorySaved(seq=None, appended=False, events=len(evs))
+        payload = json.dumps(
+            {"kind": NOTE_KIND, "event": body.model_dump(mode="json")}, separators=(",", ":")
+        )
+        seq = unwrap(svc.append_note(payload))
+        _log.info("weight-plan inventory saved at seq %d (%d weights)", seq, len(body.weights))
+        return InventorySaved(seq=seq, appended=True, events=len(evs) + 1)
+
+    @r.get("/weight-plan/next")
+    def next_hang() -> NextHang:
+        """Replan from the latest saved inventory and captured points; advisory, writes nothing."""
+        evs = _saved_events(svc)
+        if not evs:
             raise _problem(
-                "no_calibration",
-                "no calibration slope",
-                "No LVDT calibration slope was entered and none exists in the session.",
-                "Enter the LVDT slope (volts per metre), or complete the calibration step first.",
+                "no_inventory",
+                "no saved weights",
+                "No weight inventory has been saved in this session.",
+                "Enter and save your weights on the Setup screen's weight plan first.",
+                status=404,
             )
-        weights = _build_weights(body)
-        req = PlanRequest(
-            weights=tuple(weights),
-            diameter_m=body.diameter_m,
-            u_diameter_m=body.u_diameter_m,
-            length_m=body.length_m,
-            u_length_m=body.u_length_m,
-            cal_slope_v_per_m=slope,
-            cal_offset_v=body.cal_offset_v,
-            config=PlanConfig(),
-        )
-        res: Result[WeightPlan, PlanError] = plan(req)
-        if isinstance(res, Err):
-            err = res.unwrap_err()
-            _log.info("weight-plan refused: %s", err)
-            raise _problem("refused", "no plan", str(err), str(err))
-        out = res.danger_ok
-        view, note = _propagate(body, weights, out, slope)
-        _log.info("weight-plan ok: %d hangs (%s)", len(out.hangs), source)
-        return WeightPlanOut(
-            plan=out,
-            cal_slope_v_per_m=slope,
-            cal_source="entered" if source == "entered" else "session",
-            propagated=view,
-            propagation_note=note,
-        )
+        captured = _captured(svc)
+        reply = _plan_reply(svc, evs[-1], captured)
+        hang = reply.plan.hangs[0] if reply.plan.hangs else None
+        return NextHang(captured=len(captured), next_hang=hang, reply=reply)
 
     return r

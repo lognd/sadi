@@ -1,10 +1,11 @@
 // frob:ticket 01M72X7ZB936PEBXHRGX06FSAD
+// frob:ticket 01M72YENT6PZMVDMYGZ2BWDNK9
 // frob:accept COV001 because="covered by WeightPlanPanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { getJson } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
-import { postJson, problemText, type PostError } from "../review/api";
+import { postJson, problemText } from "../review/api";
 
 const log = getLogger("setup.weightPlan");
 const STORE_KEY = "sadi.weightPlan.form";
@@ -59,8 +60,15 @@ export interface PlanBody {
   readonly cal_slope_v_per_m?: number;
 }
 
-/** Standard gravity (m/s^2): the weights are entered in newtons and the API wants kilograms. */
-const STANDARD_G = 9.80665;
+/** Reply of POST /api/weight-plan/inventory. */
+export interface InventorySaved { readonly seq: number | null; readonly appended: boolean; readonly events: number }
+
+/** Sentence telling the operator what a save did (append-only: an identical save writes nothing). */
+export function savedText(r: InventorySaved): string {
+  return r.appended
+    ? `Weights saved to this session (version ${String(r.events)}). Earlier versions are kept.`
+    : "These weights are already saved in this session; nothing new was written.";
+}
 
 const num = (s: string): number => (s.trim() === "" ? Number.NaN : Number(s));
 
@@ -148,21 +156,32 @@ export function WeightPlanPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
   const [reply, setReply] = useState<PlanReply | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [body, setBody] = useState<PlanBody | null>(null);
+  const [saveMsg, setSaveMsg] = useState("");
   useEffect(() => {
     void getJson<CalDefaults>("/api/weight-plan/defaults", fetchImpl).then((r) => {
       if (r.ok) setDefaults(r.value); else log.warn("defaults failed", { kind: r.error.kind });
     });
   }, [fetchImpl]);
-  const set = (k: keyof PlanForm, v: string): void => { setForm((f) => ({ ...f, [k]: v }) as PlanForm); };
+  const set = (k: keyof PlanForm, v: string): void => { setForm((f) => ({ ...f, [k]: v })); };
   const submit = (): void => {
     const parsed = parsePlanForm(form);
     if (!parsed.ok) { setMessage(parsed.error); return; }
     try { localStorage.setItem(STORE_KEY, JSON.stringify(form)); } catch { log.debug("form not persisted"); }
+    setBody(parsed.value); setSaveMsg("");
     setBusy(true); setMessage("Planning...");
     void postJson<PlanReply>("/api/weight-plan", parsed.value, fetchImpl).then((r) => {
       setBusy(false);
       if (r.ok) { setReply(r.value); setMessage(""); }
-      else { setReply(null); setMessage(problemText(r.error as PostError, "plan the weights")); }
+      else { setReply(null); setMessage(problemText(r.error, "plan the weights")); }
+    });
+  };
+  const save = (): void => {
+    if (body === null) return;
+    setSaveMsg("Saving...");
+    void postJson<InventorySaved>("/api/weight-plan/inventory", body, fetchImpl).then((r) => {
+      if (r.ok) { log.info("inventory saved", { appended: r.value.appended }); setSaveMsg(savedText(r.value)); }
+      else { log.warn("inventory save failed"); setSaveMsg(problemText(r.error, "save the weights")); }
     });
   };
   return (
@@ -187,6 +206,12 @@ export function WeightPlanPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
       </form>
       <p role="status">{message}</p>
       {reply !== null ? <PlanResult reply={reply} /> : null}
+      {reply !== null ? (
+        <p>
+          <button type="button" onClick={save}>Save weights to this session</button>{" "}
+          <span role="status" data-testid="save-status">{saveMsg}</span>
+        </p>
+      ) : null}
     </section>
   );
 }

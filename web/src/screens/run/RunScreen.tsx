@@ -1,3 +1,4 @@
+// frob:ticket 01M72YENT6PZMVDMYGZ2BWDNK9
 // frob:ticket 01M72TEVXXFP3PZ84SABZEDX7H
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M6WWN96C55R68VNZF2D1NB2V
@@ -22,6 +23,7 @@ import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
 import { getPoints, isRequestIdReused, problemText } from "../review/api";
 import { guidanceText } from "./guidance";
+import { NextHangPanel } from "./NextHangPanel";
 import { SuggestedWeightPanel } from "./SuggestedWeightPanel";
 import { countPhasePoints, finishBlockedWhy } from "./pointCount";
 
@@ -162,6 +164,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
       {(p.phase === "elastic" || p.phase === "plastic" || p.phase === "calibrate") && (
         <SuggestedWeightPanel phase={p.phase === "plastic" ? "yield" : p.phase === "calibrate" ? "lvdt_cal" : "elastic"} tick={savedTick} fetchImpl={p.fetchImpl} />
       )}
+      {p.phase === "elastic" && <NextHangPanel tick={savedTick} fetchImpl={p.fetchImpl} />}
       <RunView
         phase={p.phase} view={view} pointCount={pointCount}
         fields={fields} onField={onField}

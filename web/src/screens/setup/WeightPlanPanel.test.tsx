@@ -2,7 +2,7 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { EMPTY_FORM, PlanResult, WeightPlanPanel, parsePlanForm, type PlanReply } from "./WeightPlanPanel";
+import { EMPTY_FORM, savedText, PlanResult, WeightPlanPanel, parsePlanForm, type PlanReply } from "./WeightPlanPanel";
 
 describe("parsePlanForm", () => {
   it("converts newtons to kg and mm to SI and leaves slope unset", () => {
@@ -22,6 +22,13 @@ describe("parsePlanForm", () => {
     expect(parsePlanForm({ ...EMPTY_FORM, weights: "" }).ok).toBe(false);
     expect(parsePlanForm({ ...EMPTY_FORM, weights: "abc" }).ok).toBe(false);
     expect(parsePlanForm({ ...EMPTY_FORM, weights: "5", slope: "0" }).ok).toBe(false);
+  });
+});
+
+describe("savedText", () => {
+  it("distinguishes a new version from an identical re-save", () => {
+    expect(savedText({ seq: 5, appended: true, events: 2 })).toContain("version 2");
+    expect(savedText({ seq: null, appended: false, events: 2 })).toContain("nothing new");
   });
 });
 

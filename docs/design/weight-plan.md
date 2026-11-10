@@ -52,15 +52,21 @@ ordered hangs and the uncertainty from `sadi.labs.lctt.propagate` (stress per ha
 the elastic plan. Planner refusals (`PlanError`) are 422 problems.
 
 The "Weight plan" button in the app header opens `WeightPlanPanel` (web/src/screens/setup), which
-accepts weights one per line (newtons, N), keeps the form in the browser's localStorage, and shows each
-hang with total mass, tension, predicted volts and the planner's reason. It is not yet wired into the
-Run screen's replanning and does not write inventory events.
+accepts weights one per line (g or kg), keeps the form in the browser's localStorage, and shows each
+hang with total mass, tension, predicted volts and the planner's reason. After a plan, "Save weights
+to this session" appends the entered inputs as an inventory event (see below).
 
-## Hang count and units
+## Persistence and replanning
 
-`PlanConfig.max_hangs` (any count >= 1) requests exactly that many hangs. The planner enumerates subset sums of the
-inventory, drops what the wire cannot carry or the LVDT would saturate, then picks the loads nearest to
-evenly spaced targets between the lightest and heaviest usable load, so combinations of many weights
-(for example 3 to 4 of 2 N each for 6 to 8 N) are chosen. With fewer usable loads, all are returned.
-Without `max_hangs` the advisory selector stops early. User-facing weights are newtons; the model stores
-kg (`mass_kg = N / 9.80665`) and the API (`mass_kg`) is unchanged.
+- `POST /api/weight-plan/inventory` appends the entered inventory (weights, wire geometry, optional
+  slope) as a JSON NOTE record tagged `weight_plan_inventory` in the session WAL, durable before the
+  response. Nothing is overwritten or deleted: an edit is a later event, the latest wins, and the
+  earlier versions stay in the WAL (and are copied into resumed sessions like all NOTEs). Saving
+  inputs identical to the latest event writes nothing. With no open session the answer is 409.
+- `GET /api/weight-plan/inventory` returns the latest saved inputs and the event count.
+- `GET /api/weight-plan/next` replans from the latest saved inventory and the session's settled
+  elastic points (`PlanRequest.captured`), returning `{captured, next_hang, reply}`; 404 when nothing
+  is saved. Advisory and read-only. The Run screen's `NextHangPanel` (elastic step) shows `next_hang`
+  and refetches after each captured point.
+- These events are kept separate from plugin `InventoryProvider` events (docs/server/inventory.md),
+  so they can never corrupt a plugin's inventory fold.

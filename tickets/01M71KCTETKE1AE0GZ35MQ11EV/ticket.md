@@ -7,7 +7,7 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:05Z"
-updated = "2026-11-10T02:13:43Z"
+updated = "2026-11-10T02:13:47Z"
 labels = ["model:sonnet", "creates:python/sadi/labs/lctt/gp_suggester.py", "creates:python/tests/labs/lctt/test_gp_suggester.py", "creates:docs/labs/lctt-gp-selector.md"]
 scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "python/sadi/labs/lctt/gp_suggester.py", "python/tests/labs/lctt/test_gp_suggester.py", "docs/labs/lctt-gp-selector.md", "docs/index.md", "docs/lctt/guidance.md"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Tests: beats even-schedule and random in fewer points to reach target half-width on seeded synthetic data; never suggests outside the range; deterministic; docs/labs/lctt-gp-selector.md documents the maths and fields. Design reference (read only, do not import): private/final-project/docs/gp-selector.md"
-bound = false
+bound = true
 +++
 
 Implement the Gaussian-process weight (load) selection the user asked for for the LCTT tensile test. Advisory only: the user decides the load. Standards: ASCII only, no emojis, NEVER a Co-Authored-By line; module logger never print; one-line docstring on public symbols; typani Result for fallible ops; update docs in the same change; tests in the same change; tracked code must not import or link private/ or labview/. Heavy builds via goway.

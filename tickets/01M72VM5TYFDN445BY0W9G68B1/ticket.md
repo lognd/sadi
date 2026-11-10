@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:55:03Z"
+updated = "2026-11-10T13:55:25Z"
 scope = ["python/sadi/design/**", "python/sadi/server/routes/design.py", "python/tests/design/**", "python/tests/server/test_design_route.py", "web/src/components/wizard/stepGuide.ts", "web/src/screens/run/phases.ts", "web/src/components/wizard/stepGuide.test.ts", "docs/design/gp-selector.md"]
 
 [[acceptance]]

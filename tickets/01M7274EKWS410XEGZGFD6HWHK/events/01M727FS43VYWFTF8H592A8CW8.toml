@@ -1,0 +1,133 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T07:59:12Z"
+digest = "aa05de267faaed0c74cc7e9b011fc71e3b1a8f9ae7de3fd4584a7554ef2ea14e"
+exit_code = 0
+head = "acb053207633f8edbf225b945e600c693e738772"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] closing session { path: '/api/session/close' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] session closed {}
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] closing session { path: '/api/session/close' }
+
+ \u{2713} web/src/components/wizard/wizard.test.tsx (24 tests) 63ms
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.run.loadChange] load change marked { seq: 5 }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > audit1 run-screen fixes > old frames make the readout idle: no stale volts, drift or saturation
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > audit1 run-screen fixes > fresh frames are not idle and NaN drift becomes null
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+ \u{2713} web/src/screens/run/RunScreen.test.tsx (29 tests) 88ms
+
+ Test Files  2 passed (2)
+      Tests  53 passed (53)
+   Start at  02:59:12
+   Duration  1.42s (transform 738ms, setup 0ms, collect 1.31s, tests 152ms, environment 0ms, prepare 377ms)
+
+JSON report written to /tmp/frob-vitest-785955-0.json
+stderr | web/src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] close refused { path: '/api/session/close', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export http error { format: 'x', status: 404 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export network failure { format: 'x', message: 'down' }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] http error { path: '/api/session/load-change', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.run.loadChange] load change refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/screens/run/RunScreen.test.tsx src/components/wizard/wizard.test.tsx"
+size = 6604
+status = "measured"
+test_count = 53
+tests_digest = "9f8a77645b92badb96bfc5749ae5b535215ce2ddba80c2f6a9267f8fb818fc4c"
+at = "2026-11-10T07:59:12Z"
+actor = "lognd"
+rev = 1

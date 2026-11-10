@@ -7,8 +7,12 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T13:58:26Z"
-updated = "2026-11-10T02:43:26Z"
+updated = "2026-11-10T02:44:12Z"
 scope = ["docs/core/device.md"]
+
+[[acceptance]]
+text = "Given docs/core/device.md, when read, then the reader queue default matches DEFAULT_QUEUE_BLOCKS (4096)"
+bound = false
 +++
 
 found while working 01M709DXGS91GPWZ3M06FWXJPY; docs/core/device.md says default 256 blocks, leased by N6VY4KP

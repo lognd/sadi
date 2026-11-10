@@ -495,9 +495,11 @@ class JobManager:
         else:
             self._counts["discarded"] += 1
             _log.debug("job %s: result discarded (superseded or cancelled)", job.spec.job_id)
+        # A supersede/cancel that raced the worker's Done still wins: report its state.
+        final = job.outcome.terminal_state
         self._finish(
             job,
-            JobState.DONE,
+            final,
             result=event.result if current else None,
             why=f"run_ms={event.run_ms:.1f}",
         )

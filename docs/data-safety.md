@@ -503,8 +503,18 @@ On any `OSError` from open, write, flush or rename in the writer:
    `<data-root>/spill/`, the user data directory (`~/.local/share/sadi/spill`,
    `%LOCALAPPDATA%\sadi\spill`, `~/Library/Application Support/sadi/spill`),
    then the OS temp dir (`sadi-spill-*.wal`); every attempt and the final path
-   are logged. Spill files are picked up at next start by `import_all_spills`
-   and become a new version with a parent link. If NO location accepts the
+   are logged. The file name is deterministic (`sadi-spill-<session uuid>-<first seq>.wal`),
+   so a Close retry that spills the same records reuses the existing file instead of piling up
+   copies; a retry with different records for the same key is written beside it under a
+   content-hash suffix (nothing is overwritten). Spill files are picked up at next start by
+   `import_all_spills` and become a new version with a parent link. When the spill directly
+   continues the parent's verified records, the new version is self-contained: the parent's
+   verified records (calibration, tare, points; seals dropped) followed by the spill frames,
+   renumbered densely from 1, so it resumes and downloads like any session. The parent is
+   never modified and stays on disk; a complete successor supersedes an `incomplete` parent in
+   the setup list. A spill that does not continue the parent is kept alone as a fragment
+   version (`continuity_ok=false`), never dropped. Byte-identical spill copies in two
+   locations import once. If NO location accepts the
    records, close returns HTTP 409 (`undurable_records`), the session and its
    in-memory writer stay open, and the user can fix the disk and press Close
    session again; records are never dropped silently. If the process is

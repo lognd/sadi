@@ -7,7 +7,7 @@ priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T03:13:18Z"
-updated = "2026-11-10T03:13:43Z"
+updated = "2026-11-10T03:13:54Z"
 scope = ["python/sadi/jobs/manager.py", "python/tests/jobs/test_manager.py", "changelog.d/*", "frob.lock"]
 
 [[acceptance]]

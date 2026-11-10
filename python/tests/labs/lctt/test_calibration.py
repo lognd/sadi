@@ -264,7 +264,7 @@ def test_offset_is_the_intercept() -> None:
     assert f.offset is f.intercept
 
 
-# frob:ticket ~5V612KT
+# frob:ticket 01M72YAG11208WNCXQJ5V612KT
 # frob:tests python/sadi/labs/lctt/calibration.py::fit_calibration
 def test_degenerate_message_says_what_to_do() -> None:
     """The degenerate-voltage message names the hardware action and the sim Skip."""

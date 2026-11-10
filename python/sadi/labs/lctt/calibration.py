@@ -47,7 +47,7 @@ class CalibrationError(ErrorSet):
         "All calibration voltages are equal, so no height-to-volts line can be fitted. "
         "On hardware, move the LVDT core to a different gauge block before each capture. "
         "The simulator does not move the LVDT: press Skip this step instead"
-    )  # frob:ticket ~5V612KT
+    )  # frob:ticket 01M72YAG11208WNCXQJ5V612KT
     RankDeficient = "Fit matrix is rank deficient (too few distinct weighted points); recapture"
     BadUncertainty = "Uncertainties must be finite and positive; fix or drop the entries"
     MissingVoltUnc = "errors_in_both needs u_volts; pass voltage uncertainties or disable it"

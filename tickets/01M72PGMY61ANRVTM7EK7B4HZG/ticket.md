@@ -7,11 +7,11 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T12:21:51Z"
-updated = "2026-11-10T12:24:37Z"
+updated = "2026-11-10T12:24:44Z"
 labels = ["web"]
 scope = ["web/src/plots/core/canvas.ts", "web/src/plots/core/canvas.test.ts", "web/src/components/live/*", "web/src/plots/live/*"]
 
 [[acceptance]]
 text = "Canvas keeps scene width/height ratio at any container width (aspect-ratio set, inline height not fixed); vitest asserts style.aspectRatio; text not stretched"
-bound = false
+bound = true
 +++

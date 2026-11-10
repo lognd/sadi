@@ -7,9 +7,9 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:36:23Z"
-updated = "2026-11-10T14:37:19Z"
+updated = "2026-11-10T14:38:29Z"
 labels = ["creates:web/src/plots/live/useContainerSquare.test.ts"]
-scope = ["web/src/plots/live/useContainerSquare.ts", "web/src/components/live/TraceCanvas.tsx", "web/src/plots/live/**"]
+scope = ["web/src/plots/live/useContainerSquare.ts", "web/src/components/live/TraceCanvas.tsx", "web/src/plots/live/**", "changelog.d/01M72Y6ZXN756YB93HK0H3ACB5.*"]
 
 [[acceptance]]
 text = "Live trace side is clamped to min(containerWidth, 0.6*viewport height, 520) and stays square; Accept is inside the first viewport at 1024x768."

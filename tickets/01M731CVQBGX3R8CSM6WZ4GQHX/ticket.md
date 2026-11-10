@@ -6,7 +6,11 @@ category = "todo"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T15:32:01Z"
-updated = "2026-11-10T15:50:05Z"
+updated = "2026-11-10T15:50:09Z"
+
+[[acceptance]]
+text = "Given the tracked docs, when the course-material test runs, then no doc names a course VI"
+bound = false
 +++
 
 found while working HQEPVZH; line 120 names lctt_export_calibration.vi

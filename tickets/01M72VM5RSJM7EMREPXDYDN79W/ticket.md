@@ -2,7 +2,8 @@
 id = "01M72VM5RSJM7EMREPXDYDN79W"
 title = "Capture retry must never save a point twice (freeze body+id, narrow digest)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

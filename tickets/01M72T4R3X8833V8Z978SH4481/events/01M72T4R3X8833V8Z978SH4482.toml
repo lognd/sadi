@@ -1,0 +1,13 @@
+kind = "create"
+title = "Spill import: verify before close, fragment fallback on verify failure, lineage through fragments, orphan provenance"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 5
+labels = ["creates:none"]
+scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/store/test_spill.py", "python/tests/server/test_latest_lineage.py", "web/src/screens/setup/SessionSetup.tsx"]
+acceptance = ["Verify failure -> crashed + failed marker + fragment import; in-progress sidecar prevents repeat copies; fragment->resume keeps parent as latest; orphan provenance unknown not synthetic; SessionSetup labels fragment/joined; tests incl. a6 repros. No data deleted."]
+body = "Audit6 M3,M4,L2. _import_version closes before verify and retries copying each start; _descendants walks through fragment kids making full parent read superseded; orphan spills labelled SYNTHETIC; SessionSetup does not label fragment/joined."
+at = "2026-11-10T13:25:15Z"
+actor = "lognd"
+rev = 1

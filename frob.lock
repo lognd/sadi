@@ -2825,13 +2825,13 @@ reason = "ticket YTVC4WD front panel rework, re-read"
 [[symbol]]
 identity = "web/src/screens/WizardHost.tsx::WizardHost"
 symref = "web/src/screens/WizardHost.tsx::WizardHost"
-sig = "d6b6431bd3e38d45167d7c8adc7ee23601d469fd52b859b5e3e18a4c045356a9"
-body = "ef337bb32c1cdc3820f169d692d4375962143ddaf1700b93595dfa3549900e72"
+sig = "8d1807943f00f4670a766d29b4948caa9e54c52233ba19a308e41501514fad0e"
+body = "39cb56b2adaa68c98fec02356f53e11f407e140ad1e0e0bfe5b6277e1b30aa67"
 doc = "4e3379c5af007e12e14ed621d6e5238becb44cb17b5cbdddb4ee7b25be603d50"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "f10b03e8f4921aba037708383531cb32599054e5c44c2d0b630bf93f1a57d1e9"
+contract = "75eba3ffbfb3ea346f45a988b53d825dca4fd439293c6cf84e5549db59e17075"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T10:26:17.318249346Z"
+acked_at = "2026-11-10T05:15:51.657258862Z"
 
 [[symbol]]
 identity = "web/src/screens/WizardHost.tsx::log"

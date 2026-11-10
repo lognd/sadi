@@ -25,7 +25,7 @@ from typani import Err, ErrorSet, Ok, Result
 
 from sadi.api.acquisition import AcquisitionDriver, DriverFault
 from sadi.bench.lctt_source import BOARD_FULL_SCALE_V
-from sadi.core.device import DEVICE_RATE_HZ, LIVE_MIN_FREE_BYTES, free_bytes
+from sadi.core.device import DEVICE_RATE_HZ, LIVE_MIN_FREE_BYTES, StopFailed, free_bytes
 from sadi.core.pipeline import (
     AcquisitionPipeline,
     Bus,
@@ -122,6 +122,17 @@ class _DecimatingSource:
     def stop_streaming(self) -> Result[list[Any], Any]:
         """Stop the device; trailing blocks come back decimated."""
         got = self._device.stop_streaming()
+        if got.is_err:
+            err = got.danger_err
+            kept = getattr(err, "blocks", None)
+            if kept:  # keep the drained blocks on the error so the driver can still ingest them
+                return Err(
+                    StopFailed(
+                        code=err.code,
+                        detail=err.detail,
+                        blocks=[_Decimated(b, self._step) for b in kept],
+                    )
+                )
         return got.map(lambda blocks: [_Decimated(b, self._step) for b in blocks])
 
 
@@ -216,6 +227,7 @@ class LiveAcquisition:
                 _log.warning("reconnect: stopping faulted run first (blocks are drained)")
                 _ = self._stop_run_locked(STOP_NO_DEVICE)
             res = self._device.reconnect()
+            self._ingest_salvaged_locked()
             if res.is_err:
                 _log.error("reconnect failed: %s", res.danger_err)
                 return Err(res.danger_err)
@@ -233,6 +245,41 @@ class LiveAcquisition:
             if self._pipe is None:
                 return Err(LiveError.NoLiveSession)
             return Ok(None)
+
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+    def resume(self) -> Result[None, LiveError]:
+        """Restart streaming after an idle pause without any load-change marker or sim load."""
+        with self._lock:
+            if self._pipe is not None:
+                self._last_activity = self._clock()
+                _log.info("resume: already streaming")
+                return Ok(None)
+            refused = self._resume_after_idle_locked()
+            if refused is not None:
+                _log.warning("resume refused: %s", refused.description)
+                return Err(refused)
+            self._last_activity = self._clock()
+        _log.info("resumed streaming after idle (no marker written)")
+        return Ok(None)
+
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+    def _ingest_salvaged_locked(self) -> None:
+        """Write blocks a device teardown kept into the WAL before any new run starts."""
+        kept = self._device.take_salvaged()
+        if not kept:
+            return
+        if self._writer is None:
+            _log.error("%d salvaged blocks have no open session to save into", len(kept))
+            self._fault = DriverFault(origin="device", detail="Unsaved blocks could not be kept")
+            return
+        pipe = AcquisitionPipeline(self._writer, self._cfg, self.bus)
+        pipe.start()
+        saved = 0
+        for block in kept:
+            if pipe.ingest(_Decimated(block, DECIMATE)).is_ok:
+                saved += 1
+        pipe.stop()
+        _log.warning("saved %d of %d salvaged blocks before reconnect", saved, len(kept))
 
     def mark_load_change(self) -> Result[Seq, LiveError | WriterError | PipelineError]:
         """Record a load-applied marker in the WAL and open a new settle point (Ok is its seq)."""

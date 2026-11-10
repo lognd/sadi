@@ -135,6 +135,9 @@ def render_closed_export(
 
 #: Response header naming the copy kept in the session folder ("failed" when it could not be kept).
 SAVED_HEADER = "X-SADI-Saved"
+#: Response header set to "segment/offset" when a closed export holds only the verified WAL prefix.
+# frob:ticket 01M727965F98C8FB295P7A7FRS
+TORN_TAIL_HEADER = "X-SADI-Torn-Tail"
 #: Largest figure upload accepted (bytes); a 600 dpi plot is a few MB.
 MAX_FIGURE_BYTES = 64 * 1024 * 1024
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -216,6 +219,8 @@ def make_export_router(
         """Download one export of a closed session; read-only, so no copy is kept and nothing is written."""
         fmt, closed, body = unwrap(render_closed_export(svc, name, format_id, replays))
         headers = {PROVENANCE_HEADER: "real"}
+        if closed.torn_tail is not None:
+            headers[TORN_TAIL_HEADER] = closed.torn_tail
         if closed.provenance.synthetic:
             body = stamp_export(body, fmt.media_type, closed.provenance)
             headers[PROVENANCE_HEADER] = "synthetic"

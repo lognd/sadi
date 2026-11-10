@@ -1,3 +1,4 @@
+// frob:ticket 01M7274EH583A30335TGGT6ZZ1
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 /** Polls the light status endpoints that feed the debug strip. */
 import { useEffect, useRef, useState } from "react";
@@ -15,7 +16,7 @@ export const NO_SESSION_POLL_EVERY = 5;
 /** Everything the debug strip reads from REST; null means "not known yet or unavailable". */
 export interface BackendFacts {
   readonly save: { readonly state: string; readonly label: string; readonly pending: number; readonly hint: string } | null;
-  readonly device: { readonly status: string; readonly attached: boolean; readonly fault: string | null; readonly hint: string } | null;
+  readonly device: { readonly status: string; readonly attached: boolean; readonly fault: string | null; readonly hint: string; readonly stopReason: string | null; readonly acquisitionFault: string | null } | null;
   readonly session: { readonly name: string; readonly lab: string; readonly durableSeq: number | null } | null;
   readonly rootLockOk: boolean | null;
   readonly dataRoot: string | null;
@@ -53,7 +54,7 @@ export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = f
   return {
     ...prev,
     save: save.ok ? { state: save.value.state ?? "unknown", label: save.value.label ?? "", pending: save.value.pending ?? 0, hint: save.value.hint ?? "" } : null,
-    device: d === null ? null : { status: d.status ?? "unknown", attached: d.attached ?? false, fault: d.fault ?? null, hint: d.hint || acquisitionHint(d) },
+    device: d === null ? null : { status: d.status ?? "unknown", attached: d.attached ?? false, fault: d.fault ?? null, hint: d.hint || acquisitionHint(d), stopReason: d.stop_reason ?? null, acquisitionFault: d.acquisition_fault ?? null },
     session: ses === null ? prev.session : ses.ok ? { name: ses.value.name ?? "", lab: ses.value.lab ?? "", durableSeq: ses.value.durable_seq ?? null } : null,
     rootLockOk: lock.ok ? lock.value.ok !== false : null,
     lastError: errs.length > 0 ? errs.join("; ") : null,

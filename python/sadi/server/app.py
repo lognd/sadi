@@ -227,7 +227,12 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
     # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
-    app.include_router(make_acquisition_router(cfg.live.mark_load_change if cfg.live else None))
+    app.include_router(
+        make_acquisition_router(
+            cfg.live.mark_load_change if cfg.live else None,
+            cfg.live.resume if cfg.live else None,
+        )
+    )
     app.include_router(
         make_results_router(
             app.state.sessions,

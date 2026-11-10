@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:39Z"
-updated = "2026-11-10T08:11:04Z"
+updated = "2026-11-10T08:12:51Z"
 scope = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx", "web/src/App.tsx", "web/src/screens/run/RunScreen.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/components/instrument/audit1.test.tsx", "web/src/components/status/saveView.ts", "web/src/components/status/saveView.test.ts", "web/src/components/instrument/FactsContext.tsx", "docs/ux.md", "web/src/components/instrument/DebugStrip.tsx"]
 
 [[acceptance]]

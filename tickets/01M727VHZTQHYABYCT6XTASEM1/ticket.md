@@ -1,0 +1,15 @@
++++
+id = "01M727VHZTQHYABYCT6XTASEM1"
+title = "L4: two contradictory save indicators; Saved shown with no session"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-10T08:05:39Z"
+updated = "2026-11-10T08:05:39Z"
+scope = ["web/src/components/shell/WizardShell.tsx", "web/src/components/status/StatusBar.tsx"]
+
+[[acceptance]]
+text = "One save indicator source; never shows Saved without an open session; test covers both"
+bound = false
++++

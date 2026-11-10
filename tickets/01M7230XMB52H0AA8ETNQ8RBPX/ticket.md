@@ -2,7 +2,8 @@
 id = "01M7230XMB52H0AA8ETNQ8RBPX"
 title = "Audit2 H3/H4: calibration quality gate (r2, slope sign, outliers); plausible ranges for height, mass, diameter; require diameter"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

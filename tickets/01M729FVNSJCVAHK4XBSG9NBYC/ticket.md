@@ -1,0 +1,16 @@
++++
+id = "01M729FVNSJCVAHK4XBSG9NBYC"
+title = "audit4 L3+L4+L5+L7: phase hints, session facts refresh, sticky offset, SYNTHETIC badge, RECOVERED export"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-10T08:34:13Z"
+updated = "2026-11-10T08:34:13Z"
+labels = ["audit4"]
+scope = ["web/src/screens/run/phases.ts", "web/src/hooks/useBackendFacts.ts", "web/src/hooks/useStickyOffset.ts", "web/src/components/status/FactsContext.tsx", "web/src/screens/setup/SessionSetup.tsx", "python/sadi/server/routes/export.py"]
+
+[[acceptance]]
+text = "Phase hints match auto-open; No session clears right after create/close; sticky offset does not override media rule; SessionSetup shows SYNTHETIC badge; torn-tail export has RECOVERED- prefix and # RECOVERED: line"
+bound = false
++++

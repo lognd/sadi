@@ -44,7 +44,7 @@ from sadi.labs.lctt.clamp_check import (
     clamp_status,
     setup_subcheck,
 )
-from sadi.labs.lctt.export_csv import build_document, render_document
+from sadi.labs.lctt.export_csv import build_document, render_document, tare_report
 from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
     CalPoint,
@@ -300,6 +300,7 @@ def events_from_inputs(
             out.append(
                 LoadPoint(
                     point_id=f"{prefix}-{n_load}",
+                    phase=item.phase,  # frob:ticket 01M729642YCP4MRYBWBNQBYW7A
                     volts=item.volts,
                     u_volts=item.u_volts,
                     volts_sd=item.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
@@ -509,9 +510,16 @@ def _calibration_quantities(
     if ctx.tare_v is not None:
         tare = [i for i in inputs if isinstance(i, TareInputs)][-1]
         # frob:ticket 01M725CA43JK1ZDJKF8135RHT0
-        # The tare is a mean of n samples: its uncertainty is the standard error sd/sqrt(n).
-        se = tare.sd / math.sqrt(tare.n) if tare.n >= 1 else tare.sd
-        out["tare"] = Quantity(value=tare.mean, standard_uncertainty=se, unit="V")
+        # One tare model shared with the CSV export: pooled mean, standard error Sx/sqrt(N).
+        blocks = [i for i in inputs if isinstance(i, TareInputs)]
+        rep = tare_report([b.mean for b in blocks], [b.sd for b in blocks], [b.n for b in blocks])
+        if isinstance(rep, Ok):
+            out["tare"] = Quantity(
+                value=rep.danger_ok.value, standard_uncertainty=rep.danger_ok.std_unc, unit="V"
+            )
+        else:  # blocks too small to pool: fall back to the last block's sd/sqrt(n)
+            se = tare.sd / math.sqrt(tare.n) if tare.n >= 1 else tare.sd
+            out["tare"] = Quantity(value=tare.mean, standard_uncertainty=se, unit="V")
     _log.debug("lctt calibration quantities: %s", sorted(out))
     return out
 

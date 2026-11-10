@@ -87,6 +87,8 @@ class LoadPoint(_Ev):
     t_since_load_s: float | None = None
     # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
     volts_sd: float | None = None  # per-sample std dev of the raw volts in the window
+    # frob:ticket 01M729642YCP4MRYBWBNQBYW7A
+    phase: str = ""  # "elastic" / "plastic" (selects specimen L0); "" = unknown (legacy)
 
 
 class OverridePoint(_Ev):

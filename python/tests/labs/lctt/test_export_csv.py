@@ -1,4 +1,4 @@
-"""Tests for the LCTT 48-column CSV export, reader, round trip and byte policy."""
+"""Tests for the LCTT 49-column CSV export, reader, round trip and byte policy."""
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
 from __future__ import annotations
@@ -73,9 +73,9 @@ def test_header_is_48_columns_and_block_layout() -> None:
     lines = data.decode("utf-8").split("\r\n")
     blank = lines.index("")
     assert lines[blank + 1].split(",") == list(COLUMNS)
-    assert len(COLUMNS) == 48
+    assert len(COLUMNS) == 49
     assert lines[0] == "Title,SADI LCTT tensile test"
-    assert all(len(r.split(",")) == 48 for r in lines[blank + 2 : -1])
+    assert all(len(r.split(",")) == 49 for r in lines[blank + 2 : -1])
     assert len(lines[blank + 2 : -1]) == 8
     meta = dict(_doc().meta)
     for key in ("Date", "Operator", "Description", "Tare mean (V)", "Cal slope (m/V)", "E (Pa)"):
@@ -200,7 +200,7 @@ def test_private_short_run_file_round_trips_field_by_field() -> None:
 # frob:tests python/sadi/labs/lctt/export_csv.py::PointRow
 def test_elapsed_and_sd_columns_round_trip() -> None:
     doc = _doc()
-    assert doc.get("Schema") == "4"
+    assert doc.get("Schema") == "5"
     assert math.isnan(doc.rows[0].elapsed_s)  # unknown elapsed time is NaN, not 0
     assert doc.rows[3].elapsed_s == pytest.approx(33.0)
     assert all(r.volts_sd == pytest.approx(2e-4) for r in doc.rows)

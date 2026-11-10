@@ -87,6 +87,7 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
         drift_rate=meta.drift_rate,
         t_since_load_s=meta.t_since_load_s,
         point_id=cp.point.point_id,
+        phase=cp.point.phase,  # frob:ticket 01M729642YCP4MRYBWBNQBYW7A
         volts=p.volts,
         u_volts=p.u_volts,
         volts_sd=p.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV

@@ -7,6 +7,7 @@ from __future__ import annotations
 import math
 
 from sadi.core.point_inputs import TareInputs
+from sadi.labs.lctt.export_csv import tare_report
 from sadi.labs.lctt.lab import LoadingContext, _calibration_quantities
 
 
@@ -20,9 +21,11 @@ def test_tare_unc_is_standard_error() -> None:
     assert math.isclose(q.standard_uncertainty, 0.02 / math.sqrt(100))
 
 
-def test_tare_unc_uses_last_block() -> None:
-    """The last tare block wins, consistent with context_from_inputs."""
+def test_tare_unc_pools_all_blocks() -> None:
+    """All tare blocks are pooled: Sx/sqrt(N), the same model the CSV reports."""
     a = TareInputs(mean=1.0, sd=0.5, n=4)
     b = TareInputs(mean=2.0, sd=0.3, n=9)
     q = _calibration_quantities([a, b], LoadingContext(tare_v=2.0))["tare"]
-    assert math.isclose(q.standard_uncertainty, 0.1)
+    want = tare_report([1.0, 2.0], [0.5, 0.3], [4, 9]).danger_ok
+    assert math.isclose(q.standard_uncertainty, want.std_unc)
+    assert math.isclose(q.value, want.value)

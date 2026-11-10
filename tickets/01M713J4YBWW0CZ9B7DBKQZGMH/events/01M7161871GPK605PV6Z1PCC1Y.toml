@@ -1,0 +1,51 @@
+kind = "evidence"
+captured_at = "2026-11-09T22:14:27Z"
+digest = "b81d47a76cbec4dd6b182cad6392a43f270fcd50dd8639bc91de7d8d173b13a9"
+exit_code = 1
+head = "a3e0ad9b4f80a3903f3039e6bda08e5b186fa11c"
+inline = """
+Error: Cannot find package '<worktree>/web/node_modules/@playwright/test/index.js' imported from <worktree>/web/e2e/playwright.config.ts
+    at legacyMainResolve (node:internal/modules/esm/resolve:202:26)
+    at packageResolve (node:internal/modules/esm/resolve:796:12)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at ModuleLoader.#resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolve (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:870:19)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolveWithHooks (node:internal/modules/customization_hooks:417:10)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:751:16)
+    at ModuleLoader.#resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+    at ModuleJob.link (node:internal/modules/esm/module_job:381:17)
+    at new ModuleJob (node:internal/modules/esm/module_job:360:26)
+    at ModuleLoader.#getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:576:11)
+    at afterResolve (node:internal/modules/esm/loader:611:52)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:617:12)
+    at node:internal/modules/esm/loader:636:32
+    at TracingChannel.tracePromise (node:diagnostics_channel:370:14)
+    at ModuleLoader.import (node:internal/modules/esm/loader:632:21)
+    at defaultImportModuleDynamicallyForScript (node:internal/modules/esm/utils:240:31)
+    at importModuleDynamicallyCallback (node:internal/modules/esm/utils:264:12)
+    at eval (eval at esmImport (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1151:29), <anonymous>:1:1)
+    at esmImport (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1151:29)
+    at requireOrImport (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1155:18)
+    at loadUserConfig (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1360:52)
+    at loadConfig (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1367:28)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at Object.loadConfigFromFile (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/common/index.js:1585:10)
+    at runTests (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/cli/testActions.js:44:18)
+    at _Command.<anonymous> (~/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/lib/program.js:55:7) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+"""
+passed = false
+provider = "command"
+ref = "npx playwright test -c web/e2e/playwright.config.ts web/e2e/lctt-data.spec.ts"
+size = 2890
+status = "measured"
+at = "2026-11-09T22:14:27Z"
+actor = "lognd"
+rev = 1

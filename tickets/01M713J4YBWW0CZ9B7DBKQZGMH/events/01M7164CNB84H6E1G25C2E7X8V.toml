@@ -1,0 +1,14 @@
+kind = "evidence"
+captured_at = "2026-11-09T22:14:51Z"
+digest = "891a6f058b545a56498908b6d7f49069885bee9846cbef96e2fcb390ec0feca4"
+exit_code = 0
+head = "a3e0ad9b4f80a3903f3039e6bda08e5b186fa11c"
+passed = true
+provider = "command"
+ref = "npx --prefix web --no-install playwright test -c web/e2e/playwright.config.ts web/e2e/lctt-data.spec.ts"
+size = 91805
+status = "measured"
+uri = "dir:.git/frob/artifacts/891a6f058b545a56498908b6d7f49069885bee9846cbef96e2fcb390ec0feca4"
+at = "2026-11-09T22:14:51Z"
+actor = "lognd"
+rev = 1

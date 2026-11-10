@@ -1,0 +1,40 @@
+kind = "evidence"
+captured_at = "2026-11-09T22:14:45Z"
+digest = "7518d8d7beece36155218920644ebcee1d3810447e278f7ce4a347ead8cd93ed"
+exit_code = 1
+head = "a3e0ad9b4f80a3903f3039e6bda08e5b186fa11c"
+inline = """
+Error: Playwright Test did not expect test() to be called here.
+Most common reasons include:
+- You are calling test() in a configuration file.
+- You are calling test() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+- You are calling test() from an async test.describe() block. Only sync ones are supported.
+
+   at lctt-data.spec.ts:21
+
+  19 | }
+  20 |
+> 21 | test("LCTT run exports real data and the session is saved on disk and recoverable", async ({ page, request, dataDir }) => {
+     | ^
+  22 |   const mounted = await openWizard(page);
+  23 |   test.skip(!mounted, "wizard shell did not mount (is the backend up? see docs/e2e.md)");
+  24 |
+    at _TestTypeImpl._currentSuite (<worktree>/web/node_modules/playwright/lib/common/index.js:2312:13)
+    at _TestTypeImpl._createTest (<worktree>/web/node_modules/playwright/lib/common/index.js:2326:24)
+    at test (<worktree>/web/node_modules/playwright/lib/common/index.js:1229:12)
+    at <worktree>/web/e2e/lctt-data.spec.ts:21:1
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+"""
+passed = false
+provider = "command"
+ref = "npx playwright test -c web/e2e/playwright.config.ts web/e2e/lctt-data.spec.ts"
+size = 1311
+status = "measured"
+at = "2026-11-09T22:14:45Z"
+actor = "lognd"
+rev = 1

@@ -7476,12 +7476,12 @@ acked_at = "2026-11-08T07:16:41.366286059Z"
 identity = "web/src/screens/setup/WeightPlanPanel.test.tsx"
 symref = "web/src/screens/setup/WeightPlanPanel.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "73aec2ada9856c6817d909ddbe2fc3c2237db640ec53c7a75a2a95cb2465e1b7"
+body = "5746637958db1d6952c7d4173cdb61df8cd2807de7e7af9c6e75ed5784578a7d"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T14:33:11.302509258Z"
+acked_at = "2026-11-10T15:49:44.417411527Z"
 
 [[symbol]]
 identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm"
@@ -7515,6 +7515,28 @@ attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
 contract = "9521a3742a3a6c18aedd3beea172b981cfe058876df44e17d6d3f46a9714343a"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$savedText"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$savedText"
+sig = "0a8e871386ab82805450aeb4e8db17892fc2af0268f77c836437c4fdecbc4bba"
+body = "6c83af9cac73ecb525de7b46855e662dbb96ca3e9139cd30d6a0b63b0ff67e04"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "95921054be9812144b9b6519654004bfebc5a2c679d1b57acd0e9d436aa90107"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:44.417411527Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$savedText.test$distinguishes_a_new_version_from_an_identical_re-save"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$savedText.test$distinguishes_a_new_version_from_an_identical_re-save"
+sig = "dd299f00354ebd862c53c704358495586851c3d13fdf181f830cf95aac6163db"
+body = "48f5ab3543ebe60b4e3e6cf678a37a7e80de93af27c1dfcd3aad177f1fbdcf2f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "f1eb1614703424f62201a82ca9197aeb4dc10f73be694b41b430636e7aa307b7"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:44.417411527Z"
 
 [[symbol]]
 identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views"

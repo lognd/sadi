@@ -1,0 +1,69 @@
+kind = "evidence"
+captured_at = "2026-11-10T07:24:25Z"
+digest = "8ee3b8b480672726b92fc5fd42102a7e174142c944e9fc8d10704288682530ec"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 104 items
+
+python/tests/api/test_point_roundtrip.py .                               [  0%]
+python/tests/bench/test_ad3_launch.py ..                                 [  2%]
+python/tests/cli/test_launcher.py ...............                        [ 17%]
+python/tests/cli/test_launcher_live.py ..                                [ 19%]
+python/tests/cli/test_launcher_real_device.py ..                         [ 21%]
+python/tests/cli/test_launcher_recovery.py ...                           [ 24%]
+python/tests/cli/test_launcher_spill.py ...                              [ 26%]
+python/tests/core/test_point_inputs_ranges.py .                          [ 27%]
+python/tests/labs/lctt/test_audit1_analysis.py .....                     [ 32%]
+python/tests/labs/lctt/test_lab.py .                                     [ 33%]
+python/tests/labs/lctt/test_lab_analyze_e2e.py ....                      [ 37%]
+python/tests/labs/lctt/test_tare_unc.py ..                               [ 39%]
+python/tests/server/test_app.py ..........                               [ 49%]
+python/tests/server/test_curve_source.py ..                              [ 50%]
+python/tests/server/test_export_routes.py .                              [ 51%]
+python/tests/server/test_idle_raw.py ....                                [ 55%]
+python/tests/server/test_inventory_routes.py ..                          [ 57%]
+python/tests/server/test_loop_lag.py .                                   [ 58%]
+python/tests/server/test_openapi_export.py ...                           [ 61%]
+python/tests/server/test_plots_routes.py .                               [ 62%]
+python/tests/server/test_reconnect_no_device.py ....                     [ 66%]
+python/tests/server/test_results_routes.py ..                            [ 68%]
+python/tests/server/test_routes_acquisition.py .                         [ 69%]
+python/tests/server/test_routes_health.py .                              [ 70%]
+python/tests/server/test_routes_stress_strain.py .....                   [ 75%]
+python/tests/server/test_run_phase.py .                                  [ 75%]
+python/tests/server/test_save_wired_and_sim_provenance.py ..             [ 77%]
+python/tests/server/test_session_points.py .                             [ 78%]
+python/tests/server/test_settings_record.py .                            [ 79%]
+python/tests/server/test_sim_pacing.py .                                 [ 80%]
+python/tests/server/test_spill_isolation.py ...                          [ 83%]
+python/tests/server/test_ws.py .....                                     [ 88%]
+python/tests/server/test_ws_results.py ..                                [ 90%]
+python/tests/store/test_session_synthetic_manifest.py .                  [ 91%]
+python/tests/synthetic/test_launcher_gate.py ......                      [ 97%]
+python/tests/synthetic/test_provenance.py .                              [ 98%]
+python/tests/test_launcher_no_device.py ..                               [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-745128-0.xml ---------------
+======================= 104 passed, 1 warning in 22.36s ========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/api/test_point_roundtrip.py::test_record_recover_fit_round_trip python/tests/bench/test_ad3_launch.py::test_launcher_ad3_unavailable_exits_cleanly python/tests/bench/test_ad3_launch.py::test_launcher_closes_ad3_after_serve python/tests/cli/test_launcher.py::test_browser_opened_unless_suppressed python/tests/cli/test_launcher.py::test_ctrl_c_is_graceful_and_releases_lock python/tests/cli/test_launcher.py::test_data_dir_alias_and_printed python/tests/cli/test_launcher.py::test_doctor_passthrough python/tests/cli/test_launcher.py::test_launcher_app_serves_builtin_labs python/tests/cli/test_launcher.py::test_no_sim_opens_real_board python/tests/cli/test_launcher.py::test_non_loopback_host_rejected python/tests/cli/test_launcher.py::test_preflight_blocker_is_err python/tests/cli/test_launcher.py::test_preflight_failure_blocks_start python/tests/cli/test_launcher.py::test_refused_lock_exits_nonzero python/tests/cli/test_launcher.py::test_selftest_exit_codes python/tests/cli/test_launcher.py::test_serve_default_host_and_lock_released python/tests/cli/test_launcher.py::test_sim_flag_injects_device python/tests/cli/test_launcher.py::test_sim_open_failure_exits_device python/tests/cli/test_launcher.py::test_version_flag python/tests/cli/test_launcher_live.py::test_sim_launcher_streams_frames_and_saves_raw python/tests/cli/test_launcher_live.py::test_sim_load_change_is_recorded_in_wal python/tests/cli/test_launcher_real_device.py::test_default_serve_opens_real_board_and_passes_port python/tests/cli/test_launcher_real_device.py::test_missing_board_warns_and_serves_without_device python/tests/cli/test_launcher_recovery.py::test_recover_stale_flag_takes_over_without_touching_data python/tests/cli/test_launcher_recovery.py::test_stale_lock_message_names_the_launcher_flag python/tests/cli/test_launcher_recovery.py::test_unwritable_root_gives_plain_hint python/tests/cli/test_launcher_spill.py::test_failed_spill_import_leaves_file_intact python/tests/cli/test_launcher_spill.py::test_no_spill_is_noop python/tests/cli/test_launcher_spill.py::test_spill_at_startup_imported_as_new_version python/tests/core/test_point_inputs_ranges.py::test_missing_diameter_adds_note python/tests/labs/lctt/test_audit1_analysis.py::test_analyze_emits_slope_intercept_tare python/tests/labs/lctt/test_audit1_analysis.py::test_calibration_values_present_before_both_runs python/tests/labs/lctt/test_audit1_analysis.py::test_modulus_interval_covers_creep_biased_truth python/tests/labs/lctt/test_audit1_analysis.py::test_modulus_uncertainty_includes_systematics python/tests/labs/lctt/test_audit1_analysis.py::test_pending_and_notes_survive_analyze python/tests/labs/lctt/test_lab.py::test_analyze_builds_context_and_combines_runs python/tests/labs/lctt/test_lab_analyze_e2e.py::test_analyze_e_uses_auto_window_not_all_points python/tests/labs/lctt/test_lab_analyze_e2e.py::test_analyze_reports_pending_and_note_when_plastic_run_missing python/tests/labs/lctt/test_lab_analyze_e2e.py::test_analyze_yield_omitted_when_plastic_run_never_yields python/tests/labs/lctt/test_lab_analyze_e2e.py::test_analyze_yield_present_when_plastic_run_yields python/tests/labs/lctt/test_tare_unc.py::test_tare_unc_is_standard_error python/tests/labs/lctt/test_tare_unc.py::test_tare_unc_uses_last_block python/tests/server/test_app.py::test_degraded_start_reports_lock_failure python/tests/server/test_app.py::test_device_status_uses_injected_device python/tests/server/test_app.py::test_doctor_route_reachable python/tests/server/test_app.py::test_inventory_unmounted_provider_is_501 python/tests/server/test_app.py::test_lifespan_holds_lock_and_releases python/tests/server/test_app.py::test_plugins_route_reachable python/tests/server/test_app.py::test_save_indicator_reachable_and_latches_on_failure python/tests/server/test_app.py::test_settings_injected_and_no_shared_state python/tests/server/test_app.py::test_startup_fails_when_lock_held python/tests/server/test_app.py::test_unknown_route_404 python/tests/server/test_curve_source.py::test_active_session_feeds_fit_read_only python/tests/server/test_curve_source.py::test_no_session_is_no_data python/tests/server/test_export_routes.py::test_real_lctt_lab_lists_csv_and_refuses_empty_session python/tests/server/test_idle_raw.py::test_finish_stops_raw_and_refuses_restart python/tests/server/test_idle_raw.py::test_idle_timeout_stops_raw_without_losing_blocks python/tests/server/test_idle_raw.py::test_low_disk_midrun_keeps_recorded_blocks python/tests/server/test_idle_raw.py::test_low_disk_stops_stream_with_fault python/tests/server/test_inventory_routes.py::test_no_open_session_is_409 python/tests/server/test_inventory_routes.py::test_no_provider_is_501 python/tests/server/test_loop_lag.py::test_handlers_respond_while_job_runs python/tests/server/test_openapi_export.py::test_committed_spec_not_stale python/tests/server/test_openapi_export.py::test_main_writes_file python/tests/server/test_openapi_export.py::test_render_is_deterministic python/tests/server/test_plots_routes.py::test_stress_strain_empty_then_points_and_exclusion python/tests/server/test_reconnect_no_device.py::test_reconnect_attaches_mid_session_without_touching_the_wal python/tests/server/test_reconnect_no_device.py::test_reconnect_failure_is_a_409_with_hint python/tests/server/test_reconnect_no_device.py::test_session_opens_without_device_and_capture_is_blocked python/tests/server/test_reconnect_no_device.py::test_status_is_disconnected_before_attach python/tests/server/test_results_routes.py::test_budgets_empty_without_hook python/tests/server/test_results_routes.py::test_device_status_attached python/tests/server/test_routes_acquisition.py::test_load_change_409_without_live_session python/tests/server/test_routes_health.py::test_health_ok_without_session python/tests/server/test_routes_stress_strain.py::test_bad_window_is_typed_422 python/tests/server/test_routes_stress_strain.py::test_fit_is_read_only python/tests/server/test_routes_stress_strain.py::test_fit_returns_client_view python/tests/server/test_routes_stress_strain.py::test_missing_body_fields_rejected python/tests/server/test_routes_stress_strain.py::test_no_data_is_409 python/tests/server/test_run_phase.py::test_provider_uses_recorded_phase_else_infers python/tests/server/test_save_wired_and_sim_provenance.py::test_indicator_tracks_open_session_writer python/tests/server/test_save_wired_and_sim_provenance.py::test_sim_device_serves_synthetic_provenance python/tests/server/test_session_points.py::test_analyze_uses_inputs_aware_lab python/tests/server/test_settings_record.py::test_fresh_session_wal_has_settings_before_raw python/tests/server/test_sim_pacing.py::test_health_fast_with_ws_client_on_sim python/tests/server/test_spill_isolation.py::test_control_spill_in_scanned_data_root_is_imported python/tests/server/test_spill_isolation.py::test_control_standin_spill_is_imported_without_isolation python/tests/server/test_spill_isolation.py::test_startup_ignores_spill_in_real_dir_standin python/tests/server/test_ws.py::test_50ksps_real_time_budget python/tests/server/test_ws.py::test_guidance_pushed_to_clients python/tests/server/test_ws.py::test_guidance_ws_after_state_change python/tests/server/test_ws.py::test_hello_state_and_stop_pushed_as_json python/tests/server/test_ws.py::test_reconnect_resumes_from_latest python/tests/server/test_ws_results.py::test_disconnect_removes_results_client python/tests/server/test_ws_results.py::test_ws_pushes_snapshot_and_live_envelopes python/tests/store/test_session_synthetic_manifest.py::test_missing_marker_still_synthetic_from_manifest python/tests/synthetic/test_launcher_gate.py::test_env_alone_never_enables python/tests/synthetic/test_launcher_gate.py::test_flag_and_phrase_enable_with_banner python/tests/synthetic/test_launcher_gate.py::test_not_combinable_with_sim python/tests/synthetic/test_launcher_gate.py::test_refused_without_flag_and_exact_phrase python/tests/synthetic/test_provenance.py::test_ws_hello_carries_provenance python/tests/test_launcher_no_device.py::test_no_board_serves_disconnected_and_writes_nothing python/tests/test_launcher_no_device.py::test_unwritable_data_root_still_exits"
+size = 3885
+status = "measured"
+test_count = 104
+tests_digest = "af8b476f1f89482ae2002cc2083cdce44c5663cf277f2b5486a621b8c7f1abf5"
+at = "2026-11-10T07:24:25Z"
+actor = "lognd"
+rev = 1

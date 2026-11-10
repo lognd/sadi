@@ -2,7 +2,8 @@
 id = "01M729642YCP4MRYBWBNQBYW7A"
 title = "audit4 H1+M3: CSV/plot/figure/refit use one gauge length for both specimens; tare uncertainty differs from Results"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

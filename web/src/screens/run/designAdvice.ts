@@ -5,6 +5,7 @@
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import type { Result } from "../../api/result";
+import type { components } from "../../api/schema";
 
 const log = getLogger("screens.run.designAdvice");
 
@@ -20,14 +21,18 @@ export interface DesignSuggestion {
   readonly why: string;
 }
 
-/** "Enough data" indicator from the server. */
+/** Server reason code, generated from the OpenAPI schema so a rename breaks tsc here. */
+// frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+export type ReasonCode = components["schemas"]["ConfidenceIndicator"]["reasons"][number];
+
+/** "Enough data" indicator from the server (the fields the UI reads). */
 export interface DesignIndicator {
   readonly n: number;
   readonly state: "collecting" | "enough" | "diminishing" | "unreliable";
   readonly ratio: number | null;
   readonly consecutive_ok: number;
   readonly patience: number;
-  readonly reasons: readonly string[];
+  readonly reasons: readonly ReasonCode[];
 }
 
 /** Whole advice payload. */
@@ -39,14 +44,31 @@ export function getDesignAdvice(phase: string, fetchImpl: typeof fetch = fetch):
   return getJson<DesignAdvice>(`/api/design/next-weight?phase=${encodeURIComponent(phase)}`, fetchImpl);
 }
 
+/** Plain-language text for one reason code; exhaustive so a new server code fails tsc. */
+function reasonText(r: ReasonCode, i: DesignIndicator): string | null {
+  switch (r) {
+    case "no_elastic_fit": return "Take at least 3 elastic points first; the yield suggestion needs the straight-line fit.";
+    case "no_calibration": return "No LVDT calibration was recorded, so the yield offset cannot be worked out. Choose loads yourself.";
+    case "cold_start": return `Keep going: collect a few more points first (you have ${String(i.n)}).`;
+    case "departure_from_linear": return "The last point is off the straight line. Check it before adding more.";
+    case "range_exhausted": return "You have reached the top of the elastic range; finish this step.";
+    case "yield_not_reached": return "The curve has not bent over yet. Try a heavier load.";
+    case "singular": return "The points so far cannot be fitted (they are too alike). Try a clearly different load.";
+    case "no_offset": return "The yield offset cannot be worked out yet. Choose loads yourself.";
+    case "diminishing_returns": return null; // falls through to the state wording ("Nearly there")
+  }
+}
+
+/** Reason precedence, highest first; the first present reason with text wins. */
+const REASON_ORDER: readonly ReasonCode[] = ["no_elastic_fit", "no_calibration", "cold_start", "singular", "no_offset", "departure_from_linear", "range_exhausted", "yield_not_reached", "diminishing_returns"];
+
 /** Plain-language reading of the indicator for a student. */
 export function indicatorText(i: DesignIndicator): string {
-  if (i.reasons.includes("no_elastic_fit")) return "Take at least 3 elastic points first; the yield suggestion needs the straight-line fit.";
-  if (i.reasons.includes("no_calibration")) return "No LVDT calibration was recorded, so the yield offset cannot be worked out. Choose loads yourself.";
-  if (i.reasons.includes("cold_start")) return `Keep going: collect a few more points first (you have ${String(i.n)}).`;
-  if (i.reasons.includes("departure_from_linear")) return "The last point is off the straight line. Check it before adding more.";
-  if (i.reasons.includes("range_exhausted")) return "You have reached the top of the elastic range; finish this step.";
-  if (i.reasons.includes("yield_not_reached")) return "The curve has not bent over yet. Try a heavier load.";
+  for (const r of REASON_ORDER) {
+    if (!i.reasons.includes(r)) continue;
+    const t = reasonText(r, i);
+    if (t !== null) return t;
+  }
   switch (i.state) {
     case "enough": return "Enough data: more points will barely improve the result. You can stop (your call).";
     case "diminishing": return "Nearly there: extra points now help very little.";

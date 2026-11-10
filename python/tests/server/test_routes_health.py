@@ -50,3 +50,18 @@ def test_health_reports_data_root_without_running_doctor(
     app = FastAPI()
     app.include_router(make_health_router(data_root=tmp_path))
     assert TestClient(app).get("/api/health").json()["data_root"] == str(tmp_path)
+
+
+# frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+# frob:tests python/sadi/server/routes_health.py::make_health_router
+def test_health_provenance_is_read_per_request() -> None:
+    """A provenance callable is evaluated on each request, not captured at creation."""
+    from sadi.synthetic.provenance import REAL, UNKNOWN
+
+    state = {"p": REAL}
+    app = FastAPI()
+    app.include_router(make_health_router(provenance=lambda: state["p"]))
+    client = TestClient(app)
+    assert client.get("/api/health").json()["provenance"] == REAL.model_dump(mode="json")
+    state["p"] = UNKNOWN
+    assert client.get("/api/health").json()["provenance"] == UNKNOWN.model_dump(mode="json")

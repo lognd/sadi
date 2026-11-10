@@ -286,7 +286,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(
         make_health_router(
             (lambda: _dev.is_simulator) if _dev is not None else None,
-            app.state.sessions.provenance(),
+            app.state.sessions.provenance,  # per request, so an open orphan import reports unknown
             cfg.data_root,
         )
     )

@@ -336,12 +336,15 @@ def select_next(  # noqa: PLR0913
         reasons.append(fit)
         state = GpState.UNRELIABLE if fit in {"cold_start", "singular"} else GpState.COLLECTING
         if fit == "cold_start":
+            # frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+            alt_pool = pool
             if monotonic:
                 real = [c for c in pool if c.x > 0.0] or pool
                 pick = _cold_step_pick(real, n, n_min)
+                alt_pool = real  # a zero load is never a suggestion, so never an alternative
             else:
                 pick = _cold_pick(cands, n, lo, hi)
-            gains = [(0.0, pick)] + [(0.0, c) for c in pool if c is not pick][:N_ALTERNATIVES]
+            gains = [(0.0, pick)] + [(0.0, c) for c in alt_pool if c is not pick][:N_ALTERNATIVES]
         elif fit == "yield_not_reached":
             # explore upward: highest-load candidates first (nothing is known beyond the data)
             above = [c for c in pool if c.x > max((o.x for o in obs), default=lo)] or pool
@@ -404,7 +407,7 @@ def select_next(  # noqa: PLR0913
         criterion=cfg.criterion,
         elapsed_ms=elapsed,
         budget_exceeded=over,
-        why=_why(state, reasons, top[0]),
+        why=_why(state, reasons, top[0], _unit_noun(unit)),
     )
     ind = ConfidenceIndicator(
         phase=phase,
@@ -430,8 +433,14 @@ def select_next(  # noqa: PLR0913
     return Ok(DesignAdvice(suggestion=sug, indicator=ind))
 
 
-def _why(state: GpState, reasons: Sequence[ReasonCode], gain: float) -> str:
-    """One plain sentence explaining the pick, for the student."""
+def _unit_noun(unit: str) -> str:
+    """Student-facing noun for the suggested quantity (kg -> load, m -> gauge height)."""
+    # frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+    return {"kg": "load", "m": "gauge height"}.get(unit, "value")
+
+
+def _why(state: GpState, reasons: Sequence[ReasonCode], gain: float, noun: str = "load") -> str:
+    """One plain sentence explaining the pick, for the student; `noun` names the quantity."""
     if "cold_start" in reasons:
         return "Too few points to model yet, so this spreads your points across the range."
     if "yield_not_reached" in reasons:
@@ -441,5 +450,5 @@ def _why(state: GpState, reasons: Sequence[ReasonCode], gain: float) -> str:
     if state is GpState.ENOUGH:
         return "You already have enough data; another point barely helps."
     if gain > 0:
-        return "This load should tighten the result the most."
-    return "This load is the best remaining choice."
+        return f"This {noun} should tighten the result the most."
+    return f"This {noun} is the best remaining choice."

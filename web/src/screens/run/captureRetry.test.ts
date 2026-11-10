@@ -2,7 +2,7 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
 import { isRequestIdReused, problemText } from "../review/api";
-import { buildSpecimenBody, postCapture, wroteNothing, type CaptureBody } from "./capture";
+import { buildSpecimenBody, postCapture, whySameLoad, wroteNothing, type CaptureBody } from "./capture";
 import type { LiveView } from "./live";
 
 const view: LiveView = { volts: 1, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false };
@@ -47,5 +47,14 @@ describe("wroteNothing", () => {
   it("is false for network errors and 5xx, whose outcome is unknown", () => {
     expect(wroteNothing({ kind: "network", message: "x" })).toBe(false);
     expect(wroteNothing(http(500, "urn:x"))).toBe(false);
+  });
+});
+
+// frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+describe("whySameLoad", () => {
+  it("names the button the phase actually shows", () => {
+    expect(whySameLoad("elastic")).toContain('"I added a weight"');
+    expect(whySameLoad("calibrate")).toContain('"I moved to a new gauge block"');
+    expect(whySameLoad("elastic")).not.toContain("mark button");
   });
 });

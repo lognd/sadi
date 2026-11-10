@@ -41,10 +41,10 @@ def _package_version() -> str:
 
 def make_health_router(
     simulated: Callable[[], bool] | None = None,
-    provenance: DataProvenance = REAL,
+    provenance: Callable[[], DataProvenance] | DataProvenance = REAL,
     data_root: Path | None = None,
 ) -> APIRouter:
-    """Build the health router; `simulated` reports the sim flag, `data_root` the data folder."""
+    """Build the health router; `simulated` reports the sim flag, `provenance` (value or per-request callable) the data origin, `data_root` the data folder."""
     # frob:ticket 01M72YAG3BHTR584JK3TY2DE40
     root = resolve_data_root(RunOptions(data_root=str(data_root) if data_root else None), RealProbes())
     router = APIRouter(prefix="/api", tags=["health"])
@@ -53,7 +53,8 @@ def make_health_router(
     async def get_health() -> HealthOut:
         """Return status "ok", the package version and the sim flag when known."""
         sim = simulated() if simulated is not None else None
-        _log.debug("health ok (simulated=%s)", sim)
-        return HealthOut(version=_package_version(), simulated=sim, provenance=provenance, data_root=root)
+        prov = provenance() if callable(provenance) else provenance  # frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+        _log.debug("health ok (simulated=%s provenance=%s)", sim, prov)
+        return HealthOut(version=_package_version(), simulated=sim, provenance=prov, data_root=root)
 
     return router

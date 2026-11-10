@@ -16,7 +16,7 @@ import type { KeyAction } from "../../keys/keymap";
 import type { WizardState } from "../../components/wizard/types";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, wroteNothing, WHY_SAME_LOAD, type Confirm, type FrozenAttempt } from "./capture";
+import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, wroteNothing, whySameLoad, type Confirm, type FrozenAttempt } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
@@ -122,7 +122,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [captureOnce]);
 
   const accept = useCallback((early: boolean): void => {
-    if (loadRecorded.current) { log.info("accept ignored: load already recorded"); setMessage(WHY_SAME_LOAD); setConfirm("idle"); return; }
+    if (loadRecorded.current) { log.info("accept ignored: load already recorded"); setMessage(whySameLoad(p.phase)); setConfirm("idle"); return; }
     const d = decide(view, early, confirm);
     log.info("accept", { early, decision: d.kind });
     if (d.kind === "blocked") { setMessage(d.why); setConfirm("idle"); }

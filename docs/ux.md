@@ -67,7 +67,7 @@ contract in [core/lab-modules.md](core/lab-modules.md).
   open, so `SessionSetup` (after create/resume) and `CloseSession` call
   `useRefreshFacts()` to poll at once; "No session" never lingers after either.
 - Setup list: sessions whose provenance is synthetic carry a bold SYNTHETIC badge.
-- Run hints: the first point of a phase needs the mark button; after each Accept
+- Run hints: the first point of a phase needs the phase's mark button (its real label, e.g. "I added a weight"; the same-load hint quotes it); after each Accept
   the next point opens by itself, and the button only restarts the settle timer.
 
 ### 2.1 Step rail states

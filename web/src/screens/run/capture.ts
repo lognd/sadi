@@ -62,8 +62,11 @@ export function newRequestId(): string {
   return globalThis.crypto.randomUUID();
 }
 
-/** Hint shown when a second accept arrives before the load was changed. */
-export const WHY_SAME_LOAD = "This load is already recorded. Change the load or gauge block, then click the mark button, before accepting again.";
+/** Hint shown when a second accept arrives before the load was changed; names the phase's real mark button. */
+// frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+export function whySameLoad(phase: RunPhase): string {
+  return `This load is already recorded. Change the load or gauge block, then click "${PHASES[phase].markLabel}", before accepting again.`;
+}
 
 /** Build the capture body. `rawSeq` is the newest raw seq seen on the stream (see docs gap G1). */
 export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean, requestId?: string): CaptureBody {

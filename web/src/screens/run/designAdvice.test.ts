@@ -10,3 +10,14 @@ describe("indicatorText range_exhausted", () => {
     expect(t).toContain("top of the elastic range");
   });
 });
+
+// frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+describe("indicatorText new reasons", () => {
+  it("explains singular and no_offset instead of the generic line", () => {
+    expect(indicatorText({ ...base, reasons: ["singular"] })).toContain("cannot be fitted");
+    expect(indicatorText({ ...base, reasons: ["no_offset"] })).toContain("yield offset");
+  });
+  it("falls back to state wording for diminishing_returns", () => {
+    expect(indicatorText({ ...base, state: "diminishing", reasons: ["diminishing_returns"] })).toContain("Nearly there");
+  });
+});

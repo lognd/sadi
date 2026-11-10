@@ -6,7 +6,8 @@ Status: current
 It mounts `make_doctor_router()` (`/api/doctor`, see [doctor-ui.md](../web/doctor-ui.md))
 and `make_plugins_router(registry)` (`/api/plugins`).
 `make_health_router()` serves `GET /api/health` -> `{status: "ok", version, simulated}`; it needs no
-session (never 409). `simulated` is null unless `AppSettings.device` is set.
+session (never 409). `simulated` is null unless `AppSettings.device` is set. `provenance` is read per request from the open
+session (`SessionService.provenance`), so an opened orphan import reports `unknown`, not the startup default.
 
 `AppSettings` (pydantic, frozen) is the injection point: `registry` (a `PluginRegistry`,
 default empty) and `data_root` (a `Path`, default `data`). The settings are stored on

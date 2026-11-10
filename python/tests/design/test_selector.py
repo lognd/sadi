@@ -155,3 +155,18 @@ def test_elastic_never_suggests_current_or_lower_load() -> None:
     adv = select_next(DesignPhase.ELASTIC, over, cands, TARGET).unwrap()
     assert adv.suggestion is None
     assert adv.indicator.reasons == ("range_exhausted",)
+
+
+# frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
+# frob:tests python/sadi/design/selector.py::select_next
+def test_cold_start_alternatives_exclude_zero_and_why_names_the_unit() -> None:
+    """Cold-start alternatives are never 0 kg, and the why text names the gauge height for metres."""
+    cands = [Candidate(candidate_id=f"m{i}", x=3.0 * i / 24) for i in range(25)]
+    adv = select_next(DesignPhase.ELASTIC, [], cands, TARGET, unit="kg").unwrap()
+    assert adv.suggestion is not None
+    assert all(a.x > 0.0 for a in adv.suggestion.alternatives)
+    hs = [Candidate(candidate_id=f"h{i}", x=0.01 * (i + 1)) for i in range(10)]
+    obs = [Obs(x=h.x, y=3.0 * h.x, u=1e-6) for h in hs[:5]]
+    adv_h = select_next(DesignPhase.LVDT_CAL, obs, hs, TARGET, unit="m").unwrap()
+    assert adv_h.suggestion is not None
+    assert "load" not in adv_h.suggestion.why

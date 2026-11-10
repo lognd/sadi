@@ -2,12 +2,12 @@
 id = "01M72XJMDHV60KRBV1ANWKHKC9"
 title = "Record a large raw-sample block per tare/capture and store mean, sd, n (like the VI 2500-sample block)"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:25:16Z"
-updated = "2026-11-10T14:25:16Z"
+updated = "2026-11-10T15:13:38Z"
 labels = ["creates:tests/labs/lctt/test_block_capture.py"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "web/src/screens/run/live.ts", "web/src/screens/run/inputFields.ts"]
 

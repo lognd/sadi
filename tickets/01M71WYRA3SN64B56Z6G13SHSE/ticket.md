@@ -2,7 +2,8 @@
 id = "01M71WYRA3SN64B56Z6G13SHSE"
 title = "Audit1 #3 #6 #20 #19: validate capture inputs and windows, units/range checks, wizard needs valid fit and clamp pass"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

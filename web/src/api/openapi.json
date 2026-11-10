@@ -3891,6 +3891,53 @@
         "summary": "Resume"
       }
     },
+    "/api/sessions/{name}/export/{format_id}": {
+      "get": {
+        "description": "Download one export of a closed session; read-only, so no copy is kept and nothing is written.",
+        "operationId": "export_closed_api_sessions__name__export__format_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "format_id",
+            "required": true,
+            "schema": {
+              "title": "Format Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Closed"
+      }
+    },
     "/api/stress-strain/fit": {
       "post": {
         "description": "Recompute E, r^2 and U95 over the window from stored data; read-only.",

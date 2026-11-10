@@ -2,6 +2,7 @@
 import { getJson } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
+import { downloadFrom, toProblem, type DownloadedExport } from "../export/api";
 import type { components } from "../../api/schema";
 import { plainNote } from "../../components/wizard/plainText";
 import { toFailure, type WizardFailure } from "../../components/wizard/wizardApi";
@@ -60,4 +61,33 @@ export async function resumeSession(name: string, fetchImpl: typeof fetch = fetc
 export function failureText(f: WizardFailure): string {
   if (f.kind === "problem") return `${f.problem.title}: ${plainNote(f.problem.hint)}`;
   return f.error.kind === "http" ? `Server error ${String(f.error.status)} - try again, and open Doctor if it keeps happening` : `Network error: ${f.error.message}`;
+}
+
+/** Export format id of the CSV per lab id; labs absent here get no Download button. */
+const CSV_FORMATS: Readonly<Record<string, string>> = { lctt: "lctt-csv" };
+
+/** The CSV export format id for a lab, or null when the web does not know one. */
+export function csvFormatFor(labId: string): string | null {
+  return CSV_FORMATS[labId] ?? null;
+}
+
+/** URL of the read-only export of a closed session (never opens, versions or writes it). */
+export function closedExportUrl(name: string, formatId: string): string {
+  return `/api/sessions/${encodeURIComponent(name)}/export/${encodeURIComponent(formatId)}`;
+}
+
+/** Download a closed session's export read-only; a refusal comes back as a WizardFailure with the problem detail. */
+export async function downloadClosedExport(name: string, formatId: string, fetchImpl: typeof fetch = fetch): Promise<Result<DownloadedExport, WizardFailure>> {
+  const r = await downloadFrom(closedExportUrl(name, formatId), formatId, fetchImpl);
+  return r.ok ? r : err(toFailure(r.error));
+}
+
+/** One line for a refused download: title, detail and hint from the problem body. */
+export function downloadFailureText(f: WizardFailure): string {
+  if (f.kind === "problem") return `${f.problem.title}: ${f.problem.detail} ${plainNote(f.problem.hint)}`.trim();
+  if (f.error.kind === "http") {
+    const p = toProblem(f.error);
+    return `${p.title}: ${p.detail} ${p.hint}`.trim();
+  }
+  return failureText(f);
 }

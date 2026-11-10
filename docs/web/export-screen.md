@@ -33,3 +33,7 @@ The report states the data source (real measurement or SYNTHETIC) in plain words
 The Download links fetch the file with `fetch()` instead of following the link. A refusal (for example 422 NotReady) shows the problem detail and hint in the page; success saves the file and shows "Saved a copy in <path>" from the `X-SADI-Saved` header (or a warning when the header is `failed`).
 
 The header of every wizard screen has **Close session**, and the finished screen has **Start another session**. Both ask for confirmation, state that captured data stays saved in the session folder, then POST `/api/session/close` and return to session setup.
+
+## Download a closed session (~VBQ0A3E)
+
+Session setup shows a **Download** button next to Resume for each closed session. It fetches the CSV through the read-only `GET /api/sessions/{name}/export/{format_id}` (no new version, no device needed) and saves it; a refusal shows the problem detail and hint in the page.

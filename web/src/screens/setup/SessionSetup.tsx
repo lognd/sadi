@@ -2,8 +2,9 @@
 // frob:accept COV001 because="covered by SessionSetup.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
+import { saveBlob } from "../export/ExportScreen";
 import {
-  createSession, failureText, listLabs, listSessions, resumeSession,
+  createSession, csvFormatFor, downloadClosedExport, downloadFailureText, failureText, listLabs, listSessions, resumeSession,
   type LabInfo, type SessionSummary,
 } from "./sessionApi";
 
@@ -68,6 +69,18 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
     });
   };
 
+  const download = (s: SessionSummary): void => {
+    const fmt = csvFormatFor(s.lab);
+    if (pending !== null || fmt === null) return;
+    setPending(s.name);
+    setMessage("");
+    void downloadClosedExport(s.name, fmt).then((r) => {
+      setPending(null);
+      if (r.ok) { saveBlob(r.value.blob, r.value.filename); log.info("closed session downloaded", { name: s.name }); }
+      else setMessage(downloadFailureText(r.error));
+    });
+  };
+
   const create = (e: React.SyntheticEvent): void => {
     e.preventDefault();
     if (pending !== null || lab === "") return;
@@ -127,6 +140,11 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
                   <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
                     Resume {s.name}
                   </button>
+                  {s.state === "closed" && csvFormatFor(s.lab) !== null ? (
+                    <button type="button" disabled={pending !== null} onClick={() => { download(s); }}>
+                      Download {s.name}
+                    </button>
+                  ) : null}
                 </li>
               ))}
             </ul>

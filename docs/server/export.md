@@ -37,3 +37,7 @@ full replay and anomalies fall back to the verified full replay.
 Export never serves unverified data: `render_export` calls `SessionReplayCache.events(path, verify=True)`,
 which discards the cached replayer and runs a full CRC-verified replay, so corruption in WAL bytes the
 incremental tail had already applied fails the export (replay error, nothing rendered).
+
+## Read-only export of a closed session (~VBQ0A3E)
+
+`GET /api/sessions/{name}/export/{format_id}` renders a closed session without Resume: it takes no writer lock, creates no version, appends nothing to the WAL, writes no copy and needs no device. `SessionService.read_closed` refuses with 409 `session_open` (the open session, or a live writer holds it), 409 `session_corrupt` (torn or corrupt WAL, or recovery fails) and 404 for unknown names; every refusal carries a hint and nothing on disk is modified. Rendering shares `_render` with `render_export`.

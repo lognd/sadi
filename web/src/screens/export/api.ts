@@ -79,11 +79,16 @@ export function dispositionName(header: string | null, fallback: string): string
 }
 
 /** Download one export format with fetch so a refusal can be shown in the page; never throws. */
-export async function downloadExport(formatId: string, fetchImpl: typeof fetch = fetch): Promise<Result<DownloadedExport, ApiError>> {
-  log.info("download requested", { formatId });
+export function downloadExport(formatId: string, fetchImpl: typeof fetch = fetch): Promise<Result<DownloadedExport, ApiError>> {
+  return downloadFrom(exportUrl(formatId), formatId, fetchImpl);
+}
+
+/** Fetch `url` as an export download (any non-2xx becomes an ApiError carrying the problem body); never throws. */
+export async function downloadFrom(url: string, formatId: string, fetchImpl: typeof fetch = fetch): Promise<Result<DownloadedExport, ApiError>> {
+  log.info("download requested", { formatId, url });
   let res: Response;
   try {
-    res = await fetchImpl(exportUrl(formatId));
+    res = await fetchImpl(url);
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     log.error("download network failure", { formatId, message });

@@ -3,7 +3,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { SessionSetup, slugFrom, specimenFrom } from "./SessionSetup";
-import { failureText } from "./sessionApi";
+import { closedExportUrl, csvFormatFor, downloadClosedExport, downloadFailureText, failureText } from "./sessionApi";
 
 describe("SessionSetup", () => {
   it("renders the resume list and the new-session form", () => {
@@ -21,5 +21,35 @@ describe("SessionSetup", () => {
 
   it("describes failures", () => {
     expect(failureText({ kind: "transport", error: { kind: "http", status: 500, body: "" } })).toContain("500");
+  });
+
+  it("builds the read-only export url and knows the lctt csv format", () => {
+    expect(closedExportUrl("a b", "lctt-csv")).toBe("/api/sessions/a%20b/export/lctt-csv");
+    expect(csvFormatFor("lctt")).toBe("lctt-csv");
+    expect(csvFormatFor("other")).toBeNull();
+  });
+
+  it("downloads a closed session with a plain GET and no body", async () => {
+    const calls: unknown[][] = [];
+    const f = ((...a: unknown[]) => {
+      calls.push(a);
+      return Promise.resolve(new Response("a,b\n", { status: 200, headers: { "Content-Disposition": 'attachment; filename="s-lctt-csv.csv"' } }));
+    }) as unknown as typeof fetch;
+    const r = await downloadClosedExport("s", "lctt-csv", f);
+    expect(r.ok).toBe(true);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual(["/api/sessions/s/export/lctt-csv"]);
+  });
+
+  it("shows the problem detail and hint when the server refuses", async () => {
+    const body = JSON.stringify({ title: "session open", detail: "s is the open session", hint: "Close it first." });
+    const f = (() => Promise.resolve(new Response(body, { status: 409 }))) as unknown as typeof fetch;
+    const r = await downloadClosedExport("s", "lctt-csv", f);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      const text = downloadFailureText(r.error);
+      expect(text).toContain("s is the open session");
+      expect(text).toContain("Close it first.");
+    }
   });
 });

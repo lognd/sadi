@@ -1,4 +1,4 @@
-"""REST routes for exporting the open session through its lab's export formats (read-only)."""
+"""REST routes for exporting the open session, and read-only export of closed sessions, through the lab export formats."""
 
 # frob:ticket 01M6WWMSA41S7Y91W4RE16P75D
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
@@ -20,7 +20,8 @@ from sadi.core.registry import LabRegistry
 from sadi.logging_setup import get_logger
 from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, ProblemError, from_sadi, not_found, unwrap
-from sadi.server.service import SessionService
+from sadi.server.schemas import PointView
+from sadi.server.service import ClosedSession, SessionService
 from sadi.store.exports import ExportError, write_export
 from sadi.server.session_points import active_points, analyze, to_captured
 from sadi.synthetic.provenance import EXPORT_PREFIX, PROVENANCE_HEADER, stamp_export
@@ -65,14 +66,15 @@ def _open_lab(svc: SessionService, labs: LabRegistry) -> Result[tuple[str, LabMo
 
 
 @propagate
-def render_export(
-    svc: SessionService,
-    labs: LabRegistry,
+def _render(
+    lab: LabModule,
+    name: str,
+    sdir: Path,
+    views: list[PointView],
     format_id: str,
-    cache: SessionReplayCache | None = None,
+    cache: SessionReplayCache | None,
 ) -> Result[tuple[ExportFormat, str, bytes], ApiProblem]:
-    """Render `format_id` for the open session in memory; nothing is written to disk or the WAL."""
-    name, lab = _open_lab(svc, labs).unwrap()
+    """Render `format_id` over `views` of the session at `sdir` in memory (shared by both paths)."""
     fmt = next((f for f in lab.export_formats if f.id == format_id), None)
     if fmt is None:
         _log.warning("unknown export format %r for lab %s", format_id, lab.id)
@@ -83,7 +85,7 @@ def render_export(
                 f"Pick one of this lab's formats ({known}); GET /api/export lists them.",
             )
         )
-    active = active_points(svc.points().unwrap())
+    active = active_points(views)
     captured = to_captured(active)
     analysis = analyze(lab, active)
     if analysis.is_err:
@@ -91,9 +93,7 @@ def render_export(
         return Err(from_sadi(analysis.danger_err))
     # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
     replays = cache if cache is not None else SessionReplayCache()
-    events = replays.events(
-        svc.session_path().unwrap(), verify=True
-    )  # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
+    events = replays.events(sdir, verify=True)  # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
     if events.is_err:
         _log.error("export %s: session replay failed: %s", format_id, events.danger_err)
         return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))
@@ -104,6 +104,33 @@ def render_export(
         return Err(from_sadi(body.danger_err))
     _log.info("exported %s for %s (%d bytes)", format_id, name, len(body.danger_ok))
     return Ok((fmt, name, body.danger_ok))
+
+
+@propagate
+def render_export(
+    svc: SessionService,
+    labs: LabRegistry,
+    format_id: str,
+    cache: SessionReplayCache | None = None,
+) -> Result[tuple[ExportFormat, str, bytes], ApiProblem]:
+    """Render `format_id` for the open session in memory; nothing is written to disk or the WAL."""
+    name, lab = _open_lab(svc, labs).unwrap()
+    views = svc.points().unwrap()
+    return _render(lab, name, svc.session_path().unwrap(), views, format_id, cache)
+
+
+# frob:ticket 01M724AKTJNNRY06637VBQ0A3E
+@propagate
+def render_closed_export(
+    svc: SessionService,
+    name: str,
+    format_id: str,
+    cache: SessionReplayCache | None = None,
+) -> Result[tuple[ExportFormat, ClosedSession, bytes], ApiProblem]:
+    """Render `format_id` for closed session `name` read-only: no writer, lock, version or device."""
+    closed = svc.read_closed(name).unwrap()
+    fmt, _, body = _render(closed.lab, name, closed.path, closed.views, format_id, cache).unwrap()
+    return Ok((fmt, closed, body))
 
 
 #: Response header naming the copy kept in the session folder ("failed" when it could not be kept).
@@ -181,6 +208,22 @@ def make_export_router(
             headers["Content-Disposition"] = f'attachment; filename="{fname}"'
             saved = _save_copy(svc, fmt.id, f"{name}-{fmt.id}", ext, body)
             headers[SAVED_HEADER] = saved or "failed"
+        return Response(content=body, media_type=fmt.media_type, headers=headers)
+
+    # frob:ticket 01M724AKTJNNRY06637VBQ0A3E
+    @r.get("/sessions/{name}/export/{format_id}")
+    def export_closed(name: str, format_id: str) -> Response:
+        """Download one export of a closed session; read-only, so no copy is kept and nothing is written."""
+        fmt, closed, body = unwrap(render_closed_export(svc, name, format_id, replays))
+        headers = {PROVENANCE_HEADER: "real"}
+        if closed.provenance.synthetic:
+            body = stamp_export(body, fmt.media_type, closed.provenance)
+            headers[PROVENANCE_HEADER] = "synthetic"
+        if _is_download(fmt):
+            fname = f"{name}-{fmt.id}.{_EXT.get(fmt.media_type, 'bin')}"
+            if closed.provenance.synthetic:
+                fname = EXPORT_PREFIX + fname
+            headers["Content-Disposition"] = f'attachment; filename="{fname}"'
         return Response(content=body, media_type=fmt.media_type, headers=headers)
 
     @r.post("/export/figure/{figure_id}")

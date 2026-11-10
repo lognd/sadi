@@ -52,7 +52,7 @@ from sadi.server.schemas import (
     SessionInfo,
     SessionSummary,
 )
-from sadi.store.events import EventsWal, ReplayState
+from sadi.store.events import EventsWal, ReplayState, recover_state
 from sadi.store.incremental import IncrementalReplay
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FLAG_JSON, NewRecord, RecordType
@@ -62,6 +62,7 @@ from sadi.store.session import (
     SessionHandle,
     SessionMeta,
     create_session_in_held_root,
+    read_lock_holder,
     resume_session_in_held_root,
     session_is_synthetic,
 )
@@ -75,6 +76,16 @@ _log = get_logger(__name__)
 DURABLE_TIMEOUT_S = 10.0
 
 _T = TypeVar("_T")
+
+
+@dataclass(frozen=True)
+class ClosedSession:
+    """A session read straight from disk for review: nothing about it can be written."""
+
+    path: Path
+    lab: LabModule
+    views: list[PointView]
+    provenance: DataProvenance
 
 
 @dataclass
@@ -220,6 +231,73 @@ class SessionService:
                 )
             )
         return out
+
+    # frob:ticket 01M724AKTJNNRY06637VBQ0A3E
+    @propagate
+    def read_closed(self, name: str) -> Result[ClosedSession, ApiProblem]:
+        """Read session `name` from disk without a writer, lock, version, WAL append or device.
+
+        Refuses the session this service has open and one whose writer is alive elsewhere;
+        a corrupt log is a problem too. Nothing under the session directory is modified.
+        """
+        with self._lock:
+            if self._open is not None and self._open.handle.path.name == name:
+                return Err(
+                    conflict(
+                        "session_open",
+                        f"{name} is the open session and is still being written",
+                        "Close it first, or use the export on the open session.",
+                    )
+                )
+            path = self._root / SESSIONS_DIRNAME / name
+            if not name or "/" in name or "\\" in name or name.startswith(".") or not path.is_dir():
+                return Err(not_found(name, "Pick a session from the list of sessions."))
+            mf = read_manifest(path)
+            if mf.is_err or mf.danger_ok is None:
+                _log.error("read_closed %s: manifest unreadable", name)
+                return Err(
+                    conflict(
+                        "session_unreadable",
+                        f"{name} has no readable manifest",
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            holder, alive = read_lock_holder(path)
+            if mf.danger_ok.state == "open" and alive:
+                _log.warning("read_closed %s: writer alive (%s)", name, holder)
+                return Err(
+                    conflict(
+                        "session_open",
+                        f"{name} is being written by a running process",
+                        "Close it there first; nothing was changed.",
+                    )
+                )
+            lab = self._labs.get(LabId(mf.danger_ok.lab_module)).map_err(from_sadi).unwrap()
+            scan = WalReader.scan(path / "wal")  # read-only verification of the whole log
+            if scan.is_err or scan.danger_ok.tail is not None:
+                detail = repr(scan.danger_err if scan.is_err else scan.danger_ok.tail)
+                _log.error("read_closed %s: WAL not clean: %s", name, detail)
+                return Err(
+                    conflict(
+                        "session_corrupt",
+                        f"{name} has a damaged or incomplete log: {detail}"[:300],
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            state = recover_state(path)
+            if state.is_err:
+                _log.error("read_closed %s: replay failed: %s", name, state.danger_err)
+                return Err(
+                    conflict(
+                        "session_corrupt",
+                        f"{name} could not be replayed: {state.danger_err!r}"[:300],
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            views = [PointView.of(p) for p in state.danger_ok.view().points]
+            prov = SYNTHETIC if session_is_synthetic(path) else REAL
+            _log.info("read_closed %s: %d points (read-only)", name, len(views))
+            return Ok(ClosedSession(path=path, lab=lab, views=views, provenance=prov))
 
     # ---- lifecycle --------------------------------------------------------------------
 

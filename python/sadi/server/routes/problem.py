@@ -44,6 +44,7 @@ _STORE_STATUS: dict[str, int] = {
     "ParentCorrupt": 409,
     "ProvenanceMismatch": 409,
     "Backpressure": 503,
+    "Stalled": 503,  # frob:ticket 01M72YKEWHJJXEBBV7XDP5Z31J
     "Closed": 409,
 }
 

@@ -69,3 +69,14 @@ def test_bad_capture_and_wizard_errors(client: TestClient) -> None:
 def test_validation_errors_are_problem_json(client: TestClient) -> None:
     """Malformed bodies (extra field) are 422 problem+json, not FastAPI's default shape."""
     _assert_problem(client.post("/api/sessions", json={"lab": "lctt", "bogus": 1}), 422)
+
+
+# frob:ticket 01M72YKEWHJJXEBBV7XDP5Z31J
+# frob:tests python/sadi/server/routes/problem.py::from_model
+def test_durability_stall_is_503_like_backpressure() -> None:
+    """A durability timeout maps to 503, matching the OpenAPI, not the 500 default."""
+    from sadi.server.routes.problem import from_model
+    from sadi.store.writer_thread import Stalled
+
+    p = from_model(Stalled(waited_s=1.0, durable_seq=0, enqueued_seq=2), "store")
+    assert p.status == 503 and p.hint

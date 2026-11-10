@@ -2,7 +2,8 @@
 id = "01M72D37RN0VN65DDCSPWHJMJ7"
 title = "Run-step guidance wording, accept-key repeat guard, capture request_id idempotency, sim load-change phase (audit5 M5 L1 L7 MED11)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 reporter = "lognd"

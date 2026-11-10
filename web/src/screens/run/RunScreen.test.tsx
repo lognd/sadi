@@ -9,7 +9,7 @@ import type { ConnState } from "../../ws/client";
 import { decodeFrame } from "../../ws/frame";
 import { parseMessage, type ServerMessage } from "../../ws/messages";
 import { encodeTrace } from "../../ws/testframes";
-import { buildBody, decide, postCapture } from "./capture";
+import { buildBody, decide, newRequestId, postCapture } from "./capture";
 import { postLoadChange } from "./loadChange";
 import { PHASES } from "./phases";
 import { countPhasePoints, finishBlockedWhy } from "./pointCount";
@@ -129,6 +129,12 @@ describe("capture decisions", () => {
     expect(b).toMatchObject({ phase: "elastic", settled: false, forced_early: true, drift_rate: 0.01 });
     expect(buildBody("tare", {}, 9, view(), false)).toMatchObject({ phase: "tare", settled: true, forced_early: false });
   });
+  // frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+  it("body carries the request_id only when given, and ids are unique", () => {
+    expect(buildBody("tare", {}, 9, view(), false, "abc")).toMatchObject({ request_id: "abc" });
+    expect(buildBody("tare", {}, 9, view(), false)).not.toHaveProperty("request_id");
+    expect(newRequestId()).not.toBe(newRequestId());
+  });
   it("postCapture posts JSON and surfaces refusals", async () => {
     const calls: string[] = [];
     const ok: typeof fetch = (i, init) => { calls.push(`${init?.method ?? "GET"} ${typeof i === "string" ? i : i instanceof URL ? i.href : i.url}`); return Promise.resolve(new Response(JSON.stringify({ seq: 3, summary: "p1" }), { status: 201 })); };
@@ -183,7 +189,7 @@ describe("run F3 export", () => {
 describe("mark load change", () => {
   it("RunView renders the Mark load change button", () => {
     expect(html(<RunView {...props()} />)).toContain("I moved to a new gauge block");
-    expect(html(<RunView {...props()} />)).toContain("the next point opens by itself");
+    expect(html(<RunView {...props()} />)).toContain("click it again after every Accept");
     expect(html(<RunView {...props({ phase: "elastic" })} />)).toContain("I added a weight");
     expect(html(<RunView {...props()} />)).not.toContain("Mark load change");
   });
@@ -232,8 +238,8 @@ describe("audit1 run-screen fixes", () => {
     expect(v.driftVps).toBeNull();
   });
   it("guidanceText replaces a zero-kg hang instruction", () => {
-    expect(guidanceText("Hang a total of 0.000 kg")).not.toMatch(/0\.000/);
-    expect(guidanceText("Hang a total of 0.250 kg")).toContain("0.250");
+    expect(guidanceText("Add 0.000 kg of masses to the hanger (the hanger is added for you)")).not.toMatch(/0\.000/);
+    expect(guidanceText("Add 0.250 kg of masses to the hanger (the hanger is added for you)")).toContain("0.250");
   });
   it("RunView warns on an implausible diameter and offers metres", () => {
     const out = html(<RunView {...props({ phase: "tare", fields: { diameter: "0.2" } })} />);

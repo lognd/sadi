@@ -7,7 +7,7 @@ import { GuidancePanel } from "./GuidancePanel";
 import type { GuidanceState } from "./types";
 
 const base: GuidanceState = {
-  phase: "elastic", next_action: "Hang a total of 1.250 kg", suggested_load_kg: 1.25,
+  phase: "elastic", next_action: "Add 1.250 kg of masses to the hanger (the hanger is added for you)", suggested_load_kg: 1.25,
   expected_value: 70, unit: "GPa",
   confidence: { quantity: "E", half_width: 4, target_half_width: 3.5, relative: 0.0571, fraction: 0.875, met: false },
   points_taken: 4, max_points: 12, stop_early: false, stop_reason: "",

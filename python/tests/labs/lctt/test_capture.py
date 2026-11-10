@@ -187,3 +187,23 @@ def test_detector_exposes_raw_and_records() -> None:
     ctl.accept()
     assert len(ctl.detector.raw[0]) == 60
     assert len(ctl.detector.records) == 1
+
+
+# frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+# frob:tests python/sadi/labs/lctt/capture.py::CaptureController.tick
+def test_auto_does_not_recapture_same_load_until_start_point() -> None:
+    ctl, clock = make(mode=CaptureMode.AUTO, max_wait_s=30.0)
+    first = ctl.push(*block(0, 60))
+    assert not isinstance(first, Err) and first.danger_ok.captured is not None
+    clock.now += 1000.0
+    for _ in range(3):
+        tick = ctl.tick()
+        assert not isinstance(tick, Err) and tick.danger_ok.captured is None
+    again = ctl.push(*block(60, 200))
+    assert not isinstance(again, Err) and again.danger_ok.captured is None
+    # a new load change re-arms the controller
+    assert not isinstance(ctl.start_point(200.0, 2.0), Err)
+    ctl.push(*block(200, 206, decay))
+    clock.now += 31.0
+    tick = ctl.tick()
+    assert not isinstance(tick, Err) and tick.danger_ok.captured is not None

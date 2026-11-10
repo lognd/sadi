@@ -113,6 +113,7 @@ class CaptureController:
         self._resolve = resolver
         self._clock = clock
         self._started: float | None = None
+        self._armed = False
         self._mass_kg = 0.0
         self._u_mass_kg = 0.0
 
@@ -147,6 +148,7 @@ class CaptureController:
         self._mass_kg = mass_kg
         self._u_mass_kg = u_mass_kg
         self._started = self._clock()
+        self._armed = True
         _log.info("point started at t=%g (clock %g)", t, self._started)
         return Ok(None)
 
@@ -177,6 +179,10 @@ class CaptureController:
     def _auto(self, status: StreamStatus) -> Result[CaptureStep, StreamError | CaptureError]:
         """Apply the mode policy to the current status."""
         if status.point_index is None or self._cfg.mode is CaptureMode.CONFIRM:
+            return Ok(CaptureStep(status=status))
+        if not self._armed:
+            # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+            # no start_point since the last capture: the auto-opened point is the same load
             return Ok(CaptureStep(status=status))
         if status.state is SettleState.SETTLED:
             _log.info("auto-capture on settle (mode=%s)", self._cfg.mode)
@@ -222,8 +228,10 @@ class CaptureController:
         if isinstance(rec_res, Err):
             return Err(rec_res.danger_err)
         rec = rec_res.danger_ok
-        # the detector auto-opens the next point: restart the max-wait clock for it
+        # the detector auto-opens the next point: restart the max-wait clock for it, but do not
+        # auto-capture it again until start_point marks a new load (otherwise: same load forever)
         self._started = self._clock()
+        self._armed = False
         if rec.window_start is None or rec.window_end is None:
             _log.error("point %d has no averaging window", rec.point_index)
             return Err(CaptureError.NoRawRange)

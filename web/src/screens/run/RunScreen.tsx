@@ -13,7 +13,7 @@ import type { KeyAction } from "../../keys/keymap";
 import type { WizardState } from "../../components/wizard/types";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, buildSpecimenBody, capturedMessage, decide, postCapture, type Confirm } from "./capture";
+import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, WHY_SAME_LOAD, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
@@ -32,9 +32,9 @@ function saveBlob(blob: Blob, name: string): void {
   URL.revokeObjectURL(url);
 }
 
-/** Replace a meaningless "Hang a total of 0.000 kg" suggestion (no load computed yet) with plain advice. */
+/** Replace a meaningless "Add 0.000 kg of masses ..." suggestion (no load computed yet) with plain advice. */
 export function guidanceText(next: string): string {
-  return /hang a total of 0(\.0+)? kg/i.test(next) ? "Add a weight to the hanger, click I added a weight, then wait for Settled." : next;
+  return /add 0(\.0+)? kg of masses/i.test(next) ? "Add a weight to the hanger, click I added a weight, then wait for Settled." : next;
 }
 
 /** Props of the run screen. */
@@ -64,6 +64,9 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const [savedTick, setSavedTick] = useState(0);
   const [pointCount, setPointCount] = useState<number | null>(null);
   const inFlight = useRef(false);
+  // frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+  const attemptId = useRef<string | null>(null); // reused on retry until the capture succeeds
+  const loadRecorded = useRef(false); // true after a capture until the load change is marked
   const { view, side } = live;
   const onField = useCallback((k: string, v: string): void => { setFields((f) => ({ ...f, [k]: v })); }, []);
   // Count the saved points for this step from the server so Finish stays gated correctly after a reload.
@@ -91,9 +94,10 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
         return;
       }
     }
-    const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
+    attemptId.current ??= newRequestId();
+    const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early, attemptId.current), p.fetchImpl);
     setConfirm("idle");
-    if (r.ok) { setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
+    if (r.ok) { attemptId.current = null; loadRecorded.current = true; setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
   }, [p, side.rawSeq, view, fields]);
 
@@ -104,6 +108,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [captureOnce]);
 
   const accept = useCallback((early: boolean): void => {
+    if (loadRecorded.current) { log.info("accept ignored: load already recorded"); setMessage(WHY_SAME_LOAD); setConfirm("idle"); return; }
     const d = decide(view, early, confirm);
     log.info("accept", { early, decision: d.kind });
     if (d.kind === "blocked") { setMessage(d.why); setConfirm("idle"); }
@@ -113,6 +118,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
 
   const markLoadChange = useCallback(async (): Promise<void> => {
     const r = await postLoadChange(p.fetchImpl);
+    if (r.ok) loadRecorded.current = false;
     if (r.ok) setMessage("Load change marked; wait for the reading to settle.");
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Load change refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
   }, [p.fetchImpl]);

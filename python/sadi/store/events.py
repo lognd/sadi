@@ -97,6 +97,8 @@ class PointV1(_Payload):
     forced_early: bool = False
     inputs: dict[str, Any] = {}
     computed: dict[str, Any] = {}
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    request_id: str | None = None  # client idempotency key: a replayed capture never records twice
 
 
 class EditV1(_Payload):

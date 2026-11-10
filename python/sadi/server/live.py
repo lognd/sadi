@@ -35,6 +35,7 @@ from sadi.core.pipeline import (
     ResultUpdate,
     SettleUpdate,
 )
+from sadi.labs.lctt.guidance import Phase
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import SettleState, StreamConfig
 from sadi.logging_setup import get_logger
@@ -56,6 +57,8 @@ DECIMATE: Final[int] = 25
 PACKET_LEN: Final[int] = 612
 #: Simulator only: mass hung on each load-change so successive points differ, kg.
 SIM_LOAD_STEP_KG: Final[float] = 0.1
+#: Phases in which a load-change mark means "more mass hung" (simulator load step).
+_SIM_LOAD_PHASES: Final[frozenset[Phase | None]] = frozenset({Phase.ELASTIC, Phase.PLASTIC})
 #: Default settle detector parameters (UNVERIFIED on real hardware; tune per lab).
 # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
 LIVE_SETTLE: Final[SettleConfig] = SettleConfig(
@@ -166,6 +169,7 @@ class LiveAcquisition:
         self._min_free = min_free_bytes
         self._watch_poll_s = watch_poll_s
         self._clock = clock
+        self._phase_source: Callable[[], Phase | None] | None = None
         self._writer: WriterHandle | None = None
         self._path: Path | None = None
         self._stop_reason: str | None = None
@@ -199,6 +203,11 @@ class LiveAcquisition:
     def device_attached(self) -> bool:
         """True when the device can stream (connected or simulated), else False."""
         return str(self._device.status) in _READY_STATUSES
+
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    def set_phase_source(self, source: Callable[[], Phase | None]) -> None:
+        """Wire the recorded run phase so a sim load step only happens in elastic/plastic."""
+        self._phase_source = source
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     def capture_block_hint(self) -> str | None:
@@ -319,7 +328,16 @@ class LiveAcquisition:
         return None if self._pipe is not None else LiveError.NoLiveSession
 
     def _apply_sim_load(self) -> None:
-        """On the simulator, hang one more step of mass so the next point has a new voltage."""
+        """On the simulator, hang one more step of mass so the next point has a new voltage.
+
+        With a phase source wired, only the elastic and plastic phases add load: the tare
+        ("I emptied the hanger") and calibrate ("new gauge block") marks must not.
+        """
+        if self._phase_source is not None:
+            phase = self._phase_source()
+            if phase not in _SIM_LOAD_PHASES:
+                _log.info("load change in phase %s: no simulated load step", phase)
+                return
         if getattr(self._device, "is_synthetic", False):  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
             res = cast("Any", self._device).advance_load()
             if res.is_err:

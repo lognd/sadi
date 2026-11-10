@@ -154,3 +154,32 @@ def test_reset_returns_to_cold_start() -> None:
 # frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.suggester
 def test_guided_run_defaults_to_gp_suggester() -> None:
     assert isinstance(GuidedRun().suggester, GpLoadSuggester)
+
+
+# frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+@pytest.mark.parametrize("phase", [Phase.ELASTIC, Phase.PLASTIC])
+def test_guidance_never_says_total(phase: Phase) -> None:
+    """Cold-start, model-driven and even-schedule guidance all use the masses-only wording."""
+    from sadi.labs.lctt.guidance import EvenScheduleSuggester, mass_guidance_text
+
+    texts = []
+    sug = GpLoadSuggester(noise_var=SIGMA**2)
+    for k in (0, 1):
+        got = sug.suggest(phase, ResultSet(n_points=k), RANGE)
+        assert isinstance(got, Ok)
+        texts.append(got.danger_ok.text)
+    for i in range(6):
+        sug.observe(0.5 + 0.5 * i, SLOPE * (0.5 + 0.5 * i) + 1e-5 * i * i)
+    got = sug.suggest(phase, ResultSet(n_points=6), RANGE)
+    assert isinstance(got, Ok)
+    texts.append(got.danger_ok.text)
+    even = EvenScheduleSuggester().suggest(phase, ResultSet(n_points=2), RANGE)
+    assert isinstance(even, Ok)
+    texts.append(even.danger_ok.text)
+    for t in texts:
+        assert "total" not in t.lower()
+        assert "hanger is added for you" in t
+    assert (
+        mass_guidance_text(1.25)
+        == "Add 1.250 kg of masses to the hanger (the hanger is added for you)"
+    )

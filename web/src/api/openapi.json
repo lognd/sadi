@@ -217,6 +217,19 @@
             "title": "Phase",
             "type": "string"
           },
+          "request_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
           "settled": {
             "default": false,
             "title": "Settled",

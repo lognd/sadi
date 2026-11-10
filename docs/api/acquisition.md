@@ -18,3 +18,5 @@ object with `next_block` / `stop_streaming`) to `AcquisitionPipeline`.
   writes a `load_applied` marker through the pipeline and only then advances the cursor, so a
   refused marker never skips a step. Errors are typani `Err` values (`AcquisitionError`).
 - Recording points: `record_point(inputs, window, meta=None)` writes a WAL POINT event (via `AcquisitionPipeline.record_point`) using the typed inputs of `sadi.core.point_inputs` (calibration, tare, specimen, load); the same module is what the server curve source reads, so recorded points feed `/api/stress-strain/fit`. The optional `PointMeta` (`t_since_load_s`, `drift_rate`, `settled`, `forced_early`) is persisted on the POINT too, so recovery loses no settle provenance; older events without it read as defaults (`parse_meta`). Append-only; a WAL refusal halts the pipeline like any other write.
+
+`POST /api/session/points` takes an optional `request_id` (1-128 chars, persisted on the POINT). A retry with the same id, including one after a durability timeout, returns the original commit (same `seq`) and never records a second point.

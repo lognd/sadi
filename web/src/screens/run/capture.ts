@@ -51,14 +51,25 @@ export interface CaptureBody {
   readonly settled: boolean;
   readonly forced_early: boolean;
   readonly drift_rate: number | null;
+  /** Idempotency key: a retried accept reuses it so the server never records the point twice. */
+  readonly request_id?: string;
 }
 
+/** A fresh idempotency key for one accept attempt. */
+export function newRequestId(): string {
+  return globalThis.crypto.randomUUID();
+}
+
+/** Hint shown when a second accept arrives before the load was changed. */
+export const WHY_SAME_LOAD = "This load is already recorded. Change the load or gauge block, then click the mark button, before accepting again.";
+
 /** Build the capture body. `rawSeq` is the newest raw seq seen on the stream (see docs gap G1). */
-export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean): CaptureBody {
+export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean, requestId?: string): CaptureBody {
   return {
     phase: PHASES[phase].apiPhase, inputs,
     window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
     settled: !early, forced_early: early, drift_rate: view.driftVps,
+    ...(requestId === undefined ? {} : { request_id: requestId }),
   };
 }
 

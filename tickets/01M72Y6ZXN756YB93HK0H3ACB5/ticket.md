@@ -2,12 +2,12 @@
 id = "01M72Y6ZXN756YB93HK0H3ACB5"
 title = "Square live trace pushes Accept 3 screens down below 64rem (audit8 M4)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:36:23Z"
-updated = "2026-11-10T14:36:23Z"
+updated = "2026-11-10T14:37:19Z"
 labels = ["creates:web/src/plots/live/useContainerSquare.test.ts"]
 scope = ["web/src/plots/live/useContainerSquare.ts", "web/src/components/live/TraceCanvas.tsx", "web/src/plots/live/**"]
 

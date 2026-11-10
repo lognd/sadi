@@ -24,6 +24,20 @@ export function isSynthetic(p: DataProvenance | null | undefined): boolean {
   return p !== null && p !== undefined && (p.synthetic || p.source === "synthetic");
 }
 
+/** True only when a stamp says the data origin is unknown (orphan spill import). */
+export function isUnknown(p: DataProvenance | null | undefined): boolean {
+  // frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+  return p !== null && p !== undefined && p.source === "unknown";
+}
+
+/** Session-list badge text for a stamp: "SYNTHETIC", "Provenance unknown", or null for real. */
+export function provenanceBadge(p: DataProvenance | null | undefined): string | null {
+  // frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+  if (isSynthetic(p)) return "SYNTHETIC";
+  if (isUnknown(p)) return "Provenance unknown";
+  return null;
+}
+
 /** Prefix a download filename with SYNTHETIC- when the data is synthetic (idempotent). */
 export function exportFilename(name: string, synthetic: boolean): string {
   // frob:ticket 01M72D3CTDED2MGDY721RSM8M4

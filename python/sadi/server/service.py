@@ -66,12 +66,13 @@ from sadi.store.session import (
     read_lock_holder,
     resume_session_in_held_root,
     session_is_synthetic,
+    session_provenance_unknown,
 )
 from sadi.store.snapshot import SnapshotCadence, write_snapshot
 from sadi.store.spill import write_spill
 from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
-from sadi.synthetic.provenance import REAL, SYNTHETIC, DataProvenance
+from sadi.synthetic.provenance import REAL, SYNTHETIC, UNKNOWN, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -188,6 +189,16 @@ def _phase_view(phase: Phase | None) -> RunPhaseView:
     return RunPhaseView(phase=phase, next_phase=next_allowed(phase))
 
 
+def _session_provenance(session_dir: Path) -> DataProvenance:
+    """Stamp for a stored session: synthetic wins, then unknown (orphan import), else real."""
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    if session_is_synthetic(session_dir):
+        return SYNTHETIC
+    if session_provenance_unknown(session_dir):
+        return UNKNOWN
+    return REAL
+
+
 class SessionService:
     """Owns the single open session of this server process; calls are serialized by a lock."""
 
@@ -288,7 +299,7 @@ class SessionService:
                     lab=m.lab_module,
                     state=m.state,
                     parent=m.parent,
-                    provenance=SYNTHETIC if session_is_synthetic(d) else REAL,
+                    provenance=_session_provenance(d),
                     spill_import=m.spill_import,  # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
                 )
             )
@@ -364,7 +375,7 @@ class SessionService:
                     )
                 )
             views = [PointView.of(p) for p in state.danger_ok.view().points]
-            prov = SYNTHETIC if session_is_synthetic(path) else REAL
+            prov = _session_provenance(path)
             _log.info("read_closed %s: %d points (read-only)", name, len(views))
             return Ok(
                 ClosedSession(path=path, lab=lab, views=views, provenance=prov, torn_tail=torn)

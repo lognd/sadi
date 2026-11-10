@@ -3,6 +3,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { SessionSetup, isRecoverable, slugFrom, specimenFrom } from "./SessionSetup";
+import { provenanceBadge } from "../../state/provenance";
 import { closedExportUrl, csvFormatFor, downloadClosedExport, downloadFailureText, failureText } from "./sessionApi";
 
 describe("SessionSetup", () => {
@@ -65,5 +66,15 @@ describe("SessionSetup SYNTHETIC badge", () => {
     const src = (await import("node:fs")).readFileSync(new URL("./SessionSetup.tsx", import.meta.url), "utf8");
     expect(src).toContain("s.provenance.synthetic ?");
     expect(src).toContain("SYNTHETIC</strong>");
+  });
+});
+
+// frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+describe("session provenance badge", () => {
+  const stamp = (source: "real" | "synthetic" | "unknown", synthetic: boolean) => ({ source, synthetic, label: "", warning: "" });
+  it("labels unknown as unknown, never synthetic or real", () => {
+    expect(provenanceBadge(stamp("unknown", false))).toBe("Provenance unknown");
+    expect(provenanceBadge(stamp("synthetic", true))).toBe("SYNTHETIC");
+    expect(provenanceBadge(stamp("real", false))).toBeNull();
   });
 });

@@ -1,4 +1,4 @@
-"""Data provenance stamp: real vs synthetic, carried on every session, export and payload."""
+"""Data provenance stamp: real, synthetic or unknown, carried on every session, export and payload."""
 
 # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 from __future__ import annotations
@@ -13,6 +13,10 @@ __all__ = [
     "EXPORT_PREFIX",
     "PROVENANCE_HEADER",
     "REAL",
+    "UNKNOWN",
+    "UNKNOWN_LABEL",
+    "UNKNOWN_PREFIX",
+    "UNKNOWN_WARNING",
     "SYNTHETIC",
     "SYNTHETIC_LABEL",
     "SYNTHETIC_WARNING",
@@ -31,16 +35,25 @@ SYNTHETIC_WARNING: Final = (
 )
 #: Filename prefix on every synthetic export.
 EXPORT_PREFIX: Final = "SYNTHETIC-"
+#: Short banner for data whose origin was lost (orphan spill import).
+UNKNOWN_LABEL: Final = "PROVENANCE UNKNOWN"
+#: Long warning for payloads and export headers of unknown-origin data.
+UNKNOWN_WARNING: Final = (
+    "This data was recovered without its original session, so it is not known whether it is "
+    "real or simulated. Do not report it as lab data until its origin is established."
+)
+#: Filename prefix on every unknown-provenance export.
+UNKNOWN_PREFIX: Final = "UNKNOWN-"
 #: HTTP response header carrying the provenance source on exports.
 PROVENANCE_HEADER: Final = "X-Sadi-Provenance"
 
 
 class DataProvenance(BaseModel):
-    """Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped."""
+    """Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped."""
 
     model_config = ConfigDict(frozen=True)
 
-    source: Literal["real", "synthetic"] = "real"
+    source: Literal["real", "synthetic", "unknown"] = "real"
     synthetic: bool = False
     label: str = ""
     warning: str = ""
@@ -51,8 +64,8 @@ class DataProvenance(BaseModel):
         """Reject a stamp whose flag and source disagree (cannot hide synthetic data)."""
         if self.synthetic != (self.source == "synthetic"):
             raise ValueError("synthetic flag must match source")
-        if self.synthetic and not (self.label and self.warning):
-            raise ValueError("synthetic provenance needs a label and a warning")
+        if self.source != "real" and not (self.label and self.warning):
+            raise ValueError("synthetic or unknown provenance needs a label and a warning")
         return self
 
     def with_truth(self, truth: dict[str, Any]) -> DataProvenance:
@@ -64,12 +77,15 @@ REAL: Final = DataProvenance()
 SYNTHETIC: Final = DataProvenance(
     source="synthetic", synthetic=True, label=SYNTHETIC_LABEL, warning=SYNTHETIC_WARNING
 )
+UNKNOWN: Final = DataProvenance(
+    source="unknown", label=UNKNOWN_LABEL, warning=UNKNOWN_WARNING
+)
 
 
 def stamp_export(body: bytes, media_type: str, prov: DataProvenance) -> bytes:
-    """Brand an export body as synthetic: comment lines for CSV, a `provenance` key for JSON."""
+    """Brand a non-real export body: comment lines for CSV, a `provenance` key for JSON."""
     # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
-    if not prov.synthetic:
+    if prov.source == "real":
         return body
     if media_type == "application/json":
         try:

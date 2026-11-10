@@ -143,6 +143,15 @@ def session_is_synthetic(session_dir: Path) -> bool:
     return False
 
 
+def session_provenance_unknown(session_dir: Path) -> bool:
+    """True when the manifest flags the session's data origin as unknown (orphan spill import)."""
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    mf = read_manifest(session_dir)
+    if mf.is_err or mf.danger_ok is None:
+        return False
+    return mf.danger_ok.provenance_unknown
+
+
 def _write_synthetic_marker(path: Path) -> Result[None, SessionError]:
     """Create the SYNTHETIC marker exclusively (never overwritten) and fsync it."""
     # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
@@ -586,6 +595,7 @@ def _resume_locked(
         specimen=pmf.specimen if pmf is not None else {},
         plugins=tuple(plugins) if plugins is not None else (pmf.plugins if pmf is not None else ()),
         synthetic=parent_synth,
+        provenance_unknown=pmf.provenance_unknown if pmf is not None else False,  # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
     )
     _log.info("resuming %s as %s (parent_last_seq=%s)", parent_dir.name, path.name, report.last_seq)
     return _init_dir(path, manifest)

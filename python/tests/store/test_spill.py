@@ -17,7 +17,12 @@ from sadi.store import failpoints, spill
 from sadi.store.durable import DurableIo
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FRAME_HEADER_LEN, NewRecord, Record, RecordType, encode_frame
-from sadi.store.session import SessionMeta, create_session, session_is_synthetic
+from sadi.store.session import (
+    SessionMeta,
+    create_session,
+    session_is_synthetic,
+    session_provenance_unknown,
+)
 from sadi.store.spill import (
     SpillEmpty,
     SpillHeaderInvalid,
@@ -296,7 +301,10 @@ def test_import_inherits_synthetic_and_orphan_is_not_real(tmp_path: Path) -> Non
     joined, orphan = outs["s.wal"], outs["o.wal"]
     assert joined is not None and orphan is not None
     assert session_is_synthetic(joined.version_dir)
-    assert session_is_synthetic(orphan.version_dir)
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    assert not session_is_synthetic(orphan.version_dir)
+    assert session_provenance_unknown(orphan.version_dir)
+    assert not session_provenance_unknown(joined.version_dir)
 
 
 # frob:tests python/sadi/store/spill.py::import_spill

@@ -25,7 +25,12 @@ from sadi.server.schemas import PointView
 from sadi.server.service import ClosedSession, SessionService
 from sadi.server.session_points import active_points, analyze, to_captured
 from sadi.store.exports import ExportError, write_export
-from sadi.synthetic.provenance import EXPORT_PREFIX, PROVENANCE_HEADER, stamp_export
+from sadi.synthetic.provenance import (
+    EXPORT_PREFIX,
+    PROVENANCE_HEADER,
+    UNKNOWN_PREFIX,
+    stamp_export,
+)
 
 _log = get_logger(__name__)
 
@@ -243,16 +248,18 @@ def make_export_router(
         """Download one export of a closed session; read-only, so no copy is kept and nothing is written."""
         fmt, closed, body = unwrap(render_closed_export(svc, name, format_id, replays))
         headers = {PROVENANCE_HEADER: "real"}
-        if closed.provenance.synthetic:
+        if closed.provenance.source != "real":  # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
             body = stamp_export(body, fmt.media_type, closed.provenance)
-            headers[PROVENANCE_HEADER] = "synthetic"
+            headers[PROVENANCE_HEADER] = closed.provenance.source
         if closed.torn_tail is not None:
             headers[TORN_TAIL_HEADER] = closed.torn_tail
             body = stamp_recovered(body, fmt.media_type, closed.torn_tail)
         if _is_download(fmt):
             fname = f"{name}-{fmt.id}.{_EXT.get(fmt.media_type, 'bin')}"
-            if closed.provenance.synthetic:
+            if closed.provenance.source == "synthetic":
                 fname = EXPORT_PREFIX + fname
+            elif closed.provenance.source == "unknown":
+                fname = UNKNOWN_PREFIX + fname
             if closed.torn_tail is not None:
                 fname = RECOVERED_PREFIX + fname
             headers["Content-Disposition"] = f'attachment; filename="{fname}"'

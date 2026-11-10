@@ -41,6 +41,7 @@ from sadi.store.session import (
     _slug,
     _take_version,
     session_is_synthetic,
+    session_provenance_unknown,
 )
 from sadi.store.wal import (
     SEGMENT_HEADER_LEN,
@@ -612,13 +613,16 @@ def _import_version(
     path, ver = taken.map_err(lambda e: SpillSession(error=e)).unwrap()
     new_uuid = uuid.uuid4()
     total = scan.last_seq if join is None else join.parent_records + len(join.tail)
-    # Provenance (M3/L2): inherit from the parent. An orphan has none: the manifest bool cannot
-    # say "unknown", so it stays True (never labelled real) and the UI shows an orphan
-    # (parent None + spill_import set) as "provenance unknown", not SYNTHETIC.
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    # Provenance: inherit from the parent. An orphan has none, so it is flagged unknown: neither
+    # real nor synthetic (never labelled either way).
+    unknown = False
     if parent is not None:
         synthetic = session_is_synthetic(sessions / parent.dir_name)
+        unknown = session_provenance_unknown(sessions / parent.dir_name)
     else:
-        synthetic = True
+        synthetic = False
+        unknown = True
         _log.warning("orphan spill %s has no parent; imported with unknown provenance", scan.path)
     manifest = Manifest(
         session_uuid=str(new_uuid),
@@ -632,6 +636,7 @@ def _import_version(
         specimen=parent.specimen if parent is not None else {},
         last_seq=total,
         synthetic=synthetic,
+        provenance_unknown=unknown,
         spill_import="joined" if join is not None else "fragment",
     )
     handle = _init_dir(path, manifest).map_err(lambda e: SpillSession(error=e)).unwrap()

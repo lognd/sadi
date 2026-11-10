@@ -65,3 +65,13 @@ committed seq), a failed run stops the replay, and the uncertainty library's
 per-value logging is silenced during a replay. Tolerances:
 E 6 percent (`TOL_E`), yield 5 percent (`TOL_YIELD`), calibration slope
 1 percent (`TOL_CAL_SLOPE`).
+
+## Unknown provenance (orphan spill imports)
+
+- A spill imported with no parent session has no known origin. Its manifest sets
+  `provenance_unknown: true` (default false, so old manifests still load) and
+  `synthetic: false`: it is neither real nor synthetic.
+- `DataProvenance.source` is `"unknown"` (label `PROVENANCE UNKNOWN`). Closed-session
+  exports get an `UNKNOWN-` filename prefix, `X-Sadi-Provenance: unknown`, and a stamp
+  in the body. The setup list shows a "Provenance unknown" badge.
+- Children (resume, spill join) of an unknown session stay unknown.

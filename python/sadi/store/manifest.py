@@ -94,6 +94,9 @@ class Manifest(BaseModel):
     # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
     # Set only by spill import: "joined" (self-contained successor) or "fragment" (spill alone).
     spill_import: str | None = None
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    # True when the data's origin was lost (orphan spill import): neither real nor synthetic.
+    provenance_unknown: bool = False
 
 
 class ManifestInvalid(BaseModel):

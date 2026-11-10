@@ -174,3 +174,27 @@ def test_stamp_recovered_csv_and_json() -> None:
     assert b'"recovered"' in stamp_recovered(b'{"x": 1}', "application/json", "0/5")
     wrapped = stamp_recovered(b"[1]", "application/json", "0/5")
     assert b'"data": [1]' in wrapped
+
+
+# frob:tests python/sadi/server/routes/export.py::make_export_router
+def test_unknown_provenance_export_is_neither_real_nor_synthetic(
+    client: TestClient, tmp_path: Path
+) -> None:
+    """An orphan-import session exports with an UNKNOWN- filename and 'unknown' header."""
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    import json
+
+    name = _closed(client)
+    mpath = tmp_path / "sessions" / name / "manifest.json"
+    doc = json.loads(mpath.read_text(encoding="utf-8"))
+    doc["provenance_unknown"] = True
+    mpath.write_text(json.dumps(doc), encoding="utf-8")
+    res = client.get(f"/api/sessions/{name}/export/points")
+    assert res.status_code == 200, res.text
+    assert res.headers["x-sadi-provenance"] == "unknown"
+    disp = res.headers["content-disposition"]
+    assert 'filename="UNKNOWN-' in disp and "SYNTHETIC" not in disp
+    assert res.text.startswith("# PROVENANCE UNKNOWN")
+    listed = {s["name"]: s for s in client.get("/api/sessions").json()}
+    assert listed[name]["provenance"]["source"] == "unknown"
+    assert listed[name]["provenance"]["synthetic"] is False

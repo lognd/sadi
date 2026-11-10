@@ -1189,7 +1189,7 @@ export interface components {
         };
         /**
          * DataProvenance
-         * @description Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.
+         * @description Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped.
          */
         DataProvenance: {
             /**
@@ -1202,7 +1202,7 @@ export interface components {
              * @default real
              * @enum {string}
              */
-            source: "real" | "synthetic";
+            source: "real" | "synthetic" | "unknown";
             /**
              * Synthetic
              * @default false

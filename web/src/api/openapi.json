@@ -730,7 +730,7 @@
         "type": "object"
       },
       "DataProvenance": {
-        "description": "Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.",
+        "description": "Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped.",
         "properties": {
           "label": {
             "default": "",
@@ -741,7 +741,8 @@
             "default": "real",
             "enum": [
               "real",
-              "synthetic"
+              "synthetic",
+              "unknown"
             ],
             "title": "Source",
             "type": "string"

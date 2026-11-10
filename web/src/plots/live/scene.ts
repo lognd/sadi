@@ -13,6 +13,8 @@ const RAIL_VIEW_V = 0.5 * SATURATION_V;
 /** Smallest auto-scaled y span in volts, so a flat signal does not collapse the axis. */
 const MIN_SPAN_V = 1e-3;
 /** Live-trace text sizes: larger than the default theme so axis and legend stay readable when the canvas is scaled down. */
+/** Smallest logical font (px) the live theme uses; the scene is rendered 1:1, so this is the CSS size. */
+export const MIN_LIVE_FONT = 12;
 const LIVE_THEME = { ...lightTheme, fontSize: { title: 20, subtitle: 15, label: 16, tick: 14, legend: 14, annotation: 14, footer: 12 } };
 
 /** Y-axis bounds for a snapshot: padded signal extent, or the saturation rails once the signal is large. Pure. */

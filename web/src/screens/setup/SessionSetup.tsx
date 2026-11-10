@@ -119,15 +119,15 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
               <select value={lab} onChange={(e) => { setLab(e.target.value); }}>
                 {labs.map((l) => <option key={l.id} value={l.id}>{labTitle(l)}</option>)}
               </select>
-              <small>Which experiment to run.</small>
+              <small className="field-help">Which experiment to run.</small>
             </label>
             <label>Specimen name
               <input value={name} onChange={(e) => { setName(e.target.value); }} placeholder="cu-wire-1" autoFocus />
-              <small>Used to name the saved files, e.g. cu-wire-1.</small>
+              <small className="field-help">Used to name the saved files, e.g. cu-wire-1.</small>
             </label>
             <label>Material
               <input value={material} onChange={(e) => { setMaterial(e.target.value); }} placeholder="copper" />
-              <small>Optional; recorded with the results.</small>
+              <small className="field-help">Optional; recorded with the results.</small>
             </label>
             <button type="submit" className="btn btn-primary" data-variant="primary" disabled={pending !== null || lab === ""}>Create session</button>
           </form>
@@ -148,7 +148,7 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
                 <li key={s.name}>
                   <span>{s.name} {isUnknown(s.provenance) ? <strong role="note" data-testid={`unknown-${s.name}`}>Provenance unknown (recovered without its original session)</strong> : s.provenance.synthetic ? <strong className="synthetic-badge" role="note" data-testid={`synthetic-${s.name}`}>SYNTHETIC</strong> : null}{" "}
                     {s.spill_import === "fragment" ? <small role="note" data-testid={`fragment-${s.name}`}>Recovered fragment (only the last few records; the full data is in {s.parent ?? "the original session"})</small> : null}
-                    {s.spill_import === "joined" ? <small role="note" data-testid={`joined-${s.name}`}>Recovered (complete)</small> : null}{" "}<small>({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
+                    {s.spill_import === "joined" ? <small role="note" data-testid={`joined-${s.name}`}>Recovered (complete)</small> : null}{" "}<small className="field-help">({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
                     {s.latest ? null : <small role="note" data-testid={`newer-${s.name}`}>Newer work exists: {s.latest_name ?? "a later version"}. Resume that one unless you want this older copy.</small>}</span>
                   <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
                     Resume {s.name}
@@ -169,7 +169,7 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
           )}
         </div>
       </div>
-      <p className="data-safety"><small>Your data is safe: resuming makes a new version, the original is kept, and nothing is ever overwritten.</small></p>
+      <p className="data-safety"><small className="field-help">Your data is safe: resuming makes a new version, the original is kept, and nothing is ever overwritten.</small></p>
       <p role="status">{message}</p>
     </section>
   );

@@ -3,3 +3,4 @@
 export * from "./window";
 export * from "./scene";
 export { LivePlot } from "./LivePlot";
+export * from "./useContainerSquare";

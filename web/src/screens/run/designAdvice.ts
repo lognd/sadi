@@ -1,4 +1,5 @@
 // frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
+// frob:ticket 01M72VM5X86QRPEWSW65Q9RBD8
 // frob:accept COV001 because="covered by SuggestedWeightPanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
@@ -52,8 +53,8 @@ export function indicatorText(i: DesignIndicator): string {
   }
 }
 
-/** Format a load in kg and newtons, or a gauge height in mm. */
+/** Format a load in kg and newtons, or a gauge height in the field unit (m) with mm in parentheses. */
 export function loadText(x: number, unit: string): string {
   if (unit === "kg") return `${x.toFixed(2)} kg (${(x * 9.80665).toFixed(1)} N)`;
-  return unit === "m" ? `${(x * 1000).toFixed(1)} mm` : `${x.toPrecision(3)} ${unit}`;
+  return unit === "m" ? `${x.toFixed(4).replace(/0$/, "")} m (${String(Number((x * 1000).toFixed(1)))} mm)` : `${x.toPrecision(3)} ${unit}`;
 }

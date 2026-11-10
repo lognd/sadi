@@ -6927,6 +6927,83 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T07:16:41.366286059Z"
 
 [[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "73aec2ada9856c6817d909ddbe2fc3c2237db640ec53c7a75a2a95cb2465e1b7"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm"
+sig = "b785b872020f155ff1a97b0d715294765c5a7326f56d5a29b880e5eb72c9fb7e"
+body = "4fdc0c23885cb51fd98b7fd896a505a52d1426a0db739d87a1c24f2992109b45"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "32b9506aaca68595ae6a7e34d86df4387f5cdcc02627f2f4c1908838b6052314"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm.test$converts_grams_and_mm_to_SI_and_leaves_slope_unset"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm.test$converts_grams_and_mm_to_SI_and_leaves_slope_unset"
+sig = "75964a339b16476ba9a833696995128d7c836c102b6bd258032df3067d0b82b4"
+body = "fd552c9a79f782e7e2d80596a8cb176127e474eb547f65ec417b1a7e27f89a01"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "4ee2d4416ae1576cc8e1de0ed468b28dd7a0b54c0754259ccec8456abef26e3c"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm.test$sends_an_entered_slope_and_rejects_bad_input_with_a_sentence"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$parsePlanForm.test$sends_an_entered_slope_and_rejects_bad_input_with_a_sentence"
+sig = "31a575c069e9213f8f85897cefbccb92807450d9a6aa920e9f45cff078e16351"
+body = "8c765c2273c59a2dbc4d41499bb1121490bbc6fedc0945a55ad1c8ef25e27881"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "9521a3742a3a6c18aedd3beea172b981cfe058876df44e17d6d3f46a9714343a"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views"
+sig = "58d8c8dd7d25719e877cb60902a151853efcad6777eeba863053f86b26c58211"
+body = "4b6d7fae761adfdb9688e55b5ac980b616aafb2c60b8e2d82baabc6c2f0db41b"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "ad4f983854d629b361d29bb7f4bb1bd2e6c370788baa22145f6c3b1795a15ae2"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views.test$renders_the_form_without_a_lab"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views.test$renders_the_form_without_a_lab"
+sig = "824a54b87d832a8a58e50136225b6010e05450f0b4d2e954b26c7d0423dee4c6"
+body = "cdebad78a23a10931d6c8831cc49bbf824a970203f276a9a945aadd0e7db7512"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "da6434e537df1607564395608ad1f0a85da353e2b8419fafe69e513183d91dea"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views.test$renders_the_ordered_hangs_with_plus_minus"
+symref = "web/src/screens/setup/WeightPlanPanel.test.tsx::suite$views.test$renders_the_ordered_hangs_with_plus_minus"
+sig = "87f952fceb9636e4a192d1aa0cbfde12f8788dc1a747638feb904d253d46ddaf"
+body = "5d1b5b0a13c0ce743caffbc46bbc18cc1af49a8a16684198b57e34f92e2ccf77"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "713a50cc5f337fe78e221a13a02d27457ac9933fee30504768f120b1ca187cee"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T14:33:11.302509258Z"
+
+[[symbol]]
 identity = "web/src/screens/setup/WeightPlanPanel.tsx"
 symref = "web/src/screens/setup/WeightPlanPanel.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

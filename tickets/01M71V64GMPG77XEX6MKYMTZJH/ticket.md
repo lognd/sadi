@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T04:24:15Z"
-updated = "2026-11-10T15:46:47Z"
+updated = "2026-11-10T15:46:50Z"
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_context_per_run.py", "docs/lctt/export-csv.md", "docs/lctt/lab-module.md"]
 
 [[acceptance]]

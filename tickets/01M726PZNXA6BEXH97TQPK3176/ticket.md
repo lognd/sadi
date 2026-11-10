@@ -7,9 +7,9 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:45:54Z"
+updated = "2026-11-10T07:46:31Z"
 labels = ["creates:python/tests/server/test_curve_source_open_session.py"]
-scope = ["python/sadi/server/curve_source.py", "python/sadi/server/app.py", "python/tests/server/test_curve_source_open_session.py"]
+scope = ["python/sadi/server/curve_source.py", "python/sadi/server/app.py", "python/tests/server/test_curve_source_open_session.py", "python/sadi/server/routes_stress_strain.py"]
 
 [[acceptance]]
 text = "curve source takes open session path from SessionService; 409 no_open_session when none; test with two families where the open one does not sort last"

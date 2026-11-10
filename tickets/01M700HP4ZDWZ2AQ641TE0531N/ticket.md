@@ -2,13 +2,18 @@
 id = "01M700HP4ZDWZ2AQ641TE0531N"
 title = "Base CI red since d62d351cc: fix or revert the land range after (no green run)"
 type = "bug"
-category = "todo"
+category = "done"
+outcome = "fixed"
 priority = "high"
 reporter = "lognd"
 created = "2026-11-09T11:19:24Z"
-updated = "2026-11-09T11:19:24Z"
+updated = "2026-11-10T02:34:41Z"
 idempotency_key = "culprit-d62d351cc3aced40d8a0c075f1593dff53d61a3b"
 labels = ["blocks-lands"]
+
+[[acceptance]]
+text = "Given main at dddab29c, when the CI workflow completes, then its conclusion is success"
+bound = true
 +++
 
 Base CI is red. Land commits between the last green run and the first red run:

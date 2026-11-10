@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given web/, when crunk check runs with a committed crunk.toml whose tokens mirror styles.css, then it reports no errors", "Given the token export, when it is regenerated, then it matches the committed CSS variables (no TOKENS001 drift)"]
+moved = []
+at = "2026-11-10T02:29:12Z"
+actor = "lognd"
+rev = 1

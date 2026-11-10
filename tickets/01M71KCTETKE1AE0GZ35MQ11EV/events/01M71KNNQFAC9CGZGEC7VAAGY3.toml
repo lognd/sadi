@@ -1,0 +1,29 @@
+kind = "evidence"
+captured_at = "2026-11-10T02:12:52Z"
+digest = "1882531a5ff0666e13d99896129234bfbe24878a533de9683bf257e42641b848"
+exit_code = 0
+head = "63ae185d4c0292f52bded753ccfd1fc6ccd904b9"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 22 items
+
+python/tests/labs/lctt/test_gp_suggester.py ...........                  [ 50%]
+python/tests/labs/lctt/test_guidance.py ...........                      [100%]
+
+--------------- generated xml file: /tmp/frob-pytest-31628-0.xml ---------------
+============================== 22 passed in 2.82s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_gp_suggester.py python/tests/labs/lctt/test_guidance.py"
+size = 602
+status = "measured"
+test_count = 22
+tests_digest = "83025dac49929fec493c632e881bbadcef8b9b32f97007acaa0e3b9eac2e2c4b"
+at = "2026-11-10T02:12:52Z"
+actor = "lognd"
+rev = 1

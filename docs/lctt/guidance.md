@@ -43,3 +43,9 @@ Each phase has a point cap: calibrate 8, elastic 12, plastic 15. At the cap guid
 suggesting loads and proposes the phase end, so a complete three-phase run is at most
 `MAX_RUN_POINTS` = 35 points even if the target is never met. The simulator test follows the
 guidance through all three phases with an unreachable target and ends at exactly this bound.
+
+## GP load selector
+
+When no suggester is passed, `guide()` and `GuidedRun` use `GpLoadSuggester` (see
+[GP selector](../labs/lctt-gp-selector.md)); `GuidanceState` gains the optional
+`expected_gain`, `expected_half_width`, `alternatives` and `gp_state` fields.

@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:34:19Z"
-updated = "2026-11-10T05:39:21Z"
+updated = "2026-11-10T05:37:21Z"
 scope = ["python/sadi/store/lock.py", "python/tests/cli/**", "python/tests/store/test_lock*.py", "python/sadi/launcher.py"]
 
 [[acceptance]]

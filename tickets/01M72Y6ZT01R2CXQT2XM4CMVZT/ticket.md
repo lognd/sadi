@@ -2,12 +2,12 @@
 id = "01M72Y6ZT01R2CXQT2XM4CMVZT"
 title = "WAL segment roll forces full-WAL rebase under the service lock; all session routes hang (audit8 H1)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:36:23Z"
-updated = "2026-11-10T14:36:23Z"
+updated = "2026-11-10T14:37:16Z"
 labels = ["creates:python/tests/store/test_incremental_roll.py"]
 scope = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py"]
 

@@ -308,7 +308,7 @@ def test_registry_known_tracks_register_and_forget() -> None:
 
 
 # frob:ticket 01M72YKF3EN8RJX7RCH78JDPQC
-# frob:tests sadi.uncertainty.measured.Measured.from_readings
+# frob:tests python/sadi/uncertainty/measured.py::Measured.from_readings
 def test_from_readings_rss():
     """Mean, type-A standard error and instrument term combine in quadrature."""
     from sadi.uncertainty.measured import Measured

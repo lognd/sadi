@@ -4,9 +4,10 @@ title = "H1: export must not finish acquisition (GET export mid-run kills record
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:45:41Z"
+updated = "2026-11-10T07:45:45Z"
 labels = ["creates:python/tests/server/test_export_no_finish.py"]
 scope = ["python/sadi/server/routes/export.py", "python/sadi/server/live.py", "python/tests/server/test_export_no_finish.py", "docs/server/results.md", "docs/server/app.md"]
 

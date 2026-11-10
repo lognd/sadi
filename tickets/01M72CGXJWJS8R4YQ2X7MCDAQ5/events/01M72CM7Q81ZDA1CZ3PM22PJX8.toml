@@ -1,0 +1,112 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T09:29:01Z"
+digest = "bbf036ffa101608eab2843ab16f2efc0aeac865e4554f0584c675d4e991e5bb7"
+exit_code = 0
+head = "ad973b04f915e64d2e1beffdd1ea7fbb995e168a"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/hooks/stopText.test.ts (3 tests) 4ms
+stdout | web/src/hooks/useStickyOffset.test.ts > trackStickyHeight > publishes the measured height and follows resizes
+[hooks.useStickyOffset] sticky offset { px: 256 }
+[hooks.useStickyOffset] sticky offset { px: 300 }
+
+stdout | web/src/hooks/useStickyOffset.test.ts > watchStickyTop > attaches on the frame the sticky element appears
+[hooks.useStickyOffset] sticky offset { px: 200 }
+
+stdout | web/src/hooks/useStickyOffset.test.ts > static element (narrow-viewport media rule) > does not publish --top-h and clears a stale value when the element is not sticky
+[hooks.useStickyOffset] sticky offset cleared; element is static {}
+[hooks.useStickyOffset] sticky offset { px: 120 }
+[hooks.useStickyOffset] sticky offset cleared; element is static {}
+
+ \u{2713} web/src/hooks/useStickyOffset.test.ts (5 tests) 9ms
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > uses the Content-Disposition name from the server
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > uses the Content-Disposition name from the server
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > keeps a server SYNTHETIC- prefix without doubling it
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > keeps a server SYNTHETIC- prefix without doubling it
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > prefixes SYNTHETIC- when the provenance header says synthetic
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > prefixes SYNTHETIC- when the provenance header says synthetic
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > falls back to a default name when no header is sent
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > falls back to a default name when no header is sent
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns an http error with user-facing text
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns a network error instead of throwing
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+ \u{2713} web/src/screens/run/exportTrace.test.ts (6 tests) 15ms
+ \u{2713} web/src/screens/run/inputFields.test.ts (17 tests) 14ms
+stdout | web/src/hooks/markClock.test.ts > stream clock vs record fields > load mark is now minus time_since_load; result mark is window_end verbatim
+[hooks.markClock] load mark { now: 12, timeSinceLoad: 1.5, t: 10.5 }
+[hooks.markClock] load mark { now: 12, timeSinceLoad: null, t: 12 }
+
+stdout | web/src/hooks/markClock.test.ts > stream clock vs record fields > marks land on the trace-frame clock (t0_s)
+[hooks.markClock] load mark { now: 20.1, timeSinceLoad: 0.05, t: 20.05 }
+[plots.live.window] mark { t: 20.05, kind: 'load' }
+[plots.live.window] mark { t: 20.05, kind: 'settled' }
+
+ \u{2713} web/src/hooks/markClock.test.ts (2 tests) 8ms
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > POSTs /api/device/reconnect
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] resume requested { path: '/api/acquisition/resume' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] resume requested { path: '/api/acquisition/resume' }
+
+ \u{2713} web/src/components/instrument/StopBanner.test.tsx (9 tests) 28ms
+
+ Test Files  6 passed (6)
+      Tests  42 passed (42)
+   Start at  04:29:01
+   Duration  1.11s (transform 947ms, setup 0ms, collect 1.49s, tests 78ms, environment 2ms, prepare 1.19s)
+
+JSON report written to /tmp/frob-vitest-917063-0.json
+stderr | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns an http error with user-facing text
+[screens.run.export] export http error { format: 'lctt-csv', status: 409 }
+
+stderr | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns a network error instead of throwing
+[screens.run.export] export network failure { format: 'lctt-csv', message: 'down' }
+
+stderr | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] network failure { path: '/api/device/reconnect', message: 'down' }
+
+stderr | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > extracts the 409 hint from a problem body
+[instrument.stop] resume error body was not JSON {}
+
+stderr | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] http error { path: '/api/acquisition/resume', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/hooks src/screens/run/inputFields.test.ts src/screens/run/exportTrace.test.ts src/components/instrument/StopBanner.test.tsx"
+size = 5703
+status = "measured"
+test_count = 42
+tests_digest = "f7c544cf9f41e5a3d5e156b80184550298efbc334a37e659c89e957e845298ec"
+at = "2026-11-10T09:29:01Z"
+actor = "lognd"
+rev = 1

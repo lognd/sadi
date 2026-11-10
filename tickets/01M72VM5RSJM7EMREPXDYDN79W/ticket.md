@@ -2,12 +2,12 @@
 id = "01M72VM5RSJM7EMREPXDYDN79W"
 title = "Capture retry must never save a point twice (freeze body+id, narrow digest)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:51:09Z"
+updated = "2026-11-10T13:51:17Z"
 scope = ["python/sadi/server/service.py", "python/tests/server/test_capture_request_id.py", "web/src/screens/run/**", "web/src/screens/review/api.ts"]
 
 [[acceptance]]

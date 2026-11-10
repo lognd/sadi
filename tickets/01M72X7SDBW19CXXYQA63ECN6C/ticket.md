@@ -2,7 +2,8 @@
 id = "01M72X7SDBW19CXXYQA63ECN6C"
 title = "Automatic error propagation for the weight plan and results (mass, diameter, L0, volts to stress, strain, E, yield)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

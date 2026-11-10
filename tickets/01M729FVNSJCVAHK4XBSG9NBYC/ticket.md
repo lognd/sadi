@@ -2,7 +2,8 @@
 id = "01M729FVNSJCVAHK4XBSG9NBYC"
 title = "audit4 L3+L4+L5+L7: phase hints, session facts refresh, sticky offset, SYNTHETIC badge, RECOVERED export"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

@@ -2,7 +2,8 @@
 id = "01M72TEVXXFP3PZ84SABZEDX7H"
 title = "Run screen: drive guidance next-weight line from design selector (single source)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

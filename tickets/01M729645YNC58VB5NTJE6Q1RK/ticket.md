@@ -2,7 +2,8 @@
 id = "01M729645YNC58VB5NTJE6Q1RK"
 title = "audit4 M1: no Origin/Host check; cross-site requests can close session, undo, write files"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

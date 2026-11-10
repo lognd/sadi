@@ -380,9 +380,12 @@ def combine_runs(
 
 # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
 def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
-    """Render the 42-column lctt CSV from the raw session events carried on `run` (in memory)."""
+    """Render the 49-column lctt CSV from the raw session events carried on `run` (in memory)."""
     events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
-    doc = build_document(events, date=datetime.now(UTC))
+    doc = build_document(
+        events, date=datetime.now(UTC),
+        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+    )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(doc, Err):
         _log.warning("lctt csv export refused: %s", doc.danger_err)
         return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(doc.danger_err)))
@@ -397,7 +400,10 @@ def _live_events(run: RunState) -> list[Any]:
 # frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
 def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
     """Render a PARTIAL lctt CSV from whatever has been captured so far (calibration suffices)."""
-    doc = build_document(_live_events(run), date=datetime.now(UTC), partial=True)
+    doc = build_document(
+        _live_events(run), date=datetime.now(UTC), partial=True,
+        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+    )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(doc, Err):
         _log.warning("lctt partial csv export refused: %s", doc.danger_err)
         return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(doc.danger_err)))
@@ -407,7 +413,10 @@ def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, C
 # frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
 def _write_calibration_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
     """Render the standalone calibration CSV (points plus fit) from the session events."""
-    out = build_calibration_csv(_live_events(run), date=datetime.now(UTC))
+    out = build_calibration_csv(
+        _live_events(run), date=datetime.now(UTC),
+        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+    )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(out, Err):
         _log.warning("lctt calibration csv export refused: %s", out.danger_err)
         return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(out.danger_err)))
@@ -419,7 +428,7 @@ _LIVE_EVENT_TYPES = (
 )  # fmt: skip
 
 
-#: The lctt-csv export format: project-defined 42-column layout, see docs/lctt/export-csv.md.
+#: The lctt-csv export format: project-defined 49-column layout, see docs/lctt/export-csv.md.
 # frob:ticket 01M6WYB1R6FYQ95T8SDQ62G869
 CSV_FORMAT = ExportFormat(
     id=ExportFormatId("lctt-csv"),

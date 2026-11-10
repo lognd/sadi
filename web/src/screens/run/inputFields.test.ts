@@ -12,6 +12,15 @@ function required<T>(v: T | undefined): T {
 }
 
 describe("collectInputs", () => {
+  it("load points post volts_sd and U_V = 2 sd from the recent block (parity M1)", () => {
+    const r = collectInputs("elastic", { mass_kg: "0.5" }, 1, { mean: 1, sd: 0.01, n: 200 });
+    expect(r.ok).toBe(true);
+    if (r.ok) { expect(r.value["volts_sd"]).toBe(0.01); expect(r.value["u_volts"]).toBe(0.02); }
+  });
+  it("tare and calibration do not gain load uncertainty keys", () => {
+    const r = collectInputs("calibrate", { height: "0.01" }, 1, { mean: 1, sd: 0.01, n: 200 });
+    expect(r.ok && "u_volts" in r.value).toBe(false);
+  });
   it("calibration: live volts when blank, typed height in SI", () => {
     const r = collectInputs("calibrate", { height: "0.0125" }, 1.5);
     expect(r).toEqual({ ok: true, value: { volts: 1.5, height: 0.0125 } });

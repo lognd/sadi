@@ -156,6 +156,9 @@ class RunState(_Frozen):
     # frob:ticket 01M6WVADB5YKXAVC43CQNBQVJW
     #: Lab-defined raw session events (opaque to the core) for writers that re-derive results.
     events: tuple[BaseModel, ...] = ()
+    # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
+    #: Free-form session header fields (operator, description) for writers; empty when unknown.
+    meta: dict[str, str] = Field(default_factory=dict)
 
     def advance(self, phase: Phase) -> RunState:
         """Return a copy moved to `phase`."""

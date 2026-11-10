@@ -24,6 +24,7 @@ from sadi.server.routes.problem import ApiProblem, ProblemError, from_sadi, not_
 from sadi.server.schemas import PointView
 from sadi.server.service import ClosedSession, SessionService
 from sadi.server.session_points import active_points, analyze, to_captured
+from sadi.store.manifest import read_manifest
 from sadi.store.exports import ExportError, write_export
 from sadi.synthetic.provenance import (
     EXPORT_PREFIX,
@@ -71,6 +72,20 @@ def _open_lab(svc: SessionService, labs: LabRegistry) -> Result[tuple[str, LabMo
     return Ok((info.name, lab))
 
 
+# frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
+def _header_meta(sdir: Path) -> dict[str, str]:
+    """Operator and description for the export header, from the session manifest's specimen map."""
+    mf = read_manifest(sdir)
+    if mf.is_err or mf.danger_ok is None:
+        _log.warning("export header: no readable manifest in %s; operator/description blank", sdir)
+        return {}
+    spec = mf.danger_ok.specimen
+    desc = spec.get("description") or " ".join(v for k in ("name", "material") if (v := spec.get(k)))
+    meta = {"operator": spec.get("operator", ""), "description": desc}
+    _log.debug("export header meta from %s: %s", sdir.name, meta)
+    return meta
+
+
 @propagate
 def _render(
     lab: LabModule,
@@ -103,7 +118,9 @@ def _render(
     if events.is_err:
         _log.error("export %s: session replay failed: %s", format_id, events.danger_err)
         return Err(from_sadi(ComputeError(code=ComputeCode.DEGENERATE, detail="session replay")))
-    run = RunState(session_id=name, points=captured, events=tuple(events.danger_ok))
+    run = RunState(
+        session_id=name, points=captured, events=tuple(events.danger_ok), meta=_header_meta(sdir)
+    )
     body = fmt.writer(run, analysis.danger_ok)
     if body.is_err:
         _log.error("export %s: writer failed: %s", format_id, body.danger_err)

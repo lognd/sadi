@@ -50,6 +50,7 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
   const [lab, setLab] = useState("");
   const [name, setName] = useState("");
   const [material, setMaterial] = useState("");
+  const [operator, setOperator] = useState("");
   const [pending, setPending] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const refreshFacts = useRefreshFacts();
@@ -97,7 +98,7 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
     if (pending !== null || lab === "") return;
     setPending("new");
     setMessage("");
-    const body = { lab, slug: slugFrom(name), specimen: specimenFrom({ name, material }) };
+    const body = { lab, slug: slugFrom(name), specimen: specimenFrom({ name, material, operator }) };
     void createSession(body).then((r) => {
       if (!r.ok) setMessage(failureText(r.error));
       finish(r, `create ${body.slug}`);
@@ -128,6 +129,10 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
             <label>Material
               <input value={material} onChange={(e) => { setMaterial(e.target.value); }} placeholder="copper" />
               <small className="field-help">Optional; recorded with the results.</small>
+            </label>
+            <label>Operator
+              <input value={operator} onChange={(e) => { setOperator(e.target.value); }} placeholder="your name" />
+              <small className="field-help">Optional; written in the header of the exported CSV.</small>
             </label>
             <button type="submit" className="btn btn-primary" data-variant="primary" disabled={pending !== null || lab === ""}>Create session</button>
           </form>

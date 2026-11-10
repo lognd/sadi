@@ -26,6 +26,8 @@ from sadi.core.lab import LabId, LabModule, StepId
 from sadi.labs.lctt.capture import BlockError, BlockStats
 from sadi.core.point_inputs import (
     PHASE_CALIBRATION,
+    PHASE_SETUP,
+    PHASE_SPECIMEN,
     PHASE_TARE,
     PointMeta,
     build_point,
@@ -79,6 +81,9 @@ from sadi.synthetic.provenance import REAL, SYNTHETIC, UNKNOWN, DataProvenance
 
 _log = get_logger(__name__)
 
+#: Coverage factor k of the load-point voltage uncertainty U_V = k * sd (95 %, loading.py TWO_S rule).
+LOAD_VOLTS_K = 2.0
+
 #: Seconds a write waits for fsync before the request fails (data stays queued, not lost).
 DURABLE_TIMEOUT_S = 10.0
 
@@ -98,7 +103,7 @@ class ClosedSession:
 
 
 # Live-derived input keys: they change on every sample, so they never identify a point.
-_LIVE_INPUT_KEYS = frozenset({"volts", "mean", "sd", "n"})
+_LIVE_INPUT_KEYS = frozenset({"volts", "mean", "sd", "n", "volts_sd", "u_volts"})
 
 
 def _capture_digest(body: CaptureBody) -> str:
@@ -268,9 +273,10 @@ class SessionService:
         self._block_source = source
 
     def _apply_block(self, body: CaptureBody) -> Result[dict[str, Any], ApiProblem]:
-        """Inputs with tare mean/sd/n or calibration volts replaced by the server raw block stats."""
+        """Inputs with tare mean/sd/n, calibration volts or load volts/sd/U replaced by raw block stats."""
         inputs = dict(body.inputs)
-        if self._block_source is None or body.phase not in (PHASE_TARE, PHASE_CALIBRATION):
+        # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
+        if self._block_source is None or body.phase in (PHASE_SPECIMEN, PHASE_SETUP):
             return Ok(inputs)
         got = self._block_source()
         if got.is_err:
@@ -280,8 +286,11 @@ class SessionService:
         st = got.danger_ok
         if body.phase == PHASE_TARE:
             inputs.update(mean=st.mean, sd=st.sd, n=st.n)
-        else:
+        elif body.phase == PHASE_CALIBRATION:
             inputs["volts"] = st.mean
+        else:
+            # load point: block mean, sample sd and U_V = 2 sd (the loading.py TWO_S rule, 95 %)
+            inputs.update(volts=st.mean, volts_sd=st.sd, u_volts=LOAD_VOLTS_K * st.sd)
         _log.info("capture %s from raw block n=%d mean=%g sd=%g", body.phase, st.n, st.mean, st.sd)
         return Ok(inputs)
 

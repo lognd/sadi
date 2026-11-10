@@ -96,6 +96,14 @@ export function plausibilityNote(f: InputField, raw: string): { readonly message
   };
 }
 
+/** Coverage factor of the load-point voltage uncertainty U_V = k sd (mirrors LOAD_VOLTS_K in service.py). */
+export const LOAD_VOLTS_K = 2;
+
+/** True for the elastic and plastic load phases (the ones that post volts and a mass). */
+function isLoadPhase(phase: RunPhase): boolean {
+  return phase !== "calibrate" && phase !== "tare";
+}
+
 /** Validate all fields of a phase; Err lists every problem so none is hidden. Derived fields are placeholders; the server substitutes its raw-block stats. */
 export function collectInputs(
   phase: RunPhase, raw: Readonly<Record<string, string>>, liveVolts: number | null,
@@ -112,6 +120,12 @@ export function collectInputs(
     const r = parseField(f, raw[f.key] ?? "", f.key === "mean" && recent !== null ? recent.mean : liveVolts);
     if (!r.ok) errors.push(r.error);
     else if (r.value !== null) out[f.key] = r.value;
+  }
+  // frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
+  if (isLoadPhase(phase) && recent !== null) {
+    // Load points carry the block sd and U_V = 2 sd (95 %); the server replaces them with its raw-block values.
+    out["volts_sd"] = recent.sd;
+    out["u_volts"] = LOAD_VOLTS_K * recent.sd;
   }
   return errors.length > 0 ? err(errors) : ok(out);
 }

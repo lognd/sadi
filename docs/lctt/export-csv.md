@@ -7,6 +7,7 @@ Format source: [domain.md](../domain.md) section 4; byte policy: [store/csv-expo
 
 ## Layout
 
+Operator and Description come from the session's `specimen` map (keys `operator`, `description`; description falls back to `name material`) and are blank only when unset.
 Metadata rows (`key,value`: Title, Schema, Date, Operator, Description, tare, calibration,
 specimen inputs, modulus fit, yield), one blank line, the 49-column header, one row per logged
 point (including excluded ones, flagged). Columns are the fields of `PointRow`, in order:
@@ -30,7 +31,8 @@ as a separate ticket (decision below); reader, writer and tests follow its field
 
 `elapsed_s` is seconds since the load was applied (from the capture settle record) and `volts_sd`
 is the per-sample standard deviation of the raw volts in the averaging window (`u_volts` is the
-standard error of the mean); both are `NaN` when unknown (older sessions, single-sample windows).
+standard error of the mean for auto-captured points; for points captured through the guided run it is
+U_V = 2 sd of the server's raw-sample block, the LabVIEW 95 % rule, and `volts_sd` is that block's sd); both are `NaN` when unknown (older sessions, single-sample windows).
 Uncertainty columns (schema `3`) are the engines' propagated standard uncertainties, not new
 estimates: `u_tare_v` is the standard error of the pooled tare mean, Sx/sqrt(N) (the same model as the Results `tare`); every row uses this one model: `u_strain`, `u_stress`, `u_delta_volts` and `u_displacement_m` all take U_tare = Sx/sqrt(N), so `u_strain` is approximately `u_displacement_m / l0_m` (stated in the `Row uncertainty model` metadata line); `u_delta_volts = hypot(u_volts, u_tare_v)`;
 `u_displacement_m` propagates delta volts and the calibration slope; `u_hanger_kg` and `u_diameter_m`

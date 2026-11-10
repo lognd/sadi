@@ -1,6 +1,7 @@
 """Measured: a value with standard uncertainty, SI unit, covariance links and provenance."""
 
 # frob:ticket 01M6W7R155JD0XGVXHDSP19B1H
+# frob:ticket 01M72YKF3EN8RJX7RCH78JDPQC
 
 from __future__ import annotations
 
@@ -114,6 +115,42 @@ class Measured(BaseModel):
         _track(out, registry)
         _log.info("created %s = %g +/- %g %s", out.id, out.value, out.std_unc, out.unit)
         return Ok(out)
+
+    @classmethod
+    def from_readings(
+        cls,
+        readings: Sequence[float],
+        u_instrument: float = 0.0,
+        unit: str = units.DIMENSIONLESS,
+        *,
+        provenance: Provenance | None = None,
+        registry: CovarianceRegistry = DEFAULT_REGISTRY,
+    ) -> Result[Measured, UncertaintyError]:
+        """Mean of repeated readings with standard uncertainty sqrt((s/sqrt n)^2 + u_instrument^2).
+
+        The standard (k=1) type-A term is s/sqrt(n); dof is n-1 (None for one reading).
+        """
+        n = len(readings)
+        if n == 0:
+            return Err(UncertaintyError.NoContributions)
+        if not all(math.isfinite(x) for x in readings):
+            return Err(UncertaintyError.InvalidValue)
+        if not (math.isfinite(u_instrument) and u_instrument >= 0):
+            return Err(UncertaintyError.InvalidUncertainty)
+        mean = math.fsum(readings) / n
+        type_a = 0.0
+        if n > 1:
+            var = math.fsum((x - mean) ** 2 for x in readings) / (n - 1)
+            type_a = math.sqrt(var / n)
+        _log.info("from_readings n=%d mean=%g", n, mean)
+        return cls.create(
+            mean,
+            math.hypot(type_a, u_instrument),
+            unit,
+            dof=(n - 1) if n > 1 else None,
+            provenance=provenance or Provenance(source="repeated-readings"),
+            registry=registry,
+        )
 
     @classmethod
     def from_json(

@@ -1,0 +1,36 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:42:25Z"
+digest = "793a4c14c2c5f9242c371b742df776bcdd7f39344937139cca7f548d4de108e6"
+exit_code = 0
+head = "9c55b129815e613ad26b4f0f6020fd41adbff3a0"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/server/test_readonly_export.py .                            [ 50%]
+python/tests/store/test_spill.py .                                       [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-1143237-0.xml --------------
+========================= 2 passed, 1 warning in 2.27s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_readonly_export.py::test_unknown_provenance_export_is_neither_real_nor_synthetic python/tests/store/test_spill.py::test_import_inherits_synthetic_and_orphan_is_not_real"
+size = 1083
+status = "measured"
+test_count = 2
+tests_digest = "6d9657174d604669a95b1bf5641d9afecc4d46f75c3da58ad03eb4e5204096e2"
+at = "2026-11-10T13:42:25Z"
+actor = "lognd"
+rev = 1

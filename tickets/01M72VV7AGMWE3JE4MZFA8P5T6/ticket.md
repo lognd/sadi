@@ -2,12 +2,12 @@
 id = "01M72VV7AGMWE3JE4MZFA8P5T6"
 title = "Replay fallback must compare request digest; OpenAPI declares capture 409/503 and design reason enum"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:55:00Z"
-updated = "2026-11-10T13:55:00Z"
+updated = "2026-11-10T13:58:06Z"
 scope = ["python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/schemas*.py", "web/src/api/**", "python/tests/server/test_capture_request_id.py"]
 
 [[acceptance]]

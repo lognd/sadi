@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T06:59:29Z"
-updated = "2026-11-10T07:00:52Z"
+updated = "2026-11-10T07:03:09Z"
 labels = ["creates:python/tests/test_launcher_no_device.py"]
 scope = ["python/sadi/launcher.py", "python/tests/test_launcher_no_device.py", "python/tests/cli/test_launcher_real_device.py", "docs/server/launcher.md"]
 

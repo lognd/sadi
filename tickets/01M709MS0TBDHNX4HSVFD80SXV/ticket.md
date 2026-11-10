@@ -12,7 +12,7 @@ scope = ["docs/core/device.md"]
 
 [[acceptance]]
 text = "Given docs/core/device.md, when read, then the reader queue default matches DEFAULT_QUEUE_BLOCKS (4096)"
-bound = false
+bound = true
 +++
 
 found while working 01M709DXGS91GPWZ3M06FWXJPY; docs/core/device.md says default 256 blocks, leased by N6VY4KP

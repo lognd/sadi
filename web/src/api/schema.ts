@@ -1237,7 +1237,7 @@ export interface components {
              * Reasons
              * @default []
              */
-            reasons: ("cold_start" | "singular" | "no_offset" | "yield_not_reached" | "departure_from_linear" | "diminishing_returns" | "no_elastic_fit" | "no_calibration")[];
+            reasons: ("cold_start" | "singular" | "no_offset" | "yield_not_reached" | "departure_from_linear" | "diminishing_returns" | "no_elastic_fit" | "no_calibration" | "range_exhausted")[];
             /**
              * Schema Version
              * @default 1
@@ -1559,6 +1559,8 @@ export interface components {
          * @description Health payload consumed by web/src/api/client.ts getHealth.
          */
         HealthOut: {
+            /** Data Root */
+            data_root?: string | null;
             /**
              * @default {
              *       "label": "",

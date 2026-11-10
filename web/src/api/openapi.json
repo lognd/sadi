@@ -727,7 +727,8 @@
                 "departure_from_linear",
                 "diminishing_returns",
                 "no_elastic_fit",
-                "no_calibration"
+                "no_calibration",
+                "range_exhausted"
               ],
               "type": "string"
             },
@@ -1419,6 +1420,17 @@
       "HealthOut": {
         "description": "Health payload consumed by web/src/api/client.ts getHealth.",
         "properties": {
+          "data_root": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Root"
+          },
           "provenance": {
             "$ref": "#/components/schemas/DataProvenance",
             "default": {

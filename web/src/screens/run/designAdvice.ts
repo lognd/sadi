@@ -1,5 +1,6 @@
 // frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
 // frob:ticket 01M72VM5X86QRPEWSW65Q9RBD8
+// frob:ticket 2Q852YF
 // frob:accept COV001 because="covered by SuggestedWeightPanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
@@ -44,6 +45,7 @@ export function indicatorText(i: DesignIndicator): string {
   if (i.reasons.includes("no_calibration")) return "No LVDT calibration was recorded, so the yield offset cannot be worked out. Choose loads yourself.";
   if (i.reasons.includes("cold_start")) return `Keep going: collect a few more points first (you have ${String(i.n)}).`;
   if (i.reasons.includes("departure_from_linear")) return "The last point is off the straight line. Check it before adding more.";
+  if (i.reasons.includes("range_exhausted")) return "You have reached the top of the elastic range; finish this step.";
   if (i.reasons.includes("yield_not_reached")) return "The curve has not bent over yet. Try a heavier load.";
   switch (i.state) {
     case "enough": return "Enough data: more points will barely improve the result. You can stop (your call).";

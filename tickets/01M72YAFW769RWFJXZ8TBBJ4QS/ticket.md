@@ -2,12 +2,12 @@
 id = "01M72YAFW769RWFJXZ8TBBJ4QS"
 title = "Frozen retry body outlives refusals that wrote nothing; later Accept saves stale data (audit8 M2)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:38:17Z"
-updated = "2026-11-10T14:38:17Z"
+updated = "2026-11-10T14:59:49Z"
 scope = ["python/sadi/server/capture.py", "web/src/screens/run/live.ts"]
 
 [[acceptance]]

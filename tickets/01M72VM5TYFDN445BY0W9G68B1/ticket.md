@@ -2,12 +2,12 @@
 id = "01M72VM5TYFDN445BY0W9G68B1"
 title = "Design advice: yield uses plastic points only; monotonic non-zero elastic cold start; fix field label text"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:51:09Z"
+updated = "2026-11-10T13:51:46Z"
 scope = ["python/sadi/design/**", "python/sadi/server/routes/design.py", "python/tests/design/**", "python/tests/server/test_design_route.py", "web/src/components/wizard/stepGuide.ts", "web/src/screens/run/phases.ts"]
 
 [[acceptance]]

@@ -522,7 +522,7 @@ def test_app_logs_fragment_failed_skip_at_warning(
     assert not any("already imported" in r.getMessage() for r in caplog.records)
 
 
-# frob:ticket ~WSGEKR2
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
 # frob:tests python/sadi/store/spill.py::import_all_spills
 def test_synthetic_root_skips_foreign_spill_and_keeps_it_intact(tmp_path: Path) -> None:
     """A synthetic root adopts no orphan spill: no new version, no marker, file byte-identical."""

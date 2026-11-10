@@ -739,7 +739,7 @@ class FragmentFailedSkip(BaseModel):
     crashed_dirs: tuple[Path, ...]
 
 
-# frob:ticket ~WSGEKR2
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
 class SyntheticSkip(BaseModel):
     """Outcome: spill left untouched because a synthetic root must not adopt foreign data."""
 
@@ -747,7 +747,7 @@ class SyntheticSkip(BaseModel):
     spill: Path
 
 
-# frob:ticket ~WSGEKR2
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
 def _foreign_to_synthetic_root(data_root: Path, scan: SpillScan) -> bool:
     """True when the spill has no parent session in this root (a synthetic root adopts none)."""
     parent = _find_parent(data_root, scan.header.session_uuid)
@@ -778,7 +778,7 @@ def import_all_spills(
     user_dir: Path | None = None,
     temp_dir: Path | None = None,
     *,
-    synthetic: bool = False,  # frob:ticket ~WSGEKR2
+    synthetic: bool = False,  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
 ) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]]:
     """Discover, verify and import every spill at start; Ok(None) means already imported.
 
@@ -797,7 +797,7 @@ def import_all_spills(
             outcomes.append((spill, Err(scanned.danger_err)))
             continue
         scan = scanned.danger_ok
-        if synthetic and _foreign_to_synthetic_root(data_root, scan):  # frob:ticket ~WSGEKR2
+        if synthetic and _foreign_to_synthetic_root(data_root, scan):  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
             _log.info("spill %s skipped: synthetic root, no synthetic parent session here", spill)
             outcomes.append((spill, Ok(SyntheticSkip(spill=spill))))
             continue

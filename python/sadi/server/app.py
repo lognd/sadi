@@ -148,7 +148,7 @@ def _import_spills(cfg: AppSettings) -> int:
         elif outcome.danger_ok is None:
             _log.info("spill %s already imported", spill)
         elif isinstance(outcome.danger_ok, SyntheticSkip):
-            # frob:ticket ~WSGEKR2
+            # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
             _log.info("spill %s left alone: synthetic data root does not adopt real spills", spill)
         elif isinstance(outcome.danger_ok, FragmentFailedSkip):
             # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X

@@ -7,12 +7,12 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:48:40Z"
+updated = "2026-11-10T14:49:16Z"
 scope = ["web/src/screens/run/**"]
 
 [[acceptance]]
 text = "Simulated strip persists after a fault."
-bound = false
+bound = true
 +++
 
 See /tmp/claude-1000/-home-logan-projects-SADI/4f193782-dc1d-4c66-a170-89d2ce998f4d/scratchpad/audit8.md L1.

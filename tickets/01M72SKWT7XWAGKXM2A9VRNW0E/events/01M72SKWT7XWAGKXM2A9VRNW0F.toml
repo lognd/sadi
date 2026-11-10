@@ -1,0 +1,12 @@
+kind = "create"
+title = "Regenerate web/src/api/schema.ts: missing SessionSummary.spill_import"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 1
+labels = ["creates:none"]
+scope = ["web/src/api/schema.ts"]
+acceptance = ["schema.ts contains spill_import on SessionSummary and matches openapi.json (npm run gen:ts); tsc --noEmit clean"]
+at = "2026-11-10T13:16:03Z"
+actor = "lognd"
+rev = 1

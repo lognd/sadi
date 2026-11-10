@@ -2,7 +2,8 @@
 id = "01M72B7QAB5FFFNXRHZ80T48X8"
 title = "Fix capture/pipeline regressions from settle auto-open (found in ~6ZE1QAP)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

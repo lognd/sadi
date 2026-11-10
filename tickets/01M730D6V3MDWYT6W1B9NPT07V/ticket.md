@@ -2,12 +2,12 @@
 id = "01M730D6V3MDWYT6W1B9NPT07V"
 title = "Read-only step view should render the step's data panels, not hide them behind a banner"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:14:44Z"
-updated = "2026-11-10T15:14:44Z"
+updated = "2026-11-10T15:22:05Z"
 scope = ["web/src/components/wizard/**"]
 
 [[links]]

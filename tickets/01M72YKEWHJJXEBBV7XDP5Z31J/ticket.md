@@ -2,12 +2,12 @@
 id = "01M72YKEWHJJXEBBV7XDP5Z31J"
 title = "Durability timeout returns 500 vs OpenAPI 503; client calls uncertain capture refused (audit8 L2)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:43:11Z"
+updated = "2026-11-10T14:48:43Z"
 scope = ["python/sadi/server/**", "web/src/api/**"]
 
 [[acceptance]]

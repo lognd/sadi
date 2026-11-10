@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:17:59Z"
-updated = "2026-11-10T15:17:59Z"
-labels = ["creates:python/tests/plugins/test_example_plugin.py"]
+updated = "2026-11-10T15:18:02Z"
+labels = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
 scope = ["examples/**", "python/tests/plugins/test_example_plugin.py", "docs/plugins.md"]
 
 [[acceptance]]

@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:55:00Z"
-updated = "2026-11-10T13:58:06Z"
-scope = ["python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/schemas*.py", "web/src/api/**", "python/tests/server/test_capture_request_id.py"]
+updated = "2026-11-10T13:59:07Z"
+scope = ["python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/schemas*.py", "web/src/api/**", "python/tests/server/test_capture_request_id.py", "python/sadi/store/events.py"]
 
 [[acceptance]]
 text = "Fallback replay path through stored points compares the narrowed digest and returns 409 on mismatch; POST /api/session/points declares 409 and 503 ApiProblem responses; DesignIndicator reasons are an enum; openapi.json and schema.ts regenerated"

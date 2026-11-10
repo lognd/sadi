@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:10:34Z"
-updated = "2026-11-10T15:23:06Z"
+updated = "2026-11-10T15:23:10Z"
 labels = ["creates:python/tests/design/test_height_plan.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 
@@ -29,7 +29,7 @@ bound = true
 
 [[acceptance]]
 text = "Duplicates in the height inventory stay distinct ids; error when fewer than 2 distinct usable heights"
-bound = false
+bound = true
 +++
 
 User: heights are just like the weights; need to know which heights to use and the uncertainty in them. Reuse selector.py; do not duplicate the weight logic.

@@ -154,6 +154,117 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
     )
 
 
+#: Plausibility limits for captured inputs (SI units); see `check_ranges`.
+MIN_DIAMETER_M = 0.05e-3
+MAX_DIAMETER_M = 5e-3
+MAX_HEIGHT_M = 1.0
+#: Heights are measured relative to a zero reference, so small noise below zero is legitimate.
+MIN_HEIGHT_M = -1e-3
+MAX_MASS_KG = 1000.0
+MAX_VOLTS = 100.0
+MAX_STRAIN_ZERO = 1.0
+MAX_TARE_N = 100_000_000
+#: SI unit -> the thousandth unit people mistakenly type instead.
+_MISTAKEN_UNIT = {"metres": "millimetres", "kilograms": "grams"}
+
+
+def _finite(items: dict[str, float]) -> str | None:
+    """Return a message naming the first non-finite value in `items`, else None."""
+    for name, val in items.items():
+        if not math.isfinite(val):
+            return f"{name} must be a finite number (got {val}); NaN and Infinity are not stored"
+    return None
+
+
+def _bounded(name: str, val: float, lo: float, hi: float, unit: str) -> str | None:
+    """Return a unit-aware message when `val` is outside [lo, hi], else None."""
+    if lo <= val <= hi:
+        return None
+    other = _MISTAKEN_UNIT.get(unit)
+    if other is not None and val > hi and lo <= val / 1e3 <= hi:
+        return f"{name} is in {unit}; {val:g} looks like {other}, did you mean {val / 1e3:g}?"
+    return f"{name} is in {unit}; {val:g} is outside the plausible range {lo:g}..{hi:g} {unit}"
+
+
+def _nonneg(items: dict[str, float], unit: str) -> str | None:
+    """Return a message for the first negative value in `items`, else None."""
+    for name, val in items.items():
+        if val < 0:
+            return f"{name} is in {unit} and cannot be negative (got {val:g})"
+    return None
+
+
+def check_ranges(inputs: PointInputs) -> Result[PointInputs, str]:
+    """Reject non-finite or implausible inputs with a unit-aware message; Ok returns `inputs`.
+
+    This guards the capture write path only; reading old logs stays lenient (`parse_inputs`).
+    """
+    fields = {k: float(v) for k, v in inputs.model_dump(exclude={"phase"}).items() if v is not None}
+    problem = _finite(fields) or _check_phase(inputs)
+    if problem is not None:
+        _log.warning("input rejected (%s): %s", inputs.phase, problem)
+        return Err(problem)
+    return Ok(inputs)
+
+
+def _check_phase(inputs: PointInputs) -> str | None:
+    """Phase-specific plausibility checks on already finite inputs."""
+    v = MAX_VOLTS
+    if isinstance(inputs, CalibrationInputs):
+        return _bounded("volts", inputs.volts, -v, v, "volts") or _bounded(
+            "height", inputs.height, MIN_HEIGHT_M, MAX_HEIGHT_M, "metres"
+        )
+    if isinstance(inputs, TareInputs):
+        if not 1 <= inputs.n <= MAX_TARE_N:
+            return f"n is a sample count and must be between 1 and {MAX_TARE_N} (got {inputs.n})"
+        return _bounded("mean", inputs.mean, -v, v, "volts") or _nonneg({"sd": inputs.sd}, "volts")
+    if isinstance(inputs, SpecimenInputs):
+        return (
+            _bounded("diameter", inputs.diameter, MIN_DIAMETER_M, MAX_DIAMETER_M, "metres")
+            or _nonneg({"u_diameter": inputs.u_diameter}, "metres")
+            or _bounded("hanger_kg", inputs.hanger_kg, 0.0, MAX_MASS_KG, "kilograms")
+            or _nonneg({"u_hanger_kg": inputs.u_hanger_kg}, "kilograms")
+        )
+    if isinstance(inputs, LoadInputs):
+        return (
+            _bounded("volts", inputs.volts, -v, v, "volts")
+            or _bounded("mass_kg", inputs.mass_kg, 0.0, MAX_MASS_KG, "kilograms")
+            or _nonneg({"u_volts": inputs.u_volts, "u_mass_kg": inputs.u_mass_kg}, "SI units")
+        )
+    z = MAX_STRAIN_ZERO
+    return _bounded("zero_before", inputs.zero_before, -z, z, "strain") or _bounded(
+        "zero_after", inputs.zero_after, -z, z, "strain"
+    )
+
+
+def check_window(window: PointWindow, durable_seq: int | None = None) -> Result[PointWindow, str]:
+    """Reject a sample window that is negative, reversed or beyond the durable raw seq.
+
+    The upper bound applies only when `durable_seq` is given; the server passes None because it has
+    no raw index, so synthetic/replayed windows stay accepted and only sign/ordering is enforced.
+
+    The seqs are WAL seqs of RAW_BLOCK records: a point cannot average data that is not (yet)
+    durable. Server-side volts are not re-derived from the window (documented limitation).
+    """
+    w = window
+    problem = None
+    if min(w.first_raw_seq, w.last_raw_seq, w.first_sample, w.last_sample) < 0:
+        problem = "window seqs and sample offsets are counts and cannot be negative"
+    elif w.first_raw_seq > w.last_raw_seq or (
+        w.first_raw_seq == w.last_raw_seq and w.first_sample > w.last_sample
+    ):
+        problem = "window is reversed: first must not come after last"
+    elif durable_seq is not None and w.last_raw_seq > durable_seq:
+        problem = (
+            f"window ends at raw seq {w.last_raw_seq} but only seq {durable_seq} is durable; "
+            "a point can only average data already recorded"
+        )
+    if problem is not None:
+        _log.warning("window rejected: %s (durable_seq=%s)", problem, durable_seq)
+        return Err(problem)
+    return Ok(window)
+
+
 def build_point(inputs: PointInputs, window: PointWindow, meta: PointMeta | None = None) -> PointV1:
     """Build the POINT payload for typed inputs (and optional settle meta); keys match parsing."""
     raw = inputs.model_dump(exclude={"phase"})

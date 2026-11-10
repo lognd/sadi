@@ -21,7 +21,13 @@ from pydantic import BaseModel
 from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import LabId, LabModule, StepId
-from sadi.core.point_inputs import PointMeta, build_point, parse_inputs
+from sadi.core.point_inputs import (
+    PointMeta,
+    build_point,
+    check_ranges,
+    check_window,
+    parse_inputs,
+)
 from sadi.core.registry import LabRegistry
 from sadi.core.wizard import Command, History, Wizard, WizardError, WizardState
 from sadi.labs.lctt.guidance import Phase
@@ -127,6 +133,17 @@ def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
         durable.map_err(_from_store).unwrap()
     _log.info("folded %d state records from %s", count, parent.name)
     return Ok(count)
+
+
+def _unprocessable(code: str, detail: str, hint: str) -> ApiProblem:
+    """A 422 for rejected input; the WAL is untouched."""
+    return ApiProblem(
+        type=f"urn:sadi:error:input:{code}",
+        title=code.replace("_", " "),
+        status=422,
+        detail=detail,
+        hint=hint,
+    )
 
 
 def _phase_view(phase: Phase | None) -> RunPhaseView:
@@ -285,8 +302,16 @@ class SessionService:
         return self._read(lambda cur, rp: cur.wizard.state(rp))
 
     def complete(self, step: str) -> Result[Committed, ApiProblem]:
-        """Mark the current step done."""
-        return self._act(lambda cur, rp: cur.wizard.complete(rp, StepId(step)))
+        """Mark the current step done, unless the lab's quality gate for it fails (422)."""
+        with self._lock:
+            cur = self._open
+            if cur is not None:
+                rp = self._replay(cur)
+                if rp.is_ok and cur.wizard.complete(rp.danger_ok, StepId(step)).is_ok:
+                    why = cur.wizard.not_ready(rp.danger_ok, StepId(step))
+                    if why is not None:
+                        return Err(_unprocessable("step_quality_gate", why, why))
+            return self._act(lambda cur, rp: cur.wizard.complete(rp, StepId(step)))
 
     def skip(self, step: str) -> Result[Committed, ApiProblem]:
         """Explicitly skip the current step."""
@@ -306,15 +331,21 @@ class SessionService:
 
     @propagate
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
-        """Validate typed inputs, then append a POINT through the wizard."""
+        """Validate typed inputs and window (nothing logged on rejection), then append a POINT."""
         parsed = parse_inputs(body.phase, body.inputs)
         parsed_ok = parsed.map_err(
-            lambda detail: ApiProblem(
-                type="urn:sadi:error:input:missing",
-                title="missing",
-                status=422,
-                detail=detail,
-                hint="Fill in the required field before continuing.",
+            lambda detail: _unprocessable(
+                "missing", detail, "Fill in the required field before continuing."
+            )
+        ).unwrap()
+        check_ranges(parsed_ok).map_err(
+            lambda detail: _unprocessable(
+                "out_of_range", detail, "Enter the value in the unit named in the message."
+            )
+        ).unwrap()
+        check_window(body.window).map_err(
+            lambda detail: _unprocessable(
+                "bad_window", detail, "Capture from the live trace so the window is recorded."
             )
         ).unwrap()
         meta = PointMeta(

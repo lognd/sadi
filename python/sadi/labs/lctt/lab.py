@@ -24,16 +24,25 @@ from sadi.core.lab import (
 )
 from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
 from sadi.core.point_inputs import (
+    PHASE_CALIBRATION,
+    PHASE_SETUP,
     CalibrationInputs,
+    ClampInputs,
     LoadInputs,
     PointInputs,
     SpecimenInputs,
     TareInputs,
+    parse_inputs,
 )
 from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.calibration import MIN_POINTS, fit_calibration
-from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
+from sadi.labs.lctt.clamp_check import (
+    ADVICE_RETIGHTEN,
+    ClampCheckConfig,
+    clamp_status,
+    setup_subcheck,
+)
 from sadi.labs.lctt.export_csv import build_document, render_document
 from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
@@ -90,6 +99,48 @@ def _guide(text: str):  # type: ignore[no-untyped-def]  # noqa: ANN202
     return guidance
 
 
+def calibration_gate(points: list[dict[str, Any]]) -> str | None:
+    """Quality gate for the calibrate step: the active points must give a valid LVDT fit."""
+    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    volts: list[float] = []
+    heights: list[float] = []
+    for inputs in points:
+        parsed = parse_inputs(PHASE_CALIBRATION, inputs)
+        item = parsed.danger_ok if parsed.is_ok else None
+        if isinstance(item, CalibrationInputs):
+            volts.append(item.volts)
+            heights.append(item.height)
+    fit = fit_calibration(volts, heights)
+    if fit.is_err:
+        return f"Calibration has no valid fit: {fit.danger_err.description}"
+    return None
+
+
+def clamp_gate(config: ClampCheckConfig | None = None):  # type: ignore[no-untyped-def]  # noqa: ANN202
+    """Build the setup-step gate: the recorded clamp-check cycles must all pass."""
+    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    cfg = config or ClampCheckConfig()
+
+    def gate(points: list[dict[str, Any]]) -> str | None:
+        """Return a message when the clamp check has not passed, else None."""
+        cycles: list[tuple[float, float, int]] = []
+        for inputs in points:
+            parsed = parse_inputs(PHASE_SETUP, inputs)
+            item = parsed.danger_ok if parsed.is_ok else None
+            if isinstance(item, ClampInputs):
+                cycles.append((item.zero_before, item.zero_after, item.slip_events))
+        status = clamp_status(cycles, cfg)
+        if status.passed is False:
+            return (
+                "The clamp-slip check failed (a cycle slipped or the zero did not return). "
+                f"{ADVICE_RETIGHTEN} Repeat the cycles (exclude the failed ones), "
+                "or skip the step explicitly to proceed without a passing check."
+            )
+        return None
+
+    return gate
+
+
 def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
     """Build the Setup step hosting the clamp-slip sub-check; done after one capture per cycle."""
     # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM
@@ -103,6 +154,7 @@ def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
         capture=CaptureKind.DEVICE_POINTS,
         guidance=_guide(sub.guidance),
         min_points=cfg.cycles,
+        complete_check=clamp_gate(cfg),
     )
 
 
@@ -116,6 +168,7 @@ def lctt_steps() -> list[StepSpec]:
             phase=Phase.CALIBRATION,
             capture=CaptureKind.DEVICE_POINTS,
             guidance=_guide("Step the LVDT through known heights and capture each."),
+            complete_check=calibration_gate,
         ),
         StepSpec(
             id=StepId("tare"),

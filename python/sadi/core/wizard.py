@@ -12,6 +12,7 @@ undoing a captured point appends an `exclude` edit so the point itself stays in 
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, ErrorSet, Ok, Result, propagate
@@ -22,6 +23,7 @@ from sadi.core.point_inputs import PHASE_SPECIMEN
 from sadi.logging_setup import get_logger
 from sadi.store.events import (
     ANALYSIS_TARGET,
+    CurrentPoint,
     EditOp,
     EditV1,
     PointV1,
@@ -265,18 +267,36 @@ class Wizard:
         _log.info("wizard: complete %s", sid)
         return Ok(Command(records=(_mark(MARK_DONE, sid),), summary=f"completed {sid}"))
 
-    def _step_points(self, replay: ReplayState, spec: StepSpec) -> int:
-        """Count active points of the step's phase captured since the previous step resolved."""
+    def not_ready(self, replay: ReplayState, sid: StepId) -> str | None:
+        """Return why step `sid` fails its lab quality gate (`complete_check`), else None."""
+        spec = self._spec(sid)
+        if spec is None or spec.complete_check is None:
+            return None
+        why = spec.complete_check(self._step_inputs(replay, spec))
+        if why is not None:
+            _log.info("wizard: complete %s blocked by quality gate: %s", sid, why)
+        return why
+
+    def _step_inputs(self, replay: ReplayState, spec: StepSpec) -> list[dict[str, Any]]:
+        """Inputs of the step's active points captured since the previous step resolved."""
+        return [dict(p.inputs) for p in self._step_point_views(replay, spec)]
+
+    def _step_point_views(self, replay: ReplayState, spec: StepSpec) -> list[CurrentPoint]:
+        """Active points of the step's phase captured since the previous step resolved."""
         seqs: dict[StepId, int] = {}
         _resolved(self.steps, replay, [], seqs)
         ids = [s.id for s in self.steps]
         idx = ids.index(spec.id)
         since = seqs.get(ids[idx - 1], 0) if idx else 0
-        return sum(
-            1
+        return [
+            p
             for p in replay.view().points
             if not p.excluded and p.point.phase == spec.phase.value and p.seq > since
-        )
+        ]
+
+    def _step_points(self, replay: ReplayState, spec: StepSpec) -> int:
+        """Count active points of the step's phase captured since the previous step resolved."""
+        return len(self._step_point_views(replay, spec))
 
     @propagate
     def skip(self, replay: ReplayState, sid: StepId) -> Result[Command, WizardError]:

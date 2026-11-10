@@ -205,7 +205,9 @@ def drive_lab(
         steps.append(r.point("setup", cyc.model_dump()))
     clamp = r.call("GET", "/api/session/clamp-check")
     passed = clamp.danger_ok.json().get("passed") if isinstance(clamp, Ok) else None
-    steps.append(r.step("complete", "setup"))
+    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    # A failed clamp check blocks completion; skip it explicitly.
+    steps.append(r.step("skip" if passed is False else "complete", "setup"))
     for c in sc.calibration:
         steps.append(r.point("calibration", c.model_dump()))
     steps.append(r.step("complete", "calibrate"))

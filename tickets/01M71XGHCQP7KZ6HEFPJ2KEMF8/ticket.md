@@ -2,7 +2,8 @@
 id = "01M71XGHCQP7KZ6HEFPJ2KEMF8"
 title = "Audit1 #7 #9 #13 #15 #18 #32: LCTT analysis (E bias and CI, pending/notes surfaced, calib/tare results, mass label, settle, repr leaks)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

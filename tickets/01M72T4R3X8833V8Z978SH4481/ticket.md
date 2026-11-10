@@ -2,12 +2,12 @@
 id = "01M72T4R3X8833V8Z978SH4481"
 title = "Spill import: verify before close, fragment fallback on verify failure, lineage through fragments, orphan provenance"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:25:15Z"
+updated = "2026-11-10T13:25:27Z"
 labels = ["creates:none"]
 scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/store/test_spill.py", "python/tests/server/test_latest_lineage.py", "web/src/screens/setup/SessionSetup.tsx"]
 

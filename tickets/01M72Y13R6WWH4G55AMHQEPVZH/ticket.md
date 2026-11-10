@@ -2,12 +2,12 @@
 id = "01M72Y13R6WWH4G55AMHQEPVZH"
 title = "Enter L0 and hanger-mass uncertainty in the app (LabVIEW parity H1, M3)"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:33:10Z"
-updated = "2026-11-10T14:33:10Z"
+updated = "2026-11-10T15:29:10Z"
 labels = ["creates:python/tests/labs/lctt/test_l0_input.py"]
 scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/loading.py", "python/sadi/labs/lctt/export_csv.py", "web/src/screens/run/inputFields.ts", "python/sadi/core/point_inputs.py"]
 

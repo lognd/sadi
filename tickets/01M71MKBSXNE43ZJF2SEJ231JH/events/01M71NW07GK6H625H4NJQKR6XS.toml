@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-10T02:51:18Z"
+digest = "2d8db49fc87f2c2b5e20c64b17f7f2621f24fc9d2799e97e9978588fce29f8aa"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+ \u{2713} src/a11y/contrast.test.ts (40 tests) 7ms
+
+ Test Files  1 passed (1)
+      Tests  40 passed (40)
+   Start at  21:51:19
+   Duration  464ms (transform 70ms, setup 0ms, collect 51ms, tests 7ms, environment 0ms, prepare 157ms)
+
+JSON report written to /tmp/frob-vitest-63989-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/a11y/contrast.test.ts"
+size = 316
+status = "measured"
+test_count = 40
+tests_digest = "0ba9e17f2afac8f57cc0a9ab86ee2f851a2d3682008682c44408aa57a2af2c81"
+at = "2026-11-10T02:51:18Z"
+actor = "lognd"
+rev = 1

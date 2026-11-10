@@ -17,6 +17,13 @@ Parent: [web layout](../web-layout.md), next to the [budget panel](budget-panel.
   It is advisory only. The button (or key `N` while the panel has focus, `handleAdvanceKey`)
   calls `onAdvance`; the panel never advances anything itself and the user may ignore it.
   Without `onAdvance` no button is rendered.
+- GP load panel (`components/guidance/GpLoadPanel.tsx`, embedded in `GuidancePanel`): shows the
+  recommended next load in kg and N, expected gain (`expected_gain`, percent narrower), expected
+  half-width after the point, up to 3 `alternatives` as one-click buttons (`onPickLoad(kg)`), and
+  an advisory `gp_state` note (collecting, enough, diminishing, unreliable). Numbers use tabular
+  numerals. When `gp_state` is empty or absent it shows the even-schedule text instead. See
+  [LCTT GP selector](../labs/lctt-gp-selector.md). `GuidancePanel` also takes `status`
+  (`loading` / `error`) plus `error` for the loading and error states.
 - `components/guidance/api.ts`: `getGuidance({phase, hold, target}, fetcher)` calls
   `GET /api/results/guidance` with an injectable fetcher; errors (409 no session, 422 bad
   input) come back as an http error Result.

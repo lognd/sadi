@@ -2,11 +2,15 @@
 id = "01M715VW4GNGBM7CM75ZFZ58XG"
 title = "pipeline forward loop logs expected 0.2 s wait_durable poll timeouts at ERROR (noisy on slow Windows disks)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T22:11:38Z"
-updated = "2026-11-09T22:11:38Z"
-scope = ["python/sadi/core/pipeline.py", "python/sadi/store/writer_thread.py"]
+updated = "2026-11-10T02:49:30Z"
+scope = ["python/sadi/core/pipeline.py", "python/sadi/store/writer_thread.py", "python/sadi/store/wal.py"]
+
+[[acceptance]]
+text = "A wait_durable poll timeout is logged below ERROR while real writer failures still log ERROR"
+bound = false
 +++

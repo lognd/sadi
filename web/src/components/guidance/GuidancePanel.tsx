@@ -2,6 +2,7 @@
 // frob:accept COV001 because="covered by GuidancePanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useState, type KeyboardEvent } from "react";
 import { getLogger } from "../../api/log";
+import { GpLoadPanel } from "./GpLoadPanel";
 import type { GuidancePhase, GuidanceState } from "./types";
 
 const log = getLogger("components.guidance");
@@ -93,10 +94,22 @@ export function GuidancePanel(props: {
   target?: number;
   onTargetChange?: (fraction: number) => void;
   onAdvance?: () => void;
+  /** Fill the load field with a GP recommendation or alternative (kg). */
+  onPickLoad?: (kg: number) => void;
+  /** Fetch state; "loading" and "error" replace the body with a message. */
+  status?: "ready" | "loading" | "error";
+  /** Error text shown when status is "error". */
+  error?: string;
 }) {
-  const { guidance: g, target = 0.05, onTargetChange, onAdvance } = props;
+  const { guidance: g, target = 0.05, onTargetChange, onAdvance, onPickLoad, status = "ready", error } = props;
   const [text, setText] = useState(String(+(target * 100).toFixed(2)));
   const [bad, setBad] = useState(false);
+  if (status === "loading") {
+    return <section aria-label="Guidance" aria-busy="true"><p role="status">Loading guidance...</p></section>;
+  }
+  if (status === "error") {
+    return <section aria-label="Guidance"><p role="alert">{`Guidance unavailable: ${error ?? "unknown error"}`}</p></section>;
+  }
   if (g === null) {
     return <section aria-label="Guidance"><p>No guidance yet.</p></section>;
   }
@@ -117,6 +130,7 @@ export function GuidancePanel(props: {
       <p data-testid="next-step">{nextStepText(g)}</p>
       {expected ? <p data-testid="expected">{expected}</p> : null}
       <p>{`Point ${String(g.points_taken)} of ${String(g.max_points)} (${g.phase})`}</p>
+      <GpLoadPanel guidance={g} onPickLoad={onPickLoad} />
       <ConfidenceMeter g={g} />
       <label>
         {"Target half-width (%) "}

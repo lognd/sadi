@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-10T02:39:22Z"
+digest = "9132bb02097ccc1ed75aaf3018b0a3b5c367ff1cca1b18f1da5bf0e768bd2c36"
+exit_code = 0
+head = "34b61b91af00c4bd458ba081371abf6088e8a2da"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/guidance/GpLoadPanel.test.tsx (5 tests) 21ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  21:39:22
+   Duration  1.02s (transform 220ms, setup 0ms, collect 253ms, tests 21ms, environment 0ms, prepare 253ms)
+
+JSON report written to /tmp/frob-vitest-51055-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "src/components/guidance/GpLoadPanel.test.tsx"
+size = 336
+status = "measured"
+test_count = 5
+tests_digest = "867810e2681eea72069e1a82502fae64870de6b3ab317cb17152c74a16260c46"
+at = "2026-11-10T02:39:22Z"
+actor = "lognd"
+rev = 1

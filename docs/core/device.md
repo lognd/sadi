@@ -46,7 +46,7 @@ simulator (`kind="sim"`, scenario, seed) or a serial port (`kind="serial"`;
 
 ## Reader queue and overflow
 
-The reader thread pushes `Block`s into a bounded `queue.Queue` (default 256
+The reader thread pushes `Block`s into a bounded `queue.Queue` (default 4096
 blocks, see [concurrency](../concurrency.md) section 3). A block is never
 silently dropped. If the queue is full the reader stops, keeps the block in
 hand, logs an error, sets status `error` and `fault` to `ReaderOverflow`;

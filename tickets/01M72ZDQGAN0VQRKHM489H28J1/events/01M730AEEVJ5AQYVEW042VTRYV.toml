@@ -1,0 +1,81 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T15:13:11Z"
+digest = "cf7e049a4ef14f41893ac931a970a0011b133f798b8e79e025f087706c406bf7"
+exit_code = 0
+head = "b57d2de0797e378f31142c3f95f4c38b7cfa146b"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/wizard/ExportNow.test.tsx > exportNow > saves the server file under the server-chosen name
+[screens.export.api] download requested { formatId: 'lctt-csv-partial', url: '/api/export/lctt-csv-partial' }
+
+stdout | web/src/components/wizard/ExportNow.test.tsx > exportNow > saves the server file under the server-chosen name
+[screens.export.api] download fetched { formatId: 'lctt-csv-partial', bytes: 3, saved: 'exports/x/1.csv' }
+
+stdout | web/src/components/wizard/ExportNow.test.tsx > exportNow > saves the server file under the server-chosen name
+[wizard.export_now] export now saved { formatId: 'lctt-csv-partial', name: 's-lctt-csv-partial.csv' }
+
+stdout | web/src/components/wizard/ExportNow.test.tsx > exportNow > returns the refusal text and saves nothing when the server refuses
+[screens.export.api] download requested { formatId: 'lctt-csv-partial', url: '/api/export/lctt-csv-partial' }
+
+ \u{2713} web/src/components/wizard/ExportNow.test.tsx (3 tests) 32ms
+stdout | web/src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] closing session { path: '/api/session/close' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] session closed {}
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] closing session { path: '/api/session/close' }
+
+ \u{2713} web/src/components/wizard/wizard.test.tsx (25 tests) 75ms
+
+ Test Files  2 passed (2)
+      Tests  28 passed (28)
+   Start at  10:13:11
+   Duration  1.80s (transform 1.03s, setup 0ms, collect 1.67s, tests 106ms, environment 0ms, prepare 426ms)
+
+JSON report written to /tmp/frob-vitest-1288634-0.json
+stderr | web/src/components/wizard/ExportNow.test.tsx > exportNow > returns the refusal text and saves nothing when the server refuses
+[screens.export.api] download refused { formatId: 'lctt-csv-partial', status: 422 }
+
+stderr | web/src/components/wizard/ExportNow.test.tsx > exportNow > returns the refusal text and saves nothing when the server refuses
+[wizard.export_now] export now refused { formatId: 'lctt-csv-partial', title: 'too few points' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] close refused { path: '/api/session/close', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/wizard/ExportNow.test.tsx web/src/components/wizard/wizard.test.tsx"
+size = 3704
+status = "measured"
+test_count = 28
+tests_digest = "2fd58056e0c5395989f58f10263d38c89bdc1a05db3656fd26c1a3a498f8381b"
+at = "2026-11-10T15:13:11Z"
+actor = "lognd"
+rev = 1

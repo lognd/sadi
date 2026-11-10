@@ -183,7 +183,7 @@ describe("run F3 export", () => {
 describe("mark load change", () => {
   it("RunView renders the Mark load change button", () => {
     expect(html(<RunView {...props()} />)).toContain("I moved to a new gauge block");
-    expect(html(<RunView {...props()} />)).toContain("Settled cannot show until you do");
+    expect(html(<RunView {...props()} />)).toContain("the next point opens by itself");
     expect(html(<RunView {...props({ phase: "elastic" })} />)).toContain("I added a weight");
     expect(html(<RunView {...props()} />)).not.toContain("Mark load change");
   });

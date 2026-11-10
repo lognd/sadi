@@ -1,6 +1,6 @@
 // frob:ticket 01M72855X7J5P97BAN234Z81W4
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { STICKY_VAR, trackStickyHeight, watchStickyTop, type StyleRoot } from "./useStickyOffset";
+import { STICKY_VAR, isActuallySticky, trackStickyHeight, watchStickyTop, type StyleRoot } from "./useStickyOffset";
 
 let cb: ResizeObserverCallback = () => undefined;
 const disconnect = vi.fn();
@@ -61,5 +61,36 @@ describe("watchStickyTop", () => {
     el = box(200);
     frames.shift()?.();
     expect(root.vars.get(STICKY_VAR)).toBe("200px");
+  });
+});
+
+describe("static element (narrow-viewport media rule)", () => {
+  it("does not publish --top-h and clears a stale value when the element is not sticky", () => {
+    vi.stubGlobal("ResizeObserver", FakeRO);
+    const win = new EventTarget();
+    vi.stubGlobal("window", win);
+    const root = fakeRoot();
+    root.vars.set(STICKY_VAR, "999px");
+    let sticky = false;
+    const el = box(120);
+    const stop = trackStickyHeight(el, root, () => sticky);
+    expect(root.vars.has(STICKY_VAR)).toBe(false);
+    sticky = true;
+    cb([{ target: el } as unknown as ResizeObserverEntry], {} as ResizeObserver);
+    expect(root.vars.get(STICKY_VAR)).toBe("120px");
+    sticky = false;
+    win.dispatchEvent(new Event("resize"));
+    expect(root.vars.has(STICKY_VAR)).toBe(false);
+    stop();
+  });
+});
+
+describe("isActuallySticky", () => {
+  it("reads computed position and treats unmeasurable environments as sticky", () => {
+    vi.stubGlobal("getComputedStyle", () => ({ position: "static" }));
+    expect(isActuallySticky({ nodeType: 1 } as unknown as HTMLElement)).toBe(false);
+    vi.stubGlobal("getComputedStyle", () => ({ position: "sticky" }));
+    expect(isActuallySticky({ nodeType: 1 } as unknown as HTMLElement)).toBe(true);
+    expect(isActuallySticky({} as unknown as HTMLElement)).toBe(true);
   });
 });

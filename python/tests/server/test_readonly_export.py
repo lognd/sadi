@@ -19,6 +19,7 @@ from sadi.core.models import CapturedPoint, RunState
 from sadi.core.registry import LabRegistry
 from sadi.labs.lctt.plugin import register
 from sadi.server.app import AppSettings, create_app
+from sadi.server.routes.export import stamp_recovered
 
 WINDOW = {"first_raw_seq": 1, "last_raw_seq": 5}
 
@@ -156,6 +157,20 @@ def test_torn_tail_exports_verified_prefix_with_header(client: TestClient, tmp_p
     before = _digest(sdir)
     res = client.get(f"/api/sessions/{name}/export/points")
     assert res.status_code == 200, res.text
-    assert res.text == f"session,points\n{name},1\n"
+    lines = res.text.splitlines()
+    assert lines[0].startswith("# RECOVERED:")
+    assert "\n".join(lines[1:]) == f"session,points\n{name},1"
     assert res.headers["x-sadi-torn-tail"].count("/") == 1
+    disp = res.headers["content-disposition"]
+    assert 'filename="RECOVERED-' in disp
+    assert "RECOVERED-RECOVERED-" not in disp
     assert _digest(sdir) == before
+
+
+# frob:tests python/sadi/server/routes/export.py::stamp_recovered
+def test_stamp_recovered_csv_and_json() -> None:
+    """CSV gets a leading comment line; JSON gets a `recovered` key (wrapping non-objects)."""
+    assert stamp_recovered(b"a,b\n", "text/csv", "0/5").startswith(b"# RECOVERED: ")
+    assert b'"recovered"' in stamp_recovered(b'{"x": 1}', "application/json", "0/5")
+    wrapped = stamp_recovered(b"[1]", "application/json", "0/5")
+    assert b'"data": [1]' in wrapped

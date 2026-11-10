@@ -1,0 +1,1 @@
+Run-screen hints match auto-open, session status refreshes right after create/close, the sticky header offset respects the narrow-screen layout, synthetic sessions show a SYNTHETIC badge, and torn-tail exports are marked RECOVERED.

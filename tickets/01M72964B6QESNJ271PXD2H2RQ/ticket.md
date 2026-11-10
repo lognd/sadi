@@ -7,9 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T08:28:55Z"
-updated = "2026-11-10T08:30:14Z"
+updated = "2026-11-10T08:31:47Z"
 labels = ["audit4"]
-scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_live_audit4.py"]
+scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_live_audit4.py", "docs/live-view.md"]
 
 [[acceptance]]
 text = "hint says Resume live readings; resume returns NoDevice when detached instead of 500; SETTINGS records firmware or literal unknown; tests"

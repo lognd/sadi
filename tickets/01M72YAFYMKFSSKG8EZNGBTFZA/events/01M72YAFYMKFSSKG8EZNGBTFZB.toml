@@ -1,0 +1,12 @@
+kind = "create"
+title = "Elastic suggestion is always the 3.0 kg cap after cold start (audit8 M3)"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 2
+scope = ["python/sadi/design/**"]
+acceptance = ["Elastic suggestion after cold start is a sensible load, not the cap."]
+body = "See /tmp/claude-1000/-home-logan-projects-SADI/4f193782-dc1d-4c66-a170-89d2ce998f4d/scratchpad/audit8.md section M3."
+at = "2026-11-10T14:38:18Z"
+actor = "lognd"
+rev = 1

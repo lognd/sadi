@@ -4,9 +4,10 @@ title = "Synthetic 32 AWG copper specimen source, loudly labelled, opt-in only"
 type = "story"
 category = "todo"
 priority = "medium"
+points = 8
 reporter = "lognd"
 created = "2026-11-10T04:02:36Z"
-updated = "2026-11-10T04:02:36Z"
+updated = "2026-11-10T04:02:38Z"
 scope = ["python/sadi/**", "python/tests/**", "docs/synthetic.md", "docs/index.md"]
 
 [[acceptance]]

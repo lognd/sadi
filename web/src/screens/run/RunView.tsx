@@ -2,6 +2,7 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
 import { CalibrationPlot } from "../../plots/calibration";
 import type { CalibrationData } from "../../plots/calibration";
 import { StressStrainScreen } from "../StressStrainScreen";
@@ -21,7 +22,8 @@ export type PhasePlot =
 export interface RunViewProps {
   readonly phase: RunPhase;
   readonly view: LiveView;
-  readonly plot: PhasePlot | null;
+  /** Accepted points so far for this step, or null while unknown. */
+  readonly pointCount?: number | null;
   /** Reason capture is blocked right now, or null. */
   readonly blockedWhy: string | null;
   /** True while the forced-early confirmation is open. */
@@ -37,12 +39,20 @@ export interface RunViewProps {
   readonly onCancelEarly: () => void;
 }
 
-/** Presentational run screen body (live readout and trace live in the front panel): phase plot, saturation warning, capture and confirmation. */
+/** Per-phase live plot (calibration line or stress-strain); rendered below the Finish button, after the capture card. */
+export function RunPlot({ plot }: { readonly plot: PhasePlot | null }): React.JSX.Element | null {
+  if (plot === null) return null;
+  return plot.kind === "calibration"
+    ? <CalibrationPlot data={plot.data} />
+    : <StressStrainScreen key={plot.data.points.length} initial={plot.data} />;
+}
+
+/** Presentational capture card (directly under Do this, above Finish): instructions, alerts, inputs, Accept point and the phase-specific mark button. */
 export function RunView(p: RunViewProps): React.JSX.Element {
   const meta = PHASES[p.phase];
   const v = p.view;
   return (
-    <section aria-label={meta.title}>
+    <section aria-label={meta.title} className="capture-card" data-testid="capture-card">
       <h2>{meta.title}</h2>
       <p>{meta.instruction}</p>
       {v.signal === "saturated" && (
@@ -80,8 +90,6 @@ export function RunView(p: RunViewProps): React.JSX.Element {
         })}
       </fieldset>
       <small data-testid="hotkey-hint" id="hotkey-hint" role="note"> {TEXT_FIELD_HOTKEY_HINT}</small>
-      {p.plot?.kind === "calibration" && <CalibrationPlot data={p.plot.data} />}
-      {p.plot?.kind === "stress-strain" && <StressStrainScreen key={p.plot.data.points.length} initial={p.plot.data} />}
       {p.confirming ? (
         <div role="alertdialog" aria-label="Accept early" data-testid="confirm-early">
           <p>The reading has not settled. Accept anyway? It will be recorded as unsettled.</p>
@@ -91,8 +99,11 @@ export function RunView(p: RunViewProps): React.JSX.Element {
       ) : (
         <button type="button" onClick={p.onAccept} disabled={p.blockedWhy !== null}>{meta.acceptLabel} (Space)</button>
       )}
-      {" "}<button type="button" onClick={p.onLoadChange}>Mark load change</button>
-      <small data-testid="load-change-hint"> Press this after applying a load; Settled cannot show until you do.</small>
+      {" "}<button type="button" onClick={p.onLoadChange} data-testid="mark-load-change">{meta.markLabel}</button>
+      <small data-testid="load-change-hint"> {meta.markHint}</small>
+      {p.pointCount != null && (
+        <p data-testid="point-count">Accepted points: {p.pointCount} (at least {meta.minPoints} needed before you can finish).</p>
+      )}
       {p.blockedWhy !== null && <p data-testid="blocked-why">{p.blockedWhy}</p>}
       {p.message !== null && <p role="status" data-testid="run-message">{p.message}</p>}
     </section>

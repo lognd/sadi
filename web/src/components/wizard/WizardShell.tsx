@@ -1,6 +1,7 @@
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { useKeyCapture } from "../../keys/useKeyCapture";
@@ -34,11 +35,15 @@ export interface WizardShellProps {
   savedTick?: number;
   /** Called after the session was closed; defaults to reloading the page so it shows session setup. */
   onClosed?: () => void;
+  /** Why Finish (button and Enter) is disabled right now, or null/absent when allowed. */
+  finishBlockedWhy?: string | null;
+  /** Rendered below the next-action panel (e.g. the live plot). */
+  after?: React.ReactNode;
 }
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Wizard shell: the front panel (step rail, step content, next action, live readout, live trace, status bar) plus keyboard capture. */
-export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0, onClosed }: WizardShellProps): React.JSX.Element {
+export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0, onClosed, finishBlockedWhy = null, after }: WizardShellProps): React.JSX.Element {
   const { view } = useLive();
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
@@ -78,13 +83,14 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
   const current = wizard?.rail.find((s) => s.status === "current") ?? null;
   const act = useCallback((a: KeyAction): void => {
     log.debug("action", { a });
-    if (a === "primary" || a === "finish-phase") void write("wizard/complete");
+    if ((a === "primary" || a === "finish-phase") && finishBlockedWhy !== null) log.info("finish ignored: minimum points not met", { why: finishBlockedWhy });
+    else if (a === "primary" || a === "finish-phase") void write("wizard/complete");
     else if (delegateUndo && (a === "undo" || a === "redo")) onKeyAction?.(a);
     else if (a === "undo") void write("undo");
     else if (a === "redo") void write("redo");
     else if (a === "help") setHelp((h) => !h);
     else onKeyAction?.(a);
-  }, [write, onKeyAction, delegateUndo]);
+  }, [write, onKeyAction, delegateUndo, finishBlockedWhy]);
   useKeyCapture(act, nudgeActive);
 
   const index = wizard === null || current === null ? -1 : wizard.rail.indexOf(current);
@@ -103,6 +109,7 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
       subtitle={subtitle}
       rail={wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
       guide={guide}
+      after={after}
       shortcuts={help ? <details className="shortcuts"><summary>Keyboard shortcuts</summary><ShortcutList /></details> : null}
       live={<LiveTrace />}
       status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} savedAt={savedAt} />}
@@ -111,6 +118,7 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
           step={current}
           busy={busy}
           canSkip={current !== null}
+          finishBlockedWhy={finishBlockedWhy}
           onPrimary={() => { void write("wizard/complete"); }}
           onSkip={() => { void write("wizard/skip"); }}
           finishedActions={<CloseSession label="Start another session" onClosed={closed} />}

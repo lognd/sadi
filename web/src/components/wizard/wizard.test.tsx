@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 import { StatusBar } from "../status/StatusBar";
 import { ErrorNotice } from "./ErrorNotice";
 import { NextActionPanel } from "./NextActionPanel";
+import { FrontPanel } from "./FrontPanel";
+import { STEP_GUIDE } from "./stepGuide";
 import { ShortcutList } from "./ShortcutList";
 import { StepRail } from "./StepRail";
 import { WizardShell } from "./WizardShell";
@@ -185,5 +187,29 @@ describe("Close session", () => {
     const r = await closeSession((() => Promise.resolve(new Response(body, { status: 409 }))));
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.kind).toBe("problem");
+  });
+});
+
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
+describe("Finish gate and layout", () => {
+  const f = (): void => undefined;
+  it("disables Finish as a secondary button with the reason when blocked", () => {
+    const html = renderToString(<NextActionPanel step={rail[1] ?? null} busy={false} canSkip onPrimary={f} onSkip={f} finishBlockedWhy="Accept at least 3 points first." />);
+    expect(html).toMatch(/<button[^>]*disabled[^>]*btn-secondary|<button[^>]*btn-secondary[^>]*disabled/);
+    expect(html).toContain("Accept at least 3 points first.");
+    expect(html).not.toContain("btn-primary");
+  });
+  it("puts the step content between the guide and the next action", () => {
+    const html = renderToString(<FrontPanel title="t" subtitle={null} rail={null} shortcuts={null} live={null} status={null}
+      guide={<i>GUIDE</i>} next={<i>NEXT</i>} after={<i>AFTER</i>}><i>CARD</i></FrontPanel>);
+    const at = (s: string): number => html.indexOf(s);
+    expect(at("GUIDE")).toBeLessThan(at("CARD"));
+    expect(at("CARD")).toBeLessThan(at("NEXT"));
+    expect(at("NEXT")).toBeLessThan(at("AFTER"));
+  });
+  it("calibration guide mentions the mark step and Accept point", () => {
+    const text = (STEP_GUIDE.calibration?.doThis ?? []).join(" ");
+    expect(text).toContain("I moved to a new gauge block");
+    expect(text).toContain("Accept point (Space)");
   });
 });

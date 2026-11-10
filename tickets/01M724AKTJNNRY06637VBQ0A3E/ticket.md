@@ -2,7 +2,8 @@
 id = "01M724AKTJNNRY06637VBQ0A3E"
 title = "Audit2 H8b: read-only export of closed sessions with a Download button"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

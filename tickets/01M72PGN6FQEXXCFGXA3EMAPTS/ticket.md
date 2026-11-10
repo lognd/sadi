@@ -2,7 +2,8 @@
 id = "01M72PGN6FQEXXCFGXA3EMAPTS"
 title = "Restyle web UI: distinctive, less generic visual identity"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

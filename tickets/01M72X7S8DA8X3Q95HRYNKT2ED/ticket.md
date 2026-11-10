@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:19:20Z"
-updated = "2026-11-10T14:25:13Z"
+updated = "2026-11-10T14:25:23Z"
 labels = ["creates:python/sadi/design/plan.py", "creates:python/tests/design/test_plan.py", "creates:docs/design/weight-plan.md"]
 scope = ["python/sadi/design/plan.py", "python/sadi/design/models.py", "python/tests/design/test_plan.py", "docs/design/weight-plan.md", "docs/design/gp-selector.md", "changelog.d/*YNKT2ED*"]
 

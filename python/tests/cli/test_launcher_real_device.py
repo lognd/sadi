@@ -64,20 +64,20 @@ def test_default_serve_opens_real_board_and_passes_port(
 
 
 # frob:tests python/sadi/server/device_open.py::open_real_device
-def test_missing_board_exits_with_plain_message(
+def test_missing_board_warns_and_serves_without_device(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """A board that cannot be opened exits EXIT_DEVICE with a plain 'plug it in' message."""
+    """A board that cannot be opened prints a plain 'plug it in' warning and still serves."""
     monkeypatch.setattr(device_open, "open_real_device", _REAL_OPEN)  # run the real opener
     err = DeviceError(code=DeviceCode.NOT_FOUND, detail="no such port")
     monkeypatch.setattr("sadi.core.device.open_serial", lambda _p, _c: Err(err))
-    served: list[int] = []
+    served: list[object] = []
     code = launcher.main(_argv(tmp_path, "--device-port", "/dev/ttyNOPE"),
-                         lambda *_a: served.append(1))
-    assert code == launcher.EXIT_DEVICE
-    assert not served
+                         lambda app, _h, _p: served.append(app.state.settings.device))
+    assert code == 0
+    assert served == [None]
     out = capsys.readouterr().err
-    assert "/dev/ttyNOPE" in out and "Plug in the SADI board" in out
+    assert "WARNING" in out and "/dev/ttyNOPE" in out and "Plug in the SADI board" in out
 
 
 # frob:tests python/sadi/server/device_open.py::open_real_device

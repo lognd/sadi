@@ -5237,6 +5237,72 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-10T15:49:41.80109045Z"
 
 [[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx"
+symref = "web/src/screens/run/NextHangPanel.tsx"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "c28526a6debcf98142dc3ae8e98268de0fe8e3d100cb81434d24306a436c65a7"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx::NextHangPanel"
+symref = "web/src/screens/run/NextHangPanel.tsx::NextHangPanel"
+sig = "7247c3c51df3c3c35541efc6c545cf625a7f660ac2ac162babb214c1c46384f3"
+body = "729e832b82e512ff78062c93552189d933b0988e538e14c47da8fa112c74959c"
+doc = "8eb7be0ff5a02ecd9ede100265ddb9d2c7150e1f4fd1116af7e812f8fd1e698d"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "c0f90a6678209904f360e27c9eb96a7a1242d859cb161d0bac7b2f2e598ac02d"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx::NextHangReply"
+symref = "web/src/screens/run/NextHangPanel.tsx::NextHangReply"
+sig = "cb466c2610c3b8dc6d99af7b762c4772ee99069355169c883730d24440876d3e"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "74c008dfe89ceb2969f3882da66d9f0cfdcf3a4b1b8ded78f7e8e399119011de"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "84c08794e26cc8822b15a0cab76d472bae31558bf31d368ec3adc9b537a76a29"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx::NextHangState"
+symref = "web/src/screens/run/NextHangPanel.tsx::NextHangState"
+sig = "67d303bc04bc3b6117231b4ceecc8e18bf3df8e241a238086cfa81448a307314"
+body = "d9b78e33e4b39c69992eebbfc9c21ed6786f178a52c46144a94a09be5d2faf9e"
+doc = "5bae80aaa5554a1427b8fb60091d5e34363fd24c65968d07f2e527940db1ca3f"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "736a487040d76d701d56f997feb882cb22cab832dd3c072953059155b895a139"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx::NextHangView"
+symref = "web/src/screens/run/NextHangPanel.tsx::NextHangView"
+sig = "1e9638a9eb9f76901c1087dd430224e40cadac0dc4670b0d98b0ee9bcfbab521"
+body = "c38a859cd48f600a4c551ba4eb7b2d29c862b3213a7816533309fd566ace17b3"
+doc = "5797cfce55fb3506e272a1dec3aca9cbfed971b5614521c4d69dc5d265581b1e"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "2315bfe06b6cd3997bbafeb1a582e22c9ad9b7d09761fc4e516bb8098000329f"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
+identity = "web/src/screens/run/NextHangPanel.tsx::log"
+symref = "web/src/screens/run/NextHangPanel.tsx::log"
+sig = "9cac239e5b8d06b9f48df36fe4acb2da24d354ef077ccb84651e44a487521d50"
+body = "48b37452107c0407071313b2f43b50bbf7bc7c0c65ddfd3234a7ac97659743a8"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "d8a2085da88dc0fbc016fd166f666fba585400826538ddad780427f7033eb748"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:49:42.712796896Z"
+
+[[symbol]]
 identity = "web/src/screens/run/RepeatedReadingsPanel.test.tsx"
 symref = "web/src/screens/run/RepeatedReadingsPanel.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

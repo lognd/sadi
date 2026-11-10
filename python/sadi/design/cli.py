@@ -110,24 +110,24 @@ def format_height_plan(p: HeightPlan) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _run_heights(args: argparse.Namespace) -> int:
-    """Plan which gauge heights to use; needs --cal-slope as the nominal LVDT slope."""
+def _run_heights(args: argparse.Namespace) -> HeightPlan | None:
+    """Plan which gauge heights to use first; None (after printing why) when no plan exists."""
     if args.cal_slope is None:
         sys.stdout.write("No plan: --heights needs --cal-slope (nominal V per m) to turn height into volts\n")
-        return 1
+        return None
     hs = parse_heights(args.heights)
     if isinstance(hs, Err):
         sys.stdout.write(f"No plan: {hs.error}\n")
-        return 1
+        return None
     res = plan_heights(
         hs.value, nominal_slope_v_per_m=args.cal_slope, nominal_offset_v=args.cal_offset,
         saturation_v=args.saturation,
     )
     if isinstance(res, Err):
         sys.stdout.write(f"No plan: {res.error}\n")
-        return 1
-    sys.stdout.write(format_height_plan(res.value))
-    return 0
+        return None
+    sys.stdout.write("1. Heights to use\n" + format_height_plan(res.value))
+    return res.value
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -152,8 +152,14 @@ def main(argv: list[str] | None = None) -> int:
     logging.getLogger("sadi").setLevel(logging.WARNING)  # keep the table readable; errors still show
     logging.getLogger("plan").setLevel(logging.WARNING)
     logging.getLogger("design").setLevel(logging.WARNING)
+    hplan: HeightPlan | None = None
     if args.heights.strip():
-        return _run_heights(args)
+        hplan = _run_heights(args)
+        if hplan is None:
+            return 1
+        if not args.weights.strip():
+            return 0
+        sys.stdout.write("2. Recommended weights (GP selection)\n")
     if not args.weights.strip() or args.length is None:
         sys.stdout.write("No plan: give --weights and --length (or --heights)\n")
         return 1
@@ -162,11 +168,15 @@ def main(argv: list[str] | None = None) -> int:
     if isinstance(cal, Err):
         sys.stdout.write(f"No plan: {cal.error}\n")
         return 1
-    sys.stdout.write(cal.value.summary() + "\n")
+    cal_v = cal.value
+    if hplan is not None and cal_v.source == "override":
+        cal_v = cal_v.model_copy(update={"se_slope": hplan.se_slope_v_per_m or 0.0, "se_offset": hplan.se_offset_v or 0.0})
+        _log.info("weight plan uses height-plan design uncertainty")
+        sys.stdout.write("note: the slope uncertainty below is the height plan's design estimate\n")
+    sys.stdout.write(cal_v.summary() + "\n")
     built = build_request(
         weights=args.weights, u_mass=args.u_mass, diameter=args.diameter, u_diameter=args.u_diameter,
-        length=args.length, u_length=args.u_length, cal=cal.value, saturation=args.saturation, captured=args.captured,
-        max_hangs=args.hangs,
+        length=args.length, u_length=args.u_length, cal=cal_v, saturation=args.saturation, captured=args.captured,
     )
     if isinstance(built, Err):
         sys.stdout.write(f"No plan: {built.error}\n")

@@ -92,3 +92,20 @@ def test_per_weight_uncertainty_is_parsed():
     ws = parse_weights("0.1:0.001,0.2", 0.0005).unwrap()
     assert [w.u_mass_kg for w in ws] == [0.001, 0.0005]
     assert not isinstance(parse_weights("0.1:x", 0.0), type(ws))
+
+
+def test_heights_and_weights_give_both_plans():
+    out = plan_from_form({**FORM, "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001,0.006:0.00001"})
+    assert out["ok"] and out["hangs"]
+    hp = out["heights_plan"]
+    assert hp["ok"] and hp["height_steps"]
+    assert out["cal"]["se_slope"] == hp["se_slope_v_per_m"]
+
+
+def test_heights_only_still_gives_height_plan():
+    out = plan_from_form({**FORM, "weights": "", "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001"})
+    assert out["ok"] and out["height_steps"] and "hangs" not in out
+
+
+def test_page_orders_heights_and_calibration_before_weights():
+    assert PAGE.index("Height inventory") < PAGE.index("LVDT calibration") < PAGE.index("Weight inventory")

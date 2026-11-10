@@ -18,6 +18,13 @@ the URL and opens it with `webbrowser`. `GET /` serves one self-contained page (
 network assets, no node, no tkinter). `POST /plan` takes the form as JSON and replies
 `{"ok": true, phase, counts, hangs[]}` or `{"ok": false, "error": msg}`.
 
+Order of use: (1) the height inventory, (2) the LVDT calibration (typed slope/offset or points), (3) the
+weight inventory. When both a height inventory and weights are given, `POST /plan` returns the weight plan
+(`hangs`, the GP-ordered recommendation) plus `heights_plan` (the height table); a typed slope then carries
+the height plan's design slope/offset uncertainty (`se_slope_v_per_m`, `se_offset_v`) into the weight plan.
+With heights only, the reply is the height plan alone. The CLI does the same with `--heights` and
+`--weights` together (heights printed first, then the recommended weights).
+
 Form: a weight inventory table (mass and its own uncertainty per row, same as the height table; duplicates allowed, max 12; CLI `--weights kg:u,...`), a default mass uncertainty for blank rows, wire diameter and its uncertainty,
 L0 and its uncertainty, an editable table of LVDT calibration points (height m / volts, with Add row),
 saturation limit, and already captured points as `N:volts`. The page joins the table into

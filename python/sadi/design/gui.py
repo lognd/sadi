@@ -53,7 +53,22 @@ small{color:#555}
 Nothing is saved or sent anywhere; it does not talk to the LVDT or to LabVIEW. Re-run it with the
 points you have already captured to replan.</p>
 <form id="f">
-<fieldset><legend>Weight inventory (which weights you have)</legend>
+<fieldset><legend>1. Height inventory (which heights you have)</legend>
+<table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
+<button type="button" id="addheight">Add row</button>
+<small>Enter each height you have and its uncertainty, same as the weights; duplicates stay distinct. Needs the LVDT slope below.</small>
+</fieldset>
+<fieldset><legend>2. LVDT calibration (type it from your LabVIEW, or fit it from points)</legend>
+<label>LVDT slope, V per m (from your LabVIEW calibration)
+<input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
+<label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
+<small>A typed slope is used as given (no uncertainty) and is all the height plan needs. Or leave it blank and fit from points:</small>
+<table id="cal"><thead><tr><th>Height, m</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
+<button type="button" id="addrow">Add row</button>
+<small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
+<label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
+</fieldset>
+<fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
 <table id="wts"><thead><tr><th>Mass, kg</th><th>Uncertainty, kg</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
 <small>Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
@@ -64,21 +79,6 @@ points you have already captured to replan.</p>
 <label>Diameter uncertainty, m <input type="text" name="u_diameter" value="0"></label>
 <label>Gauge length L0, m <input type="text" name="length" value="0.08313" required></label>
 <label>L0 uncertainty, m <input type="text" name="u_length" value="0"></label>
-</fieldset>
-<fieldset><legend>LVDT calibration (type it from your LabVIEW, or fit it from points)</legend>
-<label>LVDT slope, V per m (from your LabVIEW calibration)
-<input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
-<label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
-<small>A typed slope is used as given (no uncertainty) and is all the height plan needs. Or leave it blank and fit from points:</small>
-<table id="cal"><thead><tr><th>Height, m</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
-<button type="button" id="addrow">Add row</button>
-<small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
-<label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
-</fieldset>
-<fieldset><legend>Gauge height inventory (which heights to calibrate with)</legend>
-<table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
-<button type="button" id="addheight">Add row</button>
-<small>Optional. Enter each height you have and its uncertainty, same as the weights; uses the typed LVDT slope above; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
 </fieldset>
 <fieldset><legend>Already captured</legend>
 <label>Points as N:volts, comma separated (blank = none)<br>
@@ -132,22 +132,23 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   } catch (e) { out.innerHTML = ""; const p = document.createElement("p"); p.className = "err"; p.textContent = "Request failed: " + e; out.appendChild(p); return; }
   out.innerHTML = "";
   if (!data.ok) { const p = document.createElement("p"); p.className = "err"; p.textContent = "No plan: " + data.error; out.appendChild(p); return; }
-  if (data.height_steps) {
+  const hp = data.height_steps ? data : data.heights_plan;
+  if (hp) {
     const c0 = document.createElement("p");
-    c0.textContent = "Heights to use (design estimate): slope se " + data.se_slope_v_per_m + " V/m, intercept se " + data.se_offset_v + " V.";
+    c0.textContent = "1. Heights to use (design estimate): slope se " + hp.se_slope_v_per_m + " V/m, intercept se " + hp.se_offset_v + " V.";
     out.appendChild(c0);
     const t0 = document.createElement("table");
     const hr0 = t0.insertRow();
     for (const h of ["#", "Id", "Height m", "u m", "Predicted V", "Slope se", "Offset se"]) { const th = document.createElement("th"); th.textContent = h; hr0.appendChild(th); }
-    for (const h of data.height_steps) {
+    for (const h of hp.height_steps) {
       const r = t0.insertRow();
       for (const v of [h.order, h.height_id, h.height_m, h.u_height_m, h.predicted_volts, h.se_slope_v_per_m, h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
-    return;
+    if (data.height_steps) return;
   }
   const s = document.createElement("p");
-  s.textContent = "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
+  s.textContent = (hp ? "2. Recommended weights (GP selection, minimising error). " : "") + "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
     ", usable " + data.n_usable + ". Dropped: " + data.dropped_saturation + " saturating, " + data.dropped_capacity + " over wire capacity. (Advisory; nothing saved.)";
   out.appendChild(s);
   const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
@@ -211,9 +212,25 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
 
 
 def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
-    """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}."""
+    """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}.
+
+    The height inventory is planned first; its design slope/offset uncertainty then feeds the weight plan.
+    """
+    heights: dict[str, Any] | None = None
     if str(form.get("heights", "")).strip():
-        return _heights_reply(form)
+        heights = _heights_reply(form)
+        if not heights["ok"]:
+            return heights
+        if not str(form.get("weights", "")).strip():
+            return heights
+    reply = _weights_reply(form, heights)
+    if heights is not None and reply["ok"]:
+        reply["heights_plan"] = heights
+    return reply
+
+
+def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict[str, Any]:
+    """Plan the weights; with a height plan, a typed slope carries that plan's design uncertainty."""
     nums: dict[str, float | None] = {}
     spec = {
         "u_mass": (False, 0.0), "hangs": (False, None), "diameter": (True, None), "u_diameter": (False, 0.0),
@@ -234,11 +251,17 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     cal = resolve_calibration(str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0)
     if isinstance(cal, Err):
         return {"ok": False, "error": cal.error}
+    cal_v = cal.value
+    if heights is not None and cal_v.source == "override":
+        cal_v = cal_v.model_copy(update={
+            "se_slope": float(heights["se_slope_v_per_m"] or 0.0), "se_offset": float(heights["se_offset_v"] or 0.0),
+        })
+        _log.info("weight plan uses height-plan design uncertainty slope=%g offset=%g", cal_v.se_slope, cal_v.se_offset)
     built = build_request(
         weights=str(form.get("weights", "")), u_mass=nums["u_mass"] or 0.0,
         diameter=nums["diameter"] or 0.0, u_diameter=nums["u_diameter"] or 0.0,
         length=nums["length"] or 0.0, u_length=nums["u_length"] or 0.0,
-        cal=cal.value,
+        cal=cal_v,
         saturation=nums["saturation"], captured=str(form.get("captured", "")),
         max_hangs=hangs,
     )
@@ -252,8 +275,8 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     return {
         "ok": True,
         "advisory": True,
-        "calibration": cal.value.summary(),
-        "cal": cal.value.model_dump(),
+        "calibration": cal_v.summary(),
+        "cal": cal_v.model_dump(),
         "phase": p.phase.value,
         "n_inventory": p.n_inventory,
         "n_achievable": p.n_achievable,

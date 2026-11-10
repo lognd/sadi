@@ -2,7 +2,8 @@
 id = "01M727965F98C8FB295P7A7FRS"
 title = "M5+M6: latest-version by lineage; download torn-tail sessions"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

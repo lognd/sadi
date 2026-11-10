@@ -1,5 +1,6 @@
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
+/* frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD */
 @import "./theme.css";
 
 /* ---- Base ---- */
@@ -71,47 +72,56 @@ em { color: var(--muted); }
 .pill[data-state="down"] { background: var(--bad-soft); }
 
 /* ---- Cards: every panel section ---- */
-main section, main aside, main fieldset {
+main section, main aside, main fieldset, .card {
   padding: var(--space-4);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-1);
 }
-main section, main aside { margin: var(--space-4) 0; }
+main section, main aside, .card { margin: var(--space-4) 0; }
 main section > :first-child, main aside > :first-child { margin-top: 0; }
 main section section, main section fieldset { box-shadow: none; background: var(--surface-2); }
 fieldset legend { padding: 0 var(--space-2); font-weight: 600; color: var(--muted); }
 #next-action { border-left: 4px solid var(--accent); }
 
-/* ---- Step rail ---- */
+/* ---- Step rail: vertical sidebar list ---- */
 .step-rail {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
   padding: 0;
-  margin: var(--space-3) 0;
+  margin: 0;
   list-style: none;
 }
 .step-rail li {
-  padding: 0.3rem 0.8rem;
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
   color: var(--muted);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
+  border-left: 4px solid var(--line);
+  border-radius: var(--radius-sm);
 }
-.step-rail li[data-status="done"] { color: var(--ok); background: var(--ok-soft); border-color: transparent; }
-.step-rail li[data-status="skipped"] { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+.step-glyph { font-family: var(--mono); }
+.step-body { display: flex; flex-direction: column; }
+.step-title { font-weight: 600; color: var(--fg); }
+.step-state { font-size: var(--text-xs); }
+.step-blurb { font-size: var(--text-xs); color: var(--muted); }
+.step-rail li[data-status="done"] { border-left-color: var(--ok); background: var(--ok-soft); }
+.step-rail li[data-status="done"] .step-glyph { color: var(--ok); }
+.step-rail li[data-status="skipped"] { border-left-color: var(--warn); background: var(--warn-soft); }
 .step-rail li[data-status="current"] {
-  font-weight: 700;
-  color: var(--accent-fg);
-  background: var(--accent);
   border-color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
   box-shadow: var(--shadow-2);
 }
-.step-rail li[data-status="current"] em { color: inherit; }
-.sr-word { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.step-rail li[data-status="current"] .step-title { font-weight: 750; }
+.step-rail li[data-status="current"] .step-glyph { color: var(--accent); }
+.step-rail li em { font-size: var(--text-xs); }
 
 /* ---- Buttons ---- */
 .btn, button {
@@ -227,3 +237,61 @@ canvas { max-width: 100%; background: #ffffff; border: 1px solid var(--line); bo
   .brand-sub { display: none; }
 }
 .field { margin-right: var(--space-4); }
+
+/* ---- Front panel: sidebar rail | step content | live instrument ---- */
+.front-panel {
+  display: grid;
+  grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr) minmax(18rem, 24rem);
+  grid-template-areas: "head head head" "side main live";
+  gap: var(--space-4);
+  align-items: start;
+}
+.fp-head { grid-area: head; }
+.fp-head h1 { margin: 0; font-size: var(--text-xl); }
+.fp-sub { margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--muted); }
+.fp-side { grid-area: side; display: flex; flex-direction: column; gap: var(--space-4); }
+.fp-main { grid-area: main; min-width: 0; }
+.fp-live { grid-area: live; position: sticky; top: var(--space-6); min-width: 0; }
+.fp-main h2 { font-size: var(--text-lg); }
+.fp-side dl { margin: 0; font-size: var(--text-xs); color: var(--muted); }
+.fp-side dl div { display: flex; gap: var(--space-2); }
+.fp-side dt { font-family: var(--mono); color: var(--fg); }
+.fp-side dd { margin: 0; }
+.fp-main form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); }
+.fp-main fieldset { margin: var(--space-3) 0; }
+.fp-main ul[aria-label="Captured cycles"] { padding-left: var(--space-5); }
+
+/* ---- Live readout card ---- */
+.live-readout h2, .live-trace h2 { margin: 0 0 var(--space-2); font-size: var(--text-md); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.readout-value { margin: var(--space-2) 0; line-height: 1; }
+.readout-num { font-family: var(--mono); font-size: var(--text-xl); font-weight: 750; font-variant-numeric: tabular-nums; }
+.live-readout .readout-num { font-size: 3rem; }
+.readout-unit { font-size: var(--text-lg); font-weight: 650; }
+.readout-label { font-size: var(--text-sm); color: var(--muted); }
+.readout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-3); margin: 0; }
+.readout-grid dt { font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; }
+.readout-grid dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.readout-grid dd[data-state="settled"], .readout-grid dd[data-state="connected"] { color: var(--ok); }
+.readout-grid dd[data-state="creeping"], .readout-grid dd[data-state="near-limit"], .readout-grid dd[data-state="stale"] { color: var(--warn); }
+.readout-grid dd[data-state="saturated"], .readout-grid dd[data-state="disconnected"] { color: var(--bad); }
+.live-readout[data-stale="true"] .readout-num { opacity: 0.55; }
+.sim-banner {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  color: var(--warn);
+  background: var(--warn-soft);
+  border: 2px dashed var(--warn);
+  border-radius: var(--radius-sm);
+}
+.live-trace canvas { display: block; width: 100%; height: auto; }
+
+/* ---- Next action: prominent ---- */
+#next-action { border-left-width: 6px; box-shadow: var(--shadow-2); }
+#next-action h2 { font-size: var(--text-md); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+@media (max-width: 64rem) {
+  .front-panel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "live" "main" "side"; }
+  .fp-live { position: static; }
+}

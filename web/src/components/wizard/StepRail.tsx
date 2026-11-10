@@ -1,11 +1,23 @@
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 import type { RailItem, StepStatus } from "./types";
 
 const GLYPH: Record<StepStatus, string> = { done: "[x]", skipped: "[-]", current: "[>]", locked: "[ ]" };
 const WORD: Record<StepStatus, string> = { done: "done", skipped: "skipped", current: "current", locked: "upcoming" };
 
-/** Persistent step rail: glyph plus word per step; only the current step is a tab stop (no jumping past gates), marked aria-current. */
+/** Plain-language one-line description per wizard phase, shown under the step title. */
+export const STEP_BLURB: Readonly<Record<string, string>> = {
+  setup: "Check the clamps hold the specimen without slipping.",
+  calibration: "Teach the instrument what a volt of LVDT output means in length.",
+  tare: "Record the empty reading before any load is applied.",
+  elastic: "Add load in small steps and capture each settled point.",
+  plastic: "Keep loading past the knee to see the specimen yield.",
+  results: "Review the fitted values with their uncertainties.",
+  export: "Save the run as a file or figure.",
+};
+
+/** Persistent vertical step rail: glyph plus word and a short description per step; only the current step is a tab stop (no jumping past gates), marked aria-current. */
 export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Element {
   return (
     <nav aria-label="Steps">
@@ -17,9 +29,13 @@ export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Ele
             aria-current={s.status === "current" ? "step" : undefined}
             tabIndex={s.status === "current" ? 0 : undefined}
           >
-            <span aria-hidden="true">{GLYPH[s.status]}</span> {i + 1}. {s.title}{" "}
-            <span className="sr-word">({WORD[s.status]})</span>
-            {s.status === "skipped" && s.hint !== "" ? <em> {s.hint}</em> : null}
+            <span className="step-glyph" aria-hidden="true">{GLYPH[s.status]}</span>
+            <span className="step-body">
+              <span className="step-title">{i + 1}. {s.title}</span>{" "}
+              <span className="step-state">({WORD[s.status]})</span>
+              <span className="step-blurb">{STEP_BLURB[s.phase] ?? s.hint}</span>
+              {s.status === "skipped" && s.hint !== "" ? <em> {s.hint}</em> : null}
+            </span>
           </li>
         ))}
       </ol>

@@ -1,6 +1,7 @@
 // frob:ticket 01M6XAZ42NR9WARFYVZMS85NR2
 // frob:ticket 01M6WZCNF9F9XSPWCKB34JHSD9
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:accept COV001 because="covered by WizardHost.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../api/log";
@@ -10,7 +11,6 @@ import { WizardShell } from "../components/wizard/WizardShell";
 import type { RailItem, WizardState } from "../components/wizard/types";
 import { getWizard, type WizardFailure } from "../components/wizard/wizardApi";
 import type { KeyAction } from "../keys/keymap";
-import { useStore } from "../state/store";
 import { ExportScreen, saveBlob } from "./export/ExportScreen";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./run/exportTrace";
 import type { RunPhase } from "./run/phases";
@@ -49,11 +49,9 @@ function useExportKey(): (a: KeyAction) => void {
 
 /** Non-run steps: shell with rail around setup, review or export content. */
 function StaticStep({ kind, onWizard }: { kind: "setup" | "results" | "export"; onWizard: (w: WizardState) => void }): React.JSX.Element {
-  const connection = useStore((s) => s.connection);
   const onKey = useExportKey();
   return (
     <WizardShell
-      status={{ source: connection === "up" ? "connected" : "disconnected", motion: "unknown", signal: "ok" }}
       onWizard={onWizard}
       onKeyAction={kind === "export" ? onKey : undefined}
       delegateUndo={kind === "results"}

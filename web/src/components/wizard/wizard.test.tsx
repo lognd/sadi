@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 import { renderToString as rts } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { StatusBar } from "../status/StatusBar";
@@ -8,6 +9,7 @@ import { ShortcutList } from "./ShortcutList";
 import { StepRail } from "./StepRail";
 import { WizardShell } from "./WizardShell";
 import type { RailItem } from "./types";
+import { fakeLive, withLive } from "../../state/testLive";
 import { postWizard, toFailure } from "./wizardApi";
 
 /** Render and drop React text-boundary comments. */
@@ -115,9 +117,32 @@ describe("postWizard", () => {
 
 describe("WizardShell", () => {
   it("renders loading rail, shortcuts and status bar on first paint", () => {
-    const html = renderToString(<WizardShell status={{ source: "connected", motion: "unknown", signal: "ok" }} />);
+    const html = renderToString(withLive(<WizardShell />));
     expect(html).toContain("Loading steps");
     expect(html).toContain("Ctrl+Z");
     expect(html).toContain("Measuring...");
+  });
+
+  it("lays out the front panel with a persistent live readout and trace", () => {
+    const html = renderToString(withLive(<WizardShell><p>Step body</p></WizardShell>, fakeLive({ view: { volts: 1.5 } })));
+    expect(html).toContain('class="front-panel"');
+    expect(html).toContain("<h1>Guided run</h1>");
+    expect(html).toContain('aria-label="Live readout"');
+    expect(html).toContain('aria-label="Live trace"');
+    expect(html).toContain("1.5000");
+    expect(html.indexOf("Step body")).toBeLessThan(html.indexOf('aria-label="Live readout"'));
+  });
+
+  it("status bar reflects the shared live feed", () => {
+    const html = renderToString(withLive(<WizardShell />, fakeLive({ view: { motion: "creeping" } })));
+    expect(html).toContain("Creeping");
+  });
+});
+
+describe("StepRail description", () => {
+  it("shows a plain-language description per step", () => {
+    const html = renderToString(<StepRail rail={[item("setup", "Setup", "current")]} />);
+    expect(html).toContain("Check the clamps hold the specimen without slipping.");
+    expect(html).toContain("(current)");
   });
 });

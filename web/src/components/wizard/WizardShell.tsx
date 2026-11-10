@@ -1,10 +1,15 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { useKeyCapture } from "../../keys/useKeyCapture";
 import type { KeyAction } from "../../keys/keymap";
-import { StatusBar, type StatusBarProps } from "../status/StatusBar";
+import { useLive } from "../../state/LiveContext";
+import { LiveReadout } from "../live/LiveReadout";
+import { LiveTrace } from "../live/TraceCanvas";
+import { StatusBar } from "../status/StatusBar";
 import { ErrorNotice } from "./ErrorNotice";
+import { FrontPanel } from "./FrontPanel";
 import { NextActionPanel } from "./NextActionPanel";
 import { ShortcutList } from "./ShortcutList";
 import { StepRail } from "./StepRail";
@@ -13,9 +18,8 @@ import { getWizard, postWizard, type WizardFailure, type WizardWrite } from "./w
 
 const log = getLogger("wizard.shell");
 
-/** Shell props: status inputs and work-area content come from the run screens. */
+/** Shell props: work-area content comes from the step screens; live status comes from LiveProvider. */
 export interface WizardShellProps {
-  status: Omit<StatusBarProps, "savedAt">;
   children?: React.ReactNode;
   /** Called for capture and window-nudge keys the shell does not handle itself. */
   onKeyAction?: (a: KeyAction) => void;
@@ -27,8 +31,9 @@ export interface WizardShellProps {
 }
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
-/** Wizard shell: rail, work area, next-action panel, status bar and keyboard capture. */
-export function WizardShell({ status, children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false }: WizardShellProps): React.JSX.Element {
+/** Wizard shell: the front panel (step rail, step content, next action, live readout, live trace, status bar) plus keyboard capture. */
+export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false }: WizardShellProps): React.JSX.Element {
+  const { view } = useLive();
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
   const [busy, setBusy] = useState(false);
@@ -74,23 +79,30 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
   }, [write, onKeyAction, delegateUndo]);
   useKeyCapture(act, nudgeActive);
 
+  const index = wizard === null || current === null ? -1 : wizard.rail.indexOf(current);
+  const title = wizard === null ? "Guided run" : current === null ? "All steps finished" : current.title;
+  const subtitle = wizard === null || current === null ? null : `Step ${String(index + 1)} of ${String(wizard.rail.length)}`;
+
   return (
-    <div>
-      <h1>Guided run</h1>
-      {wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
-      <main>
-        {failure ? <ErrorNotice failure={failure} /> : null}
-        {children}
-      </main>
-      <NextActionPanel
-        step={current}
-        busy={busy}
-        canSkip={current !== null}
-        onPrimary={() => { void write("wizard/complete"); }}
-        onSkip={() => { void write("wizard/skip"); }}
-      />
-      {help ? <ShortcutList /> : null}
-      <StatusBar {...status} savedAt={savedAt} />
-    </div>
+    <FrontPanel
+      title={title}
+      subtitle={subtitle}
+      rail={wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
+      shortcuts={help ? <ShortcutList /> : null}
+      live={<><LiveReadout /><LiveTrace /></>}
+      status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} savedAt={savedAt} />}
+      next={
+        <NextActionPanel
+          step={current}
+          busy={busy}
+          canSkip={current !== null}
+          onPrimary={() => { void write("wizard/complete"); }}
+          onSkip={() => { void write("wizard/skip"); }}
+        />
+      }
+    >
+      {failure ? <ErrorNotice failure={failure} /> : null}
+      {children}
+    </FrontPanel>
   );
 }

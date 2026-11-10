@@ -1,10 +1,12 @@
 // frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 import { CalibrationPlot } from "../../plots/calibration";
 import type { CalibrationData } from "../../plots/calibration";
 import { StressStrainScreen } from "../StressStrainScreen";
 import type { StressStrainData } from "../../plots/stressstrain";
 import type { LiveView } from "./live";
+export { settleText } from "../../components/live/settle";
 import { PHASE_FIELDS } from "./inputFields";
 import { PHASES, type RunPhase } from "./phases";
 import { TEXT_FIELD_HOTKEY_HINT } from "../../keys/keymap";
@@ -18,8 +20,6 @@ export type PhasePlot =
 export interface RunViewProps {
   readonly phase: RunPhase;
   readonly view: LiveView;
-  /** Live trace element (LivePlot in production, a stub in tests). */
-  readonly trace: React.ReactNode;
   readonly plot: PhasePlot | null;
   /** Reason capture is blocked right now, or null. */
   readonly blockedWhy: string | null;
@@ -36,14 +36,7 @@ export interface RunViewProps {
   readonly onCancelEarly: () => void;
 }
 
-/** Text for the creep/settle indicator, with drift rate when known. */
-export function settleText(v: LiveView): string {
-  if (v.motion === "settled") return "[Settled]";
-  if (v.motion === "unknown") return "[Measuring...]";
-  return v.driftVps === null ? "[Creeping]" : `[Creeping ${Math.abs(v.driftVps * 1000).toFixed(1)} mV/s]`;
-}
-
-/** Presentational run screen body: readouts, trace, phase plot, saturation warning, capture and confirmation. */
+/** Presentational run screen body (live readout and trace live in the front panel): phase plot, saturation warning, capture and confirmation. */
 export function RunView(p: RunViewProps): React.JSX.Element {
   const meta = PHASES[p.phase];
   const v = p.view;
@@ -61,10 +54,6 @@ export function RunView(p: RunViewProps): React.JSX.Element {
           (!) Disconnected from the instrument. Reconnecting automatically; data already saved is untouched and capture is paused.
         </p>
       )}
-      <p data-testid="readout" style={{ fontSize: "2.5rem" }} aria-live="off">
-        Live V: {v.volts === null ? "--" : v.volts.toFixed(4)} V {settleText(v)}{v.stale ? " (stale)" : ""}
-      </p>
-      {p.trace}
       <fieldset aria-label="Capture inputs" aria-describedby="hotkey-hint">
         <legend>Capture inputs (SI units)</legend>
         {PHASE_FIELDS[p.phase].map((f) => (

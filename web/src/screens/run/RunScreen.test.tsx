@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { renderToString as rts } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -42,7 +43,7 @@ const flat = (n: number, v: number): number[] => Array.from({ length: n }, () =>
 const view = (o: Partial<LiveView> = {}): LiveView =>
   ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
 const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
-  phase: "calibrate", view: view(), trace: <canvas data-testid="live-canvas" />, plot: null, blockedWhy: null,
+  phase: "calibrate", view: view(), plot: null, blockedWhy: null,
   confirming: false, message: null, fields: {}, onField: () => undefined, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
 });
 
@@ -79,7 +80,6 @@ describe("live derivation from a mocked sim stream", () => {
     expect(d.kind).toBe("blocked");
     const out = html(<RunView {...props({ view: v, blockedWhy: d.kind === "blocked" ? d.why : null })} />);
     expect(out).toContain("disconnect-notice");
-    expect(out).toContain("(stale)");
     expect(out).toContain("disabled");
   });
   it("driftOver needs three columns", () => {
@@ -138,10 +138,10 @@ describe("capture decisions", () => {
 });
 
 describe("RunView", () => {
-  it("shows big readout, trace, accept button and phase wording", () => {
+  it("shows accept button and phase wording; readout and trace live in the front panel", () => {
     const out = html(<RunView {...props()} />);
-    expect(out).toContain("Live V: 1.2345 V [Settled]");
-    expect(out).toContain("live-canvas");
+    expect(out).not.toContain("Live V:");
+    expect(out).not.toContain("live-canvas");
     expect(out).toContain("Accept point (Space)");
     expect(out).not.toContain("saturation-warning");
   });

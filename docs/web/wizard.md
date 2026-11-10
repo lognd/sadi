@@ -4,19 +4,20 @@ Status: current
 
 Implements the layout of `docs/ux.md` sections 2, 4, 5 and 6.
 
-- `components/wizard/WizardShell.tsx` loads `GET /api/session/wizard`, renders the step rail,
-  the work area (children), the next-action panel, the shortcut list and the status bar, and
+- `components/wizard/WizardShell.tsx` loads `GET /api/session/wizard`, lays the page out as a
+  front panel (see [front-panel.md](front-panel.md)): step rail sidebar, work area (children),
+  next-action panel, shortcut list, live readout, live trace and status bar, and
   posts `wizard/complete`, `wizard/skip`, `undo`, `redo`. Each write replaces the wizard
   state with the `Committed.wizard` it returns.
-- `StepRail`: glyph plus word per step (`[x] [>] [ ] [-]`), `aria-current="step"`. The rail
+- `StepRail`: vertical sidebar; glyph plus word per step (`[x] [>] [ ] [-]`), a plain-language blurb (`STEP_BLURB`), `aria-current="step"`. The rail
   comes entirely from the API, so lab-specific steps need no web change.
 - `NextActionPanel`: the current step's hint and one big primary button
   (`btn btn-primary`, `data-variant="primary"`) with Skip as `btn btn-secondary`. `src/styles.css`
   (imported once from `main.tsx`) is the shared stylesheet: system fonts, spacing, a
   `:focus-visible` ring (outlines are never removed), and the primary vs secondary button styles.
 - `ErrorNotice`: renders a problem+json as "what happened / What to do: hint".
-- `components/status/StatusBar.tsx`: Source, Motion, Signal and last-saved time; its inputs are
-  props supplied by the run screens (live data arrives with the stream tickets).
+- `components/status/StatusBar.tsx`: Source, Motion, Signal and last-saved time; WizardShell
+  feeds it from the shared live feed (`useLive`), so it is correct on every step.
 
 ## Keyboard
 

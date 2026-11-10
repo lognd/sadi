@@ -2,7 +2,8 @@
 id = "01M72SKWT7XWAGKXM2A9VRNW0E"
 title = "Regenerate web/src/api/schema.ts: missing SessionSummary.spill_import"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

@@ -1,0 +1,16 @@
+kind = "create"
+title = "Read-only step view should render the step's data panels, not hide them behind a banner"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 2
+scope = ["web/src/components/wizard/**"]
+acceptance = ["Opening a past step from the step rail shows that step's data panels read-only (no capture controls)"]
+body = "Follow-up from ~89H28J1: the read-only view hides content behind a banner."
+at = "2026-11-10T15:14:44Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M72XJMDHV60KRBV1ANWKHKC9"

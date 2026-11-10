@@ -81,9 +81,9 @@ export function sourceOf(c: ConnState, simulated: boolean): Source {
   return simulated ? "simulated" : "connected";
 }
 
-/** Status-bar motion from the server settle state; "loading" counts as not settled. */
+/** Status-bar motion from the server settle state; "loading" (no load/too few samples) is unknown, never creeping. */
 export function motionOf(st: SettleState | null): Motion {
-  if (st === null) return "unknown";
+  if (st === null || st === "loading") return "unknown";
   return st === "settled" ? "settled" : "creeping";
 }
 

@@ -2,7 +2,7 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
 import { isRequestIdReused, problemText } from "../review/api";
-import { buildSpecimenBody, postCapture, type CaptureBody } from "./capture";
+import { buildSpecimenBody, postCapture, wroteNothing, type CaptureBody } from "./capture";
 import type { LiveView } from "./live";
 
 const view: LiveView = { volts: 1, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false };
@@ -30,5 +30,22 @@ describe("capture failure text", () => {
   });
   it("the specimen body carries its own request id", () => {
     expect(buildSpecimenBody({ diameter: 0.001 }, 3, view, "sp-1")).toMatchObject({ phase: "specimen", request_id: "sp-1" });
+  });
+});
+
+// frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
+describe("wroteNothing", () => {
+  const http = (status: number, type: string) => ({ kind: "http" as const, status, body: "", problem: { type, title: "T", detail: "", hint: "" } });
+  it("is true for 4xx refusals such as 409 no_device and 422 bad_window", () => {
+    expect(wroteNothing(http(409, "urn:sadi:error:conflict:no_device"))).toBe(true);
+    expect(wroteNothing(http(422, "urn:sadi:error:wizard:bad_window"))).toBe(true);
+  });
+  it("is true for 503 Backpressure only", () => {
+    expect(wroteNothing(http(503, "urn:sadi:error:writer:backpressure"))).toBe(true);
+    expect(wroteNothing(http(503, "urn:sadi:error:writer:stalled"))).toBe(false);
+  });
+  it("is false for network errors and 5xx, whose outcome is unknown", () => {
+    expect(wroteNothing({ kind: "network", message: "x" })).toBe(false);
+    expect(wroteNothing(http(500, "urn:x"))).toBe(false);
   });
 });

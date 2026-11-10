@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py"]
+new = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py", "docs/lctt/export-csv.md"]
+at = "2026-11-10T15:04:56Z"
+actor = "lognd"
+rev = 1

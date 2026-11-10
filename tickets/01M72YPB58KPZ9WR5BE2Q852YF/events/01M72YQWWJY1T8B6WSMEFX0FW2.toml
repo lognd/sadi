@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/2Q852YF; scope: web/src/screens/run/designAdvice.ts, web/src/api/schema.ts, web/src/api/openapi.json; ttl 7200s"
+at = "2026-11-10T14:45:34Z"
+actor = "lognd"
+rev = 1

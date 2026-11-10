@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:46:59Z"
+digest = "6bcc97872d065118ebf41329972a7a027e981cf22d2c64cca0df8ae58023a828"
+exit_code = 0
+head = "6e675eb582f137ed716ac236bd527445d9de7201"
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+ \u{2713} src/screens/run/designAdvice.test.ts (1 test) 3ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  09:46:59
+   Duration  612ms (transform 87ms, setup 0ms, collect 89ms, tests 3ms, environment 0ms, prepare 157ms)
+
+'''
+passed = true
+provider = "command"
+ref = "npx --prefix web vitest run --root web src/screens/run/designAdvice.test.ts"
+size = 270
+status = "measured"
+at = "2026-11-10T14:46:59Z"
+actor = "lognd"
+rev = 1

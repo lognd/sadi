@@ -1,0 +1,10 @@
+kind = "create"
+title = "Regenerate web/src/api/openapi.json for DataProvenance fields"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/src/api/openapi.json"]
+body = "found while working E6MY8YC: new provenance fields on session/plot/results/health/stress-strain models make tests/server/test_openapi_export.py::test_committed_spec_not_stale fail until 'cd web && npm run gen:api' is run. web/** is owned by another agent."
+at = "2026-11-10T04:24:14Z"
+actor = "lognd"
+rev = 1

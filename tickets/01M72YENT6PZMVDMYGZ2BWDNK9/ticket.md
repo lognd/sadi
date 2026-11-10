@@ -7,8 +7,8 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:40:35Z"
-updated = "2026-11-10T15:45:00Z"
-scope = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**"]
+updated = "2026-11-10T15:48:55Z"
+scope = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**", "python/tests/server/test_weight_plan_persist.py", "docs/design/weight-plan.md"]
 
 [[links]]
 kind = "blocked-by"

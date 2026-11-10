@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**"]
+new = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**", "python/tests/server/test_weight_plan_persist.py", "docs/design/weight-plan.md"]
+at = "2026-11-10T15:48:55Z"
+actor = "lognd"
+rev = 1

@@ -4,9 +4,10 @@ title = "Audit1 #5 #23 #40: stale lock guidance, SO_REUSEADDR port check, unwrit
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T05:34:19Z"
-updated = "2026-11-10T05:34:25Z"
+updated = "2026-11-10T05:34:27Z"
 scope = ["python/sadi/store/lock.py", "python/tests/cli/**", "python/tests/store/test_lock*.py", "python/sadi/launcher.py"]
 
 [[acceptance]]

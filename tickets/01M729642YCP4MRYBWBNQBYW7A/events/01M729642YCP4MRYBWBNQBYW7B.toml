@@ -1,0 +1,12 @@
+kind = "create"
+title = "audit4 H1+M3: CSV/plot/figure/refit use one gauge length for both specimens; tare uncertainty differs from Results"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 5
+labels = ["audit4"]
+scope = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/figure_data.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt"]
+acceptance = ["build_document splits elastic (L0 0.5) and plastic (L0 0.08313) runs, fits E on elastic only and yield on plastic only, adds phase column, CSV E/Yield/Tare u equal /api/results; a test asserts equality"]
+at = "2026-11-10T08:28:54Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,7 @@
 id = "01M725CA43JK1ZDJKF8135RHT0"
 title = "LCTT: tare uncertainty is the mean's SE (sd/sqrt(n)); name the creep allowance honestly"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"

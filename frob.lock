@@ -5974,12 +5974,12 @@ acked_at = "2026-11-08T10:22:15.068878888Z"
 identity = "web/src/screens/setup/SessionSetup.test.tsx"
 symref = "web/src/screens/setup/SessionSetup.test.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "23a4dd0b0b4a0ffbcc0b4c5b7f9cf5573d27080c0109077b7744212fc080ed3f"
+body = "394a8d264a1c02e1d539c27b3739e0e9b6ac379231768bb726272c0c73a25193"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T08:00:05.948716157Z"
+acked_at = "2026-11-10T08:38:28.054537584Z"
 
 [[symbol]]
 identity = "web/src/screens/setup/SessionSetup.test.tsx::suite$SessionSetup"
@@ -6068,6 +6068,28 @@ attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
 contract = "9cade4cf3a719a1c6043c1b1f495d58436c7574a08b50ecc2e5d196e3dea8637"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T07:16:41.366286059Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/SessionSetup.test.tsx::suite$SessionSetup_SYNTHETIC_badge"
+symref = "web/src/screens/setup/SessionSetup.test.tsx::suite$SessionSetup_SYNTHETIC_badge"
+sig = "a7471cd4c4ebcd2096094a98ee1e1188fb28114fd8187381b386e844062d5a0f"
+body = "e878970ab5f888386ed71c71dfd86eb8f56432760093b63c3ce62e31e19bd9bc"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "5c5a2ae424466b3fea6107a4d71dda1842226cdc2a56e52f34703f724c83182f"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T08:38:28.054537584Z"
+
+[[symbol]]
+identity = "web/src/screens/setup/SessionSetup.test.tsx::suite$SessionSetup_SYNTHETIC_badge.test$source_marks_synthetic_sessions_with_a_visible_badge"
+symref = "web/src/screens/setup/SessionSetup.test.tsx::suite$SessionSetup_SYNTHETIC_badge.test$source_marks_synthetic_sessions_with_a_visible_badge"
+sig = "e737f044da511394c4851d70062b396d996453a7ce6132311f10a5af55bcfbb4"
+body = "8e23b0dd09d715eecc9196918b979ec4b6e083018ee4571ee59ae90efe28039f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "e6a670d32e49031aa0cafa4955e13ec76149b8920877ab2909e74ae384a51801"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T08:38:28.054537584Z"
 
 [[symbol]]
 identity = "web/src/screens/setup/SessionSetup.tsx"

@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T05:57:26Z"
-updated = "2026-11-10T06:06:07Z"
+updated = "2026-11-10T06:07:25Z"
 scope = ["python/sadi/server/**,python/sadi/labs/lctt/**", "docs/server/results.md", "python/tests/labs/lctt/test_lab_analyze_e2e.py", "python/tests/synthetic/test_results_pending.py", "python/sadi/labs/lctt/lab.py", "python/sadi/server/routes/results.py"]
 
 [[acceptance]]

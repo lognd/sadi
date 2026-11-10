@@ -4,9 +4,10 @@ title = "Audit2 H8a: start real mode without a board (status disconnected) inste
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T06:59:29Z"
-updated = "2026-11-10T06:59:29Z"
+updated = "2026-11-10T06:59:32Z"
 labels = ["creates:python/tests/test_launcher_no_device.py"]
 scope = ["python/sadi/launcher.py", "python/tests/test_launcher_no_device.py"]
 

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/loading.py", "python/sadi/labs/lctt/export_csv.py", "web/src/screens/run/inputFields.ts", "python/sadi/core/point_inputs.py"]
+new = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/loading.py", "python/sadi/labs/lctt/export_csv.py", "web/src/screens/run/inputFields.ts", "python/sadi/core/point_inputs.py", "docs/lctt/*.md"]
+at = "2026-11-10T15:30:10Z"
+actor = "lognd"
+rev = 1

@@ -1,21 +1,21 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`scene mapping > is deterministic and renders to SVG (golden) 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="720" height="460" viewBox="0 0 720 460" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="720" height="460" viewBox="0 0 720 460" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="60.14" y="40" width="637.86" height="354"/></clipPath></defs>
-<rect x="0" y="0" width="720" height="460" fill="#ffffff"/>
-<rect x="60.14" y="40" width="637.86" height="354" fill="#ffffff"/>
-<line x1="60.14" y1="40" x2="60.14" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="187.71" y1="40" x2="187.71" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="315.28" y1="40" x2="315.28" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="442.86" y1="40" x2="442.86" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="570.43" y1="40" x2="570.43" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="698" y1="40" x2="698" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="394" x2="698" y2="394" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="316.85" x2="698" y2="316.85" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="239.7" x2="698" y2="239.7" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="162.55" x2="698" y2="162.55" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="85.4" x2="698" y2="85.4" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="720" height="460" fill="#f8f6ee"/>
+<rect x="60.14" y="40" width="637.86" height="354" fill="#f8f6ee"/>
+<line x1="60.14" y1="40" x2="60.14" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="187.71" y1="40" x2="187.71" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="315.28" y1="40" x2="315.28" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="442.86" y1="40" x2="442.86" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="570.43" y1="40" x2="570.43" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="698" y1="40" x2="698" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="394" x2="698" y2="394" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="316.85" x2="698" y2="316.85" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="239.7" x2="698" y2="239.7" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="162.55" x2="698" y2="162.55" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="85.4" x2="698" y2="85.4" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
 <polygon points="123.93,40 379.07,40 379.07,394 123.93,394" fill="#7f8c8d" fill-opacity="0.22"/>
 <polyline points="60.14,394 405.35,101.73" fill="none" stroke="#2c7fb8" stroke-width="1.75" stroke-dasharray="6 4"/>
@@ -31,57 +31,57 @@ exports[`scene mapping > is deterministic and renders to SVG (golden) 1`] = `
 <circle cx="315.28" cy="177.98" r="3" fill="none" stroke="#d55e00" stroke-width="1.25"/>
 <line x1="631.21" y1="55.4" x2="637.21" y2="61.4" stroke="#009e73" stroke-width="1.25"/>
 <line x1="631.21" y1="61.4" x2="637.21" y2="55.4" stroke="#009e73" stroke-width="1.25"/>
-<polyline points="60.14,395.54 60.14,392.46" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="58.86,394 61.42,394" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="123.93,341.54 123.93,338.45" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="122.65,340 125.2,340" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="187.71,287.53 187.71,284.45" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="186.44,285.99 188.99,285.99" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="251.5,233.53 251.5,230.44" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="250.22,231.99 252.77,231.99" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="315.28,179.52 315.28,176.44" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="314.01,177.98 316.56,177.98" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="379.07,125.52 379.07,122.43" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="377.79,123.98 380.35,123.98" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="442.86,71.52 442.86,68.43" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="441.58,69.97 444.13,69.97" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="506.64,67.66 506.64,64.57" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="505.37,66.12 507.92,66.12" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="570.43,63.8 570.43,60.71" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="569.15,62.26 571.7,62.26" fill="none" stroke="#555555" stroke-width="1.5"/>
-<polyline points="634.21,59.94 634.21,56.86" fill="none" stroke="#555555" stroke-width="1.5" stroke-dasharray="6 4"/>
-<polyline points="632.94,58.4 635.49,58.4" fill="none" stroke="#555555" stroke-width="1.5"/>
+<polyline points="60.14,395.54 60.14,392.46" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="58.86,394 61.42,394" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="123.93,341.54 123.93,338.45" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="122.65,340 125.2,340" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="187.71,287.53 187.71,284.45" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="186.44,285.99 188.99,285.99" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="251.5,233.53 251.5,230.44" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="250.22,231.99 252.77,231.99" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="315.28,179.52 315.28,176.44" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="314.01,177.98 316.56,177.98" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="379.07,125.52 379.07,122.43" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="377.79,123.98 380.35,123.98" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="442.86,71.52 442.86,68.43" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="441.58,69.97 444.13,69.97" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="506.64,67.66 506.64,64.57" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="505.37,66.12 507.92,66.12" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="570.43,63.8 570.43,60.71" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="569.15,62.26 571.7,62.26" fill="none" stroke="#55514a" stroke-width="1.25"/>
+<polyline points="634.21,59.94 634.21,56.86" fill="none" stroke="#55514a" stroke-width="1.25" stroke-dasharray="6 4"/>
+<polyline points="632.94,58.4 635.49,58.4" fill="none" stroke="#55514a" stroke-width="1.25"/>
 <circle cx="442.86" cy="177.98" r="3" fill="none" stroke="#c0392b" stroke-width="1.25"/>
 </g>
-<rect x="60.14" y="40" width="637.86" height="354" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="60.14" y1="394" x2="60.14" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="60.14" y="411" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="187.71" y1="394" x2="187.71" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="187.71" y="411" font-size="11" fill="#111111" text-anchor="middle">0.002</text>
-<line x1="315.28" y1="394" x2="315.28" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="315.28" y="411" font-size="11" fill="#111111" text-anchor="middle">0.004</text>
-<line x1="442.86" y1="394" x2="442.86" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="442.86" y="411" font-size="11" fill="#111111" text-anchor="middle">0.006</text>
-<line x1="570.43" y1="394" x2="570.43" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="570.43" y="411" font-size="11" fill="#111111" text-anchor="middle">0.008</text>
-<line x1="698" y1="394" x2="698" y2="398" stroke="#333333" stroke-width="1"/>
-<text x="698" y="411" font-size="11" fill="#111111" text-anchor="middle">0.010</text>
-<line x1="56.14" y1="394" x2="60.14" y2="394" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="397.85" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="56.14" y1="316.85" x2="60.14" y2="316.85" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="320.7" font-size="11" fill="#111111" text-anchor="end">100</text>
-<line x1="56.14" y1="239.7" x2="60.14" y2="239.7" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="243.55" font-size="11" fill="#111111" text-anchor="end">200</text>
-<line x1="56.14" y1="162.55" x2="60.14" y2="162.55" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="166.4" font-size="11" fill="#111111" text-anchor="end">300</text>
-<line x1="56.14" y1="85.4" x2="60.14" y2="85.4" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="89.25" font-size="11" fill="#111111" text-anchor="end">400</text>
-<text x="379.07" y="432" font-size="13" fill="#111111" text-anchor="middle">Strain (mm/mm)</text>
-<text x="22" y="217" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 217)">Stress (MPa)</text>
-<text x="60.14" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">Stress-strain</text>
-<text x="60.14" y="448" font-size="10" fill="#555555" text-anchor="start">Warning: 1 point(s) hit ADC saturation; 1 forced-early point(s) marked with rings</text>
-<rect x="457.08" y="363" width="232.92" height="23" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="465.08" y="379" font-size="11" fill="#111111" text-anchor="start">E = 70.0 +/- 1.2 GPa, r^2 = 0.9998</text>
+<rect x="60.14" y="40" width="637.86" height="354" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="60.14" y1="394" x2="60.14" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="60.14" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="187.71" y1="394" x2="187.71" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="187.71" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0.002</text>
+<line x1="315.28" y1="394" x2="315.28" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="315.28" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0.004</text>
+<line x1="442.86" y1="394" x2="442.86" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="442.86" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0.006</text>
+<line x1="570.43" y1="394" x2="570.43" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="570.43" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0.008</text>
+<line x1="698" y1="394" x2="698" y2="398" stroke="#3a372f" stroke-width="1"/>
+<text x="698" y="411" font-size="11" fill="#1c1b17" text-anchor="middle">0.010</text>
+<line x1="56.14" y1="394" x2="60.14" y2="394" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="397.85" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="56.14" y1="316.85" x2="60.14" y2="316.85" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="320.7" font-size="11" fill="#1c1b17" text-anchor="end">100</text>
+<line x1="56.14" y1="239.7" x2="60.14" y2="239.7" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="243.55" font-size="11" fill="#1c1b17" text-anchor="end">200</text>
+<line x1="56.14" y1="162.55" x2="60.14" y2="162.55" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="166.4" font-size="11" fill="#1c1b17" text-anchor="end">300</text>
+<line x1="56.14" y1="85.4" x2="60.14" y2="85.4" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="89.25" font-size="11" fill="#1c1b17" text-anchor="end">400</text>
+<text x="379.07" y="432" font-size="13" fill="#1c1b17" text-anchor="middle">Strain (mm/mm)</text>
+<text x="22" y="217" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 217)">Stress (MPa)</text>
+<text x="60.14" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Stress-strain</text>
+<text x="60.14" y="448" font-size="10" fill="#55514a" text-anchor="start">Warning: 1 point(s) hit ADC saturation; 1 forced-early point(s) marked with rings</text>
+<rect x="457.08" y="363" width="232.92" height="23" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="465.08" y="379" font-size="11" fill="#1c1b17" text-anchor="start">E = 70.0 +/- 1.2 GPa, r^2 = 0.9998</text>
 </svg>
 "
 `;

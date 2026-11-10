@@ -3,71 +3,71 @@
 exports[`canvas draw calls > records a stable golden call sequence 1`] = `
 "save()
 scale(2,2)
-fillStyle=#ffffff
+fillStyle=#f8f6ee
 fillRect(0,0,640,400)
-fillStyle=#ffffff
+fillStyle=#f8f6ee
 fillRect(60.14,56,557.86,278)
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,56)
 lineTo(60.14,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(171.71,56)
 lineTo(171.71,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(283.28,56)
 lineTo(283.28,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(394.86,56)
 lineTo(394.86,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(506.43,56)
 lineTo(506.43,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(618,56)
 lineTo(618,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,334)
 lineTo(618,334)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,264.5)
 lineTo(618,264.5)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,195)
 lineTo(618,195)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,125.5)
 lineTo(618,125.5)
 stroke()
-strokeStyle=#e3e3e3
+strokeStyle=#e0dbcc
 lineWidth=1
 beginPath()
 moveTo(60.14,56)
@@ -132,174 +132,174 @@ arc(618,121.33,3,0,6.283185307179586)
 fillStyle=#0072b2
 fill()
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 strokeRect(60.14,56,557.86,278)
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(60.14,334)
 lineTo(60.14,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(60.14,351)
 fillText(0,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(171.71,334)
 lineTo(171.71,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(171.71,351)
 fillText(2,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(283.28,334)
 lineTo(283.28,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(283.28,351)
 fillText(4,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(394.86,334)
 lineTo(394.86,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(394.86,351)
 fillText(6,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(506.43,334)
 lineTo(506.43,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(506.43,351)
 fillText(8,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(618,334)
 lineTo(618,338)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(618,351)
 fillText(10,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(56.14,334)
 lineTo(60.14,334)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=right
 textBaseline=alphabetic
 translate(53.14,337.85)
 fillText(-50,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(56.14,264.5)
 lineTo(60.14,264.5)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=right
 textBaseline=alphabetic
 translate(53.14,268.35)
 fillText(0,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(56.14,195)
 lineTo(60.14,195)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=right
 textBaseline=alphabetic
 translate(53.14,198.85)
 fillText(50,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(56.14,125.5)
 lineTo(60.14,125.5)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=right
 textBaseline=alphabetic
 translate(53.14,129.35)
 fillText(100,0,0)
 restore()
-strokeStyle=#333333
+strokeStyle=#3a372f
 lineWidth=1
 beginPath()
 moveTo(56.14,56)
 lineTo(60.14,56)
 stroke()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=right
 textBaseline=alphabetic
 translate(53.14,59.85)
 fillText(150,0,0)
 restore()
 save()
-fillStyle=#111111
-font=13px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=13px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(339.07,372)
 fillText(Displacement (mm),0,0)
 restore()
 save()
-fillStyle=#111111
-font=13px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=13px ui-monospace, Menlo, Consolas, monospace
 textAlign=center
 textBaseline=alphabetic
 translate(22,195)
@@ -307,30 +307,30 @@ rotate(-1.5707963267948966)
 fillText(Force (N),0,0)
 restore()
 save()
-fillStyle=#111111
-font=bold 16px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=bold 16px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(60.14,28)
 fillText(Calibration,0,0)
 restore()
 save()
-fillStyle=#555555
-font=12px Helvetica, Arial, sans-serif
+fillStyle=#55514a
+font=12px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(60.14,44)
 fillText(run 1,0,0)
 restore()
 save()
-fillStyle=#555555
-font=10px Helvetica, Arial, sans-serif
+fillStyle=#55514a
+font=10px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(60.14,388)
 fillText(Bands are 95 % intervals,0,0)
 restore()
-fillStyle=#fafafa
+fillStyle=#f1ede2
 fillRect(506.58,64,103.42,56)
 strokeStyle=#999999
 lineWidth=1
@@ -340,8 +340,8 @@ arc(521.58,76,3,0,6.283185307179586)
 fillStyle=#0072b2
 fill()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(536.58,79.85)
@@ -350,8 +350,8 @@ restore()
 fillStyle=#d55e00
 fillRect(512.58,88,18,8)
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(536.58,95.85)
@@ -366,29 +366,29 @@ setLineDash(6,4)
 stroke()
 setLineDash()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(536.58,111.85)
 fillText(fit,0,0)
 restore()
-fillStyle=#fafafa
+fillStyle=#f1ede2
 fillRect(491.92,288,118.08,38)
 strokeStyle=#999999
 lineWidth=1
 strokeRect(491.92,288,118.08,38)
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(499.92,304)
 fillText(F = 10.0 x + 3.0,0,0)
 restore()
 save()
-fillStyle=#111111
-font=11px Helvetica, Arial, sans-serif
+fillStyle=#1c1b17
+font=11px ui-monospace, Menlo, Consolas, monospace
 textAlign=left
 textBaseline=alphabetic
 translate(499.92,319)
@@ -398,21 +398,21 @@ restore()"
 `;
 
 exports[`svg > matches the snapshot 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="60.14" y="56" width="557.86" height="278"/></clipPath></defs>
-<rect x="0" y="0" width="640" height="400" fill="#ffffff"/>
-<rect x="60.14" y="56" width="557.86" height="278" fill="#ffffff"/>
-<line x1="60.14" y1="56" x2="60.14" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="171.71" y1="56" x2="171.71" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="283.28" y1="56" x2="283.28" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="394.86" y1="56" x2="394.86" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="506.43" y1="56" x2="506.43" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="618" y1="56" x2="618" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="334" x2="618" y2="334" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="264.5" x2="618" y2="264.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="195" x2="618" y2="195" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="125.5" x2="618" y2="125.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="60.14" y1="56" x2="618" y2="56" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="640" height="400" fill="#f8f6ee"/>
+<rect x="60.14" y="56" width="557.86" height="278" fill="#f8f6ee"/>
+<line x1="60.14" y1="56" x2="60.14" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="171.71" y1="56" x2="171.71" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="283.28" y1="56" x2="283.28" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="394.86" y1="56" x2="394.86" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="506.43" y1="56" x2="506.43" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="618" y1="56" x2="618" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="334" x2="618" y2="334" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="264.5" x2="618" y2="264.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="195" x2="618" y2="195" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="125.5" x2="618" y2="125.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="60.14" y1="56" x2="618" y2="56" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
 <polygon points="60.14,253.38 171.71,225.58 283.28,197.78 394.86,169.98 506.43,142.18 618,114.38 618,128.28 506.43,156.08 394.86,183.88 283.28,211.68 171.71,239.48 60.14,267.28" fill="#d55e00" fill-opacity="0.22"/>
 <polyline points="60.14,260.33 171.71,232.53 283.28,204.73 394.86,176.93 506.43,149.13 618,121.33" fill="none" stroke="#009e73" stroke-width="1.75" stroke-dasharray="6 4"/>
@@ -423,44 +423,44 @@ exports[`svg > matches the snapshot 1`] = `
 <circle cx="506.43" cy="149.13" r="3" fill="#0072b2"/>
 <circle cx="618" cy="121.33" r="3" fill="#0072b2"/>
 </g>
-<rect x="60.14" y="56" width="557.86" height="278" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="60.14" y1="334" x2="60.14" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="60.14" y="351" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="171.71" y1="334" x2="171.71" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="171.71" y="351" font-size="11" fill="#111111" text-anchor="middle">2</text>
-<line x1="283.28" y1="334" x2="283.28" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="283.28" y="351" font-size="11" fill="#111111" text-anchor="middle">4</text>
-<line x1="394.86" y1="334" x2="394.86" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="394.86" y="351" font-size="11" fill="#111111" text-anchor="middle">6</text>
-<line x1="506.43" y1="334" x2="506.43" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="506.43" y="351" font-size="11" fill="#111111" text-anchor="middle">8</text>
-<line x1="618" y1="334" x2="618" y2="338" stroke="#333333" stroke-width="1"/>
-<text x="618" y="351" font-size="11" fill="#111111" text-anchor="middle">10</text>
-<line x1="56.14" y1="334" x2="60.14" y2="334" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="337.85" font-size="11" fill="#111111" text-anchor="end">-50</text>
-<line x1="56.14" y1="264.5" x2="60.14" y2="264.5" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="268.35" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="56.14" y1="195" x2="60.14" y2="195" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="198.85" font-size="11" fill="#111111" text-anchor="end">50</text>
-<line x1="56.14" y1="125.5" x2="60.14" y2="125.5" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="129.35" font-size="11" fill="#111111" text-anchor="end">100</text>
-<line x1="56.14" y1="56" x2="60.14" y2="56" stroke="#333333" stroke-width="1"/>
-<text x="53.14" y="59.85" font-size="11" fill="#111111" text-anchor="end">150</text>
-<text x="339.07" y="372" font-size="13" fill="#111111" text-anchor="middle">Displacement (mm)</text>
-<text x="22" y="195" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 195)">Force (N)</text>
-<text x="60.14" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">Calibration</text>
-<text x="60.14" y="44" font-size="12" fill="#555555" text-anchor="start">run 1</text>
-<text x="60.14" y="388" font-size="10" fill="#555555" text-anchor="start">Bands are 95 % intervals</text>
-<rect x="506.58" y="64" width="103.42" height="56" fill="#fafafa" stroke="#999999" stroke-width="1"/>
+<rect x="60.14" y="56" width="557.86" height="278" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="60.14" y1="334" x2="60.14" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="60.14" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="171.71" y1="334" x2="171.71" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="171.71" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">2</text>
+<line x1="283.28" y1="334" x2="283.28" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="283.28" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">4</text>
+<line x1="394.86" y1="334" x2="394.86" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="394.86" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">6</text>
+<line x1="506.43" y1="334" x2="506.43" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="506.43" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">8</text>
+<line x1="618" y1="334" x2="618" y2="338" stroke="#3a372f" stroke-width="1"/>
+<text x="618" y="351" font-size="11" fill="#1c1b17" text-anchor="middle">10</text>
+<line x1="56.14" y1="334" x2="60.14" y2="334" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="337.85" font-size="11" fill="#1c1b17" text-anchor="end">-50</text>
+<line x1="56.14" y1="264.5" x2="60.14" y2="264.5" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="268.35" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="56.14" y1="195" x2="60.14" y2="195" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="198.85" font-size="11" fill="#1c1b17" text-anchor="end">50</text>
+<line x1="56.14" y1="125.5" x2="60.14" y2="125.5" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="129.35" font-size="11" fill="#1c1b17" text-anchor="end">100</text>
+<line x1="56.14" y1="56" x2="60.14" y2="56" stroke="#3a372f" stroke-width="1"/>
+<text x="53.14" y="59.85" font-size="11" fill="#1c1b17" text-anchor="end">150</text>
+<text x="339.07" y="372" font-size="13" fill="#1c1b17" text-anchor="middle">Displacement (mm)</text>
+<text x="22" y="195" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 195)">Force (N)</text>
+<text x="60.14" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Calibration</text>
+<text x="60.14" y="44" font-size="12" fill="#55514a" text-anchor="start">run 1</text>
+<text x="60.14" y="388" font-size="10" fill="#55514a" text-anchor="start">Bands are 95 % intervals</text>
+<rect x="506.58" y="64" width="103.42" height="56" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
 <circle cx="521.58" cy="76" r="3" fill="#0072b2"/>
-<text x="536.58" y="79.85" font-size="11" fill="#111111" text-anchor="start">captured</text>
+<text x="536.58" y="79.85" font-size="11" fill="#1c1b17" text-anchor="start">captured</text>
 <rect x="512.58" y="88" width="18" height="8" fill="#d55e00"/>
-<text x="536.58" y="95.85" font-size="11" fill="#111111" text-anchor="start">95 % band</text>
+<text x="536.58" y="95.85" font-size="11" fill="#1c1b17" text-anchor="start">95 % band</text>
 <polyline points="512.58,108 530.58,108" fill="none" stroke="#009e73" stroke-width="1.75" stroke-dasharray="6 4"/>
-<text x="536.58" y="111.85" font-size="11" fill="#111111" text-anchor="start">fit</text>
-<rect x="491.92" y="288" width="118.08" height="38" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="499.92" y="304" font-size="11" fill="#111111" text-anchor="start">F = 10.0 x + 3.0</text>
-<text x="499.92" y="319" font-size="11" fill="#111111" text-anchor="start">r^2 = 0.9994</text>
+<text x="536.58" y="111.85" font-size="11" fill="#1c1b17" text-anchor="start">fit</text>
+<rect x="491.92" y="288" width="118.08" height="38" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="499.92" y="304" font-size="11" fill="#1c1b17" text-anchor="start">F = 10.0 x + 3.0</text>
+<text x="499.92" y="319" font-size="11" fill="#1c1b17" text-anchor="start">r^2 = 0.9994</text>
 </svg>
 "
 `;

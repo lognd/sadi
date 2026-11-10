@@ -2,7 +2,8 @@
 id = "01M72Y13R6WWH4G55AMHQEPVZH"
 title = "Enter L0 and hanger-mass uncertainty in the app (LabVIEW parity H1, M3)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

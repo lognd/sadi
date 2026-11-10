@@ -32,7 +32,7 @@ describe("doctor ui", () => {
   });
 
   // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
-  // frob:tests web/src/doctor/DoctorScreen.tsx::VerdictBanner
+  // covers web/src/doctor/DoctorScreen.tsx::VerdictBanner
   it("shows the verdict, counts and first action (audit #33)", () => {
     const html = renderToString(<VerdictBanner summary={{ verdict: "blocked", first_action: "Free port 8000" }} results={[failing]} />).replaceAll("<!-- -->", "");
     expect(html).toContain("Verdict: blocked");

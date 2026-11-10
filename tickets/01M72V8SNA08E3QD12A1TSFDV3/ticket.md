@@ -2,7 +2,8 @@
 id = "01M72V8SNA08E3QD12A1TSFDV3"
 title = "Live/open-session payloads and exports must report unknown provenance (resumed unknown session)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

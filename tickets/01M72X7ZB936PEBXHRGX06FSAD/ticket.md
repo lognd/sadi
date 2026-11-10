@@ -7,9 +7,9 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:19:26Z"
-updated = "2026-11-10T14:29:40Z"
+updated = "2026-11-10T14:32:11Z"
 labels = ["creates:python/sadi/server/routes/weight_plan.py", "creates:python/tests/server/test_weight_plan_route.py", "creates:web/src/screens/setup/WeightPlanPanel.tsx", "creates:web/src/screens/setup/WeightPlanPanel.test.tsx"]
-scope = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx"]
+scope = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx", "python/sadi/server/app.py"]
 
 [[links]]
 kind = "blocked-by"

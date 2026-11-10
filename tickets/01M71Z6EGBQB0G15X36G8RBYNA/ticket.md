@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:34:19Z"
-updated = "2026-11-10T05:58:40Z"
+updated = "2026-11-10T06:00:13Z"
 scope = ["python/sadi/synthetic/**", "python/tests/synthetic/**", "docs/synthetic.md"]
 
 [[acceptance]]

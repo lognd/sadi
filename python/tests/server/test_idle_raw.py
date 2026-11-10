@@ -89,6 +89,8 @@ def test_idle_timeout_stops_raw_without_losing_blocks(tmp_path: Path) -> None:
 
 
 # frob:tests python/sadi/server/live.py::LiveAcquisition.finish
+# frob:tests python/sadi/server/live.py::LiveAcquisition.stop_reason
+# frob:tests python/sadi/server/live.py::LiveAcquisition.stop_streaming
 def test_finish_stops_raw_and_refuses_restart(tmp_path: Path) -> None:
     """finish() drains and stops; a later load change is refused, not silently restarted."""
     with _session(tmp_path, _Clock()) as (_c, live):

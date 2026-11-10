@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7RAH93KKNK1WH67KWS2S7"
 reporter = "lognd"
 created = "2026-11-10T03:35:19Z"
-updated = "2026-11-10T03:42:12Z"
+updated = "2026-11-10T03:42:17Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "A live trace plot is persistent beside the step content"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Step rail is a left sidebar with plain-language titles; primary next action is prominent"

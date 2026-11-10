@@ -162,6 +162,15 @@
             "title": "Height M",
             "type": "array"
           },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "volts": {
             "items": {
               "type": "number"
@@ -559,6 +568,50 @@
         "title": "Confidence",
         "type": "object"
       },
+      "DataProvenance": {
+        "description": "Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.",
+        "properties": {
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "default": "real",
+            "enum": [
+              "real",
+              "synthetic"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "synthetic": {
+            "default": false,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "truth": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "scenario ground truth",
+            "title": "Truth"
+          },
+          "warning": {
+            "default": "",
+            "title": "Warning",
+            "type": "string"
+          }
+        },
+        "title": "DataProvenance",
+        "type": "object"
+      },
       "DeviceView": {
         "description": "Device state for the header: coarse status, whether a service exists, and any fault.",
         "properties": {
@@ -581,6 +634,15 @@
             "default": "",
             "title": "Hint",
             "type": "string"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           },
           "status": {
             "title": "Status",
@@ -953,6 +1015,15 @@
       "HealthOut": {
         "description": "Health payload consumed by web/src/api/client.ts getHealth.",
         "properties": {
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "simulated": {
             "anyOf": [
               {
@@ -1228,6 +1299,15 @@
           "modulusMpa": {
             "title": "Modulusmpa",
             "type": "number"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           },
           "r2": {
             "title": "R2",
@@ -1794,6 +1874,15 @@
       "ResultsView": {
         "description": "`ResultSet` plus per-quantity provenance (which settle windows fed each value).",
         "properties": {
+          "data_provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "n_points": {
             "default": 0,
             "title": "N Points",
@@ -2149,6 +2238,15 @@
               }
             ],
             "title": "Parent Last Seq"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           }
         },
         "required": [
@@ -2200,6 +2298,15 @@
               }
             ],
             "title": "Parent"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           },
           "state": {
             "title": "State",
@@ -2391,6 +2498,15 @@
             },
             "title": "Point Ids",
             "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           },
           "strain": {
             "items": {

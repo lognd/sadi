@@ -828,6 +828,15 @@ export interface components {
             fit: components["schemas"]["CalibrationFitView"] | null;
             /** Height M */
             height_m: number[];
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Volts */
             volts: number[];
         };
@@ -991,6 +1000,40 @@ export interface components {
             target_half_width?: number | null;
         };
         /**
+         * DataProvenance
+         * @description Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.
+         */
+        DataProvenance: {
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /**
+             * Source
+             * @default real
+             * @enum {string}
+             */
+            source: "real" | "synthetic";
+            /**
+             * Synthetic
+             * @default false
+             */
+            synthetic: boolean;
+            /**
+             * Truth
+             * @description scenario ground truth
+             */
+            truth?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Warning
+             * @default
+             */
+            warning: string;
+        };
+        /**
          * DeviceView
          * @description Device state for the header: coarse status, whether a service exists, and any fault.
          */
@@ -1004,6 +1047,15 @@ export interface components {
              * @default
              */
             hint: string;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Status */
             status: string;
         };
@@ -1179,6 +1231,15 @@ export interface components {
          * @description Health payload consumed by web/src/api/client.ts getHealth.
          */
         HealthOut: {
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Simulated */
             simulated?: boolean | null;
             /**
@@ -1307,6 +1368,15 @@ export interface components {
             lowR2: boolean;
             /** Modulusmpa */
             modulusMpa: number;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** R2 */
             r2: number;
         };
@@ -1563,6 +1633,15 @@ export interface components {
          */
         ResultsView: {
             /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            data_provenance: components["schemas"]["DataProvenance"];
+            /**
              * N Points
              * @default 0
              */
@@ -1745,6 +1824,15 @@ export interface components {
             parent?: string | null;
             /** Parent Last Seq */
             parent_last_seq?: number | null;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
         };
         /**
          * SessionResume
@@ -1767,6 +1855,15 @@ export interface components {
             name: string;
             /** Parent */
             parent?: string | null;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** State */
             state: string;
             /** Version */
@@ -1849,6 +1946,15 @@ export interface components {
             excluded: boolean[];
             /** Point Ids */
             point_ids: string[];
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Strain */
             strain: number[];
             /** Stress Mpa */

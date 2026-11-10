@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T09:37:01Z"
-updated = "2026-11-10T12:30:15Z"
+updated = "2026-11-10T12:32:31Z"
 scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "docs/store/spill.md", "python/sadi/store/manifest.py", "python/tests/server/test_latest_lineage.py", "python/tests/store/test_spill.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "web/src/api/openapi.json"]
 
 [[acceptance]]

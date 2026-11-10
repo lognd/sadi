@@ -178,7 +178,7 @@ class GuidanceState(BaseModel):
     stop_reason: str = ""
     proposed_next_phase: Phase | None = None
     run_complete_proposed: bool = False
-    # frob:ticket 5MQ11EV
+    # frob:ticket 01M71KCTETKE1AE0GZ35MQ11EV
     expected_gain: float | None = None
     expected_half_width: float | None = None
     alternatives: tuple[float, ...] = ()

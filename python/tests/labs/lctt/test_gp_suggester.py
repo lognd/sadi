@@ -1,6 +1,6 @@
 """Tests for the GP/c-optimal load selector (seeded synthetic data, no hardware)."""
 
-# frob:ticket 5MQ11EV
+# frob:ticket 01M71KCTETKE1AE0GZ35MQ11EV
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from sadi.labs.lctt.gp_suggester import (
 from sadi.labs.lctt.guidance import (
     GuidanceConfig,
     GuidanceInput,
+    GuidedRun,
     LoadRange,
     Phase,
     guide,
@@ -135,3 +136,21 @@ def test_guide_defaults_to_gp_and_fills_optional_fields() -> None:
     assert st.suggested_load_kg == RANGE.min_kg
     assert st.gp_state == GpState.COLLECTING.value
     assert st.alternatives == ()
+
+
+# frob:tests python/sadi/labs/lctt/gp_suggester.py::GpLoadSuggester.__init__
+# frob:tests python/sadi/labs/lctt/gp_suggester.py::GpLoadSuggester.reset
+def test_reset_returns_to_cold_start() -> None:
+    obs = tuple(Observation(load_kg=k, response=SLOPE * k) for k in (0.5, 4.0, 2.0, 1.0))
+    s = GpLoadSuggester(obs)
+    got = s.suggest(Phase.ELASTIC, ResultSet(n_points=4), RANGE)
+    assert isinstance(got, Ok) and got.danger_ok.expected_gain is not None
+    s.reset()
+    assert s.last is None
+    got = s.suggest(Phase.ELASTIC, ResultSet(n_points=0), RANGE)
+    assert isinstance(got, Ok) and got.danger_ok.load_kg == RANGE.min_kg
+
+
+# frob:tests python/sadi/labs/lctt/guidance.py::GuidedRun.suggester
+def test_guided_run_defaults_to_gp_suggester() -> None:
+    assert isinstance(GuidedRun().suggester, GpLoadSuggester)

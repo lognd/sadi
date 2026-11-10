@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/crunk.toml", "web/src/styles.css", "web/src/screens/run/RunView.tsx", "docs/web/wizard.md"]
+new = ["web/crunk.toml", "web/src/styles.css", "web/src/screens/run/RunView.tsx", "docs/web/wizard.md", ".github/workflows/ci.yml", "web/src/tokens.css", "web/package.json"]
+at = "2026-11-10T02:40:43Z"
+actor = "lognd"
+rev = 1

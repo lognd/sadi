@@ -493,18 +493,53 @@ class LoadingContext(BaseModel):
     u_tare_v: float = 0.0
 
 
+def _in_effect(
+    inputs: Sequence[PointInputs],
+) -> tuple[list[TareInputs], SpecimenInputs | None, str | None]:
+    """The tare blocks, specimen and phase in effect for the LAST load point (pure).
+
+    A specimen entry applies to the load points after it (the latest one before the point
+    wins; with none before it the first later one is used). Tare blocks pool within a run: a
+    tare entry that follows a load point starts a new group, so a plastic run's tare never
+    mixes with the elastic run's. With no load point every entry is considered (legacy).
+    """
+    last = max((i for i, it in enumerate(inputs) if isinstance(it, LoadInputs)), default=None)
+    upto = inputs if last is None else inputs[: last + 1]
+    tares: list[TareInputs] = []
+    spec: SpecimenInputs | None = None
+    after_load = False
+    for item in upto:
+        if isinstance(item, TareInputs):
+            if after_load:
+                tares, after_load = [], False
+            tares.append(item)
+        elif isinstance(item, SpecimenInputs):
+            spec = item
+        elif isinstance(item, LoadInputs):
+            after_load = True
+    if spec is None:
+        spec = next((i for i in inputs if isinstance(i, SpecimenInputs)), None)
+    if not tares:
+        tares = [i for i in inputs if isinstance(i, TareInputs)]
+    phase = None if last is None else getattr(inputs[last], "phase", None)
+    return tares, spec, phase
+
+
 def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
     """Derive geometry, tare and calibration slope from a session's typed inputs (pure).
 
-    The last specimen entry gives diameter and hanger mass, the last tare block the tare volts,
-    three or more calibration points a fitted slope, and the last load point's phase the gauge
-    length (elastic = long). Anything missing keeps the nominal default or omits strain.
+    Each point is analysed under its own run's setup: the specimen entry (diameter, hanger,
+    L0) and tare blocks in effect for the last load point, and that point's phase for the
+    gauge length (elastic = long), so elastic and plastic runs sharing a session never borrow
+    each other's. Three or more calibration points give a fitted slope. Anything missing keeps
+    the nominal default or omits strain.
     """
     # frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
+    # frob:ticket 01M71V64GMPG77XEX6MKYMTZJH
     ctx: dict[str, Any] = {}
     cal_v: list[float] = []
     cal_h: list[float] = []
-    tares = [i for i in inputs if isinstance(i, TareInputs)]
+    tares, item, phase = _in_effect(inputs)
     if tares:
         # The tare is the hand-zeroing residual: one pooled zero offset, same model as the CSV.
         rep = tare_report([t.mean for t in tares], [t.sd for t in tares], [t.n for t in tares])
@@ -512,23 +547,21 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
             ctx["tare_v"], ctx["u_tare_v"] = rep.danger_ok.value, rep.danger_ok.std_unc
         else:
             ctx["tare_v"] = tares[-1].mean
-    for item in inputs:
-        if isinstance(item, SpecimenInputs):
-            ctx.update(
-                diameter_m=item.diameter,
-                u_diameter_m=item.u_diameter,
-                hanger_kg=item.hanger_kg,
-                u_hanger_kg=item.u_hanger_kg,  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
-                l0_override_m=item.l0_m,
-                u_l0_m=item.u_l0_m,
-            )
-        elif isinstance(item, TareInputs):
-            continue
-        elif isinstance(item, CalibrationInputs):
-            cal_v.append(item.volts)
-            cal_h.append(item.height)
-        else:  # LoadInputs
-            ctx["l0_m"] = LONG_L0_M if item.phase == SpecimenRole.ELASTIC.value else SHORT_L0_M
+    if item is not None:
+        ctx.update(
+            diameter_m=item.diameter,
+            u_diameter_m=item.u_diameter,
+            hanger_kg=item.hanger_kg,
+            u_hanger_kg=item.u_hanger_kg,  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+            l0_override_m=item.l0_m,
+            u_l0_m=item.u_l0_m,
+        )
+    for c in inputs:
+        if isinstance(c, CalibrationInputs):
+            cal_v.append(c.volts)
+            cal_h.append(c.height)
+    if phase is not None:
+        ctx["l0_m"] = LONG_L0_M if phase == SpecimenRole.ELASTIC.value else SHORT_L0_M
     if ctx.get("l0_override_m") is not None:  # operator-typed L0 beats the phase default
         ctx["l0_m"] = ctx["l0_override_m"]
     if len(cal_v) >= MIN_POINTS:
@@ -585,10 +618,10 @@ def _calibration_quantities(
             out["slope"] = _quantity(f.slope, "m/V")
             out["intercept"] = _quantity(f.intercept, "m")
     if ctx.tare_v is not None:
-        tare = [i for i in inputs if isinstance(i, TareInputs)][-1]
+        blocks = _in_effect(inputs)[0]
+        tare = blocks[-1]
         # frob:ticket 01M725CA43JK1ZDJKF8135RHT0
         # One tare model shared with the CSV export: pooled mean, standard error Sx/sqrt(N).
-        blocks = [i for i in inputs if isinstance(i, TareInputs)]
         rep = tare_report([b.mean for b in blocks], [b.sd for b in blocks], [b.n for b in blocks])
         if isinstance(rep, Ok):
             out["tare"] = Quantity(

@@ -253,6 +253,26 @@ def _cal_events(doc: CsvDocument) -> list[LiveEvent]:
     return out
 
 
+def _l0_override(doc: CsvDocument) -> tuple[float | None, float]:
+    """The operator L0 override (and its uncertainty) recorded in the rows, else (None, 0).
+
+    Rows carry the effective gauge length; an override is recognised when every row has the
+    same L0 and either its uncertainty is non-zero or it differs from a row's role default.
+    """
+    # frob:ticket 01M71V64GMPG77XEX6MKYMTZJH
+    if not doc.rows:
+        return None, 0.0
+    first = doc.rows[0]
+    if math.isnan(first.l0_m) or any(r.l0_m != first.l0_m for r in doc.rows):
+        return None, 0.0
+    u = 0.0 if math.isnan(first.u_l0_m) else first.u_l0_m
+    differs = any(
+        (role := _ROLE_BY_PHASE.get(r.phase)) is not None and SpecimenSpec(role=role).l0_m != r.l0_m
+        for r in doc.rows
+    )
+    return (first.l0_m, u) if (u > 0.0 or differs) else (None, 0.0)
+
+
 def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     """Rebuild raw live events (tare, specimen, points, exclusions, window) for re-analysis.
 
@@ -264,11 +284,16 @@ def to_live_events(doc: CsvDocument) -> list[LiveEvent]:
     if not math.isnan(n):
         events.append(TareBlock(mean=doc.get_float("Tare mean (V)"), sd=sd, n=int(n)))
     if not math.isnan(doc.get_float("Specimen diameter (m)")):
+        l0_m, u_l0_m = _l0_override(doc)  # frob:ticket 01M71V64GMPG77XEX6MKYMTZJH
+        u_hang = doc.rows[0].u_hanger_kg if doc.rows else 0.0
         events.append(
             SpecimenSetup(
                 diameter=doc.get_float("Specimen diameter (m)"),
                 u_diameter=doc.get_float("Specimen u diameter (m)"),
                 hanger_kg=doc.rows[0].hanger_kg if doc.rows else 0.0,
+                u_hanger_kg=0.0 if math.isnan(u_hang) else u_hang,
+                l0_m=l0_m,
+                u_l0_m=u_l0_m,
             )
         )
     for r in doc.rows:

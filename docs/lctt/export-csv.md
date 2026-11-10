@@ -80,7 +80,8 @@ memory (read-only; the numbered on-disk `export_csv` is a separate path). An unr
 
 `read_document` / `read_file` parse a file back to `CsvDocument` (metadata + typed rows), and
 `to_live_events` rebuilds tare, specimen, point, exclusion and window events for
-post-processing (Q1). Calibration points are not in the file, only the fit.
+post-processing (Q1); the specimen event carries the hanger uncertainty and any operator L0
+override (with its uncertainty) recovered from the rows. Calibration points are not in the file, only the fit.
 
 ## Encoding and line endings
 

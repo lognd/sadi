@@ -60,7 +60,8 @@ and `strain` plus `secant_modulus` when the context supplies the calibration `sl
 ## Session wiring
 
 `LcttLab.analyze(points, inputs)` implements `sadi.core.lab.InputsAwareLab`. It derives a
-`LoadingContext` with `context_from_inputs` (last specimen diameter and hanger, last tare, slope
+`LoadingContext` with `context_from_inputs` (the specimen entry and tare blocks in effect for the last load
+point, so an elastic and a plastic run in one session never borrow each other's; slope
 fitted from three or more calibration points, gauge length from the last load phase), runs
 `recompute` under it, and when both `elastic` and `plastic` load runs exist adds `E`, `r2` and
 `yield_stress` from `combine_runs`. The server calls it through `session_points.analyze` for both

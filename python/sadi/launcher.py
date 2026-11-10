@@ -6,6 +6,7 @@
 # frob:ticket 01M6WTZVX9DFPHBKVJ1NXB07G0
 # frob:ticket 01M6X06TPZ3W86FDHQPX01MME8
 # frob:ticket 01M6Z52N7A69ET20H5GMS8S7BG
+# frob:ticket 01M71Z6EMJ9QP7716699S5SC5X
 from __future__ import annotations
 
 import argparse
@@ -103,11 +104,34 @@ def is_loopback(host: str) -> bool:
 def _port_free(host: str, port: int) -> bool:
     """Return whether `host:port` can be bound right now (port 0 always can)."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        if sys.platform != "win32":
+            # Match uvicorn: a port in TIME_WAIT after a crash is bindable, not busy. Skipped on
+            # Windows, where SO_REUSEADDR would also let us "bind" a port a live server holds.
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind((host, port))
         except OSError:
             return False
     return True
+
+
+def data_root_unwritable_hint(root: Path) -> str | None:
+    """Return a plain-language hint when `root` (or its nearest existing parent) is not writable.
+
+    Read-only check: nothing is created. None means the folder looks usable.
+    """
+    probe = root
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    if not probe.is_dir():
+        return f"{probe} is not a folder, so SADI cannot keep your data in {root}."
+    if os.access(probe, os.W_OK | os.X_OK):
+        return None
+    _log.error("data root %s is not writable (checked %s)", root, probe)
+    return (
+        f"Permission denied: SADI cannot write to {probe}. Pick a folder you own with "
+        f"`--data-root <folder>`, or fix the folder's permissions, then start again."
+    )
 
 
 def pick_port(host: str, preferred: int, *, strict: bool) -> Result[int, str]:
@@ -301,6 +325,11 @@ def _parser() -> argparse.ArgumentParser:
         default=None,
         help="data directory (default: per-OS user data dir)",
     )
+    serve.add_argument(
+        "--recover-stale",
+        action="store_true",
+        help="take over a data folder left locked by a crashed sadi (never deletes data)",
+    )
     serve.add_argument("--no-browser", action="store_true", help="do not open the browser")
     serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
     serve.add_argument(
@@ -392,6 +421,10 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     port = port_got.danger_ok
     data_root = args.data_root if args.data_root is not None else default_data_dir()
     _out(f"sadi: data directory: {data_root}\n")
+    unwritable = data_root_unwritable_hint(data_root)
+    if unwritable is not None:
+        _err(f"sadi: {unwritable}\n")
+        return EXIT_LOCK
     synth = _resolve_synthetic(args)
     if synth.is_err:
         _err(f"sadi: {synth.danger_err}\n")
@@ -466,6 +499,7 @@ def _serve_app(
     app = create_app(
         AppSettings(
             data_root=data_root,
+            recover_stale=bool(args.recover_stale),
             device=device,
             registry=plugins,
             labs=labs,

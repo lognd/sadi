@@ -691,6 +691,11 @@ The parent is never modified. Review (read-only) of an `open` session with
 a torn tail shows the verified prefix plus a "recovered after crash;
 N bytes unverifiable tail" banner.
 
+Stale data-root lock after a crash: `acquire` reports `LockStale` (OS lock free, dead pid
+recorded) and changes nothing. The user-visible recovery is `sadi serve --recover-stale`
+(or `sadi-store recover --recover-stale`); it only rewrites the lock file's holder line and
+never touches session data (I9: loud, never silent, never destructive).
+
 ## 9. Snapshots and exports (derived)
 
 ### 9.1 Snapshot files (DS5)

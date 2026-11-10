@@ -2,7 +2,8 @@
 id = "01M72T4R3X8833V8Z978SH4481"
 title = "Spill import: verify before close, fragment fallback on verify failure, lineage through fragments, orphan provenance"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

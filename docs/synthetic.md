@@ -49,6 +49,12 @@ off unless set explicitly in `ScenarioFlags`.
 ## Driver
 
 `sadi.synthetic.driver.drive_lab` runs the whole wizard through the HTTP
-API and `analyse` compares fitted values to ground truth. Tolerances:
+API, then reads E and yield from the server's own `/api/results` and
+compares them to ground truth; `analyse` is only an independent refit that
+is cross-checked and reported (`local_e_pa`, `local_yield_pa`). A quantity the
+server did not report is listed in `DriveReport.missing`, never back-filled.
+Faulty points are excluded through the server (the id is resolved from the
+committed seq), a failed run stops the replay, and the uncertainty library's
+per-value logging is silenced during a replay. Tolerances:
 E 6 percent (`TOL_E`), yield 5 percent (`TOL_YIELD`), calibration slope
 1 percent (`TOL_CAL_SLOPE`).

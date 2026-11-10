@@ -40,8 +40,9 @@ PACKET_LEN: Final[int] = 612
 #: Simulator only: mass hung on each load-change so successive points differ, kg.
 SIM_LOAD_STEP_KG: Final[float] = 0.1
 #: Default settle detector parameters (UNVERIFIED on real hardware; tune per lab).
+# frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
 LIVE_SETTLE: Final[SettleConfig] = SettleConfig(
-    window_s=0.02, threshold=1.0, min_dwell_s=0.03, min_points=5
+    window_s=0.5, threshold=0.05, min_dwell_s=0.5, min_points=10
 )
 
 

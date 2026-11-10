@@ -1,0 +1,1 @@
+LCTT analysis now keeps pending results and notes, reports slope/intercept/tare, widens the E interval for systematics, uses a longer live settle window, and words load guidance as masses added to the hanger.

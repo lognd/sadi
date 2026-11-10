@@ -20,6 +20,7 @@ from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import resolve_calibration
 from sadi.design.cli import build_request
+from sadi.design.height_plan import parse_heights, plan_heights
 from sadi.design.plan import plan
 from sadi.logging_setup import get_logger
 
@@ -75,6 +76,11 @@ points you have already captured to replan.</p>
 </details>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
+<fieldset><legend>Gauge height inventory (which heights to calibrate with)</legend>
+<table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
+<button type="button" id="addheight">Add row</button>
+<small>Optional. Needs the override slope above as the nominal V per m; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
+</fieldset>
 <fieldset><legend>Already captured</legend>
 <label>Points as N:volts, comma separated (blank = none)<br>
 <textarea name="captured"></textarea></label>
@@ -91,6 +97,13 @@ function addRow(h, v){
 }
 for (let k = 0; k < 4; k++) addRow("", "");
 document.getElementById("addrow").addEventListener("click", () => addRow("", ""));
+const htsBody = document.querySelector("#hts tbody");
+function addHeight(h, u){
+  const tr = htsBody.insertRow();
+  for (const val of [h, u]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
+}
+for (let k = 0; k < 4; k++) addHeight("", "");
+document.getElementById("addheight").addEventListener("click", () => addHeight("", ""));
 function cell(t, cls){const td=document.createElement("td"); if(cls) td.className=cls; td.textContent=t; return td;}
 document.getElementById("f").addEventListener("submit", async (ev) => {
   ev.preventDefault();
@@ -99,6 +112,9 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(h + ":" + v); }
   body.cal_points = pts.join(",");
+  const hts = [];
+  for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? h + ":" + u : h); }
+  body.heights = hts.join(",");
   out.textContent = "Planning...";
   let data;
   try {
@@ -107,6 +123,20 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   } catch (e) { out.innerHTML = ""; const p = document.createElement("p"); p.className = "err"; p.textContent = "Request failed: " + e; out.appendChild(p); return; }
   out.innerHTML = "";
   if (!data.ok) { const p = document.createElement("p"); p.className = "err"; p.textContent = "No plan: " + data.error; out.appendChild(p); return; }
+  if (data.height_steps) {
+    const c0 = document.createElement("p");
+    c0.textContent = "Heights to use (design estimate): slope se " + data.se_slope_v_per_m + " V/m, intercept se " + data.se_offset_v + " V.";
+    out.appendChild(c0);
+    const t0 = document.createElement("table");
+    const hr0 = t0.insertRow();
+    for (const h of ["#", "Id", "Height m", "u m", "Predicted V", "Slope se", "Offset se"]) { const th = document.createElement("th"); th.textContent = h; hr0.appendChild(th); }
+    for (const h of data.height_steps) {
+      const r = t0.insertRow();
+      for (const v of [h.order, h.height_id, h.height_m, h.u_height_m, h.predicted_volts, h.se_slope_v_per_m, h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
+    }
+    out.appendChild(t0);
+    return;
+  }
   const s = document.createElement("p");
   s.textContent = "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
     ", usable " + data.n_usable + ". Dropped: " + data.dropped_saturation + " saturating, " + data.dropped_capacity + " over wire capacity. (Advisory; nothing saved.)";
@@ -143,8 +173,38 @@ def _num(form: dict[str, Any], key: str, *, required: bool, default: float | Non
     return Ok(val)
 
 
+# frob:ticket 01M7305JYQ6AZA2Z92Y5QQ54BF
+def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
+    """Plan which gauge heights to use; the override slope is the nominal V per m."""
+    slope = _num(form, "cal_slope", required=True, default=None)
+    off = _num(form, "cal_offset", required=False, default=0.0)
+    sat = _num(form, "saturation", required=False, default=None)
+    for got in (slope, off, sat):
+        if isinstance(got, Err):
+            return {"ok": False, "error": got.error}
+    hs = parse_heights(str(form["heights"]))
+    if isinstance(hs, Err):
+        return {"ok": False, "error": hs.error}
+    res = plan_heights(
+        hs.value, nominal_slope_v_per_m=slope.value or 0.0, nominal_offset_v=off.value or 0.0,
+        saturation_v=sat.value,
+    )
+    if isinstance(res, Err):
+        _log.info("no height plan: %s", res.error)
+        return {"ok": False, "error": str(res.error)}
+    p = res.value
+    return {
+        "ok": True, "advisory": True, "calibration": "heights plan (design estimate)",
+        "se_slope_v_per_m": p.se_slope_v_per_m, "se_offset_v": p.se_offset_v,
+        "n_inventory": p.n_inventory, "n_usable": p.n_usable, "dropped_saturation": p.dropped_saturation,
+        "height_steps": [s.model_dump() for s in p.steps],
+    }
+
+
 def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}."""
+    if str(form.get("heights", "")).strip():
+        return _heights_reply(form)
     nums: dict[str, float | None] = {}
     spec = {
         "u_mass": (False, 0.0), "hangs": (False, None), "diameter": (True, None), "u_diameter": (False, 0.0),

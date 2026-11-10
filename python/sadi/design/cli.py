@@ -15,12 +15,13 @@ from pydantic import ValidationError
 from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import Calibration, resolve_calibration
-from sadi.design.models import CapturedPoint, PlanConfig, PlanRequest, Weight
+from sadi.design.height_plan import HeightPlan, parse_heights, plan_heights
+from sadi.design.models import CapturedPoint, PlanRequest, Weight
 from sadi.design.plan import plan
 from sadi.labs.lctt.loading import STANDARD_G
 from sadi.logging_setup import get_logger
 
-__all__ = ["build_request", "main", "parse_captured", "parse_weights"]
+__all__ = ["build_request", "format_height_plan", "main", "parse_captured", "parse_weights"]
 
 _log = get_logger(__name__)
 
@@ -89,14 +90,54 @@ def build_request(
         return Err(f"Invalid value: {exc.errors()[0]['loc']}: {exc.errors()[0]['msg']}")
 
 
+# frob:ticket 01M7305JYQ6AZA2Z92Y5QQ54BF
+def format_height_plan(p: HeightPlan) -> str:
+    """Render a height plan as the operator-facing table (shared with tests)."""
+    lines = [
+        f"inventory={p.n_inventory} usable={p.n_usable} dropped(sat={p.dropped_saturation}) "
+        f"slope se={p.se_slope_v_per_m} V/m intercept se={p.se_offset_v} V (design estimate)",
+        "#  id     height_m   u_height_m  pred_V   slope_se   offset_se",
+    ]
+    for h in p.steps:
+        ses = "-" if h.se_slope_v_per_m is None else f"{h.se_slope_v_per_m:.4g}"
+        seo = "-" if h.se_offset_v is None else f"{h.se_offset_v:.4g}"
+        lines.append(
+            f"{h.order:<2} {h.height_id:<6} {h.height_m:<10.6g} {h.u_height_m:<11.3g} "
+            f"{h.predicted_volts:7.3f}  {ses:<9}  {seo}"
+        )
+    return "\n".join(lines) + "\n"
+
+
+def _run_heights(args: argparse.Namespace) -> int:
+    """Plan which gauge heights to use; needs --cal-slope as the nominal LVDT slope."""
+    if args.cal_slope is None:
+        sys.stdout.write("No plan: --heights needs --cal-slope (nominal V per m) to turn height into volts\n")
+        return 1
+    hs = parse_heights(args.heights)
+    if isinstance(hs, Err):
+        sys.stdout.write(f"No plan: {hs.error}\n")
+        return 1
+    res = plan_heights(
+        hs.value, nominal_slope_v_per_m=args.cal_slope, nominal_offset_v=args.cal_offset,
+        saturation_v=args.saturation,
+    )
+    if isinstance(res, Err):
+        sys.stdout.write(f"No plan: {res.error}\n")
+        return 1
+    sys.stdout.write(format_height_plan(res.value))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Print the planned hang order as a table; non-zero exit when no plan exists."""
     ap = argparse.ArgumentParser(description="Plan which weights to hang, in order.")
-    ap.add_argument("--weights", required=True, help="comma list of weight forces in newtons, e.g. 2,2,5 (max 12 weights)")
-    ap.add_argument("--u-mass", type=float, default=0.0, help="force uncertainty per weight, N")
+    ap.add_argument("--heights", default="",
+                    help="height inventory h:u,... (m); plans which heights to calibrate with (needs --cal-slope)")
+    ap.add_argument("--weights", default="", help="comma list of weight masses in kg, e.g. 0.1,0.1,0.2")
+    ap.add_argument("--u-mass", type=float, default=0.0, help="mass uncertainty per weight, kg")
     ap.add_argument("--diameter", type=float, default=2.019e-4, help="wire diameter, m")
     ap.add_argument("--u-diameter", type=float, default=0.0, help="diameter uncertainty, m")
-    ap.add_argument("--length", type=float, required=True, help="gauge length L0, m")
+    ap.add_argument("--length", type=float, default=None, help="gauge length L0, m")
     ap.add_argument("--u-length", type=float, default=0.0, help="L0 uncertainty, m")
     ap.add_argument("--cal-points", default="", help="calibration points height_m:volts,... (>= 3; fitted)")
     ap.add_argument("--cal-slope", type=float, default=None,
@@ -109,6 +150,11 @@ def main(argv: list[str] | None = None) -> int:
     logging.getLogger("sadi").setLevel(logging.WARNING)  # keep the table readable; errors still show
     logging.getLogger("plan").setLevel(logging.WARNING)
     logging.getLogger("design").setLevel(logging.WARNING)
+    if args.heights.strip():
+        return _run_heights(args)
+    if not args.weights.strip() or args.length is None:
+        sys.stdout.write("No plan: give --weights and --length (or --heights)\n")
+        return 1
     # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
     cal = resolve_calibration(args.cal_points, args.cal_slope, args.cal_offset)
     if isinstance(cal, Err):

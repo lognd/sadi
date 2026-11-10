@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:40:35Z"
-updated = "2026-11-10T15:49:01Z"
+updated = "2026-11-10T15:49:05Z"
 labels = ["creates:python/tests/server/test_weight_plan_persist.py", "creates:web/src/screens/run/NextHangPanel.tsx", "creates:web/src/screens/run/NextHangPanel.test.tsx"]
 scope = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**", "python/tests/server/test_weight_plan_persist.py", "docs/design/weight-plan.md"]
 
@@ -17,7 +17,7 @@ target = "01M72X7ZB936PEBXHRGX06FSAD"
 
 [[acceptance]]
 text = "Weights persist via inventory events."
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Run screen shows next planned hang and replans from captured points."

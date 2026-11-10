@@ -27,3 +27,9 @@ See also the [synthetic data banner](synthetic-banner.md) shown above the report
 ## Provenance (Audit1 #36)
 
 The report states the data source (real measurement or SYNTHETIC) in plain words. The provenance table shows a point count (ids in the tooltip), hides empty 0-to-0 sample spans, and uses readable quantity names.
+
+## Download and close (~W5M4P7D)
+
+The Download links fetch the file with `fetch()` instead of following the link. A refusal (for example 422 NotReady) shows the problem detail and hint in the page; success saves the file and shows "Saved a copy in <path>" from the `X-SADI-Saved` header (or a warning when the header is `failed`).
+
+The header of every wizard screen has **Close session**, and the finished screen has **Start another session**. Both ask for confirmation, state that captured data stays saved in the session folder, then POST `/api/session/close` and return to session setup.

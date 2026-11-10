@@ -7,7 +7,7 @@ import { getLogger } from "../../api/log";
 import { exportFigure, validateDrawable, type ExportOptions } from "../../plots/core";
 import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
 import { currentlySynthetic, EXPORT_PREFIX, type DataProvenance, exportFilename, isSynthetic, useProvenance } from "../../state/provenance";
-import { exportUrl, getExportFormats, getFigureData, getResults, getSessionName, keepFigure, toProblem } from "./api";
+import { downloadExport, exportUrl, getExportFormats, getFigureData, getResults, getSessionName, keepFigure, savedMessage, toProblem } from "./api";
 import { figureDataScenes, isFigureData } from "./figureScenes";
 import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
 
@@ -188,8 +188,10 @@ export function FormatList(props: {
   onDpi?: (dpi: number) => void;
   onFigure?: (f: ExportFormatView, format: ExportOptions["format"]) => void;
   provenance?: DataProvenance | null;
+  /** Called instead of following the link, so the page can show a refusal or the saved-copy message. */
+  onDownload?: (f: ExportFormatView) => void;
 }) {
-  const { formats, dpi, onDpi, onFigure, provenance } = props;
+  const { formats, dpi, onDpi, onFigure, provenance, onDownload } = props;
   if (formats.length === 0) {
     return <section aria-label="Export formats"><p data-testid="no-formats">This lab declares no export formats yet.</p></section>;
   }
@@ -207,7 +209,7 @@ export function FormatList(props: {
         <ul aria-label="Downloads">
           {downloads.map((f) => (
             <li key={f.id} data-testid={`format-${f.id}`}>
-              <a href={exportUrl(f.id)} download>{`Download ${f.title}`}</a>
+              <a href={exportUrl(f.id)} download onClick={onDownload === undefined ? undefined : (e) => { e.preventDefault(); onDownload(f); }}>{`Download ${f.title}`}</a>
               {synthetic ? <code className="synthetic-file" data-testid={`prefix-${f.id}`}>{` (saved as ${EXPORT_PREFIX}...)`}</code> : null}
             </li>
           ))}
@@ -243,6 +245,7 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
   const [problem, setProblem] = useState<Problem | null>(null);
   const observe = useProvenance((s) => s.observe);
   const [dpi, setDpi] = useState<number>(300);
+  const [saved, setSaved] = useState("");
 
   useEffect(() => {
     const live = { current: true };
@@ -260,11 +263,23 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
     void exportFigureFormat(f.id, { format, dpi }, fetchImpl).then(setProblem);
   }, [dpi, fetchImpl]);
 
+  // frob:ticket 01M7230XGWSR1B8D93KW5M4P7D
+  const onDownload = useCallback((f: ExportFormatView) => {
+    setProblem(null);
+    setSaved("");
+    void downloadExport(f.id, fetchImpl).then((r) => {
+      if (!r.ok) { log.warn("download failed", { id: f.id, kind: r.error.kind }); setProblem(toProblem(r.error)); return; }
+      saveBlob(r.value.blob, r.value.filename);
+      setSaved(savedMessage(r.value.saved));
+    });
+  }, [fetchImpl]);
+
   return (
     <section aria-label="Results and export">
       {problem ? <ProblemAlert p={problem} /> : null}
+      {saved !== "" ? <p role="status" data-testid="saved-copy">{saved}</p> : null}
       <ReportView results={results} />
-      <FormatList formats={formats} dpi={dpi} onDpi={setDpi} onFigure={onFigure} />
+      <FormatList formats={formats} dpi={dpi} onDpi={setDpi} onFigure={onFigure} onDownload={onDownload} />
     </section>
   );
 }

@@ -10,7 +10,8 @@ import { StepRail } from "./StepRail";
 import { WizardShell } from "./WizardShell";
 import type { RailItem } from "./types";
 import { fakeLive, withLive } from "../../state/testLive";
-import { postWizard, toFailure } from "./wizardApi";
+import { closeSession, postWizard, toFailure } from "./wizardApi";
+import { CloseSessionView, CLOSE_CONFIRM_TEXT } from "./CloseSession";
 
 /** Render and drop React text-boundary comments. */
 const renderToString = (el: React.JSX.Element): string => rts(el).replaceAll("<!-- -->", "");
@@ -143,5 +144,46 @@ describe("StepRail description", () => {
     const html = renderToString(<StepRail rail={[item("setup", "Setup", "current")]} />);
     expect(html).toContain("Check the clamps hold the specimen without slipping.");
     expect(html).toContain("(current)");
+  });
+});
+
+// frob:ticket 01M7230XGWSR1B8D93KW5M4P7D
+describe("Close session", () => {
+  const noop = (): void => undefined;
+  const view = (over: Partial<Parameters<typeof CloseSessionView>[0]> = {}): string => renderToString(
+    <CloseSessionView label="Close session" confirming={false} busy={false} failure={null} onAsk={noop} onConfirm={noop} onCancel={noop} {...over} />);
+
+  it("header shell offers Close session", () => {
+    const html = renderToString(withLive(<WizardShell />, fakeLive({})));
+    expect(html).toContain("Close session");
+  });
+
+  it("finished screen offers Start another session", () => {
+    const html = renderToString(<NextActionPanel step={null} busy={false} canSkip={false} onPrimary={noop} onSkip={noop}
+      finishedActions={<CloseSessionView label="Start another session" confirming={false} busy={false} failure={null} onAsk={noop} onConfirm={noop} onCancel={noop} />} />);
+    expect(html).toContain("All steps are finished");
+    expect(html).toContain("Start another session");
+  });
+
+  it("asks for confirmation and says data is kept", () => {
+    expect(view()).not.toContain("alertdialog");
+    const html = view({ confirming: true });
+    expect(html).toContain("alertdialog");
+    expect(html).toContain(CLOSE_CONFIRM_TEXT);
+    expect(CLOSE_CONFIRM_TEXT).toContain("stays saved");
+  });
+
+  it("closeSession POSTs /api/session/close and reports success", async () => {
+    const f = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
+    const r = await closeSession(f);
+    expect(r.ok).toBe(true);
+    expect(f).toHaveBeenCalledWith("/api/session/close", expect.objectContaining({ method: "POST" }));
+  });
+
+  it("closeSession surfaces a problem on refusal", async () => {
+    const body = JSON.stringify({ title: "Cannot close", hint: "Wait for the write." });
+    const r = await closeSession((() => Promise.resolve(new Response(body, { status: 409 }))));
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.kind).toBe("problem");
   });
 });

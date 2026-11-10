@@ -8,6 +8,7 @@ import type { KeyAction } from "../../keys/keymap";
 import { useLive } from "../../state/LiveContext";
 import { LiveTrace } from "../live/TraceCanvas";
 import { StatusBar } from "../status/StatusBar";
+import { CloseSession } from "./CloseSession";
 import { DoThisCard } from "./DoThisCard";
 import { ErrorNotice } from "./ErrorNotice";
 import { FrontPanel } from "./FrontPanel";
@@ -31,11 +32,13 @@ export interface WizardShellProps {
   delegateUndo?: boolean;
   /** Host bumps this after each accepted point capture so the Saved indicator updates. */
   savedTick?: number;
+  /** Called after the session was closed; defaults to reloading the page so it shows session setup. */
+  onClosed?: () => void;
 }
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Wizard shell: the front panel (step rail, step content, next action, live readout, live trace, status bar) plus keyboard capture. */
-export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0 }: WizardShellProps): React.JSX.Element {
+export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0, onClosed }: WizardShellProps): React.JSX.Element {
   const { view } = useLive();
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
@@ -89,9 +92,14 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
   const subtitle = wizard === null || current === null ? null : `Step ${String(index + 1)} of ${String(wizard.rail.length)}`;
   const guide = wizard === null || current === null ? null : <DoThisCard phase={current.phase} index={index} total={wizard.rail.length} />;
 
+  const closed = useCallback((): void => {
+    if (onClosed !== undefined) onClosed(); else window.location.reload();
+  }, [onClosed]);
+
   return (
     <FrontPanel
       title={title}
+      actions={<CloseSession onClosed={closed} />}
       subtitle={subtitle}
       rail={wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
       guide={guide}
@@ -105,6 +113,7 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
           canSkip={current !== null}
           onPrimary={() => { void write("wizard/complete"); }}
           onSkip={() => { void write("wizard/skip"); }}
+          finishedActions={<CloseSession label="Start another session" onClosed={closed} />}
         />
       }
     >

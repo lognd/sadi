@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-10T14:57:32Z"
 updated = "2026-11-10T15:04:57Z"
 labels = ["ux"]
-scope = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py", "docs/lctt/export-csv.md", "python/tests/labs/lctt/test_lab_export.py"]
+scope = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py", "docs/lctt/export-csv.md", "python/tests/labs/lctt/test_lab_export.py", "python/tests/labs/lctt/test_partial_export.py"]
 
 [[acceptance]]
 text = "Export (CSV of captured points so far) is reachable from every wizard step without finishing the phase"

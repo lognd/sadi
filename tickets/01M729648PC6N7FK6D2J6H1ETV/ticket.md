@@ -2,12 +2,12 @@
 id = "01M729648PC6N7FK6D2J6H1ETV"
 title = "audit4 M2: recovered spill becomes a fragment version without calibration/tare; spill not idempotent across Close retries"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T08:28:54Z"
-updated = "2026-11-10T08:28:54Z"
+updated = "2026-11-10T08:30:07Z"
 labels = ["audit4"]
 scope = ["python/sadi/store/spill.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/tests/store"]
 

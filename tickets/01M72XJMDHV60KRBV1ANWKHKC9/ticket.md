@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:25:16Z"
-updated = "2026-11-10T15:18:50Z"
+updated = "2026-11-10T15:19:32Z"
 labels = ["creates:tests/labs/lctt/test_block_capture.py"]
 scope = ["python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "web/src/screens/run/live.ts", "web/src/screens/run/inputFields.ts", "python/sadi/server/service.py", "python/sadi/server/app.py", "python/sadi/server/schemas.py", "docs/user-guide.md", "python/tests/labs/lctt/test_block_capture.py", "web/src/screens/run/inputFields.test.ts"]
 

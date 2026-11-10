@@ -285,6 +285,14 @@ shown as soon as a record is enqueued and not yet durable, so clients polling
 every 250 ms (`poll_ms`) show it within 250 ms. `NOT SAVED` latches on writer
 failure and never clears.
 
+The web UI has ONE save indicator source: `saveView` (web/src/components/status/saveView.ts)
+over the polled backend facts. The status bar and the debug strip both render it.
+With no open session it reads `No session` (never `Saved`); with a session it shows
+the backend label (`Saved 12:04:11` / `Saving... (n pending)` / `NOT SAVED`); an
+unreachable or unrecognised backend answer reads `Save status unknown`. The UI never
+stamps its own "saved" time on a write, so it cannot claim durability the writer has
+not confirmed.
+
 The debug strip keeps the two seq spaces apart: `WS frame seq` is the
 hub-assigned WebSocket frame counter (gaps mean dropped frames), and
 `WAL seq (durable / queued)` is the raw WAL seq space (highest durable /

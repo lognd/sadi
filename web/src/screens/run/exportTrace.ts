@@ -1,10 +1,11 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M6WWN96C55R68VNZF2D1NB2V
+// frob:ticket 01M727YGXCC6ZFVHWHG64KFA7D
 import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
 import { currentlySynthetic, exportFilename } from "../../state/provenance";
-import { exportUrl } from "../export/api";
+import { dispositionName, exportUrl } from "../export/api";
 
 const log = getLogger("screens.run.export");
 
@@ -36,7 +37,10 @@ export async function fetchRunExport(format: string, fetchImpl: typeof fetch = f
   }
   const blob = await res.blob();
   log.info("export fetched", { format, bytes: blob.size });
-  return ok({ blob, filename: exportFilename(`sadi-${format}.csv`, currentlySynthetic()) });
+  const name = dispositionName(res.headers.get("Content-Disposition"), `sadi-${format}.csv`);
+  // The server's own synthetic stamp wins over the polled store, so a stale store cannot unlabel a file.
+  const synthetic = currentlySynthetic() || (res.headers.get("X-Sadi-Provenance") ?? "").toLowerCase().includes("synthetic");
+  return ok({ blob, filename: exportFilename(name, synthetic) });
 }
 
 /** User-facing text for a failed export. */

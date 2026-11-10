@@ -2,12 +2,13 @@
 id = "01M727YGXCC6ZFVHWHG64KFA7D"
 title = "L1+L2: results/finish never called by UI and docs claim it; export filename ignores server name and fails silently"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:07:17Z"
-updated = "2026-11-10T08:09:48Z"
+updated = "2026-11-10T08:12:09Z"
 labels = ["creates:web/src/screens/run/exportTrace.test.ts"]
 scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx", "web/src/screens/run/exportTrace.test.ts"]
 

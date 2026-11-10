@@ -182,6 +182,8 @@ class StreamHub:
         self._sub: Subscription = bus.subscribe("ws-hub")
         self._sessions = sessions
         self._lock = threading.Lock()
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        self._poll_lock = threading.Lock()
         self._clients: list[_Client] = []
         self._seq = 0
         self._latest: dict[str, dict[str, Any]] = {}
@@ -237,7 +239,13 @@ class StreamHub:
         )  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
     def poll(self) -> None:
-        """Drain the bus subscription and distribute events to clients."""
+        """Drain the bus subscription and distribute events to clients (thread-safe, in order)."""
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        with self._poll_lock:
+            self._poll_locked()
+
+    def _poll_locked(self) -> None:
+        """Body of `poll`; the caller holds `_poll_lock` so drain order equals delivery order."""
         events = self._sub.drain()
         if not events:
             self._flush_state()
@@ -328,18 +336,19 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
     async def stream(ws: WebSocket) -> None:
         """Push binary trace frames and JSON messages until the client leaves."""
         await ws.accept()
-        client = hub.attach()
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        client = await asyncio.to_thread(hub.attach)
         last_stats = time.monotonic()
         try:
-            await ws.send_text(json.dumps(hub.hello()))
+            await ws.send_text(json.dumps(await asyncio.to_thread(hub.hello)))
             while True:
-                hub.poll()
+                await asyncio.to_thread(hub.poll)
                 busy = False
                 while client.msgs:
                     await ws.send_text(json.dumps(client.msgs.popleft()))
                     busy = True
                 while client.envelopes:
-                    await ws.send_bytes(encode_result(hub.next_seq(), client.envelopes.popleft()))
+                    await ws.send_bytes(encode_result(await asyncio.to_thread(hub.next_seq), client.envelopes.popleft()))
                     busy = True
                 while client.frames:
                     seq, f = client.frames.popleft()
@@ -365,6 +374,7 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
         except (WebSocketDisconnect, RuntimeError) as exc:
             _log.info("ws client left: %s", type(exc).__name__)
         finally:
-            hub.detach(client)
+            # shielded so a cancelled handler still detaches (no leaked client)
+            await asyncio.shield(asyncio.to_thread(hub.detach, client))
 
     return router

@@ -47,7 +47,7 @@ describe("audit1 shell fixes", () => {
 
   // covers web/src/components/status/StatusBar.tsx::StatusBar
   it("#28 status bar says no signal instead of (ok) when disconnected", () => {
-    const html = rts(<StatusBar source="disconnected" motion="settled" signal="ok" savedAt={null} />);
+    const html = rts(<StatusBar source="disconnected" motion="settled" signal="ok" save={{ state: "no-session", text: "No session" }} />);
     expect(html).toContain("No signal");
     expect(html).not.toContain("(ok)");
   });

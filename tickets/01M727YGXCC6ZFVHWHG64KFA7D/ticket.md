@@ -13,5 +13,5 @@ scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/sr
 
 [[acceptance]]
 text = "Docs match actual UI behavior; F3 export uses server-provided filename; export failure shows a visible error"
-bound = false
+bound = true
 +++

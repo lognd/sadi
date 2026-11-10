@@ -1,0 +1,12 @@
+kind = "create"
+title = "Expose repeated-readings uncertainty (RSS) in the web app (parity M4)"
+type = "story"
+category = "todo"
+priority = "medium"
+points = 3
+scope = ["python/sadi/uncertainty/measured.py", "web/src/screens/run/**"]
+acceptance = ["Operator can enter repeated readings and see RSS uncertainty."]
+body = "See parity.md in scratchpad."
+at = "2026-11-10T14:43:12Z"
+actor = "lognd"
+rev = 1

@@ -28,7 +28,10 @@ def _run(n: int, seed: int = 1, sd: float = 0.02):
     obs: list[Obs] = []
     adv = None
     for _ in range(n + 1):
-        adv = select_next(DesignPhase.ELASTIC, obs, CANDS, TARGET).unwrap()
+        nxt = select_next(DesignPhase.ELASTIC, obs, CANDS, TARGET).unwrap()
+        if nxt.suggestion is None:  # range exhausted: keep the last real advice
+            break
+        adv = nxt
         obs.append(Obs(x=adv.suggestion.x, y=2 * adv.suggestion.x + float(rng.normal(0, sd))))
     return adv, obs
 
@@ -133,3 +136,22 @@ def test_elastic_cold_start_steps_up_never_zero() -> None:
     assert xs[0] == cands[1].x
     assert all(b >= a for a, b in zip(xs, xs[1:], strict=False))
     assert all(x > 0.0 for x in xs)
+
+
+# frob:ticket 01M72YAFYMKFSSKG8EZNGBTFZA
+# frob:tests python/sadi/design/selector.py::select_next
+def test_elastic_never_suggests_current_or_lower_load() -> None:
+    """After cold start picks stay above the hang; an exhausted range yields no suggestion."""
+    cands = [Candidate(candidate_id=f"m{i}", x=3.0 * i / 24) for i in range(25)]
+    obs: list[Obs] = []
+    for _ in range(8):
+        adv = select_next(DesignPhase.ELASTIC, obs, cands, TARGET).unwrap()
+        if adv.suggestion is None:
+            break
+        assert not obs or adv.suggestion.x > obs[-1].x
+        obs.append(Obs(x=adv.suggestion.x, y=2 * adv.suggestion.x, u=1e-6))
+    # overshoot: 3.5 kg hung, grid capped at 3.0 -> nothing to suggest, never an unload
+    over = [Obs(x=0.5, y=1.0, u=1e-6), Obs(x=1.0, y=2.0, u=1e-6), Obs(x=3.5, y=7.0, u=1e-6)]
+    adv = select_next(DesignPhase.ELASTIC, over, cands, TARGET).unwrap()
+    assert adv.suggestion is None
+    assert adv.indicator.reasons == ("range_exhausted",)

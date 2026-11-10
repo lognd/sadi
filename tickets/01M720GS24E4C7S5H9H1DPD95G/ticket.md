@@ -2,11 +2,12 @@
 id = "01M720GS24E4C7S5H9H1DPD95G"
 title = "Server /api/results omits yield_stress for the lctt lab (analyze stub)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T05:57:26Z"
-updated = "2026-11-10T05:57:26Z"
+updated = "2026-11-10T06:01:56Z"
 scope = ["python/sadi/server/**,python/sadi/labs/lctt/**"]
 
 [[acceptance]]

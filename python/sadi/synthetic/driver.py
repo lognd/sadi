@@ -3,7 +3,10 @@
 # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 from __future__ import annotations
 
+import logging
 import math
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any, Protocol, cast
 
 from pydantic import BaseModel, ConfigDict
@@ -38,6 +41,7 @@ class DriveError(ErrorSet):
 
     Http = "The server refused a step of the replay; see the log for the request and reply"
     Analysis = "The recovered data could not be fitted; see the log"
+    Results = "The server's own /api/results lacked a value the replay must verify; see the log"
 
 
 class DriveReport(BaseModel):
@@ -48,8 +52,11 @@ class DriveReport(BaseModel):
     session: str
     synthetic: bool
     e_pa: float
-    yield_pa: float
+    yield_pa: float | None
     cal_slope_m_per_v: float
+    local_e_pa: float
+    local_yield_pa: float
+    missing: tuple[str, ...] = ()
     clamp_passed: bool | None
     n_elastic: int
     n_plastic: int
@@ -57,14 +64,20 @@ class DriveReport(BaseModel):
     truth: dict[str, Any]
 
     def rel_errors(self) -> dict[str, float]:
-        """Relative error of E, yield and calibration slope against the recorded truth."""
+        """Relative error of the server's E and yield and the slope against the recorded truth.
+
+        `yield` is absent when the server reported no yield (see `missing`); it is never
+        back-filled from the driver's own recomputation.
+        """
         t = self.truth
-        return {
+        out = {
             "e": abs(self.e_pa - t["e_pa"]) / t["e_pa"],
-            "yield": abs(self.yield_pa - t["yield_pa"]) / t["yield_pa"],
             "cal_slope": abs(self.cal_slope_m_per_v - t["cal_slope_m_per_v"])
             / t["cal_slope_m_per_v"],
         }
+        if self.yield_pa is not None:
+            out["yield"] = abs(self.yield_pa - t["yield_pa"]) / t["yield_pa"]
+        return out
 
 
 class _Replay:
@@ -85,8 +98,8 @@ class _Replay:
             return Err(DriveError.Http)
         return Ok(res)
 
-    def point(self, phase: str, inputs: dict[str, Any], **extra: Any) -> Result[str, DriveError]:
-        """Capture one point; Ok is its point id."""
+    def point(self, phase: str, inputs: dict[str, Any], **extra: Any) -> Result[int, DriveError]:
+        """Capture one point; Ok is the durable seq the server committed it at."""
         window = {"first_raw_seq": self.seq, "last_raw_seq": self.seq + 99}
         self.seq += 100
         got = self.call(
@@ -96,7 +109,20 @@ class _Replay:
         )
         if isinstance(got, Err):
             return Err(got.danger_err)
-        return Ok(str(cast("dict[str, Any]", got.danger_ok.json()).get("point_id", "")))
+        return Ok(int(cast("dict[str, Any]", got.danger_ok.json())["seq"]))
+
+    def point_id(self, seq: int) -> Result[str, DriveError]:
+        """Resolve the id of the point committed at `seq` from the server's point list."""
+        listed = self.call("GET", "/api/session/points")
+        if isinstance(listed, Err):
+            return Err(listed.danger_err)
+        body = listed.danger_ok.json()
+        rows = body["points"] if isinstance(body, dict) else body
+        for row in rows:
+            if row["seq"] == seq:
+                return Ok(str(row["point_id"]))
+        _log.error("replay: no point committed at seq %d", seq)
+        return Err(DriveError.Http)
 
     def step(self, verb: str, step: str) -> Result[Any, DriveError]:
         """Complete or skip a wizard step."""
@@ -137,14 +163,47 @@ def _run(
         if isinstance(made, Err):
             return Err(made.danger_err)
         if p.fault is not None:
+            pid = r.point_id(made.danger_ok)
+            if isinstance(pid, Err):
+                return Err(pid.danger_err)
             ex = r.call(
-                "POST", f"/api/session/points/{made.danger_ok}/edit", {"op": "exclude", "args": {}}
+                "POST", f"/api/session/points/{pid.danger_ok}/edit", {"op": "exclude", "args": {}}
             )
             if isinstance(ex, Err):
                 return Err(ex.danger_err)
             excluded += 1
     done = r.step("complete", phase)
     return Err(done.danger_err) if isinstance(done, Err) else Ok(excluded)
+
+
+#: Largest relative gap between the server's E and the driver's own refit before it is logged.
+CROSS_CHECK_TOL = 0.05
+
+
+def _server_values(body: dict[str, Any]) -> dict[str, float]:
+    """Name -> value of every quantity in a /api/results body."""
+    return {v["name"]: float(v["value"]) for v in body.get("values", [])}
+
+
+def _cross_check(server_e: float, local_e: float) -> None:
+    """Log an error when the server's E and the driver's refit disagree (both are reported)."""
+    gap = abs(server_e - local_e) / abs(server_e)
+    if gap > CROSS_CHECK_TOL:
+        _log.error(
+            "server E %.6g and local refit %.6g differ by %.1f %%", server_e, local_e, 100 * gap
+        )
+
+
+@contextmanager
+def _quiet_libraries() -> Iterator[None]:
+    """Hold the uncertainty library at WARNING while a replay runs (its per-value chatter)."""
+    lib = logging.getLogger("sadi.uncertainty")
+    before = lib.level
+    lib.setLevel(logging.WARNING)
+    try:
+        yield
+    finally:
+        lib.setLevel(before)
 
 
 def _curve(
@@ -194,7 +253,13 @@ def analyse(
 def drive_lab(
     client: HttpClient, sc: Scenario, slug: str = "synthetic-lab"
 ) -> Result[DriveReport, DriveError]:
-    """Run the whole wizard (setup to export) against a server and fit the stored points."""
+    """Run the whole wizard against a server; report the server's own E and yield, quietly."""
+    with _quiet_libraries():
+        return _drive_lab(client, sc, slug)
+
+
+def _drive_lab(client: HttpClient, sc: Scenario, slug: str) -> Result[DriveReport, DriveError]:
+    """Replay the wizard and read back /api/results (the body of `drive_lab`)."""
     r = _Replay(client)
     steps: list[Result[Any, DriveError]] = []
     made = r.call("POST", "/api/sessions", {"lab": "lctt", "slug": slug})
@@ -217,10 +282,11 @@ def drive_lab(
         if isinstance(s, Err):
             return Err(s.danger_err)
     ex_e = _run(r, sc, "elastic", sc.elastic)
+    if isinstance(ex_e, Err):
+        return Err(ex_e.danger_err)
     ex_p = _run(r, sc, "plastic", sc.plastic)
-    for e in (ex_e, ex_p):
-        if isinstance(e, Err):
-            return Err(e.danger_err)
+    if isinstance(ex_p, Err):
+        return Err(ex_p.danger_err)
     listed = r.call("GET", "/api/session/points")
     if isinstance(listed, Err):
         return Err(listed.danger_err)
@@ -244,15 +310,26 @@ def drive_lab(
     rec = analyse(rows, sc)
     if isinstance(rec, Err):
         return Err(rec.danger_err)
-    e_pa, y_pa, slope = rec.danger_ok
+    local_e, local_y, slope = rec.danger_ok
+    server = _server_values(got.danger_ok.json())
+    if "E" not in server:
+        _log.error("server results carry no E: %s", sorted(server))
+        return Err(DriveError.Results)
+    missing = tuple(n for n in ("yield_stress",) if n not in server)
+    if missing:
+        _log.warning("server results lack %s; not verified, not back-filled", ", ".join(missing))
+    _cross_check(server["E"], local_e)
     info = r.call("GET", "/api/session")
     prov = info.danger_ok.json().get("provenance", {}) if isinstance(info, Ok) else {}
     report = DriveReport(
         session=name,
         synthetic=bool(prov.get("synthetic", False)),
-        e_pa=e_pa,
-        yield_pa=y_pa,
+        e_pa=server["E"],
+        yield_pa=server.get("yield_stress"),
         cal_slope_m_per_v=slope,
+        local_e_pa=local_e,
+        local_yield_pa=local_y,
+        missing=missing,
         clamp_passed=passed,
         n_elastic=len(sc.elastic),
         n_plastic=len(sc.plastic),

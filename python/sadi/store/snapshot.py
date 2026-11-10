@@ -42,6 +42,8 @@ _log = get_logger(__name__)
 
 SNAPSHOT_DIR = "snapshots"
 SNAPSHOT_VERSION = 1
+#: Minimum seconds between snapshots that no POINT/EDIT/close forced (data-safety.md 9.1).
+SNAPSHOT_MIN_INTERVAL_S = 5.0
 SNAPSHOT_FRAME_TYPE = int(RecordType.SNAPSHOT_REF)
 _LINK_FALLBACK_ERRNOS = frozenset(
     {errno.EPERM, errno.ENOTSUP, errno.EOPNOTSUPP, errno.EMLINK, errno.ENOSYS, errno.EACCES}
@@ -114,6 +116,33 @@ class _HasPath(Protocol):
 
 
 RefSink = Callable[[NewRecord], Result[Any, Any]]
+
+
+class SnapshotCadence:
+    """Decides when a live session should snapshot: always when forced, else at most every 5 s."""
+
+    def __init__(
+        self,
+        min_interval_s: float = SNAPSHOT_MIN_INTERVAL_S,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._min = min_interval_s
+        self._clock = clock
+        self._last_at: float | None = None
+        self._last_seq: int | None = None
+
+    def due(self, covers_seq: int, forced: bool) -> bool:
+        """Return True when a snapshot of `covers_seq` should be written now."""
+        if covers_seq == self._last_seq:
+            return False
+        if forced or self._last_at is None:
+            return True
+        return self._clock() - self._last_at >= self._min
+
+    def written(self, covers_seq: int) -> None:
+        """Record that a snapshot of `covers_seq` was committed just now."""
+        self._last_at = self._clock()
+        self._last_seq = covers_seq
 
 
 def snapshot_dir(session_dir: Path) -> Path:

@@ -56,6 +56,7 @@ from sadi.store.events import EventsWal, ReplayState
 from sadi.store.incremental import IncrementalReplay
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FLAG_JSON, NewRecord, RecordType
+from sadi.store.snapshot import SnapshotCadence, write_snapshot
 from sadi.store.session import (
     SESSIONS_DIRNAME,
     SessionHandle,
@@ -86,11 +87,16 @@ class _Open:
     wizard: Wizard
     # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
     replayer: IncrementalReplay = field(init=False)
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    cadence: SnapshotCadence = field(default_factory=SnapshotCadence)
 
     def __post_init__(self) -> None:
         """Attach the incremental replay cache for this session's directory."""
         self.replayer = IncrementalReplay(self.handle.path)
 
+
+#: Record types after which a snapshot is always taken (data-safety.md 9.1 cadence).
+_SNAPSHOT_FORCING = frozenset({int(RecordType.POINT), int(RecordType.EDIT)})
 
 # frob:ticket 01M6WTCAA5WR1VD7H7ES7757MP
 _FOLD_TYPES = frozenset(
@@ -262,6 +268,8 @@ class SessionService:
                 self._before_close()
             closed = cur.writer.close()
             self._open = None
+            if closed.is_ok:
+                self._snapshot(cur, forced=True)  # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
             if closed.is_err:
                 _log.error("writer close failed: %s", closed.danger_err)
                 cur.handle.close(state="incomplete")
@@ -503,6 +511,28 @@ class SessionService:
             self._on_open(opened.danger_ok, handle.path)
         return Ok(self._info(self._open))
 
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    def _snapshot(self, cur: _Open, forced: bool) -> None:
+        """Best-effort atomic snapshot of the live state (no SNAPSHOT_REF); failures are only logged."""
+        replayed = cur.replayer.state()
+        if replayed.is_err:
+            _log.warning("snapshot skipped, replay failed: %s", replayed.danger_err)
+            return
+        state = replayed.danger_ok
+        if not cur.cadence.due(state.covers_seq, forced):
+            return
+        wrote = write_snapshot(
+            cur.handle,
+            state,
+            state.covers_seq,
+            prefix_hash_hex=cur.replayer.prefix_hash_at(state.covers_seq),
+            lab_module=str(cur.lab.id),
+        )
+        if wrote.is_err:
+            _log.warning("snapshot at seq %d failed: %s", state.covers_seq, wrote.danger_err)
+            return
+        cur.cadence.written(state.covers_seq)
+
     # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
     @propagate
     def _replay(self, cur: _Open) -> Result[ReplayState, ApiProblem]:
@@ -538,6 +568,7 @@ class SessionService:
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
             durable.map_err(_from_store).unwrap()
             after = self._replay(cur).unwrap()
+            self._snapshot(cur, forced=any(r.type in _SNAPSHOT_FORCING for r in cmd.danger_ok.records))
             _log.info("committed seq %d: %s", seq, cmd.danger_ok.summary)
             return Ok(
                 Committed(

@@ -13,6 +13,7 @@ equal to `recover_state` of the same bytes (property-tested). Not thread-safe; c
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from typani import Err, Ok, Result, propagate
 
@@ -33,7 +34,9 @@ from sadi.store.records import (
     Record,
     RecordType,
     decode_payload_check,
+    new_prefix_hash,
     parse_header,
+    prefix_hash_update,
 )
 from sadi.store.wal import (
     SEGMENT_HEADER_LEN,
@@ -69,6 +72,9 @@ class IncrementalReplay:
         self._expected: int | None = None
         self._notes: list[str] = []
         self.rebases = 0
+        # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+        self._hash: Any = None
+        self._hash_seq: int | None = None
 
     def state(self) -> Result[ReplayState, EventsError]:
         """Return the state of the verified WAL as of now (equal to a full replay)."""
@@ -79,6 +85,13 @@ class IncrementalReplay:
                     self._frozen = self._acc.freeze()
                 return Ok(self._frozen)
         return self._rebase()
+
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    def prefix_hash_at(self, covers_seq: int) -> str | None:
+        """Return the running section 9.2 prefix hash if it is exactly at `covers_seq`, else None."""
+        if self._hash is None or self._hash_seq != covers_seq:
+            return None
+        return self._hash.hexdigest()
 
     # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
     @propagate
@@ -95,6 +108,7 @@ class IncrementalReplay:
         self._acc = None
         self._frozen = None
         self._notes = []
+        self._hash, self._hash_seq = None, None
         base: ReplayState | None = None
         loaded = snapshot.load_latest_snapshot(self._session_dir)
         if loaded.is_err:
@@ -108,6 +122,11 @@ class IncrementalReplay:
                 _log.error("replay of %s stopped by corruption: %s", self._wal, item.danger_err)
                 return Err(EventsWal(error=item.danger_err))
             recs.append(item.danger_ok)
+        if base is None:
+            self._hash, self._hash_seq = new_prefix_hash(), None
+            for rec in recs:
+                prefix_hash_update(self._hash, rec)
+                self._hash_seq = rec.seq
         report = reader.report
         seals = report.seal_seqs if report else ()
         folded = replay(recs, base, seals)
@@ -183,6 +202,9 @@ class IncrementalReplay:
                 if rec.seq != self._expected or rec.type == int(RecordType.SEAL):
                     return False
                 _apply(acc, rec)
+                if self._hash is not None:
+                    prefix_hash_update(self._hash, rec)
+                    self._hash_seq = rec.seq
                 if _is_note(rec):
                     self._notes.append(_note_text(rec))
                 self._expected = rec.seq + 1

@@ -1,0 +1,13 @@
+kind = "create"
+title = "Audit2 H2b: stop raw streaming once session finished/idle; free-space guard"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 3
+labels = ["creates:python/tests/server/test_idle_raw.py"]
+scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_idle_raw.py"]
+acceptance = ["After Results/Export or idle timeout the raw stream stops writing WAL; low free disk blocks new capture with a clear problem; no recorded data is dropped"]
+body = "See audit2.md HIGH 2 (backend part). Do not drop or truncate any recorded data."
+at = "2026-11-10T06:52:46Z"
+actor = "lognd"
+rev = 1

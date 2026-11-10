@@ -1,101 +1,101 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`calibration live update and golden > matches the golden SVG for both panels > main 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="53.76" y="40" width="564.24" height="310"/></clipPath></defs>
-<rect x="0" y="0" width="640" height="400" fill="#ffffff"/>
-<rect x="53.76" y="40" width="564.24" height="310" fill="#ffffff"/>
-<line x1="79.41" y1="40" x2="79.41" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="207.64" y1="40" x2="207.64" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="335.88" y1="40" x2="335.88" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="464.12" y1="40" x2="464.12" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="592.35" y1="40" x2="592.35" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="350" x2="618" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="288" x2="618" y2="288" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="226" x2="618" y2="226" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="164" x2="618" y2="164" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="102" x2="618" y2="102" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="53.76" y1="40" x2="618" y2="40" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="640" height="400" fill="#f8f6ee"/>
+<rect x="53.76" y="40" width="564.24" height="310" fill="#f8f6ee"/>
+<line x1="79.41" y1="40" x2="79.41" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="207.64" y1="40" x2="207.64" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="335.88" y1="40" x2="335.88" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="464.12" y1="40" x2="464.12" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="592.35" y1="40" x2="592.35" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="350" x2="618" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="288" x2="618" y2="288" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="226" x2="618" y2="226" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="164" x2="618" y2="164" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="102" x2="618" y2="102" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="53.76" y1="40" x2="618" y2="40" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
 <polygon points="79.41,342.56 592.35,93.94 592.35,97.66 79.41,345.04" fill="#d55e00" fill-opacity="0.22"/>
 <polyline points="79.41,343.8 592.35,95.8" fill="none" stroke="#009e73" stroke-width="1.75" stroke-dasharray="6 4"/>
-<line x1="79.41" y1="342.56" x2="79.41" y2="345.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="76.41" y1="342.56" x2="82.41" y2="342.56" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="76.41" y1="345.04" x2="82.41" y2="345.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="207.64" y1="280.56" x2="207.64" y2="283.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="204.64" y1="280.56" x2="210.64" y2="280.56" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="204.64" y1="283.04" x2="210.64" y2="283.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="335.88" y1="218.56" x2="335.88" y2="221.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="332.88" y1="218.56" x2="338.88" y2="218.56" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="332.88" y1="221.04" x2="338.88" y2="221.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="464.12" y1="156.56" x2="464.12" y2="159.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="461.12" y1="156.56" x2="467.12" y2="156.56" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="461.12" y1="159.04" x2="467.12" y2="159.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="592.35" y1="94.56" x2="592.35" y2="97.04" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="589.35" y1="94.56" x2="595.35" y2="94.56" stroke="#0072b2" stroke-width="1.5"/>
-<line x1="589.35" y1="97.04" x2="595.35" y2="97.04" stroke="#0072b2" stroke-width="1.5"/>
+<line x1="79.41" y1="342.56" x2="79.41" y2="345.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="76.41" y1="342.56" x2="82.41" y2="342.56" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="76.41" y1="345.04" x2="82.41" y2="345.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="207.64" y1="280.56" x2="207.64" y2="283.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="204.64" y1="280.56" x2="210.64" y2="280.56" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="204.64" y1="283.04" x2="210.64" y2="283.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="335.88" y1="218.56" x2="335.88" y2="221.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="332.88" y1="218.56" x2="338.88" y2="218.56" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="332.88" y1="221.04" x2="338.88" y2="221.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="464.12" y1="156.56" x2="464.12" y2="159.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="461.12" y1="156.56" x2="467.12" y2="156.56" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="461.12" y1="159.04" x2="467.12" y2="159.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="592.35" y1="94.56" x2="592.35" y2="97.04" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="589.35" y1="94.56" x2="595.35" y2="94.56" stroke="#0072b2" stroke-width="1.25"/>
+<line x1="589.35" y1="97.04" x2="595.35" y2="97.04" stroke="#0072b2" stroke-width="1.25"/>
 <circle cx="79.41" cy="343.8" r="3" fill="#0072b2"/>
 <circle cx="207.64" cy="281.8" r="3" fill="#0072b2"/>
 <circle cx="335.88" cy="219.8" r="3" fill="#0072b2"/>
 <circle cx="464.12" cy="157.8" r="3" fill="#0072b2"/>
 <circle cx="592.35" cy="95.8" r="3" fill="#0072b2"/>
 </g>
-<rect x="53.76" y="40" width="564.24" height="310" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="79.41" y1="350" x2="79.41" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="79.41" y="367" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="207.64" y1="350" x2="207.64" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="207.64" y="367" font-size="11" fill="#111111" text-anchor="middle">1</text>
-<line x1="335.88" y1="350" x2="335.88" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="335.88" y="367" font-size="11" fill="#111111" text-anchor="middle">2</text>
-<line x1="464.12" y1="350" x2="464.12" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="464.12" y="367" font-size="11" fill="#111111" text-anchor="middle">3</text>
-<line x1="592.35" y1="350" x2="592.35" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="592.35" y="367" font-size="11" fill="#111111" text-anchor="middle">4</text>
-<line x1="49.76" y1="350" x2="53.76" y2="350" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="353.85" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="49.76" y1="288" x2="53.76" y2="288" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="291.85" font-size="11" fill="#111111" text-anchor="end">10</text>
-<line x1="49.76" y1="226" x2="53.76" y2="226" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="229.85" font-size="11" fill="#111111" text-anchor="end">20</text>
-<line x1="49.76" y1="164" x2="53.76" y2="164" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="167.85" font-size="11" fill="#111111" text-anchor="end">30</text>
-<line x1="49.76" y1="102" x2="53.76" y2="102" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="105.85" font-size="11" fill="#111111" text-anchor="end">40</text>
-<line x1="49.76" y1="40" x2="53.76" y2="40" stroke="#333333" stroke-width="1"/>
-<text x="46.76" y="43.85" font-size="11" fill="#111111" text-anchor="end">50</text>
-<text x="335.88" y="388" font-size="13" fill="#111111" text-anchor="middle">Voltage (V)</text>
-<text x="22" y="195" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 195)">Height (mm)</text>
-<text x="53.76" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">LVDT calibration, height versus voltage</text>
-<rect x="398.12" y="48" width="211.88" height="56" fill="#fafafa" stroke="#999999" stroke-width="1"/>
+<rect x="53.76" y="40" width="564.24" height="310" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="79.41" y1="350" x2="79.41" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="79.41" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="207.64" y1="350" x2="207.64" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="207.64" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">1</text>
+<line x1="335.88" y1="350" x2="335.88" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="335.88" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">2</text>
+<line x1="464.12" y1="350" x2="464.12" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="464.12" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">3</text>
+<line x1="592.35" y1="350" x2="592.35" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="592.35" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">4</text>
+<line x1="49.76" y1="350" x2="53.76" y2="350" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="353.85" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="49.76" y1="288" x2="53.76" y2="288" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="291.85" font-size="11" fill="#1c1b17" text-anchor="end">10</text>
+<line x1="49.76" y1="226" x2="53.76" y2="226" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="229.85" font-size="11" fill="#1c1b17" text-anchor="end">20</text>
+<line x1="49.76" y1="164" x2="53.76" y2="164" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="167.85" font-size="11" fill="#1c1b17" text-anchor="end">30</text>
+<line x1="49.76" y1="102" x2="53.76" y2="102" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="105.85" font-size="11" fill="#1c1b17" text-anchor="end">40</text>
+<line x1="49.76" y1="40" x2="53.76" y2="40" stroke="#3a372f" stroke-width="1"/>
+<text x="46.76" y="43.85" font-size="11" fill="#1c1b17" text-anchor="end">50</text>
+<text x="335.88" y="388" font-size="13" fill="#1c1b17" text-anchor="middle">Voltage (V)</text>
+<text x="22" y="195" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 195)">Height (mm)</text>
+<text x="53.76" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">LVDT calibration, height versus voltage</text>
+<rect x="398.12" y="48" width="211.88" height="56" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
 <circle cx="413.12" cy="60" r="3" fill="#0072b2"/>
-<text x="428.12" y="63.85" font-size="11" fill="#111111" text-anchor="start">captured (95 % error bars)</text>
+<text x="428.12" y="63.85" font-size="11" fill="#1c1b17" text-anchor="start">captured (95 % error bars)</text>
 <rect x="404.12" y="72" width="18" height="8" fill="#d55e00"/>
-<text x="428.12" y="79.85" font-size="11" fill="#111111" text-anchor="start">95 % band</text>
+<text x="428.12" y="79.85" font-size="11" fill="#1c1b17" text-anchor="start">95 % band</text>
 <polyline points="404.12,92 422.12,92" fill="none" stroke="#009e73" stroke-width="1.75" stroke-dasharray="6 4"/>
-<text x="428.12" y="95.85" font-size="11" fill="#111111" text-anchor="start">fit</text>
-<rect x="338.8" y="289" width="271.2" height="53" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="346.8" y="305" font-size="11" fill="#111111" text-anchor="start">h = (10.00 +/- 0.12) V + (1.00 +/- 0.30)</text>
-<text x="346.8" y="320" font-size="11" fill="#111111" text-anchor="start">r^2 = 0.9998</text>
-<text x="346.8" y="335" font-size="11" fill="#111111" text-anchor="start">n = 5</text>
+<text x="428.12" y="95.85" font-size="11" fill="#1c1b17" text-anchor="start">fit</text>
+<rect x="338.8" y="289" width="271.2" height="53" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="346.8" y="305" font-size="11" fill="#1c1b17" text-anchor="start">h = (10.00 +/- 0.12) V + (1.00 +/- 0.30)</text>
+<text x="346.8" y="320" font-size="11" fill="#1c1b17" text-anchor="start">r^2 = 0.9998</text>
+<text x="346.8" y="335" font-size="11" fill="#1c1b17" text-anchor="start">n = 5</text>
 </svg>
 "
 `;
 
 exports[`calibration live update and golden > matches the golden SVG for both panels > residuals 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="72.9" y="40" width="545.1" height="90"/></clipPath></defs>
-<rect x="0" y="0" width="640" height="180" fill="#ffffff"/>
-<rect x="72.9" y="40" width="545.1" height="90" fill="#ffffff"/>
-<line x1="97.68" y1="40" x2="97.68" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="221.56" y1="40" x2="221.56" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="345.45" y1="40" x2="345.45" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="469.34" y1="40" x2="469.34" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="593.22" y1="40" x2="593.22" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="72.9" y1="130" x2="618" y2="130" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="72.9" y1="107.5" x2="618" y2="107.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="72.9" y1="85" x2="618" y2="85" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="72.9" y1="62.5" x2="618" y2="62.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="72.9" y1="40" x2="618" y2="40" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="640" height="180" fill="#f8f6ee"/>
+<rect x="72.9" y="40" width="545.1" height="90" fill="#f8f6ee"/>
+<line x1="97.68" y1="40" x2="97.68" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="221.56" y1="40" x2="221.56" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="345.45" y1="40" x2="345.45" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="469.34" y1="40" x2="469.34" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="593.22" y1="40" x2="593.22" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="72.9" y1="130" x2="618" y2="130" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="72.9" y1="107.5" x2="618" y2="107.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="72.9" y1="85" x2="618" y2="85" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="72.9" y1="62.5" x2="618" y2="62.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="72.9" y1="40" x2="618" y2="40" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
 <polyline points="72.9,85 618,85" fill="none" stroke="#d55e00" stroke-width="1.75" stroke-dasharray="6 4"/>
 <circle cx="97.68" cy="62.5" r="3" fill="#0072b2"/>
@@ -104,30 +104,30 @@ exports[`calibration live update and golden > matches the golden SVG for both pa
 <circle cx="469.34" cy="40" r="3" fill="#0072b2"/>
 <circle cx="593.22" cy="107.5" r="3" fill="#0072b2"/>
 </g>
-<rect x="72.9" y="40" width="545.1" height="90" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="97.68" y1="130" x2="97.68" y2="134" stroke="#333333" stroke-width="1"/>
-<text x="97.68" y="147" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="221.56" y1="130" x2="221.56" y2="134" stroke="#333333" stroke-width="1"/>
-<text x="221.56" y="147" font-size="11" fill="#111111" text-anchor="middle">1</text>
-<line x1="345.45" y1="130" x2="345.45" y2="134" stroke="#333333" stroke-width="1"/>
-<text x="345.45" y="147" font-size="11" fill="#111111" text-anchor="middle">2</text>
-<line x1="469.34" y1="130" x2="469.34" y2="134" stroke="#333333" stroke-width="1"/>
-<text x="469.34" y="147" font-size="11" fill="#111111" text-anchor="middle">3</text>
-<line x1="593.22" y1="130" x2="593.22" y2="134" stroke="#333333" stroke-width="1"/>
-<text x="593.22" y="147" font-size="11" fill="#111111" text-anchor="middle">4</text>
-<line x1="68.9" y1="130" x2="72.9" y2="130" stroke="#333333" stroke-width="1"/>
-<text x="65.9" y="133.85" font-size="11" fill="#111111" text-anchor="end">-0.02</text>
-<line x1="68.9" y1="107.5" x2="72.9" y2="107.5" stroke="#333333" stroke-width="1"/>
-<text x="65.9" y="111.35" font-size="11" fill="#111111" text-anchor="end">-0.01</text>
-<line x1="68.9" y1="85" x2="72.9" y2="85" stroke="#333333" stroke-width="1"/>
-<text x="65.9" y="88.85" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="68.9" y1="62.5" x2="72.9" y2="62.5" stroke="#333333" stroke-width="1"/>
-<text x="65.9" y="66.35" font-size="11" fill="#111111" text-anchor="end">0.01</text>
-<line x1="68.9" y1="40" x2="72.9" y2="40" stroke="#333333" stroke-width="1"/>
-<text x="65.9" y="43.85" font-size="11" fill="#111111" text-anchor="end">0.02</text>
-<text x="345.45" y="168" font-size="13" fill="#111111" text-anchor="middle">Voltage (V)</text>
-<text x="22" y="85" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 85)">Residual (mm)</text>
-<text x="72.9" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">Residuals</text>
+<rect x="72.9" y="40" width="545.1" height="90" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="97.68" y1="130" x2="97.68" y2="134" stroke="#3a372f" stroke-width="1"/>
+<text x="97.68" y="147" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="221.56" y1="130" x2="221.56" y2="134" stroke="#3a372f" stroke-width="1"/>
+<text x="221.56" y="147" font-size="11" fill="#1c1b17" text-anchor="middle">1</text>
+<line x1="345.45" y1="130" x2="345.45" y2="134" stroke="#3a372f" stroke-width="1"/>
+<text x="345.45" y="147" font-size="11" fill="#1c1b17" text-anchor="middle">2</text>
+<line x1="469.34" y1="130" x2="469.34" y2="134" stroke="#3a372f" stroke-width="1"/>
+<text x="469.34" y="147" font-size="11" fill="#1c1b17" text-anchor="middle">3</text>
+<line x1="593.22" y1="130" x2="593.22" y2="134" stroke="#3a372f" stroke-width="1"/>
+<text x="593.22" y="147" font-size="11" fill="#1c1b17" text-anchor="middle">4</text>
+<line x1="68.9" y1="130" x2="72.9" y2="130" stroke="#3a372f" stroke-width="1"/>
+<text x="65.9" y="133.85" font-size="11" fill="#1c1b17" text-anchor="end">-0.02</text>
+<line x1="68.9" y1="107.5" x2="72.9" y2="107.5" stroke="#3a372f" stroke-width="1"/>
+<text x="65.9" y="111.35" font-size="11" fill="#1c1b17" text-anchor="end">-0.01</text>
+<line x1="68.9" y1="85" x2="72.9" y2="85" stroke="#3a372f" stroke-width="1"/>
+<text x="65.9" y="88.85" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="68.9" y1="62.5" x2="72.9" y2="62.5" stroke="#3a372f" stroke-width="1"/>
+<text x="65.9" y="66.35" font-size="11" fill="#1c1b17" text-anchor="end">0.01</text>
+<line x1="68.9" y1="40" x2="72.9" y2="40" stroke="#3a372f" stroke-width="1"/>
+<text x="65.9" y="43.85" font-size="11" fill="#1c1b17" text-anchor="end">0.02</text>
+<text x="345.45" y="168" font-size="13" fill="#1c1b17" text-anchor="middle">Voltage (V)</text>
+<text x="22" y="85" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 85)">Residual (mm)</text>
+<text x="72.9" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Residuals</text>
 </svg>
 "
 `;

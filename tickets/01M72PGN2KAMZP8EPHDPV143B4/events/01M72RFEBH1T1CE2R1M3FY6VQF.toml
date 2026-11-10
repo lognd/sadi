@@ -1,0 +1,308 @@
+kind = "evidence"
+captured_at = "2026-11-10T12:43:29Z"
+digest = "22db5fe9c7cb9f605ae2ef84ef5925216ae54dea7ca2b1aa2fedfb0efaff2bae"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/screens/run/SuggestedWeightPanel.test.tsx > suggested weight > fetches the read-only route
+[screens.run.designAdvice] fetch design advice { phase: 'elastic' }
+[api.client] request { path: '/api/design/next-weight?phase=elastic' }
+
+stdout | src/screens/run/SuggestedWeightPanel.test.tsx > suggested weight > fetches the read-only route
+[api.client] response ok { path: '/api/design/next-weight?phase=elastic', status: 200 }
+
+ \u{2713} src/screens/run/SuggestedWeightPanel.test.tsx (5 tests) 21ms
+stdout | src/plots/core/plots.test.ts > layout > is deterministic and keeps the plot inside the canvas
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+
+stdout | src/plots/core/plots.test.ts > decimation > bounds 100k points and keeps extremes
+[plots.place] box placed { id: 'annotation', score: 110 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 110 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 50, series: 1 }
+
+stdout | src/plots/core/plots.test.ts > svg > matches the snapshot
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | src/plots/core/plots.test.ts > svg > escapes text
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'a<b & c',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | src/plots/core/plots.test.ts > canvas draw calls > records a stable golden call sequence
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 61 }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 1, ops: 61 }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 640, h: 400, dpi: 96, bytes: 3 }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 3.125, ops: 61 }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 2000, h: 1250, dpi: 300, bytes: 3 }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.export] svg exported { bytes: 5379, title: 'Calibration' }
+
+stdout | src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | src/plots/core/plots.test.ts > renderToCanvas > sizes the backing store by the device pixel ratio
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 61 }
+
+stdout | src/plots/core/plots.test.ts > error bars and auto annotation placement > draws capped error bars and widens the autoscaled domain
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 4,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 51, series: 1 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 4,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+
+stdout | src/plots/core/plots.test.ts > error bars and auto annotation placement > auto anchor avoids the corner holding data
+[plots.place] box placed { id: 'annotation', score: 2 }
+[plots.layout] annotation placed { id: 'annotation', x: 555.72, y: 288, penalty: 2 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 6,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 555.72, y: 64, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 6,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+
+ \u{2713} src/plots/core/plots.test.ts (11 tests) 89ms
+stdout | src/components/instrument/audit1.test.tsx > audit1 shell fixes > #37 skips /api/session when asked and keeps the previous session
+[api.client] request { path: '/api/save-indicator' }
+[api.client] request { path: '/api/device/status' }
+[api.client] request { path: '/api/root-lock' }
+[api.client] response ok { path: '/api/save-indicator', status: 200 }
+[api.client] response ok { path: '/api/device/status', status: 200 }
+[api.client] response ok { path: '/api/root-lock', status: 200 }
+
+stdout | src/components/instrument/audit1.test.tsx > audit1 shell fixes > #37 skips /api/session when asked and keeps the previous session
+[api.client] request { path: '/api/save-indicator' }
+[api.client] request { path: '/api/device/status' }
+[api.client] request { path: '/api/session' }
+[api.client] request { path: '/api/root-lock' }
+[api.client] response ok { path: '/api/save-indicator', status: 200 }
+[api.client] response ok { path: '/api/device/status', status: 200 }
+[api.client] response ok { path: '/api/session', status: 200 }
+[api.client] response ok { path: '/api/root-lock', status: 200 }
+
+ \u{2713} src/components/instrument/audit1.test.tsx (8 tests) 41ms
+
+ Test Files  3 passed (3)
+      Tests  24 passed (24)
+   Start at  07:56:06
+   Duration  1.86s (transform 1.07s, setup 0ms, collect 1.76s, tests 151ms, environment 1ms, prepare 617ms)
+
+JSON report written to /tmp/frob-vitest-1092038-1.json
+stderr | src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.export] rejected dpi { dpi: -1 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/instrument/audit1.test.tsx web/src/plots/core/plots.test.ts web/src/screens/run/SuggestedWeightPanel.test.tsx"
+size = 9582
+status = "measured"
+test_count = 24
+tests_digest = "36c66e07f5e7a7d8c2a925a4c18f300857d931a5536c7c4ec21857304e247893"
+at = "2026-11-10T12:43:29Z"
+actor = "lognd"
+rev = 1

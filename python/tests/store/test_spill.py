@@ -4,13 +4,20 @@
 from __future__ import annotations
 
 import hashlib
+import shutil
+import time
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+from typani import Err
+
+from sadi.store import failpoints, spill
+from sadi.store.durable import DurableIo
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FRAME_HEADER_LEN, NewRecord, Record, RecordType, encode_frame
-from sadi.store.session import SessionMeta, create_session
+from sadi.store.session import SessionMeta, create_session, session_is_synthetic
 from sadi.store.spill import (
     SpillEmpty,
     SpillHeaderInvalid,
@@ -220,3 +227,113 @@ def test_identical_spills_in_two_locations_import_once(tmp_path: Path) -> None:
     out = import_all_spills(root, user, tmp)
     assert [o[1].danger_ok is not None for o in out] == [True, False]
     assert len(list((root / "sessions").iterdir())) == 2
+
+
+def _fsync_failed_parent(root: Path, user: Path, tmp: Path) -> tuple[Path, uuid.UUID]:
+    """Real writer: 3 durable NOTEs, then 2 whose fsync fails (undurable); spill them."""
+    h = create_session(root, SessionMeta(slug="cu"), datetime(2026, 11, 8, tzinfo=UTC)).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    for i in range(3):
+        assert w.append(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i]))).is_ok
+    failpoints.configure({"wal.fsync.before": "once:error:5"})
+    try:
+        for i in range(3, 5):
+            w.append_nowait(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i])))
+        deadline = time.monotonic() + 5
+        while not w.undurable_records() and time.monotonic() < deadline:
+            time.sleep(0.02)
+    finally:
+        und = w.undurable_records()
+        failpoints.clear()
+    assert [r.seq for r in und] == [4, 5]
+    w.close()
+    h.close("incomplete")
+    assert write_spill(und, suid, root, user, tmp).is_ok
+    return h.path, suid
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_fsync_failure_spill_overlapping_parent_still_joins(tmp_path: Path) -> None:
+    """M1: the failed batch is already in the parent segment; the spill overlaps and still joins."""
+    root, user, tmp = dirs(tmp_path)
+    parent, _ = _fsync_failed_parent(root, user, tmp)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is True
+    recs = [r.danger_ok for r in WalReader(rep.version_dir / "wal").records()]
+    assert [r.seq for r in recs] == [1, 2, 3, 4, 5]
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "joined"
+    assert parent.is_dir()
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_overlap_with_different_bytes_stays_fragment(tmp_path: Path) -> None:
+    """M1: an overlapping spill whose frames differ from the parent is kept alone (both kept)."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 3, 3, suid)  # seq 3 overlaps with other payload
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 3
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "fragment"
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_import_inherits_synthetic_and_orphan_is_not_real(tmp_path: Path) -> None:
+    """M3: a synthetic parent gives a synthetic import; an orphan spill is never labelled real."""
+    root, user, tmp = dirs(tmp_path)
+    h = create_session(
+        root, SessionMeta(slug="cu", synthetic=True), datetime(2026, 11, 8, tzinfo=UTC)
+    ).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    assert w.append(NewRecord(type=NOTE, payload=b"p" * 9)).is_ok
+    w.close()
+    h.close("incomplete")
+    make_spill(root / "spill" / "s.wal", 2, 2, suid)
+    make_spill(root / "spill" / "o.wal", 1, 2)
+    outs = {p.name: r.danger_ok for p, r in import_all_spills(root, user, tmp)}
+    joined, orphan = outs["s.wal"], outs["o.wal"]
+    assert joined is not None and orphan is not None
+    assert session_is_synthetic(joined.version_dir)
+    assert session_is_synthetic(orphan.version_dir)
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_low_space_defers_join_to_fragment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M4: without room for a full copy the spill is imported as a fragment and the log says why."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 4, 2, suid)
+    monkeypatch.setattr(spill.shutil, "disk_usage", lambda _p: shutil._ntuple_diskusage(10, 9, 1))
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 2
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_failed_join_writes_marker_and_falls_back_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """M4: a join that fails mid-copy leaves a failed marker, imports a fragment, no retry."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real = spill._write_segment
+    calls: list[int] = []
+
+    def flaky(wal_dir: Path, header: bytes, frames: object) -> object:
+        """Fail the first (join) write like ENOSPC; later writes pass through."""
+        calls.append(1)
+        if len(calls) == 1:
+            return Err(DurableIo(errno=28, path=wal_dir))
+        return real(wal_dir, header, frames)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(spill, "_write_segment", flaky)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert (sp.parent / "s.wal.join-failed.json").is_file()
+    assert len(list((root / "sessions").iterdir())) == 3  # parent, crashed partial, fragment
+    states = sorted(read_manifest(d).danger_ok.state for d in (root / "sessions").iterdir())
+    assert states == ["closed", "crashed", "incomplete"]

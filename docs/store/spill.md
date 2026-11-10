@@ -40,6 +40,25 @@ written, `marker_written` is false and a warning is logged.
 The imported version has no `SESSION_START` (the spilled records are only the undurable
 tail); it is a data-bearing version whose lineage is in its manifest.
 
+### Join, overlap, provenance, space (audit-5 M1-M4)
+
+- Join (M1): the spill may overlap the parent, `parent.first_seq <= spill.first_seq <=
+  parent.last_seq + 1` (gap seqs must be SEALs). A failed fsync leaves the batch already written
+  to the parent segment, so overlap is the normal case. Overlapping frames must be identical
+  (type, wall_ns, flags, payload) or the spill is kept as a fragment. The joined WAL is the
+  parent's records plus the spill records beyond the parent's last seq, renumbered densely
+  (SEALs dropped; see the L2 followup: raw-seq references shift after a rotation).
+- Supersede (M2): the new manifest has `spill_import = "joined"` or `"fragment"`.
+  `routes/sessions.py` lets only a `joined` import in state `closed` supersede an incomplete
+  parent; fragment and crashed imports never do.
+- Provenance (M3): the import inherits the parent's synthetic flag/marker. An orphan spill has
+  no provenance and is conservatively imported as synthetic (never labelled real).
+- Space and failure (M4): before joining, free space must cover the parent WAL size plus the
+  spill plus 64 MiB, else the spill is imported as a fragment (WARNING "join deferred"). If the
+  join write fails anyway, the partial dir is kept (state `crashed`), a sidecar
+  `<name>.join-failed.json` names it, the spill is imported as a fragment, and later starts
+  never attempt the join again for that content. Nothing is deleted or overwritten.
+
 ## Startup
 
 `sadi.server.app._lifespan` calls `import_all_spills` right after the data-root lock is held

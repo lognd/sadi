@@ -274,6 +274,7 @@ class SessionService:
                     state=m.state,
                     parent=m.parent,
                     provenance=SYNTHETIC if session_is_synthetic(d) else REAL,
+                    spill_import=m.spill_import,  # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
                 )
             )
         return out

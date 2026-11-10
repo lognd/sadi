@@ -117,6 +117,7 @@ docs current are in [README.md](README.md).
 ## Web UI
 
 - [web/wizard.md](web/wizard.md) - Wizard shell: step rail, next-action panel, status bar, keyboard
+- [web/design-system.md](web/design-system.md) - Lab-instrument visual system: tokens, palette, type, panels, plots
 - [web/run-screens.md](web/run-screens.md) - Run screens: calibrate, tare, elastic, plastic capture
 - [web/review-screen.md](web/review-screen.md) - Review screen: re-edit points, undo/redo, recompute
 - [web/export-screen.md](web/export-screen.md) - Results and export screen

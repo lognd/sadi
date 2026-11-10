@@ -134,7 +134,10 @@ export function renderToCanvas(canvas: HTMLCanvasElement, scene: Drawable, opts:
   canvas.width = Math.round(scene.width * dpr);
   canvas.height = Math.round(scene.height * dpr);
   canvas.style.width = `${scene.width}px`;
-  canvas.style.height = `${scene.height}px`;
+  // frob:ticket 01M72PGMY61ANRVTM7EK7B4HZG
+  // Ratio, not a fixed px height, so CSS width scaling never distorts.
+  canvas.style.height = "auto";
+  canvas.style.aspectRatio = `${scene.width} / ${scene.height}`;
   paintScene(ctx, scene, dpr);
 }
 

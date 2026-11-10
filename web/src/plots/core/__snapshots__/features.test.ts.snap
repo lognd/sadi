@@ -1,56 +1,56 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`figure panels > renders through the shared plan to svg and canvas ops 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 600 500" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 600 500" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="66.52" y="40" width="511.48" height="329"/></clipPath><clipPath id="clip1"><rect x="66.52" y="383" width="511.48" height="51"/></clipPath></defs>
-<rect x="0" y="0" width="600" height="375" fill="#ffffff"/>
-<rect x="66.52" y="40" width="511.48" height="329" fill="#ffffff"/>
-<line x1="66.52" y1="40" x2="66.52" y2="369" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="237.01" y1="40" x2="237.01" y2="369" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="407.51" y1="40" x2="407.51" y2="369" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="578" y1="40" x2="578" y2="369" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="369" x2="578" y2="369" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="303.2" x2="578" y2="303.2" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="237.4" x2="578" y2="237.4" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="171.6" x2="578" y2="171.6" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="105.8" x2="578" y2="105.8" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="40" x2="578" y2="40" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="600" height="375" fill="#f8f6ee"/>
+<rect x="66.52" y="40" width="511.48" height="329" fill="#f8f6ee"/>
+<line x1="66.52" y1="40" x2="66.52" y2="369" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="237.01" y1="40" x2="237.01" y2="369" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="407.51" y1="40" x2="407.51" y2="369" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="578" y1="40" x2="578" y2="369" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="369" x2="578" y2="369" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="303.2" x2="578" y2="303.2" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="237.4" x2="578" y2="237.4" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="171.6" x2="578" y2="171.6" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="105.8" x2="578" y2="105.8" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="40" x2="578" y2="40" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
-<polyline points="66.52,369 151.77,365.71 237.01,362.42 322.26,359.13 407.51,40" fill="none" stroke="#0072b2" stroke-width="1.5"/>
+<polyline points="66.52,369 151.77,365.71 237.01,362.42 322.26,359.13 407.51,40" fill="none" stroke="#0072b2" stroke-width="1.25"/>
 </g>
-<rect x="66.52" y="40" width="511.48" height="329" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="66.52" y1="369" x2="66.52" y2="373" stroke="#333333" stroke-width="1"/>
-<line x1="237.01" y1="369" x2="237.01" y2="373" stroke="#333333" stroke-width="1"/>
-<line x1="407.51" y1="369" x2="407.51" y2="373" stroke="#333333" stroke-width="1"/>
-<line x1="578" y1="369" x2="578" y2="373" stroke="#333333" stroke-width="1"/>
-<line x1="62.52" y1="369" x2="66.52" y2="369" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="372.85" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="62.52" y1="303.2" x2="66.52" y2="303.2" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="307.05" font-size="11" fill="#111111" text-anchor="end">200</text>
-<line x1="62.52" y1="237.4" x2="66.52" y2="237.4" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="241.25" font-size="11" fill="#111111" text-anchor="end">400</text>
-<line x1="62.52" y1="171.6" x2="66.52" y2="171.6" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="175.45" font-size="11" fill="#111111" text-anchor="end">600</text>
-<line x1="62.52" y1="105.8" x2="66.52" y2="105.8" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="109.65" font-size="11" fill="#111111" text-anchor="end">800</text>
-<line x1="62.52" y1="40" x2="66.52" y2="40" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="43.85" font-size="11" fill="#111111" text-anchor="end">1000</text>
-<text x="22" y="204.5" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 204.5)">y</text>
-<text x="66.52" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">Fig</text>
-<rect x="517.62" y="48" width="52.38" height="24" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<polyline points="523.62,60 541.62,60" fill="none" stroke="#0072b2" stroke-width="1.5"/>
-<text x="547.62" y="63.85" font-size="11" fill="#111111" text-anchor="start">s</text>
-<rect x="0" y="375" width="600" height="125" fill="#ffffff"/>
-<rect x="66.52" y="383" width="511.48" height="51" fill="#ffffff"/>
-<line x1="66.52" y1="383" x2="66.52" y2="434" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="237.01" y1="383" x2="237.01" y2="434" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="407.51" y1="383" x2="407.51" y2="434" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="578" y1="383" x2="578" y2="434" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="434" x2="578" y2="434" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="421.25" x2="578" y2="421.25" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="408.5" x2="578" y2="408.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="395.75" x2="578" y2="395.75" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="383" x2="578" y2="383" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="66.52" y="40" width="511.48" height="329" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="66.52" y1="369" x2="66.52" y2="373" stroke="#3a372f" stroke-width="1"/>
+<line x1="237.01" y1="369" x2="237.01" y2="373" stroke="#3a372f" stroke-width="1"/>
+<line x1="407.51" y1="369" x2="407.51" y2="373" stroke="#3a372f" stroke-width="1"/>
+<line x1="578" y1="369" x2="578" y2="373" stroke="#3a372f" stroke-width="1"/>
+<line x1="62.52" y1="369" x2="66.52" y2="369" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="372.85" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="62.52" y1="303.2" x2="66.52" y2="303.2" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="307.05" font-size="11" fill="#1c1b17" text-anchor="end">200</text>
+<line x1="62.52" y1="237.4" x2="66.52" y2="237.4" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="241.25" font-size="11" fill="#1c1b17" text-anchor="end">400</text>
+<line x1="62.52" y1="171.6" x2="66.52" y2="171.6" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="175.45" font-size="11" fill="#1c1b17" text-anchor="end">600</text>
+<line x1="62.52" y1="105.8" x2="66.52" y2="105.8" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="109.65" font-size="11" fill="#1c1b17" text-anchor="end">800</text>
+<line x1="62.52" y1="40" x2="66.52" y2="40" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="43.85" font-size="11" fill="#1c1b17" text-anchor="end">1000</text>
+<text x="22" y="204.5" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 204.5)">y</text>
+<text x="66.52" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Fig</text>
+<rect x="517.62" y="48" width="52.38" height="24" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<polyline points="523.62,60 541.62,60" fill="none" stroke="#0072b2" stroke-width="1.25"/>
+<text x="547.62" y="63.85" font-size="11" fill="#1c1b17" text-anchor="start">s</text>
+<rect x="0" y="375" width="600" height="125" fill="#f8f6ee"/>
+<rect x="66.52" y="383" width="511.48" height="51" fill="#f8f6ee"/>
+<line x1="66.52" y1="383" x2="66.52" y2="434" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="237.01" y1="383" x2="237.01" y2="434" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="407.51" y1="383" x2="407.51" y2="434" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="578" y1="383" x2="578" y2="434" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="434" x2="578" y2="434" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="421.25" x2="578" y2="421.25" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="408.5" x2="578" y2="408.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="395.75" x2="578" y2="395.75" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="383" x2="578" y2="383" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip1)">
 <circle cx="66.52" cy="408.5" r="3" fill="#0072b2"/>
 <circle cx="151.77" cy="383" r="3" fill="#0072b2"/>
@@ -58,31 +58,31 @@ exports[`figure panels > renders through the shared plan to svg and canvas ops 1
 <circle cx="322.26" cy="383" r="3" fill="#0072b2"/>
 <circle cx="578" cy="408.5" r="3" fill="#0072b2"/>
 </g>
-<rect x="66.52" y="383" width="511.48" height="51" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="66.52" y1="434" x2="66.52" y2="438" stroke="#333333" stroke-width="1"/>
-<text x="66.52" y="451" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="237.01" y1="434" x2="237.01" y2="438" stroke="#333333" stroke-width="1"/>
-<text x="237.01" y="451" font-size="11" fill="#111111" text-anchor="middle">2</text>
-<line x1="407.51" y1="434" x2="407.51" y2="438" stroke="#333333" stroke-width="1"/>
-<text x="407.51" y="451" font-size="11" fill="#111111" text-anchor="middle">4</text>
-<line x1="578" y1="434" x2="578" y2="438" stroke="#333333" stroke-width="1"/>
-<text x="578" y="451" font-size="11" fill="#111111" text-anchor="middle">6</text>
-<line x1="62.52" y1="434" x2="66.52" y2="434" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="437.85" font-size="11" fill="#111111" text-anchor="end">-1.0</text>
-<line x1="62.52" y1="421.25" x2="66.52" y2="421.25" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="425.1" font-size="11" fill="#111111" text-anchor="end">-0.5</text>
-<line x1="62.52" y1="408.5" x2="66.52" y2="408.5" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="412.35" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="62.52" y1="395.75" x2="66.52" y2="395.75" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="399.6" font-size="11" fill="#111111" text-anchor="end">0.5</text>
-<line x1="62.52" y1="383" x2="66.52" y2="383" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="386.85" font-size="11" fill="#111111" text-anchor="end">1.0</text>
-<text x="322.26" y="472" font-size="13" fill="#111111" text-anchor="middle">x</text>
-<text x="22" y="408.5" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 408.5)">res</text>
-<text x="66.52" y="488" font-size="10" fill="#555555" text-anchor="start">foot</text>
-<rect x="517.62" y="391" width="52.38" height="24" fill="#fafafa" stroke="#999999" stroke-width="1"/>
+<rect x="66.52" y="383" width="511.48" height="51" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="66.52" y1="434" x2="66.52" y2="438" stroke="#3a372f" stroke-width="1"/>
+<text x="66.52" y="451" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="237.01" y1="434" x2="237.01" y2="438" stroke="#3a372f" stroke-width="1"/>
+<text x="237.01" y="451" font-size="11" fill="#1c1b17" text-anchor="middle">2</text>
+<line x1="407.51" y1="434" x2="407.51" y2="438" stroke="#3a372f" stroke-width="1"/>
+<text x="407.51" y="451" font-size="11" fill="#1c1b17" text-anchor="middle">4</text>
+<line x1="578" y1="434" x2="578" y2="438" stroke="#3a372f" stroke-width="1"/>
+<text x="578" y="451" font-size="11" fill="#1c1b17" text-anchor="middle">6</text>
+<line x1="62.52" y1="434" x2="66.52" y2="434" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="437.85" font-size="11" fill="#1c1b17" text-anchor="end">-1.0</text>
+<line x1="62.52" y1="421.25" x2="66.52" y2="421.25" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="425.1" font-size="11" fill="#1c1b17" text-anchor="end">-0.5</text>
+<line x1="62.52" y1="408.5" x2="66.52" y2="408.5" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="412.35" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="62.52" y1="395.75" x2="66.52" y2="395.75" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="399.6" font-size="11" fill="#1c1b17" text-anchor="end">0.5</text>
+<line x1="62.52" y1="383" x2="66.52" y2="383" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="386.85" font-size="11" fill="#1c1b17" text-anchor="end">1.0</text>
+<text x="322.26" y="472" font-size="13" fill="#1c1b17" text-anchor="middle">x</text>
+<text x="22" y="408.5" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 408.5)">res</text>
+<text x="66.52" y="488" font-size="10" fill="#55514a" text-anchor="start">foot</text>
+<rect x="517.62" y="391" width="52.38" height="24" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
 <circle cx="532.62" cy="403" r="3" fill="#0072b2"/>
-<text x="547.62" y="406.85" font-size="11" fill="#111111" text-anchor="start">r</text>
+<text x="547.62" y="406.85" font-size="11" fill="#1c1b17" text-anchor="start">r</text>
 </svg>
 "
 `;
@@ -95,7 +95,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 0,
   "w": 640,
   "h": 400,
-  "fill": "#ffffff"
+  "fill": "#f8f6ee"
  },
  {
   "op": "rect",
@@ -103,7 +103,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 40,
   "w": 551.48,
   "h": 310,
-  "fill": "#ffffff"
+  "fill": "#f8f6ee"
  },
  {
   "op": "line",
@@ -111,7 +111,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 66.52,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -120,7 +120,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 204.39,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -129,7 +129,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 342.26,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -138,7 +138,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 480.13,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -147,7 +147,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 618,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -156,7 +156,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 618,
   "y2": 350,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -165,7 +165,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 272.5,
   "x2": 618,
   "y2": 272.5,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -174,7 +174,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 195,
   "x2": 618,
   "y2": 195,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -183,7 +183,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 117.5,
   "x2": 618,
   "y2": 117.5,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -192,7 +192,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 618,
   "y2": 40,
-  "stroke": "#e3e3e3",
+  "stroke": "#e0dbcc",
   "strokeWidth": 1
  },
  {
@@ -302,7 +302,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
    114.25
   ],
   "stroke": "#0072b2",
-  "strokeWidth": 1.5,
+  "strokeWidth": 1.25,
   "dashed": false
  },
  {
@@ -322,7 +322,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 40,
   "w": 551.48,
   "h": 310,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -331,7 +331,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 66.52,
   "y2": 354,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -340,7 +340,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 367,
   "text": "0",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -349,7 +349,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 204.39,
   "y2": 354,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -358,7 +358,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 367,
   "text": "10",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -367,7 +367,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 342.26,
   "y2": 354,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -376,7 +376,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 367,
   "text": "20",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -385,7 +385,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 480.13,
   "y2": 354,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -394,7 +394,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 367,
   "text": "30",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -403,7 +403,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 618,
   "y2": 354,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -412,7 +412,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 367,
   "text": "40",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -421,7 +421,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 350,
   "x2": 66.52,
   "y2": 350,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -430,7 +430,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 353.85,
   "text": "0",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "end"
  },
  {
@@ -439,7 +439,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 272.5,
   "x2": 66.52,
   "y2": 272.5,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -448,7 +448,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 276.35,
   "text": "500",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "end"
  },
  {
@@ -457,7 +457,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 195,
   "x2": 66.52,
   "y2": 195,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -466,7 +466,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 198.85,
   "text": "1000",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "end"
  },
  {
@@ -475,7 +475,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 117.5,
   "x2": 66.52,
   "y2": 117.5,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -484,7 +484,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 121.35,
   "text": "1500",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "end"
  },
  {
@@ -493,7 +493,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y1": 40,
   "x2": 66.52,
   "y2": 40,
-  "stroke": "#333333",
+  "stroke": "#3a372f",
   "strokeWidth": 1
  },
  {
@@ -502,7 +502,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 43.85,
   "text": "2000",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "end"
  },
  {
@@ -511,7 +511,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 388,
   "text": "x",
   "size": 13,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle"
  },
  {
@@ -520,7 +520,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 195,
   "text": "y",
   "size": 13,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "middle",
   "rotate": -90
  },
@@ -530,7 +530,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 28,
   "text": "Crowded",
   "size": 16,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start",
   "bold": true
  },
@@ -540,7 +540,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 48,
   "w": 52.38,
   "h": 24,
-  "fill": "#fafafa",
+  "fill": "#f1ede2",
   "stroke": "#999999",
   "strokeWidth": 1
  },
@@ -553,7 +553,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
    60
   ],
   "stroke": "#0072b2",
-  "strokeWidth": 1.5,
+  "strokeWidth": 1.25,
   "dashed": false
  },
  {
@@ -562,7 +562,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 63.85,
   "text": "s",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -571,7 +571,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 304,
   "w": 60.66,
   "h": 38,
-  "fill": "#fafafa",
+  "fill": "#f1ede2",
   "stroke": "#999999",
   "strokeWidth": 1
  },
@@ -581,7 +581,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 320,
   "text": "primary",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -590,7 +590,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 335,
   "text": "box",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -599,7 +599,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 48,
   "w": 54.28,
   "h": 23,
-  "fill": "#fafafa",
+  "fill": "#f1ede2",
   "stroke": "#999999",
   "strokeWidth": 1
  },
@@ -609,7 +609,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 64,
   "text": "second",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -618,7 +618,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 80,
   "w": 47.9,
   "h": 23,
-  "fill": "#fafafa",
+  "fill": "#f1ede2",
   "stroke": "#999999",
   "strokeWidth": 1
  },
@@ -628,7 +628,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 96,
   "text": "third",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -637,7 +637,7 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 323.5,
   "text": "alpha",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  },
  {
@@ -646,68 +646,68 @@ exports[`markers, spans and labels > emit draw ops identically for svg and draw-
   "y": 307.35,
   "text": "beta",
   "size": 11,
-  "color": "#111111",
+  "color": "#1c1b17",
   "anchor": "start"
  }
 ]"
 `;
 
 exports[`markers, spans and labels > emit draw ops identically for svg and draw-list goldens 2`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="Helvetica, Arial, sans-serif">
+"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" font-family="ui-monospace, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="66.52" y="40" width="551.48" height="310"/></clipPath></defs>
-<rect x="0" y="0" width="640" height="400" fill="#ffffff"/>
-<rect x="66.52" y="40" width="551.48" height="310" fill="#ffffff"/>
-<line x1="66.52" y1="40" x2="66.52" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="204.39" y1="40" x2="204.39" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="342.26" y1="40" x2="342.26" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="480.13" y1="40" x2="480.13" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="618" y1="40" x2="618" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="350" x2="618" y2="350" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="272.5" x2="618" y2="272.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="195" x2="618" y2="195" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="117.5" x2="618" y2="117.5" stroke="#e3e3e3" stroke-width="1"/>
-<line x1="66.52" y1="40" x2="618" y2="40" stroke="#e3e3e3" stroke-width="1"/>
+<rect x="0" y="0" width="640" height="400" fill="#f8f6ee"/>
+<rect x="66.52" y="40" width="551.48" height="310" fill="#f8f6ee"/>
+<line x1="66.52" y1="40" x2="66.52" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="204.39" y1="40" x2="204.39" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="342.26" y1="40" x2="342.26" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="480.13" y1="40" x2="480.13" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="618" y1="40" x2="618" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="350" x2="618" y2="350" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="272.5" x2="618" y2="272.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="195" x2="618" y2="195" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="117.5" x2="618" y2="117.5" stroke="#e0dbcc" stroke-width="1"/>
+<line x1="66.52" y1="40" x2="618" y2="40" stroke="#e0dbcc" stroke-width="1"/>
 <g clip-path="url(#clip0)">
 <polygon points="135.45,40 176.82,40 176.82,350 135.45,350" fill="#0072b2" fill-opacity="0.22"/>
-<polyline points="66.52,350 80.31,349.85 94.09,349.38 107.88,348.61 121.67,347.52 135.45,346.13 149.24,344.42 163.03,342.41 176.82,340.08 190.6,337.45 204.39,334.5 218.18,331.25 231.96,327.68 245.75,323.81 259.54,319.62 273.33,315.13 287.11,310.32 300.9,305.21 314.69,299.78 328.47,294.05 342.26,288 356.05,281.65 369.83,274.98 383.62,268.01 397.41,260.72 411.2,253.13 424.98,245.22 438.77,237.01 452.56,228.48 466.34,219.65 480.13,210.5 493.92,201.05 507.7,191.28 521.49,181.21 535.28,170.82 549.07,160.13 562.85,149.12 576.64,137.81 590.43,126.18 604.21,114.25" fill="none" stroke="#0072b2" stroke-width="1.5"/>
+<polyline points="66.52,350 80.31,349.85 94.09,349.38 107.88,348.61 121.67,347.52 135.45,346.13 149.24,344.42 163.03,342.41 176.82,340.08 190.6,337.45 204.39,334.5 218.18,331.25 231.96,327.68 245.75,323.81 259.54,319.62 273.33,315.13 287.11,310.32 300.9,305.21 314.69,299.78 328.47,294.05 342.26,288 356.05,281.65 369.83,274.98 383.62,268.01 397.41,260.72 411.2,253.13 424.98,245.22 438.77,237.01 452.56,228.48 466.34,219.65 480.13,210.5 493.92,201.05 507.7,191.28 521.49,181.21 535.28,170.82 549.07,160.13 562.85,149.12 576.64,137.81 590.43,126.18 604.21,114.25" fill="none" stroke="#0072b2" stroke-width="1.25"/>
 <circle cx="342.26" cy="288" r="3" fill="none" stroke="#0072b2" stroke-width="1.25"/>
 </g>
-<rect x="66.52" y="40" width="551.48" height="310" fill="none" stroke="#333333" stroke-width="1"/>
-<line x1="66.52" y1="350" x2="66.52" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="66.52" y="367" font-size="11" fill="#111111" text-anchor="middle">0</text>
-<line x1="204.39" y1="350" x2="204.39" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="204.39" y="367" font-size="11" fill="#111111" text-anchor="middle">10</text>
-<line x1="342.26" y1="350" x2="342.26" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="342.26" y="367" font-size="11" fill="#111111" text-anchor="middle">20</text>
-<line x1="480.13" y1="350" x2="480.13" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="480.13" y="367" font-size="11" fill="#111111" text-anchor="middle">30</text>
-<line x1="618" y1="350" x2="618" y2="354" stroke="#333333" stroke-width="1"/>
-<text x="618" y="367" font-size="11" fill="#111111" text-anchor="middle">40</text>
-<line x1="62.52" y1="350" x2="66.52" y2="350" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="353.85" font-size="11" fill="#111111" text-anchor="end">0</text>
-<line x1="62.52" y1="272.5" x2="66.52" y2="272.5" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="276.35" font-size="11" fill="#111111" text-anchor="end">500</text>
-<line x1="62.52" y1="195" x2="66.52" y2="195" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="198.85" font-size="11" fill="#111111" text-anchor="end">1000</text>
-<line x1="62.52" y1="117.5" x2="66.52" y2="117.5" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="121.35" font-size="11" fill="#111111" text-anchor="end">1500</text>
-<line x1="62.52" y1="40" x2="66.52" y2="40" stroke="#333333" stroke-width="1"/>
-<text x="59.52" y="43.85" font-size="11" fill="#111111" text-anchor="end">2000</text>
-<text x="342.26" y="388" font-size="13" fill="#111111" text-anchor="middle">x</text>
-<text x="22" y="195" font-size="13" fill="#111111" text-anchor="middle" transform="rotate(-90 22 195)">y</text>
-<text x="66.52" y="28" font-size="16" fill="#111111" text-anchor="start" font-weight="bold">Crowded</text>
-<rect x="557.62" y="48" width="52.38" height="24" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<polyline points="563.62,60 581.62,60" fill="none" stroke="#0072b2" stroke-width="1.5"/>
-<text x="587.62" y="63.85" font-size="11" fill="#111111" text-anchor="start">s</text>
-<rect x="549.34" y="304" width="60.66" height="38" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="557.34" y="320" font-size="11" fill="#111111" text-anchor="start">primary</text>
-<text x="557.34" y="335" font-size="11" fill="#111111" text-anchor="start">box</text>
-<rect x="74.52" y="48" width="54.28" height="23" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="82.52" y="64" font-size="11" fill="#111111" text-anchor="start">second</text>
-<rect x="562.1" y="80" width="47.9" height="23" fill="#fafafa" stroke="#999999" stroke-width="1"/>
-<text x="570.1" y="96" font-size="11" fill="#111111" text-anchor="start">third</text>
-<text x="188.44" y="323.5" font-size="11" fill="#111111" text-anchor="start">alpha</text>
-<text x="194.39" y="307.35" font-size="11" fill="#111111" text-anchor="start">beta</text>
+<rect x="66.52" y="40" width="551.48" height="310" fill="none" stroke="#3a372f" stroke-width="1"/>
+<line x1="66.52" y1="350" x2="66.52" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="66.52" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">0</text>
+<line x1="204.39" y1="350" x2="204.39" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="204.39" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">10</text>
+<line x1="342.26" y1="350" x2="342.26" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="342.26" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">20</text>
+<line x1="480.13" y1="350" x2="480.13" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="480.13" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">30</text>
+<line x1="618" y1="350" x2="618" y2="354" stroke="#3a372f" stroke-width="1"/>
+<text x="618" y="367" font-size="11" fill="#1c1b17" text-anchor="middle">40</text>
+<line x1="62.52" y1="350" x2="66.52" y2="350" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="353.85" font-size="11" fill="#1c1b17" text-anchor="end">0</text>
+<line x1="62.52" y1="272.5" x2="66.52" y2="272.5" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="276.35" font-size="11" fill="#1c1b17" text-anchor="end">500</text>
+<line x1="62.52" y1="195" x2="66.52" y2="195" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="198.85" font-size="11" fill="#1c1b17" text-anchor="end">1000</text>
+<line x1="62.52" y1="117.5" x2="66.52" y2="117.5" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="121.35" font-size="11" fill="#1c1b17" text-anchor="end">1500</text>
+<line x1="62.52" y1="40" x2="66.52" y2="40" stroke="#3a372f" stroke-width="1"/>
+<text x="59.52" y="43.85" font-size="11" fill="#1c1b17" text-anchor="end">2000</text>
+<text x="342.26" y="388" font-size="13" fill="#1c1b17" text-anchor="middle">x</text>
+<text x="22" y="195" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 195)">y</text>
+<text x="66.52" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Crowded</text>
+<rect x="557.62" y="48" width="52.38" height="24" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<polyline points="563.62,60 581.62,60" fill="none" stroke="#0072b2" stroke-width="1.25"/>
+<text x="587.62" y="63.85" font-size="11" fill="#1c1b17" text-anchor="start">s</text>
+<rect x="549.34" y="304" width="60.66" height="38" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="557.34" y="320" font-size="11" fill="#1c1b17" text-anchor="start">primary</text>
+<text x="557.34" y="335" font-size="11" fill="#1c1b17" text-anchor="start">box</text>
+<rect x="74.52" y="48" width="54.28" height="23" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="82.52" y="64" font-size="11" fill="#1c1b17" text-anchor="start">second</text>
+<rect x="562.1" y="80" width="47.9" height="23" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
+<text x="570.1" y="96" font-size="11" fill="#1c1b17" text-anchor="start">third</text>
+<text x="188.44" y="323.5" font-size="11" fill="#1c1b17" text-anchor="start">alpha</text>
+<text x="194.39" y="307.35" font-size="11" fill="#1c1b17" text-anchor="start">beta</text>
 </svg>
 "
 `;

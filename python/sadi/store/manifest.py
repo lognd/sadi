@@ -91,6 +91,9 @@ class Manifest(BaseModel):
     # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
     # Derived mirror of the SYNTHETIC marker file; the marker, not this flag, is authoritative.
     synthetic: bool = False
+    # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
+    # Set only by spill import: "joined" (self-contained successor) or "fragment" (spill alone).
+    spill_import: str | None = None
 
 
 class ManifestInvalid(BaseModel):

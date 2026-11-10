@@ -1,3 +1,4 @@
+// frob:ticket 01M72PGN6FQEXXCFGXA3EMAPTS
 // frob:ticket 01M6W7R383ZG0WZNNVJMQYWW87
 // frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import { describe, expect, it } from "vitest";
@@ -90,7 +91,7 @@ describe("canvas draw calls", () => {
   it("records a stable golden call sequence", () => {
     const { ctx, log } = recorder();
     paintScene(ctx, scene(), 2);
-    expect(log.slice(0, 3)).toEqual(["save()", "scale(2,2)", "fillStyle=#ffffff"]);
+    expect(log.slice(0, 3)).toEqual(["save()", "scale(2,2)", "fillStyle=#f8f6ee"]);
     expect(log.join("\n")).toMatchSnapshot();
   });
 });

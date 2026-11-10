@@ -1,0 +1,24 @@
+kind = "evidence"
+captured_at = "2026-11-10T12:29:25Z"
+digest = "a050c74f26c518fcf6d717871ba65412a6723196f0d7917c5512cadb9d034260"
+exit_code = 0
+head = "b77ff61e84e48b400ab2ffffe82512967b89273d"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  2 passed (2)
+      Tests  51 passed (51)
+   Start at  07:29:32
+   Duration  481ms (transform 65%, tests 21%, import 12%, worker 3%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/a11y/contrast.test.ts src/plots/core/plots.test.ts"
+size = 173
+status = "measured"
+at = "2026-11-10T12:29:25Z"
+actor = "lognd"
+rev = 1

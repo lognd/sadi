@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/PXPD3AB; scope: python/sadi/store/spill.py, python/sadi/server/routes/sessions.py, python/tests/**/*spill*, python/tests/**/*sessions*, docs/store/spill.md; ttl 7200s"
+at = "2026-11-10T09:37:04Z"
+actor = "lognd"
+rev = 1

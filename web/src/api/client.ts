@@ -1,3 +1,4 @@
+// frob:ticket 01M7274EH583A30335TGGT6ZZ1
 import { getLogger } from "./log";
 import { err, ok, type Result } from "./result";
 import type { components } from "./schema";
@@ -71,4 +72,26 @@ export async function runDoctorCheck(
     return err({ kind: "http", status: res.status, body: await res.text() });
   }
   return ok((await res.json()) as CheckResult);
+}
+
+/** Reconnect outcome: the refreshed device view from POST /api/device/reconnect. */
+export type ReconnectView = components["schemas"]["DeviceView"];
+
+/** Ask the backend to open the board now (POST /api/device/reconnect); the open session and its WAL are untouched. */
+export async function postReconnect(fetchImpl: typeof fetch = fetch): Promise<Result<ReconnectView, ApiError>> {
+  const path = "/api/device/reconnect";
+  log.info("reconnect requested", { path });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    log.warn("http error", { path, status: res.status });
+    return err({ kind: "http", status: res.status, body: await res.text() });
+  }
+  return ok((await res.json()) as ReconnectView);
 }

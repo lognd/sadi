@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:05:50Z"
-updated = "2026-11-10T07:27:02Z"
+updated = "2026-11-10T07:29:00Z"
 labels = ["creates:python/tests/server/test_finish_wiring.py"]
 scope = ["python/sadi/server/service.py", "python/sadi/server/routes/results.py", "python/tests/server/test_finish_wiring.py", "python/sadi/server/app.py", "python/sadi/server/routes/export.py", "python/tests/server/test_results_routes.py", "web/src/api/openapi.json", "web/src/api/schema.ts", "web/src/components/instrument/useBackendFacts.ts", "docs/server/app.md", "docs/server/results.md", "changelog.d/01M724E09H9X4DDW9ATK14JQ5C.fixed.md"]
 

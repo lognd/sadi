@@ -2,7 +2,8 @@
 id = "01M72YAFYMKFSSKG8EZNGBTFZA"
 title = "Elastic suggestion is always the 3.0 kg cap after cold start (audit8 M3)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

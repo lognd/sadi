@@ -86,6 +86,20 @@ describe("live derivation from a mocked sim stream", () => {
     expect(out).toContain("disconnect-notice");
     expect(out).toContain("disabled");
   });
+  // frob:ticket 01M72Z8PFGR05PRFMM2SA28CY0
+  it("a device_fault stop reads Faulted, never Connected, and blocks capture; hello clears it", () => {
+    const stopped = parseMessage('{"kind":"stopped","reason":"device_fault","hint":"x"}');
+    const hello = parseMessage('{"kind":"hello","latest":{},"simulated":false}');
+    const s0: SideState = { settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false };
+    const s = stopped.ok ? foldSide(s0, stopped.value) : s0;
+    expect(s.faulted).toBe(true);
+    const w = new TraceWindow(5, 0);
+    const v = deriveLive(w.snapshot(100), OPEN, "settled", false, null, null, s.faulted);
+    expect(v.source).toBe("faulted");
+    expect(decide(v, true, "idle").kind).toBe("blocked");
+    expect(html(<RunView {...props({ view: v })} />)).toContain("fault-notice");
+    expect(hello.ok && foldSide(s, hello.value).faulted).toBe(false);
+  });
   it("driftOver needs three columns", () => {
     expect(driftOver(new Float64Array([0, 1]), new Float64Array([0, 1]), 0)).toBeNull();
   });

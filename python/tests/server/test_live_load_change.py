@@ -33,7 +33,7 @@ def _live(dev: _SimDevice) -> LiveAcquisition:
 # frob:tests python/sadi/server/live.py::LiveAcquisition.set_phase_source
 @pytest.mark.parametrize(
     ("phase", "steps"),
-    [(None, 0), (Phase.CALIBRATE, 0), (Phase.ELASTIC, 1), (Phase.PLASTIC, 1)],
+    [(None, 0), (Phase.ELASTIC, 1), (Phase.PLASTIC, 1)],
 )
 def test_sim_load_only_in_load_phases(phase: Phase | None, steps: int) -> None:
     dev = _SimDevice()

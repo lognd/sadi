@@ -10,6 +10,7 @@ LF and a BOM so files re-saved by other tools still load.
 """
 
 # frob:ticket 01M6W7R3Q5RVEC8YFA37P8582F
+# frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
 # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
 # frob:ticket 01M6WX3GJK2D59J39ZZS1J03DV
 from __future__ import annotations
@@ -59,6 +60,7 @@ EXPORT_KIND = "lctt-csv"
 # frob:ticket 01M6WX3GMG3Z1WCC12V437XJK7
 SCHEMA_VERSION = "5"  # v5: phase column (49) + per-phase L0; v4: 48 cols; v3: 42 cols
 TITLE = "SADI LCTT tensile test"
+PARTIAL_STATUS = "PARTIAL"
 NAN = float("nan")
 ELASTIC = SpecimenRole.ELASTIC.value
 PLASTIC = SpecimenRole.PLASTIC.value
@@ -380,8 +382,13 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
     operator: str = "",
     description: str = "",
     config: LiveConfig | None = None,
+    partial: bool = False,
 ) -> Result[CsvDocument, ExportCsvError]:
     """Derive the full document from raw session events (pure; `date` is passed for determinism).
+
+    With `partial=True` (mid-run export) the document is labelled `Status,PARTIAL` and only the
+    calibration points are required: without tare, specimen or points it holds the calibration
+    block and no rows.
 
     Mirrors the Results path: elastic points use L0 0.5 and give E/r2, plastic points use L0
     0.08313 and give yield (with the plastic curve's own modulus); each row names its phase. Points
@@ -394,7 +401,10 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         _log.error("export: event fold failed: %s", folded.danger_err)
         return Err(ExportCsvError.Compute)
     st = folded.danger_ok
-    if not st.cal or not st.tare or st.specimen is None or not st.points:
+    ready = bool(st.cal and st.tare and st.specimen is not None and st.points)
+    if partial and not ready:
+        return _calibration_only(st.cal, date, operator, description)
+    if not ready:
         _log.warning("export: session not ready (cal/tare/specimen/points missing)")
         return Err(ExportCsvError.NotReady)
     cal = fit_calibration([c.volts for c in st.cal], [c.height for c in st.cal])
@@ -511,8 +521,81 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         st.cal,
         l0s,
     )
+    if partial:
+        meta = _mark_partial(meta)
     _log.info("export: built document with %d points in %d phase(s)", len(rows), len(groups))
     return Ok(CsvDocument(meta=tuple(meta), rows=tuple(rows)))
+
+
+def _mark_partial(meta: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Insert the `Status,PARTIAL` row right after the schema row of a metadata block."""
+    out = list(meta)
+    out.insert(2, ("Status", PARTIAL_STATUS))
+    return out
+
+
+def _cal_meta(fit: Any, cal: Sequence[CalPoint]) -> list[tuple[str, str]]:  # noqa: ANN401
+    """Calibration metadata rows: fit slope/intercept/se/t95/U95/r2/n and the raw cal points."""
+    f = format_number
+    return [
+        ("Cal slope (m/V)", f(fit.slope.value)), ("Cal intercept (m)", f(fit.intercept.value)),
+        ("Cal se slope", f(fit.se_slope)), ("Cal se intercept", f(fit.se_intercept)),
+        ("Cal r2", f(fit.r2)), ("Cal t95", f(fit.t95)), ("Cal n", str(fit.n)),
+        ("Cal U95 slope (m/V)", f(fit.u95_slope)),
+        ("Cal U95 intercept (m)", f(fit.u95_intercept)),
+        *[
+            kv
+            for i, c in enumerate(cal, start=1)
+            for kv in ((f"Cal point {i} volts (V)", f(c.volts)),
+                       (f"Cal point {i} height (m)", f(c.height)))
+        ],
+    ]  # fmt: skip
+
+
+def _calibration_only(
+    cal: Sequence[CalPoint], date: datetime, operator: str, description: str
+) -> Result[CsvDocument, ExportCsvError]:
+    """PARTIAL document with the calibration block only (no tare, specimen or points yet)."""
+    if not cal:
+        _log.warning("partial export: no calibration points yet")
+        return Err(ExportCsvError.NotReady)
+    fit = fit_calibration([c.volts for c in cal], [c.height for c in cal])
+    if isinstance(fit, Err):
+        _log.error("partial export: calibration fit failed: %s", fit.danger_err)
+        return Err(ExportCsvError.Compute)
+    meta = [
+        ("Title", TITLE), ("Schema", SCHEMA_VERSION), ("Status", PARTIAL_STATUS),
+        ("Date", date.isoformat()), ("Operator", operator), ("Description", description),
+        *_cal_meta(fit.danger_ok, cal),
+    ]  # fmt: skip
+    _log.info("partial export: calibration-only document, %d cal points", len(cal))
+    return Ok(CsvDocument(meta=tuple(meta), rows=()))
+
+
+def build_calibration_csv(
+    events: Sequence[LiveEvent], *, date: datetime, operator: str = "", description: str = ""
+) -> Result[bytes, ExportCsvError]:
+    """Standalone calibration CSV (points plus fit), like lctt_export_calibration.vi."""
+    folded = _fold(events)
+    if isinstance(folded, Err):
+        _log.error("calibration export: event fold failed: %s", folded.danger_err)
+        return Err(ExportCsvError.Compute)
+    cal = folded.danger_ok.cal
+    built = _calibration_only(cal, date, operator, description)
+    if isinstance(built, Err):
+        return Err(built.danger_err)
+    fit = fit_calibration([c.volts for c in cal], [c.height for c in cal]).danger_ok
+    f = format_number
+    head = [
+        ("Title", "SADI LCTT calibration"), ("Schema", SCHEMA_VERSION), ("Date", date.isoformat()),
+        ("Operator", operator), ("Description", description),
+        *_cal_meta(fit, ())[:9],
+    ]  # fmt: skip
+    first, rest = list(head[0]), [list(kv) for kv in head[1:]]
+    rest += [[], ["point", "volts (V)", "height (m)"]]
+    rest += [[str(i), f(c.volts), f(c.height)] for i, c in enumerate(cal, start=1)]
+    _log.info("calibration export: %d points", len(cal))
+    return Ok(render_csv(first, rest))
 
 
 def _meta(  # noqa: PLR0913

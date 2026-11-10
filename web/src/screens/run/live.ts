@@ -75,9 +75,10 @@ export function signalOf(s: Snapshot): Signal {
   return peak >= NEAR_LIMIT_FRACTION * SATURATION_V ? "near-limit" : "ok";
 }
 
-/** Status-bar source: any non-open connection is Disconnected, otherwise Simulated or Connected. */
-export function sourceOf(c: ConnState, simulated: boolean): Source {
+/** Status-bar source: non-open is Disconnected, a device fault is Faulted (never Connected), else Simulated or Connected. */
+export function sourceOf(c: ConnState, simulated: boolean, faulted = false): Source {
   if (c.status !== "open") return "disconnected";
+  if (faulted) return "faulted";
   return simulated ? "simulated" : "connected";
 }
 
@@ -91,6 +92,7 @@ export function motionOf(st: SettleState | null): Motion {
 export function deriveLive(
   snap: Snapshot, conn: ConnState, settle: SettleState | null, simulated: boolean, serverDriftVps: number | null = null,
   frameAgeMs: number | null = null,
+  faulted = false,
 ): LiveView {
   const n = snap.x.length;
   const idle = frameAgeMs !== null && frameAgeMs > IDLE_FRAME_MS;
@@ -100,7 +102,7 @@ export function deriveLive(
     driftVps: drift !== null && Number.isFinite(drift) ? drift : null,
     signal: idle ? "ok" : signalOf(snap),
     motion: idle ? "unknown" : motionOf(settle),
-    source: sourceOf(conn, simulated),
+    source: sourceOf(conn, simulated, faulted),
     stale: idle || conn.status !== "open" || snap.stale,
     idle,
     recent: idle ? null : recentStats(snap),

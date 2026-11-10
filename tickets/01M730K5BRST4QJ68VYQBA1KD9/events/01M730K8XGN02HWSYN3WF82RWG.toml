@@ -1,0 +1,7 @@
+kind = "field"
+field = "labels"
+old = ["creates:python/tests/plugins/test_example_plugin.py"]
+new = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
+at = "2026-11-10T15:18:02Z"
+actor = "lognd"
+rev = 1

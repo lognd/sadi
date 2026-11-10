@@ -7,8 +7,8 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:51:42Z"
-scope = ["python/sadi/store/**", "python/sadi/server/**"]
+updated = "2026-11-10T14:52:19Z"
+scope = ["python/sadi/store/**", "python/sadi/server/**", "python/tests/store/test_spill.py"]
 
 [[acceptance]]
 text = "Non-production start does not copy user-dir spill."

@@ -2,7 +2,8 @@
 id = "01M713J4YBWW0CZ9B7DBKQZGMH"
 title = "e2e: drive the full LCTT flow with Playwright against the simulator on Linux (WSL) and native Windows; fix what breaks"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

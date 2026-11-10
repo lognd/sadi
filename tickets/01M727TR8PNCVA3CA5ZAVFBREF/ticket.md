@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:13Z"
-updated = "2026-11-10T08:07:53Z"
+updated = "2026-11-10T08:07:55Z"
 labels = ["creates:web/src/components/debug/DebugStrip.test.tsx"]
 scope = ["python/sadi/server/routes/results.py", "web/src/components/instrument/DebugStrip.tsx", "python/tests/server/test_results_routes.py", "docs/ux.md", "web/src/components/debug/DebugStrip.test.tsx"]
 

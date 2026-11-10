@@ -133,7 +133,7 @@ def test_corrupt_session_is_refused_and_untouched(client: TestClient, tmp_path: 
     segs = sorted((sdir / "wal").iterdir())
     seg = segs[0]
     data = bytearray(seg.read_bytes())
-    for i in range(64, len(data)):
+    for i in range(64, 72):  # damage the first frame only; valid frames follow, so not a torn tail
         data[i] ^= 0xFF
     seg.write_bytes(bytes(data))
     before = _digest(sdir)
@@ -141,4 +141,21 @@ def test_corrupt_session_is_refused_and_untouched(client: TestClient, tmp_path: 
     assert res.status_code >= 400
     assert res.headers["content-type"].startswith("application/problem+json")
     assert res.json()["hint"]
+    assert _digest(sdir) == before
+
+
+# frob:tests python/sadi/server/service.py::SessionService.read_closed
+# frob:tests python/sadi/server/routes/export.py::make_export_router
+def test_torn_tail_exports_verified_prefix_with_header(client: TestClient, tmp_path: Path) -> None:
+    """A crash-style torn tail still downloads the verified prefix, flagged by a header, untouched."""
+    name = _closed(client)
+    sdir = tmp_path / "sessions" / name
+    seg = sorted((sdir / "wal").iterdir())[-1]
+    with seg.open("ab") as f:
+        f.write(b"\x07\x00\x00")  # a partial frame, as left by power loss
+    before = _digest(sdir)
+    res = client.get(f"/api/sessions/{name}/export/points")
+    assert res.status_code == 200, res.text
+    assert res.text == f"session,points\n{name},1\n"
+    assert res.headers["x-sadi-torn-tail"].count("/") == 1
     assert _digest(sdir) == before

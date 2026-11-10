@@ -87,6 +87,8 @@ class ClosedSession:
     lab: LabModule
     views: list[PointView]
     provenance: DataProvenance
+    # frob:ticket 01M727965F98C8FB295P7A7FRS
+    torn_tail: str | None = None  # "segment/offset" when only the verified prefix was read
 
 
 @dataclass
@@ -280,7 +282,7 @@ class SessionService:
         """Read session `name` from disk without a writer, lock, version, WAL append or device.
 
         Refuses the session this service has open and one whose writer is alive elsewhere;
-        a corrupt log is a problem too. Nothing under the session directory is modified.
+        a corrupt log is a problem too, but a torn tail (crash) exports the verified prefix. Nothing under the session directory is modified.
         """
         with self._lock:
             if self._open is not None and self._open.handle.path.name == name:
@@ -316,8 +318,8 @@ class SessionService:
                 )
             lab = self._labs.get(LabId(mf.danger_ok.lab_module)).map_err(from_sadi).unwrap()
             scan = WalReader.scan(path / "wal")  # read-only verification of the whole log
-            if scan.is_err or scan.danger_ok.tail is not None:
-                detail = repr(scan.danger_err if scan.is_err else scan.danger_ok.tail)
+            if scan.is_err:
+                detail = repr(scan.danger_err)
                 _log.error("read_closed %s: WAL not clean: %s", name, detail)
                 return Err(
                     conflict(
@@ -326,6 +328,11 @@ class SessionService:
                         "Run the Doctor to inspect the session; nothing was changed.",
                     )
                 )
+            tail = scan.danger_ok.tail  # frob:ticket 01M727965F98C8FB295P7A7FRS
+            torn = None if tail is None else f"{tail.segment}/{tail.offset}"
+            if tail is not None:
+                # A torn tail is the normal result of a crash: export the verified prefix.
+                _log.warning("read_closed %s: torn tail at %s; exporting verified prefix", name, torn)
             state = recover_state(path)
             if state.is_err:
                 _log.error("read_closed %s: replay failed: %s", name, state.danger_err)
@@ -339,7 +346,9 @@ class SessionService:
             views = [PointView.of(p) for p in state.danger_ok.view().points]
             prov = SYNTHETIC if session_is_synthetic(path) else REAL
             _log.info("read_closed %s: %d points (read-only)", name, len(views))
-            return Ok(ClosedSession(path=path, lab=lab, views=views, provenance=prov))
+            return Ok(
+                ClosedSession(path=path, lab=lab, views=views, provenance=prov, torn_tail=torn)
+            )
 
     # ---- lifecycle --------------------------------------------------------------------
 

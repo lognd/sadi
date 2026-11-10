@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-10T14:38:17Z"
 updated = "2026-11-10T15:00:09Z"
-scope = ["python/sadi/server/capture.py", "web/src/screens/run/live.ts", "web/src/screens/run/capture.ts"]
+scope = ["python/sadi/server/capture.py", "web/src/screens/run/live.ts", "web/src/screens/run/capture.ts", "web/src/screens/run/RunScreen.tsx"]
 
 [[acceptance]]
 text = "A refusal that wrote nothing clears the frozen retry body."

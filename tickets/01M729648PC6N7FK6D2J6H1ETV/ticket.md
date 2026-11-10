@@ -2,7 +2,8 @@
 id = "01M729648PC6N7FK6D2J6H1ETV"
 title = "audit4 M2: recovered spill becomes a fragment version without calibration/tare; spill not idempotent across Close retries"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

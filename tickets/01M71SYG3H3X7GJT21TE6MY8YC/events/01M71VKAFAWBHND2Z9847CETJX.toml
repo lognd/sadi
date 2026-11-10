@@ -1,0 +1,12 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-10T04:31:27Z"
+digest = "1717005de56c0e0590eb1f5cc8f5d91ca4d9edff4b140c41e2406dc7130c3a72"
+head = "d1b187ec12cd0c8cca0fc40283b888a73f6abda5"
+provider = "file"
+ref = "docs/synthetic.md"
+size = 2194
+status = "measured"
+at = "2026-11-10T04:31:27Z"
+actor = "lognd"
+rev = 1

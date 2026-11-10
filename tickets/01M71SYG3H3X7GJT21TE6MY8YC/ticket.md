@@ -7,7 +7,7 @@ priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T04:02:36Z"
-updated = "2026-11-10T04:31:18Z"
+updated = "2026-11-10T04:31:27Z"
 scope = ["python/sadi/**", "python/tests/**", "docs/synthetic.md", "docs/index.md", "web/src/api/**"]
 
 [[acceptance]]
@@ -24,5 +24,5 @@ bound = true
 
 [[acceptance]]
 text = "docs/synthetic.md documents usage, physics model and safeguards"
-bound = false
+bound = true
 +++

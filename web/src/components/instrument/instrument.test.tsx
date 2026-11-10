@@ -12,7 +12,6 @@ import { STEP_GUIDE } from "../wizard/stepGuide";
 
 const EMPTY: BackendFacts = { save: null, device: null, session: null, rootLockOk: null, dataRoot: null, version: null, lastError: null };
 
-// frob:tests InstrumentBarView
 describe("InstrumentBarView", () => {
   it("says not calibrated yet without calibration", () => {
     const l = fakeLive({ view: { volts: 1.25, source: "simulated" } });
@@ -31,7 +30,6 @@ describe("InstrumentBarView", () => {
   });
 });
 
-// frob:tests calibFrom
 describe("calibration", () => {
   it("needs both slope and tare", () => {
     const rs = { values: [{ name: "slope", value: 2 }] } as unknown as Parameters<typeof calibFrom>[0];
@@ -40,7 +38,6 @@ describe("calibration", () => {
   });
 });
 
-// frob:tests DebugStripView
 describe("DebugStripView", () => {
   it("shows unavailable fields with a reason and the frame age", () => {
     const html = renderToString(<DebugStripView meta={{ seq: 5, durableSeq: 4, enqueuedSeq: 5, dtS: 0.01, atMs: 100 }} nowMs={150} facts={EMPTY} backend="[ok] up" />);
@@ -55,7 +52,6 @@ describe("DebugStripView", () => {
   });
 });
 
-// frob:tests plainNote
 describe("plainNote", () => {
   it("rewrites TOO_FEW_POINTS", () => {
     expect(plainNote("ComputeCode.TOO_FEW_POINTS")).toContain("capture at least 3 points");

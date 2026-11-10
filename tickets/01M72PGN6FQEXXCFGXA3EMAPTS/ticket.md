@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-10T12:21:51Z"
 updated = "2026-11-10T12:28:46Z"
 labels = ["web"]
-scope = ["web/src/styles.css", "web/src/components/*", "docs/web/design-system.md"]
+scope = ["web/src/styles.css", "web/src/components/*", "docs/web/design-system.md", "docs/web/wizard.md"]
 
 [[acceptance]]
 text = "Coherent new visual system via tokens; WCAG AA contrast in both themes; layout and information architecture unchanged"

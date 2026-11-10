@@ -18,6 +18,9 @@ export interface Confidence {
   met: boolean;
 }
 
+/** Advisory GP model state ("" when the even-schedule fallback is in use). */
+export type GpState = "" | "collecting" | "enough" | "diminishing" | "unreliable";
+
 /** Everything the guidance panel shows for one phase after one point. */
 export interface GuidanceState {
   phase: GuidancePhase;
@@ -32,4 +35,9 @@ export interface GuidanceState {
   stop_reason: string;
   proposed_next_phase: GuidancePhase | null;
   run_complete_proposed: boolean;
+  /** GP fields (frob:ticket 01M71KE93DMK963M32SPH83NF4); optional because older servers and the even schedule omit them. */
+  expected_gain?: number | null;
+  expected_half_width?: number | null;
+  alternatives?: number[];
+  gp_state?: GpState | string;
 }

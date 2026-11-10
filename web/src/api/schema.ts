@@ -1121,9 +1121,20 @@ export interface components {
          * @description Everything the guidance panel shows for one phase after one point.
          */
         GuidanceState: {
+            /** Alternatives */
+            alternatives?: number[];
             confidence: components["schemas"]["Confidence"];
+            /** Expected Gain */
+            expected_gain?: number | null;
+            /** Expected Half Width */
+            expected_half_width?: number | null;
             /** Expected Value */
             expected_value?: number | null;
+            /**
+             * Gp State
+             * @default
+             */
+            gp_state: string;
             /** Max Points */
             max_points: number;
             /** Next Action */

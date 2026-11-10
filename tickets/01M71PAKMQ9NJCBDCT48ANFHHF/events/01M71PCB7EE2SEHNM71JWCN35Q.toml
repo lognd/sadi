@@ -1,0 +1,15 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T03:00:07Z"
+digest = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+exit_code = 0
+head = "8aadb35e8f4dd068a3a8bdba09b00890be8c68f8"
+inline = ""
+passed = true
+provider = "command"
+ref = "npx --prefix web eslint web/src/components/guidance/types.ts"
+size = 0
+status = "measured"
+at = "2026-11-10T03:00:07Z"
+actor = "lognd"
+rev = 1

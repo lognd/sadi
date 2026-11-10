@@ -7,12 +7,12 @@ priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T02:59:18Z"
-updated = "2026-11-10T02:59:26Z"
+updated = "2026-11-10T03:00:07Z"
 scope = ["web/src/components/guidance/types.ts", "web/src/api/**", "changelog.d/**"]
 
 [[acceptance]]
 text = "Given main, when eslint runs in web/, then no no-redundant-type-constituents error"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Given the committed OpenAPI spec and schema.ts, when test_committed_spec_not_stale runs, then it passes"

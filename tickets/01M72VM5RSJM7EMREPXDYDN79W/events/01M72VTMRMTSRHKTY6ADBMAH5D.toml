@@ -1,0 +1,91 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:54:40Z"
+digest = "540d1654ce2c25914eb75ca140101a71aff50d30c56fd5ec642fd0922c2f48f5"
+exit_code = 0
+head = "a02d31c0498bfd2ca63172934f136fd54a2b93ee"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/run/captureRetry.test.ts > capture failure text > parses the problem once and shows the hint, never raw JSON or an HTTP code
+[screens.run.capture] capture { phase: 'load', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.run.capture] capture { phase: 'load', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.run.capture] capture { phase: 'load', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.run.capture] capture { phase: 'load', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.run.capture] capture { phase: 'load', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+ \u{2713} web/src/screens/run/captureRetry.test.ts (4 tests) 16ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  08:54:40
+   Duration  779ms (transform 122ms, setup 0ms, collect 138ms, tests 16ms, environment 0ms, prepare 152ms)
+
+JSON report written to /tmp/frob-vitest-1157163-0.json
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > parses the problem once and shows the hint, never raw JSON or an HTTP code
+[screens.review.api] http error {
+  path: '/api/session/points',
+  status: 409,
+  type: 'urn:sadi:error:conflict:no_device'
+}
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > parses the problem once and shows the hint, never raw JSON or an HTTP code
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.review.api] http error { path: '/api/session/points', status: 409, type: 'urn:x' }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.review.api] http error { path: '/api/session/points', status: 500, type: null }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > falls back to detail, then to a generic line for a non-JSON body
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.review.api] http error {
+  path: '/api/session/points',
+  status: 409,
+  type: 'urn:sadi:error:conflict:request_id_reused'
+}
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.review.api] http error {
+  path: '/api/session/points',
+  status: 409,
+  type: 'urn:sadi:error:conflict:no_device'
+}
+
+stderr | web/src/screens/run/captureRetry.test.ts > capture failure text > only request_id_reused clears the frozen id
+[screens.run.capture] capture refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/captureRetry.test.ts"
+size = 3891
+status = "measured"
+test_count = 4
+tests_digest = "6976ddd031379437e58fed62057fb7c03719af49ce866ef9a45e95886c8971c2"
+at = "2026-11-10T13:54:40Z"
+actor = "lognd"
+rev = 1

@@ -53,3 +53,18 @@ def test_complete_successor_supersedes_incomplete_parent() -> None:
     out = {i.name: i for i in mark_latest([_s(1, None, "incomplete"), _s(2, 1)])}
     assert out["f-v001"].latest is False
     assert out["f-v002"].latest is True
+
+
+def _spill_kid(v: int, parent: int, kind: str, state: str = "closed") -> SessionSummary:
+    """A spill-import child of `parent` with `spill_import=kind`."""
+    return _s(v, parent, state).model_copy(update={"spill_import": kind})
+
+
+# frob:tests python/sadi/server/routes/sessions.py::mark_latest
+def test_fragment_or_crashed_spill_never_supersedes_incomplete_parent() -> None:
+    """M2: only a joined, closed import supersedes; fragment and crashed ones leave the parent."""
+    for kid in (_spill_kid(2, 1, "fragment"), _spill_kid(2, 1, "joined", "crashed")):
+        out = {i.name: i for i in mark_latest([_s(1, None, "incomplete"), kid])}
+        assert out["f-v001"].latest is True
+    out = {i.name: i for i in mark_latest([_s(1, None, "incomplete"), _spill_kid(2, 1, "joined")])}
+    assert out["f-v001"].latest is False

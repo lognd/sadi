@@ -1,0 +1,1 @@
+Spill import now joins after a real fsync failure, only a joined closed import supersedes its parent, imports keep synthetic provenance, and a low-space or failed join falls back to a fragment without repeated partial copies.

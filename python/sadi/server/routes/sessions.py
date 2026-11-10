@@ -31,6 +31,22 @@ _log = logging.getLogger(__name__)
 
 #: Manifest state of a session whose fold failed; never counts as newer work.
 INCOMPLETE = "incomplete"
+CLOSED = "closed"
+JOINED = "joined"
+
+
+# frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
+def _supersedes(kid: SessionSummary) -> bool:
+    """True when `kid` counts as newer work than its parent.
+
+    A spill import supersedes its parent only when it genuinely joined and closed cleanly; a
+    fragment or crashed import never does (the parent holds the calibration and the points).
+    """
+    if kid.state == INCOMPLETE:
+        return False
+    if kid.spill_import is not None:
+        return kid.spill_import == JOINED and kid.state == CLOSED
+    return True
 
 
 # frob:ticket 01M727965F98C8FB295P7A7FRS
@@ -49,7 +65,7 @@ def _descendants(items: list[SessionSummary], name: str) -> list[SessionSummary]
                 continue
             seen.add(kid.name)
             stack.append(kid.name)  # an incomplete child may still have complete descendants
-            if kid.state != INCOMPLETE:
+            if _supersedes(kid):
                 out.append(kid)
     return out
 

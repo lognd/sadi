@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
 updated = "2026-11-10T15:42:14Z"
-scope = ["web/src/**", "python/sadi/server/**", "python/sadi/design/selector.py", "docs/server/app.md", "docs/ux.md", "python/tests/design/test_selector.py"]
+scope = ["web/src/**", "python/sadi/server/**", "python/sadi/design/selector.py", "docs/server/app.md", "docs/ux.md", "python/tests/design/test_selector.py", "python/tests/server/test_routes_health.py"]
 
 [[acceptance]]
 text = "L3, L4, L6, L7 resolved."

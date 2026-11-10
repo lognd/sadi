@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at f3979464b62b (python (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42747216282/job/129602075844): CI-fix ticket: fixes the red python (macos-latest) jobs race that makes the base red"
+at = "2026-11-10T03:13:54Z"
+actor = "lognd"
+rev = 1

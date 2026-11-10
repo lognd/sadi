@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/session_points.py", "python/tests/**", "web/src/screens/run/**", "web/src/keys/**", "web/src/api/**", "docs/lctt/**", "docs/server/**"]
+new = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/session_points.py", "python/tests/**", "web/src/screens/run/**", "web/src/keys/**", "web/src/api/**", "docs/lctt/**", "docs/server/**"]
+at = "2026-11-10T09:37:34Z"
+actor = "lognd"
+rev = 1

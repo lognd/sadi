@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:32:29Z"
-updated = "2026-11-10T13:42:25Z"
+updated = "2026-11-10T13:42:28Z"
 scope = ["python/sadi/synthetic/provenance.py", "python/sadi/store/spill.py", "web/src/api/schema.ts", "python/sadi/**", "python/tests/**", "web/src/**", "docs/synthetic.md"]
 
 [[acceptance]]

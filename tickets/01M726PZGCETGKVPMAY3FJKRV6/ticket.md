@@ -2,7 +2,8 @@
 id = "01M726PZGCETGKVPMAY3FJKRV6"
 title = "H1: export must not finish acquisition (GET export mid-run kills recording)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

@@ -2,12 +2,12 @@
 id = "01M71SKWW36NDBJK24QD7DHSW4"
 title = "Web: always-on instrument bar, debug strip, and newcomer-proof pages"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T03:56:48Z"
-updated = "2026-11-10T03:56:50Z"
+updated = "2026-11-10T03:56:53Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]

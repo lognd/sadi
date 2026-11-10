@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T14:40:20Z"
-scope = ["python/sadi/design/**"]
+updated = "2026-11-10T14:43:14Z"
+scope = ["python/sadi/design/**", "python/tests/design/**"]
 
 [[acceptance]]
 text = "Elastic suggestion after cold start is a sensible load, not the cap."

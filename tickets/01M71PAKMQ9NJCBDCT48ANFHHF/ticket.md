@@ -2,12 +2,12 @@
 id = "01M71PAKMQ9NJCBDCT48ANFHHF"
 title = "CI red on main: eslint redundant union in guidance/types.ts and stale committed OpenAPI spec"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T02:59:18Z"
-updated = "2026-11-10T02:59:18Z"
+updated = "2026-11-10T02:59:26Z"
 scope = ["web/src/components/guidance/types.ts", "web/src/api/**", "changelog.d/**"]
 
 [[acceptance]]

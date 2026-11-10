@@ -2386,6 +2386,17 @@
               "warning": ""
             }
           },
+          "spill_import": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spill Import"
+          },
           "state": {
             "title": "State",
             "type": "string"

@@ -54,6 +54,7 @@ class SessionSummary(BaseModel):
     # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
     latest: bool = True  # True for the newest version of its family
     latest_name: str | None = None  # directory of the newest version when this one is not it
+    spill_import: str | None = None  # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
 
 
 class SessionInfo(BaseModel):

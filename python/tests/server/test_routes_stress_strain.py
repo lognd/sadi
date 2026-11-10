@@ -53,6 +53,7 @@ def test_fit_returns_client_view(tmp_path: Path) -> None:
         "eU95Gpa",
         "r2",
         "lowR2",
+        "provenance",  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
     }
     assert (body["first"], body["last"]) == (1, 6)
     assert abs(body["eGpa"] - 70.0) < 1.0

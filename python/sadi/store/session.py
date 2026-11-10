@@ -113,6 +113,46 @@ class NotASession(SessionError):
     path: Path
 
 
+class ProvenanceMismatch(SessionError):
+    """A resume asked for a different data mode (real vs synthetic) than the parent session."""
+
+    # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    parent: Path
+    parent_synthetic: bool
+    hint: str = "Real and synthetic data are never mixed; start a new session in the same mode."
+
+
+#: Name of the immutable marker file that makes a session directory permanently synthetic.
+SYNTHETIC_MARKER = "SYNTHETIC"
+_SYNTHETIC_MARKER_TEXT = b"SYNTHETIC DATA: simulated copper specimen, not a physical measurement.\n"
+
+
+def session_is_synthetic(session_dir: Path) -> bool:
+    """True when `session_dir` carries the SYNTHETIC marker (authoritative; manifest is derived)."""
+    # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    return (session_dir / SYNTHETIC_MARKER).is_file()
+
+
+def _write_synthetic_marker(path: Path) -> Result[None, SessionError]:
+    """Create the SYNTHETIC marker exclusively (never overwritten) and fsync it."""
+    # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    created = create_exclusive(path / SYNTHETIC_MARKER)
+    if created.is_err:
+        return Err(SessionIo(error=created.danger_err))
+    fd = created.danger_ok
+    try:
+        os.write(fd, _SYNTHETIC_MARKER_TEXT)
+        synced = fsync_file(fd)
+    except OSError as exc:
+        return Err(_io(exc, path))
+    finally:
+        os.close(fd)
+    if synced.is_err:
+        return Err(SessionIo(error=synced.danger_err))
+    _log.warning("session %s marked SYNTHETIC", path.name)
+    return Ok(None)
+
+
 class SessionMeta(BaseModel):
     """Caller-supplied identity of a new session family."""
 
@@ -121,6 +161,7 @@ class SessionMeta(BaseModel):
     lab_module: str = ""
     specimen: dict[str, str] = {}
     plugins: tuple[SessionPluginRef, ...] = ()
+    synthetic: bool = False  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 def _io(exc: OSError, path: Path) -> SessionIo:
@@ -330,6 +371,11 @@ def _init_dir(path: Path, manifest: Manifest) -> Result[SessionHandle, SessionEr
     if synced.is_err:
         _release_os_lock(fd)
         return Err(SessionIo(error=synced.danger_err))
+    if manifest.synthetic:
+        marked = _write_synthetic_marker(path)  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+        if marked.is_err:
+            _release_os_lock(fd)
+            return Err(marked.danger_err)
     written = write_manifest(path, manifest)
     if written.is_err:
         _release_os_lock(fd)
@@ -418,6 +464,7 @@ def _create_locked(
         lab_module=meta.lab_module,
         specimen=meta.specimen,
         plugins=meta.plugins,
+        synthetic=meta.synthetic,
     )
     return _init_dir(path, manifest)
 
@@ -428,11 +475,13 @@ def resume_session(
     *,
     recover_stale: bool = False,
     plugins: Sequence[SessionPluginRef] | None = None,
+    synthetic: bool | None = None,
 ) -> Result[SessionHandle, SessionError]:
     """Lock the data root, then create the next version dir linked to `parent_dir`.
 
     The parent is never modified; a stale data-root lock needs explicit `recover_stale`.
     `plugins` records provenance for the new version; None inherits the parent's list.
+    `synthetic` (when given) must equal the parent's mode or ProvenanceMismatch is returned.
     """
     m = _DIR_RE.match(parent_dir.name)
     if m is None:
@@ -441,11 +490,14 @@ def resume_session(
         return Err(NotASession(path=parent_dir))
     locked = _take_root_lock(parent_dir.parent.parent, recover_stale)
     root_lock = locked.unwrap()
-    return _attach_root_lock(_resume_locked(parent_dir, m, plugins), root_lock)
+    return _attach_root_lock(_resume_locked(parent_dir, m, plugins, synthetic), root_lock)
 
 
 def resume_session_in_held_root(
-    parent_dir: Path, *, plugins: Sequence[SessionPluginRef] | None = None
+    parent_dir: Path,
+    *,
+    plugins: Sequence[SessionPluginRef] | None = None,
+    synthetic: bool | None = None,
 ) -> Result[SessionHandle, SessionError]:
     """Resume `parent_dir` as a new version when the caller already holds the data-root lock."""
     m = _DIR_RE.match(parent_dir.name)
@@ -453,14 +505,21 @@ def resume_session_in_held_root(
         return Err(BadSessionName(name=parent_dir.name))
     if not parent_dir.is_dir():
         return Err(NotASession(path=parent_dir))
-    return _resume_locked(parent_dir, m, plugins)
+    return _resume_locked(parent_dir, m, plugins, synthetic)
 
 
 @propagate
 def _resume_locked(
-    parent_dir: Path, m: re.Match[str], plugins: Sequence[SessionPluginRef] | None = None
+    parent_dir: Path,
+    m: re.Match[str],
+    plugins: Sequence[SessionPluginRef] | None = None,
+    synthetic: bool | None = None,
 ) -> Result[SessionHandle, SessionError]:
-    """Resume once the data-root lock is held."""
+    """Resume once the data-root lock is held; the child inherits the parent's data mode."""
+    parent_synth = session_is_synthetic(parent_dir)  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    if synthetic is not None and synthetic != parent_synth:
+        _log.error("refusing resume of %s: data-mode mismatch", parent_dir.name)
+        return Err(ProvenanceMismatch(parent=parent_dir, parent_synthetic=parent_synth))
     locked = probe_lock(parent_dir)
     locked.unwrap()
     if not (parent_dir / "wal").is_dir():
@@ -487,6 +546,7 @@ def _resume_locked(
         lab_module=pmf.lab_module if pmf is not None else "",
         specimen=pmf.specimen if pmf is not None else {},
         plugins=tuple(plugins) if plugins is not None else (pmf.plugins if pmf is not None else ()),
+        synthetic=parent_synth,
     )
     _log.info("resuming %s as %s (parent_last_seq=%s)", parent_dir.name, path.name, report.last_seq)
     return _init_dir(path, manifest)

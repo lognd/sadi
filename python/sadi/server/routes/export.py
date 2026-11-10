@@ -20,6 +20,7 @@ from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze, to_captured
+from sadi.synthetic.provenance import EXPORT_PREFIX, PROVENANCE_HEADER, stamp_export
 
 _log = get_logger(__name__)
 
@@ -120,9 +121,18 @@ def make_export_router(
         """Stream one export: a CSV-style attachment, or inline JSON for figure data."""
         fmt, name, body = unwrap(render_export(svc, labs, format_id, replays))
         headers: dict[str, str] = {}
+        prov = svc.provenance()
         if _is_download(fmt):
             ext = _EXT.get(fmt.media_type, "bin")
-            headers["Content-Disposition"] = f'attachment; filename="{name}-{fmt.id}.{ext}"'
+            fname = f"{name}-{fmt.id}.{ext}"
+            if prov.synthetic:
+                fname = EXPORT_PREFIX + fname
+            headers["Content-Disposition"] = f'attachment; filename="{fname}"'
+        if prov.synthetic:
+            body = stamp_export(body, fmt.media_type, prov)
+            headers[PROVENANCE_HEADER] = "synthetic"
+        else:
+            headers[PROVENANCE_HEADER] = "real"
         return Response(content=body, media_type=fmt.media_type, headers=headers)
 
     return r

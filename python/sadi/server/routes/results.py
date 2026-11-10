@@ -42,6 +42,7 @@ from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze
 from sadi.server.ws import GuidancePayload
+from sadi.synthetic.provenance import REAL, DataProvenance
 from sadi.uncertainty.budget import Budget, BudgetRow
 
 _log = get_logger(__name__)
@@ -118,6 +119,7 @@ class DeviceView(BaseModel):
     attached: bool
     fault: str | None = None
     hint: str = ""
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class QuantityProvenance(BaseModel):
@@ -136,6 +138,8 @@ class ResultsView(ResultSet):
     """`ResultSet` plus per-quantity provenance (which settle windows fed each value)."""
 
     provenance: tuple[QuantityProvenance, ...] = ()
+    # Named data_provenance because `provenance` above already means per-quantity sources.
+    data_provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 def provenance_for(
@@ -209,7 +213,13 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     _log.info("live results: %d values from %d points", len(values), len(active))
     prov = provenance_for(str(lab.id), [v.name for v in values], active)
     return Ok(
-        ResultsView(n_points=len(loads), values=tuple(values), notes=tuple(notes), provenance=prov)
+        ResultsView(
+            n_points=len(loads),
+            values=tuple(values),
+            notes=tuple(notes),
+            provenance=prov,
+            data_provenance=svc.provenance(),
+        )
     )
 
 
@@ -302,6 +312,7 @@ def make_results_router(
                 status="error",
                 attached=False,
                 hint="No device service is configured; start the server with a device source.",
+                provenance=svc.provenance(),
             )
         fault = device.fault
         return DeviceView(
@@ -309,6 +320,7 @@ def make_results_router(
             attached=True,
             fault=None if fault is None else repr(fault)[:300],
             hint=getattr(fault, "hint", "") if fault is not None else "",
+            provenance=svc.provenance(),
         )
 
     return r

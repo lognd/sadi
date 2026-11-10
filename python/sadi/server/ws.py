@@ -41,6 +41,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.framing import encode_envelope, encode_trace
 from sadi.server.results_stream import Connection, ResultsStream
 from sadi.server.service import SessionService
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -160,6 +161,7 @@ class StreamHub:
         results: ResultsStream | None = None,
         simulated: Callable[[], bool] | None = None,
         guidance: Callable[[], GuidancePayload | None] | None = None,
+        provenance: DataProvenance = REAL,
     ) -> None:
         """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes.
 
@@ -168,6 +170,7 @@ class StreamHub:
         consulted after each result or settle-state change and published when it changed.
         """
         self._guidance = guidance
+        self._provenance = provenance  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
         self._last_guidance: GuidancePayload | None = None
         self._last_settle: str | None = None
         self.results = results
@@ -225,6 +228,9 @@ class StreamHub:
             _log.info("capture window opened: point=%s first_raw_seq=%d", point, self._window_first)
         msg["window"] = {"first_raw_seq": self._window_first, "last_raw_seq": msg["raw_seq"]}
         msg["simulated"] = self.is_simulated()
+        msg["provenance"] = self._provenance.model_dump(
+            mode="json"
+        )  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
     def poll(self) -> None:
         """Drain the bus subscription and distribute events to clients."""
@@ -286,6 +292,7 @@ class StreamHub:
             "session": session,
             "latest": latest,
             "simulated": self.is_simulated(),
+            "provenance": self._provenance.model_dump(mode="json"),
             "bus_dropped": self._sub.dropped,
         }
 

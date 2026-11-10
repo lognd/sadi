@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sadi.core.wizard import History, WizardState
 from sadi.labs.lctt.guidance import Phase
 from sadi.store.events import CurrentPoint, EditOp, PointWindow
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 
 class _Body(BaseModel):
@@ -49,6 +50,7 @@ class SessionSummary(BaseModel):
     lab: str
     state: str
     parent: str | None = None
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class SessionInfo(BaseModel):
@@ -59,6 +61,7 @@ class SessionInfo(BaseModel):
     parent: str | None = None
     parent_last_seq: int | None = None
     durable_seq: int
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class StepRef(_Body):

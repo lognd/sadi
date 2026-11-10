@@ -86,6 +86,9 @@ class Manifest(BaseModel):
     last_seq: int | None = None
     # Optional, backward compatible: absent in old manifests (defaults to empty).
     plugins: tuple[SessionPluginRef, ...] = ()
+    # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # Derived mirror of the SYNTHETIC marker file; the marker, not this flag, is authoritative.
+    synthetic: bool = False
 
 
 class ManifestInvalid(BaseModel):

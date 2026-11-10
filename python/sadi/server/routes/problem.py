@@ -41,6 +41,7 @@ _STORE_STATUS: dict[str, int] = {
     "NotASession": 404,
     "ParentIncomplete": 409,
     "ParentCorrupt": 409,
+    "ProvenanceMismatch": 409,
     "Backpressure": 503,
     "Closed": 409,
 }

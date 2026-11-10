@@ -11,6 +11,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from sadi.logging_setup import get_logger
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -21,6 +22,7 @@ class HealthOut(BaseModel):
     status: str = "ok"
     version: str
     simulated: bool | None = None
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 def _package_version() -> str:
@@ -32,7 +34,9 @@ def _package_version() -> str:
         return "unknown"
 
 
-def make_health_router(simulated: Callable[[], bool] | None = None) -> APIRouter:
+def make_health_router(
+    simulated: Callable[[], bool] | None = None, provenance: DataProvenance = REAL
+) -> APIRouter:
     """Build the health router; `simulated` optionally reports the sim-device flag."""
     router = APIRouter(prefix="/api", tags=["health"])
 
@@ -41,6 +45,6 @@ def make_health_router(simulated: Callable[[], bool] | None = None) -> APIRouter
         """Return status "ok", the package version and the sim flag when known."""
         sim = simulated() if simulated is not None else None
         _log.debug("health ok (simulated=%s)", sim)
-        return HealthOut(version=_package_version(), simulated=sim)
+        return HealthOut(version=_package_version(), simulated=sim, provenance=provenance)
 
     return router

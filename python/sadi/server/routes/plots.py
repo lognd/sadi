@@ -22,6 +22,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, from_sadi, unwrap
 from sadi.server.service import SessionService
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -34,10 +35,13 @@ class CalibrationPlot(CalibrationData):
     """Calibration scatter (volts vs height in m); `fit` is None until 3 points exist."""
 
     fit: CalibrationFitView | None  # type: ignore[assignment]
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class StressStrainPlot(StressStrainData):
     """Stress-strain scatter in strain and MPa; excluded points are flagged, not dropped."""
+
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 def calibration_plot(events: list[LiveEvent]) -> CalibrationPlot:
@@ -69,11 +73,13 @@ def make_plots_router(svc: SessionService, cache: SessionReplayCache | None = No
     @r.get("/calibration")
     def get_calibration() -> CalibrationPlot:
         """Calibration points with the fitted line and 95% band of the open session."""
-        return calibration_plot(unwrap(_events(svc, replays)))
+        plot = calibration_plot(unwrap(_events(svc, replays)))
+        return plot.model_copy(update={"provenance": svc.provenance()})
 
     @r.get("/stress-strain")
     def get_stress_strain() -> StressStrainPlot:
         """Stress-strain points (strain, MPa) of the open session, excluded ones flagged."""
-        return stress_strain_plot(unwrap(_events(svc, replays)))
+        plot = stress_strain_plot(unwrap(_events(svc, replays)))
+        return plot.model_copy(update={"provenance": svc.provenance()})
 
     return r

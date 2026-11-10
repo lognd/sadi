@@ -56,9 +56,11 @@ from sadi.store.session import (
     SessionMeta,
     create_session_in_held_root,
     resume_session_in_held_root,
+    session_is_synthetic,
 )
 from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
+from sadi.synthetic.provenance import REAL, SYNTHETIC, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -135,14 +137,23 @@ def _phase_view(phase: Phase | None) -> RunPhaseView:
 class SessionService:
     """Owns the single open session of this server process; calls are serialized by a lock."""
 
-    def __init__(self, data_root: Path, labs: LabRegistry) -> None:
-        """Serve sessions under `data_root` (lock held by the app) for the registered `labs`."""
+    def __init__(self, data_root: Path, labs: LabRegistry, synthetic: bool = False) -> None:
+        """Serve sessions under `data_root` (lock held by the app) for the registered `labs`.
+
+        `synthetic` makes every session this service creates synthetic and refuses to resume a
+        real one (and vice versa): the two data modes are never mixed.
+        """
+        self._synthetic = synthetic  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
         self._root = data_root
         self._labs = labs
         self._lock = threading.RLock()
         self._open: _Open | None = None
         self._on_open: Callable[[WriterHandle, Path], None] | None = None
         self._before_close: Callable[[], None] | None = None
+
+    def provenance(self) -> DataProvenance:
+        """The data provenance every payload of this service carries (real unless synthetic)."""
+        return SYNTHETIC if self._synthetic else REAL
 
     def set_hooks(
         self,
@@ -182,6 +193,7 @@ class SessionService:
                     lab=m.lab_module,
                     state=m.state,
                     parent=m.parent,
+                    provenance=SYNTHETIC if session_is_synthetic(d) else REAL,
                 )
             )
         return out
@@ -196,7 +208,9 @@ class SessionService:
             if busy is not None:
                 return Err(busy)
             lab = self._labs.get(LabId(req.lab)).map_err(from_sadi).unwrap()
-            meta = SessionMeta(slug=req.slug, lab_module=req.lab, specimen=req.specimen)
+            meta = SessionMeta(
+                slug=req.slug, lab_module=req.lab, specimen=req.specimen, synthetic=self._synthetic
+            )
             made = create_session_in_held_root(self._root, meta)
             return self._attach(made.map_err(_from_store).unwrap(), lab)
 
@@ -217,7 +231,7 @@ class SessionService:
             mf = read_manifest(parent)
             lab_id = mf.danger_ok.lab_module if mf.is_ok and mf.danger_ok is not None else ""
             lab = self._labs.get(LabId(lab_id)).map_err(from_sadi).unwrap()
-            made = resume_session_in_held_root(parent)
+            made = resume_session_in_held_root(parent, synthetic=self._synthetic)
             return self._attach(made.map_err(_from_store).unwrap(), lab, fold_from=parent)
 
     @propagate
@@ -425,6 +439,7 @@ class SessionService:
             parent=m.parent,
             parent_last_seq=m.parent_last_seq,
             durable_seq=cur.writer.durable_seq,
+            provenance=self.provenance(),
         )
 
     def _attach(

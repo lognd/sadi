@@ -20,7 +20,7 @@ import webbrowser
 from collections.abc import Callable, Mapping, Sequence
 from importlib import metadata, resources
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import uvicorn
 from fastapi import FastAPI
@@ -304,6 +304,17 @@ def _parser() -> argparse.ArgumentParser:
     serve.add_argument("--no-browser", action="store_true", help="do not open the browser")
     serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
     serve.add_argument("--ad3", action="store_true", help="open the Digilent AD3 (closed on exit)")
+    serve.add_argument(
+        "--synthetic-specimen",
+        action="store_true",
+        help="serve a SIMULATED copper wire instead of a device (needs the confirmation phrase)",
+    )
+    serve.add_argument(
+        "--i-understand-this-is-fake",
+        metavar="PHRASE",
+        default=None,
+        help="the typed confirmation phrase required by --synthetic-specimen",
+    )
     serve.add_argument("--selftest", action="store_true", help="run a simulator acquisition, exit")
     serve.add_argument("--version", action="store_true", help="print the version and exit")
     serve.add_argument(
@@ -312,6 +323,42 @@ def _parser() -> argparse.ArgumentParser:
     serve.add_argument("--skip-preflight", action="store_true", help="do not run the doctor")
     sub.add_parser("doctor", help="run sadi-doctor; remaining arguments are passed through")
     return p
+
+
+SYNTHETIC_BANNER = (
+    "\n"
+    "########################################################################\n"
+    "#  SYNTHETIC SPECIMEN: ALL DATA IS SIMULATED. NOT A REAL MEASUREMENT.  #\n"
+    "#  Sessions and exports are labelled SYNTHETIC and cannot be mixed     #\n"
+    "#  with real data. Do not submit this data as lab results.             #\n"
+    "########################################################################\n"
+    "\n"
+)  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+
+
+def _resolve_synthetic(args: argparse.Namespace) -> Result[bool, str]:
+    """Gate the synthetic source on the flag AND the typed phrase (never env; tty may prompt)."""
+    from sadi.synthetic.confirm import check_enable
+
+    phrase = args.i_understand_this_is_fake
+    if args.synthetic_specimen and phrase is None and sys.stdin.isatty():
+        from sadi.synthetic.provenance import CONFIRM_PHRASE
+
+        _out(f'sadi: type exactly "{CONFIRM_PHRASE}" to use SIMULATED data: ')
+        phrase = sys.stdin.readline().rstrip("\n")
+    got = check_enable(args.synthetic_specimen, phrase)
+    if got.is_err:
+        return Err(str(got.danger_err))
+    return Ok(got.danger_ok)
+
+
+def _open_synthetic() -> DeviceService:
+    """Open the seeded synthetic copper-wire source in place of a device."""
+    from sadi.synthetic.device import SyntheticDevice
+
+    dev = SyntheticDevice(seed=0)
+    dev.open()
+    return cast("DeviceService", dev)  # duck-typed stand-in (same surface)
 
 
 def _serve(args: argparse.Namespace, serve: Serve) -> int:
@@ -340,7 +387,15 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     port = port_got.danger_ok
     data_root = args.data_root if args.data_root is not None else default_data_dir()
     _out(f"sadi: data directory: {data_root}\n")
+    synth = _resolve_synthetic(args)
+    if synth.is_err:
+        _err(f"sadi: {synth.danger_err}\n")
+        return EXIT_USAGE
+    synthetic = synth.danger_ok
     sim = sim_requested(args.sim)
+    if synthetic and (sim or args.ad3):
+        _err("sadi: --synthetic-specimen cannot be combined with --sim or --ad3\n")
+        return EXIT_USAGE
     if not args.skip_preflight:
         pre = preflight(data_root, port)
         if pre.is_err:
@@ -348,7 +403,10 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _err("sadi: doctor preflight failed; follow the steps above, then retry.\n")
             return EXIT_PREFLIGHT
     device: DeviceService | None = None
-    if sim:
+    if synthetic:
+        device = _open_synthetic()
+        _out(SYNTHETIC_BANNER)
+    elif sim:
         _log.info("simulator mode requested")
         opened = open_sim_device()
         if opened.is_err:
@@ -368,7 +426,7 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             return EXIT_AD3
         ad3 = got_ad3.danger_ok
     try:
-        return _serve_app(args, serve, data_root, port, device)
+        return _serve_app(args, serve, data_root, port, device, synthetic)
     finally:
         if ad3 is not None:
             ad3.close()
@@ -380,6 +438,7 @@ def _serve_app(
     data_root: Path,
     port: int,
     device: DeviceService | None,
+    synthetic: bool = False,
 ) -> int:
     """Build the app, mount the web and serve; return the exit code."""
     from sadi.core.pipeline import Bus
@@ -396,6 +455,7 @@ def _serve_app(
             labs=labs,
             bus=live.bus if live is not None else None,
             live=live,
+            synthetic=synthetic,
         )
     )
     mount_web(app, resolve_web_dist(args.web_dist))

@@ -16,6 +16,7 @@ docs current are in [README.md](README.md).
 ## User guides
 
 - [user-guide.md](user-guide.md) - Running a test with the app: procedure, two specimens, creep
+- [synthetic.md](synthetic.md) - Opt-in synthetic copper specimen source, scenario generator and driver
 - [user-guide-screens.md](user-guide-screens.md) - User guide with screenshots of each screen
 - [ux.md](ux.md) - UX design: wizard flow, step rail, wireframes, keyboard map
 - [live-view.md](live-view.md) - Live-view UX: readouts, trace, indicators, guidance placement

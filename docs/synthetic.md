@@ -1,0 +1,54 @@
+# Synthetic specimen source
+
+Status: current
+
+A simulated 32 AWG copper wire so the whole lab can be exercised end to
+end without hardware. It is opt-in, loudly labelled, and can never be
+mistaken for real data.
+
+## Usage
+
+Both an explicit flag and a typed confirmation phrase are required:
+
+    sadi --synthetic-specimen --i-understand-this-is-fake="I UNDERSTAND THIS DATA IS SIMULATED"
+
+If the phrase is omitted and stdin is a terminal, the launcher prompts for
+it. Environment variables never enable the source. Combining it with
+`--sim` or `--ad3` is a usage error, as is a wrong or missing phrase.
+
+## Physics model
+
+- Elastic region: E about 110 GPa, linear to an onset near 60 MPa.
+- Yield and strain hardening: Voce saturation towards about 132 MPa.
+- Creep under hold: logarithmic in time at constant load.
+- Noise: seeded Gaussian, so output is deterministic per seed.
+- Channels: LVDT on ACH0, load cell on ACH2.
+
+## Safeguards
+
+- Flag plus typed phrase; never default, never env-only.
+- A `SYNTHETIC` marker file in the session directory, mirrored in the
+  manifest (`synthetic: true`).
+- Resuming a session with a mismatched provenance is refused (HTTP 409,
+  `ProvenanceMismatch`); real and synthetic data are never mixed.
+- A `provenance` field on health, session, plot, results, modulus-fit
+  payloads and the websocket hello and state messages.
+- Exports get a `SYNTHETIC-` filename prefix, an `X-Sadi-Provenance`
+  header, and a stamp in the body (CSV comment lines, JSON key).
+- A banner at launch.
+
+## Scenario generator
+
+`sadi.synthetic.generate_scenario(seed, flags)` returns a `Scenario` with
+its `Truth`. It randomizes LVDT calibration, mass sequences (some
+duplicated, some out of order), mass uncertainty, tare, clamp-slip
+cycles, a long elastic run, a short plastic run past yield, and settle
+behaviour per load step. Faults (dropped frames, saturation, spike) are
+off unless set explicitly in `ScenarioFlags`.
+
+## Driver
+
+`sadi.synthetic.driver.drive_lab` runs the whole wizard through the HTTP
+API and `analyse` compares fitted values to ground truth. Tolerances:
+E 6 percent (`TOL_E`), yield 5 percent (`TOL_YIELD`), calibration slope
+1 percent (`TOL_CAL_SLOPE`).

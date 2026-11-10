@@ -15,6 +15,7 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.labs.lctt.calibration import fit_calibration
 from sadi.labs.lctt.modulus import CurvePoint, ModulusError, ModulusFit, fit_modulus
 from sadi.logging_setup import get_logger
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -50,6 +51,7 @@ class ModulusFitView(BaseModel):
     eU95Gpa: float  # noqa: N815
     r2: float
     lowR2: bool  # noqa: N815
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class ErrorBody(BaseModel):
@@ -106,7 +108,9 @@ def _status(error: ModulusError | RefitError) -> int:
     return 500
 
 
-def make_stress_strain_router(source: CurveSource | None = None) -> APIRouter:
+def make_stress_strain_router(
+    source: CurveSource | None = None, provenance: DataProvenance = REAL
+) -> APIRouter:
     """Build the router; `source` supplies stored curve points (None -> 409 NoData)."""
     router = APIRouter(prefix="/api/stress-strain", tags=["stress-strain"])
 
@@ -127,6 +131,6 @@ def make_stress_strain_router(source: CurveSource | None = None) -> APIRouter:
         res = await run_in_threadpool(refit, loaded.value, req.first, req.last)
         if not isinstance(res, Ok):
             return _fail(res.unwrap_err())
-        return res.value
+        return res.value.model_copy(update={"provenance": provenance})
 
     return router

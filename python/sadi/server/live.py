@@ -11,7 +11,7 @@ WAL faults are logged and kept on `LiveAcquisition.fault`; they never raise into
 from __future__ import annotations
 
 import threading
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import numpy as np
 from typani import Err, ErrorSet, Result
@@ -125,6 +125,11 @@ class LiveAcquisition:
 
     def _apply_sim_load(self) -> None:
         """On the simulator, hang one more step of mass so the next point has a new voltage."""
+        if getattr(self._device, "is_synthetic", False):  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+            res = cast("Any", self._device).advance_load()
+            if res.is_err:
+                _log.warning("synthetic load step failed: %s", res.danger_err)
+            return
         if not self._device.is_simulator:
             return
         res = self._device.sim_add_weight(SIM_LOAD_STEP_KG)

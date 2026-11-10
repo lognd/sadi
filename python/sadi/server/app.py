@@ -76,6 +76,8 @@ class AppSettings(BaseModel):
     budgets: BudgetSource | None = None
     inventory: InventoryProvider | None = None
     results: ResultsStream | None = None
+    # Set only by the launcher after the flag + typed phrase; never read from the environment.
+    synthetic: bool = False  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class _NoWriter:
@@ -169,7 +171,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.state.save_indicator = indicator
 
     app.include_router(make_save_indicator_router(indicator))
-    app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry())
+    app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry(), cfg.synthetic)
     install_problem_handlers(app)
     if cfg.live is not None:
         app.state.sessions.set_hooks(cfg.live.on_session_open, cfg.live.on_session_close)
@@ -189,7 +191,10 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     # frob:ticket 01M6WZZEHBSPSCHA90KQG3RK1T
     _dev = cfg.device
     app.include_router(
-        make_health_router((lambda: _dev.status == "simulated") if _dev is not None else None)
+        make_health_router(
+            (lambda: _dev.status == "simulated") if _dev is not None else None,
+            app.state.sessions.provenance(),
+        )
     )
     app.include_router(make_plugins_router(cfg.registry))
     if cfg.bus is not None:
@@ -201,9 +206,10 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             app.state.results_stream,
             simulated=(lambda: device.status == "simulated") if device is not None else None,
             guidance=make_guidance_provider(app.state.sessions, cfg.labs or LabRegistry()),
+            provenance=app.state.sessions.provenance(),
         )
         app.include_router(make_ws_router(app.state.stream_hub))
     source = cfg.curve_source or make_curve_source(cfg.data_root, replays)
-    app.include_router(make_stress_strain_router(source))
+    app.include_router(make_stress_strain_router(source, app.state.sessions.provenance()))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

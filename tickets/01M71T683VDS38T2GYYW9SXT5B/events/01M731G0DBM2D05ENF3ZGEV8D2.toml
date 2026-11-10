@@ -1,0 +1,6 @@
+kind = "field"
+field = "scope"
+new = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md"]
+at = "2026-11-10T15:33:44Z"
+actor = "lognd"
+rev = 1

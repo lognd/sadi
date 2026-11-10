@@ -4,9 +4,16 @@ title = "Backend: expose firmware, sample rate, and active data root in a status
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T04:06:50Z"
-updated = "2026-11-10T04:06:50Z"
+updated = "2026-11-10T15:33:44Z"
+labels = ["creates:python/tests/server/test_status_route.py", "creates:python/sadi/server/routes/status.py", "creates:docs/server/status.md"]
+scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md"]
+
+[[acceptance]]
+text = "GET /api/status returns firmware, sample_rate_hz and data_root (the active --data-root); tested"
+bound = false
 +++
 
 found while working ~D7DHSW4: debug strip shows firmware as unavailable; sample rate and active data folder are only inferred (doctor reports the default root, not --data-root).

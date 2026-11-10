@@ -7,7 +7,7 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T09:37:14Z"
-updated = "2026-11-10T12:22:44Z"
+updated = "2026-11-10T12:23:17Z"
 labels = ["creates:python/tests/server/test_capture_request_id.py", "creates:python/tests/server/test_live_load_change.py"]
 scope = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/session_points.py", "web/src/screens/run/**", "web/src/keys/**", "python/tests/server/test_routes_acquisition.py", "python/tests/server/test_service_snapshots.py", "python/tests/server/test_capture_request_id.py", "python/tests/server/test_live_load_change.py", "python/tests/labs/lctt/test_guidance.py", "python/tests/labs/lctt/test_gp_suggester.py", "python/tests/labs/lctt/test_capture.py", "python/tests/labs/lctt/test_capture_record.py", "python/tests/labs/lctt/test_settle_stream.py", "web/src/api/client.ts", "web/src/api/client.test.ts", "docs/lctt/guidance.md", "docs/lctt/capture.md", "python/sadi/server/app.py", "python/sadi/store/events.py", "docs/web/guidance.md", "web/src/components/guidance/GpLoadPanel.test.tsx", "docs/api/acquisition.md", "docs/web/run-screens.md", "web/src/api/openapi.json", "web/src/api/schema.ts"]
 

@@ -2,12 +2,12 @@
 id = "01M71XGK2GSEZ1GM3N3ES7916A"
 title = "Audit1 #12 #22 #34 #41: store versions/forks, exports written into session folder, slug collisions, manifest last_seq"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:54Z"
-updated = "2026-11-10T05:04:54Z"
+updated = "2026-11-10T05:04:58Z"
 scope = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**"]
 
 [[acceptance]]

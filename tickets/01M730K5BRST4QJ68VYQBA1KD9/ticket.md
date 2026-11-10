@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:17:59Z"
-updated = "2026-11-10T15:19:59Z"
+updated = "2026-11-10T15:20:03Z"
 labels = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
 scope = ["examples/**", "python/tests/plugins/test_example_plugin.py", "docs/plugins.md"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "docs/plugins.md section 11 points to the example; sadi plugins list shows it when SADI_PLUGIN_PATH is set"
-bound = false
+bound = true
 +++
 
 User asked to ship a lab as a plugin just as an example. plugins/ is gitignored, so the example lives under examples/plugins/. Based on the README make-a-plugin walkthrough; must not import private/ or labview/.

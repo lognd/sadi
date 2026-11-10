@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:56:56Z"
+updated = "2026-11-10T14:58:40Z"
 scope = ["python/sadi/uncertainty/measured.py", "web/src/screens/run/**", "python/tests/uncertainty/test_measured.py"]
 
 [[acceptance]]

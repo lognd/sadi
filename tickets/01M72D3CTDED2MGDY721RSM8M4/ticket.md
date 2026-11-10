@@ -2,7 +2,7 @@
 id = "01M72D3CTDED2MGDY721RSM8M4"
 title = "Audit5: wizard override_input validation, doctor re-run probe, CSV uncertainty model, phase-split curves, download names, export CSRF guard"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"

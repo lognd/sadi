@@ -8,7 +8,7 @@ points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:39Z"
 updated = "2026-11-10T08:06:51Z"
-scope = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx", "web/src/App.tsx", "web/src/screens/run/RunScreen.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/components/instrument/audit1.test.tsx"]
+scope = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx", "web/src/App.tsx", "web/src/screens/run/RunScreen.tsx", "web/src/components/wizard/wizard.test.tsx", "web/src/components/instrument/audit1.test.tsx", "web/src/components/status/saveView.ts"]
 
 [[acceptance]]
 text = "One save indicator source; never shows Saved without an open session; test covers both"

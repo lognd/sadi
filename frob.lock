@@ -3167,12 +3167,12 @@ acked_at = "2026-11-08T09:49:56.06261466Z"
 identity = "web/src/screens/export/api.ts"
 symref = "web/src/screens/export/api.ts"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "ca37cb0fd39ef25de95c5bf2e7871e99c1e5aa71e9cb7c200fb75b99d2500f3e"
+body = "79cdef5b48778d537cfb72e5eb38ee8b096c5ccae95e0d129fb606f4c242130f"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-08T05:53:08.801451764Z"
+acked_at = "2026-11-10T05:14:09.742886148Z"
 
 [[symbol]]
 identity = "web/src/screens/export/api.ts::exportUrl"
@@ -3217,6 +3217,28 @@ attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
 contract = "988e5851cf967056de2002cb881adef500b57bda1bc8e302fb149c9709de1b67"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T05:53:08.801451764Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::getSessionName"
+symref = "web/src/screens/export/api.ts::getSessionName"
+sig = "11bb8227d4dcfe05c1b3e1c27c4127399c7f7eae910eac5a8f1d7b11b8b68ac3"
+body = "a88d4122ad0fbf5d475da0aa009d5100f8fea79829a56383bdc1b5909da1af82"
+doc = "0cb85959bde22ba3ab3d73d49b3f62f113afb3ed357dd54e6cd09b58b1b4057c"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "8fe2a6f550022ba8b55eec67603cba877b41487bd2b0bdbd152439e70de963d5"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T05:14:09.742886148Z"
+
+[[symbol]]
+identity = "web/src/screens/export/api.ts::keepFigure"
+symref = "web/src/screens/export/api.ts::keepFigure"
+sig = "92ca1da89f9850ff2028480c08f6023c868ae4fbc2540e9d31192d190f95e9d1"
+body = "a5697f07f0784c3b7d588ec25a2ca883dbdde8c80d8a02b9d39b7a1ad3032396"
+doc = "4743c0b7dcd090e1f1e7e435d1036edbc9a1e78bfdde505f92f03de944a289d7"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "64926cb4bd6f7387aaf205331b8c0f3a9128508ffe41b5998663e72e6be6a3df"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T05:14:09.742886148Z"
 
 [[symbol]]
 identity = "web/src/screens/export/api.ts::log"

@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/acquisition/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume
+         * @description Restart streaming after an idle pause; writes no marker and applies no load.
+         */
+        post: operations["resume_api_acquisition_resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/device/reconnect": {
         parameters: {
             query?: never;
@@ -1757,6 +1777,14 @@ export interface components {
             values: components["schemas"]["ResultValue"][];
         };
         /**
+         * ResumeOut
+         * @description Result of resuming: streaming is running again and nothing was written to the WAL.
+         */
+        ResumeOut: {
+            /** Streaming */
+            streaming: boolean;
+        };
+        /**
          * RevertBody
          * @description Reopen the latest finished step; `step` (optional) must name exactly that step.
          */
@@ -2128,6 +2156,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    resume_api_acquisition_resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeOut"];
+                };
+            };
+        };
+    };
     device_reconnect_api_device_reconnect_post: {
         parameters: {
             query?: never;

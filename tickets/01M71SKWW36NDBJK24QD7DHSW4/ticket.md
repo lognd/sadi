@@ -7,7 +7,7 @@ priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T03:56:48Z"
-updated = "2026-11-10T04:07:16Z"
+updated = "2026-11-10T04:07:22Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]
@@ -24,5 +24,5 @@ bound = true
 
 [[acceptance]]
 text = "vitest, tsc, eslint, crunk check pass; docs/web updated"
-bound = false
+bound = true
 +++

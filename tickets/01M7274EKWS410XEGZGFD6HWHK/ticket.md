@@ -4,9 +4,10 @@ title = "M8: calibration layout - capture card above Finish, one vocabulary"
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:53:02Z"
-updated = "2026-11-10T07:53:02Z"
+updated = "2026-11-10T07:53:09Z"
 scope = ["web/src/components/wizard/stepGuide.ts", "web/src/screens/run/phases.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/inputFields.ts"]
 
 [[acceptance]]

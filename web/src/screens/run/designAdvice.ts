@@ -1,6 +1,6 @@
 // frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
 // frob:ticket 01M72VM5X86QRPEWSW65Q9RBD8
-// frob:ticket 2Q852YF
+// frob:ticket 01M72YPB58KPZ9WR5BE2Q852YF
 // frob:accept COV001 because="covered by SuggestedWeightPanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";

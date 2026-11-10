@@ -1,5 +1,4 @@
-// frob:ticket 2Q852YF
-// frob:tests indicatorText
+// frob:ticket 01M72YPB58KPZ9WR5BE2Q852YF
 import { describe, expect, it } from "vitest";
 import { indicatorText, type DesignIndicator } from "./designAdvice";
 

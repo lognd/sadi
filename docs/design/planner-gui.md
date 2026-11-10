@@ -86,3 +86,11 @@ GUI: the "Gauge height inventory" table (height mm / uncertainty mm); when fille
 
 With heights and weights both entered but no calibration (no points, no typed slope), the reply is the height plan plus
 `weights_note`: the weights need the calibration, which comes from hanging the planned heights. It is not an error.
+
+### Stacked heights (h1+h2)
+
+Gauge heights can be stacked, so the height plan considers every combination of up to three
+inventory heights (`stack_heights`, `MAX_STACK = 3`), not only single heights. A stack is named
+`h1+h2`, its height is the sum, and its uncertainty is the root-sum-square of the members'.
+Stacks with equal totals collapse to the one with the lowest ids; with a typed slope, stacks that
+would saturate are dropped. At least two distinct inventory heights are still required.

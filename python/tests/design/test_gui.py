@@ -128,15 +128,25 @@ def test_height_plan_needs_no_slope_and_has_default_uncertainty():
     out = plan_from_form({"heights": "0.001,0.002,0.004,0.006", "cal_slope": ""})
     assert out["ok"] and out["height_steps"] and out["slope_known"] is False
     assert out["rel_se_slope"] is not None and out["se_slope_v_per_m"] is None
-    assert all(s["predicted_volts"] is None and s["u_height_m"] == 1e-4 for s in out["height_steps"])
+    assert all(s["predicted_volts"] is None for s in out["height_steps"])
+    singles = [s for s in out["height_steps"] if "+" not in s["height_id"]]
+    assert singles and all(s["u_height_m"] == 1e-4 for s in singles)
 
 
 def test_height_default_uncertainty_is_overridable():
     out = plan_from_form({"heights": "0.001,0.002,0.004", "u_height_default": "0.0005"})
-    assert all(s["u_height_m"] == 0.0005 for s in out["height_steps"])
+    singles = [s for s in out["height_steps"] if "+" not in s["height_id"]]
+    assert singles and all(s["u_height_m"] == 0.0005 for s in singles)
     assert "Default height uncertainty" in PAGE
 
 
 def test_heights_and_weights_without_calibration_gives_height_plan_and_note():
     out = plan_from_form({**FORM, "cal_slope": "", "heights": "0.001,0.002,0.004,0.006"})
     assert out["ok"] and out["height_steps"] and "calibration" in out["weights_note"]
+
+
+def test_height_plan_offers_stacked_combinations():
+    out = plan_from_form({"heights": "0.001,0.002,0.004", "u_height_default": "0.0001"})
+    stacks = [s for s in out["height_steps"] if "+" in s["height_id"]]
+    assert stacks and any(s["height_id"] == "h1+h2" and abs(s["height_m"] - 0.003) < 1e-12 for s in out["height_steps"] + stacks)
+    assert all(abs(s["u_height_m"] - 0.0001 * len(s["height_id"].split("+")) ** 0.5) < 1e-9 for s in stacks)

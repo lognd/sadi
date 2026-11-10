@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import itertools
 import math
 from typing import Literal
 
@@ -15,7 +16,7 @@ from sadi.design.selector import select_next
 from sadi.labs.lctt.saturation import DEFAULT_SATURATION_V
 from sadi.logging_setup import get_logger
 
-__all__ = ["Height", "HeightPlan", "HeightPlanError", "HeightStep", "parse_heights", "plan_heights"]
+__all__ = ["Height", "HeightPlan", "HeightPlanError", "HeightStep", "parse_heights", "plan_heights", "stack_heights"]
 
 _log = get_logger(__name__)
 
@@ -23,6 +24,8 @@ _log = get_logger(__name__)
 MAX_HEIGHTS = 12
 #: Height uncertainty (m) used for any height entered without one: 0.1 mm.
 DEFAULT_U_HEIGHT_M = 1e-4
+#: Most heights stacked into one gauge height (h1+h2+h3); keeps the candidate list small.
+MAX_STACK = 3
 _TARGET = TargetSpec(half_width=0.05)
 _CONFIG = SelectorConfig()
 
@@ -99,6 +102,24 @@ def parse_heights(text: str, default_u_m: float = DEFAULT_U_HEIGHT_M) -> Result[
     return Ok(out)
 
 
+def stack_heights(heights: list[Height], max_stack: int = MAX_STACK) -> list[Height]:
+    """All stackings of up to max_stack heights as 'h1+h2' candidates; u adds in quadrature, equal totals keep the lowest ids."""
+    seen: dict[float, Height] = {}
+    for k in range(1, min(max_stack, len(heights)) + 1):
+        for combo in itertools.combinations(heights, k):
+            total = math.fsum(h.height_m for h in combo)
+            key = round(total, 9)
+            if key in seen:
+                continue
+            seen[key] = Height(
+                height_id="+".join(h.height_id for h in combo),
+                height_m=total,
+                u_height_m=math.sqrt(math.fsum(h.u_height_m**2 for h in combo)),
+            )
+    _log.debug("stacked %d heights into %d candidates", len(heights), len(seen))
+    return sorted(seen.values(), key=lambda h: h.height_m)
+
+
 def _se(chosen: list[Height], slope: float) -> tuple[float | None, float | None]:
     """Propagate per-height u into slope/intercept se: weighted LS with sigma_v = |slope| u_h.
 
@@ -144,9 +165,10 @@ def plan_heights(  # noqa: PLR0913
     def volts(h: Height) -> float:
         return nominal_offset_v + slope * h.height_m
 
-    usable = [h for h in heights if abs(volts(h)) <= sat] if known else list(heights)
-    n_sat = len(heights) - len(usable)
-    if len({h.height_m for h in usable}) < 2:
+    stacks = stack_heights(heights)
+    usable = [h for h in stacks if abs(volts(h)) <= sat] if known else stacks
+    n_sat = len(stacks) - len(usable)
+    if len({h.height_m for h in heights}) < 2 or len({h.height_m for h in usable}) < 2:
         _log.warning(
             "height plan refused: %d distinct usable of %d (sat dropped %d)",
             len({h.height_m for h in usable}),

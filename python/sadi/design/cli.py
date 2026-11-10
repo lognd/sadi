@@ -26,19 +26,21 @@ __all__ = ["build_request", "format_height_plan", "main", "parse_captured", "par
 _log = get_logger(__name__)
 
 
-def parse_weights(text: str, u_force_n: float) -> Result[list[Weight], str]:
-    """Parse '2,2,5' (newtons) into weights w1, w2, ...; duplicates stay distinct ids.
-
-    The planner works in kg internally, so each force is divided by standard gravity here and
-    the reported tension of a hang equals the entered newton total.
-    """
+def parse_weights(text: str, u_mass: float) -> Result[list[Weight], str]:
+    """Parse 'kg' or 'kg:u' items into weights w1, w2, ...; a missing u falls back to u_mass; duplicates stay distinct."""
     parts = [t.strip() for t in text.replace(";", ",").replace("\n", ",").split(",")]
-    parts = [t for t in parts if t]
-    try:
-        return Ok([Weight(weight_id=f"w{i + 1}", mass_kg=float(t) / STANDARD_G, u_mass_kg=u_force_n / STANDARD_G) for i, t in enumerate(parts)])
-    except (ValueError, ValidationError) as exc:
-        _log.warning("bad weights %r: %s", text, exc)
-        return Err(f"Could not read the weights list (use newtons separated by commas): {exc}")
+    out: list[Weight] = []
+    for i, part in enumerate(p for p in parts if p):
+        try:
+            f = part.split(":")
+            if len(f) not in (1, 2):
+                raise ValueError("expected kg or kg:uncertainty")
+            u = float(f[1]) if len(f) == 2 and f[1].strip() else u_mass
+            out.append(Weight(weight_id=f"w{i + 1}", mass_kg=float(f[0]), u_mass_kg=u))
+        except (ValueError, ValidationError) as exc:
+            _log.warning("bad weight %r: %s", part, exc)
+            return Err(f"Could not read weight {part!r} (use kg or kg:u_kg): {exc}")
+    return Ok(out)
 
 
 def parse_captured(text: str) -> Result[list[CapturedPoint], str]:

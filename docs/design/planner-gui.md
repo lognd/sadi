@@ -18,8 +18,7 @@ the URL and opens it with `webbrowser`. `GET /` serves one self-contained page (
 network assets, no node, no tkinter). `POST /plan` takes the form as JSON and replies
 `{"ok": true, phase, counts, hangs[]}` or `{"ok": false, "error": msg}`.
 
-Form: weights in newtons, N (duplicates allowed, max 12), number of hangs (any count >= 1, default 5), mass
-uncertainty (N), wire diameter and its uncertainty,
+Form: a weight inventory table (mass and its own uncertainty per row, same as the height table; duplicates allowed, max 12; CLI `--weights kg:u,...`), a default mass uncertainty for blank rows, wire diameter and its uncertainty,
 L0 and its uncertainty, an editable table of LVDT calibration points (height m / volts, with Add row),
 saturation limit, and already captured points as `N:volts`. The page joins the table into
 `cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (which weights, how many,

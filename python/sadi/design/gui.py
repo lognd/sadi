@@ -53,11 +53,11 @@ small{color:#555}
 Nothing is saved or sent anywhere; it does not talk to the LVDT or to LabVIEW. Re-run it with the
 points you have already captured to replan.</p>
 <form id="f">
-<fieldset><legend>Weights</legend>
-<label>Weights (newtons, N, comma separated; repeat a value for duplicate weights, max 12)<br>
-<textarea name="weights" required>0.2,0.5,0.5,1,1,2,0.1,0.3</textarea></label>
-<label>Force uncertainty per weight, N <input type="text" name="u_mass" value="0.001"></label>
-<label>Number of hangs <input type="text" name="hangs" value="5"></label>
+<fieldset><legend>Weight inventory (which weights you have)</legend>
+<table id="wts"><thead><tr><th>Mass, kg</th><th>Uncertainty, kg</th></tr></thead><tbody></tbody></table>
+<button type="button" id="addweight">Add row</button>
+<small>Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
+<label>Default mass uncertainty, kg <input type="text" name="u_mass" value="0.0001"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
 <label>Diameter, m <input type="text" name="diameter" value="0.0002019" required></label>
@@ -78,7 +78,7 @@ points you have already captured to replan.</p>
 <fieldset><legend>Gauge height inventory (which heights to calibrate with)</legend>
 <table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
-<small>Optional. Enter each height you have and its uncertainty, just like the weights; uses the typed LVDT slope above; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
+<small>Optional. Enter each height you have and its uncertainty, same as the weights; uses the typed LVDT slope above; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
 </fieldset>
 <fieldset><legend>Already captured</legend>
 <label>Points as N:volts, comma separated (blank = none)<br>
@@ -96,6 +96,13 @@ function addRow(h, v){
 }
 for (let k = 0; k < 4; k++) addRow("", "");
 document.getElementById("addrow").addEventListener("click", () => addRow("", ""));
+const wtsBody = document.querySelector("#wts tbody");
+function addWeight(m, u){
+  const tr = wtsBody.insertRow();
+  for (const val of [m, u]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
+}
+for (const m of ["0.02","0.05","0.05","0.1","0.1","0.2","0.01","0.03"]) addWeight(m, "");
+document.getElementById("addweight").addEventListener("click", () => addWeight("", ""));
 const htsBody = document.querySelector("#hts tbody");
 function addHeight(h, u){
   const tr = htsBody.insertRow();
@@ -111,6 +118,9 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(h + ":" + v); }
   body.cal_points = pts.join(",");
+  const wts = [];
+  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? m + ":" + u : m); }
+  body.weights = wts.join(",");
   const hts = [];
   for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? h + ":" + u : h); }
   body.heights = hts.join(",");

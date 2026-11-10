@@ -86,12 +86,9 @@ def test_http_errors(server):
     assert e2.value.code == 400
 
 
-def test_hangs_field_honoured_and_validated():
-    out = plan_from_form({**FORM, "hangs": "3"})
-    assert out["ok"] and len(out["hangs"]) == 3
-    assert not plan_from_form({**FORM, "hangs": "0"})["ok"]
-    assert not plan_from_form({**FORM, "hangs": "2.5"})["ok"]
+def test_per_weight_uncertainty_is_parsed():
+    from sadi.design.cli import parse_weights
 
-
-def test_page_is_in_newtons_with_hangs_field():
-    assert 'name="hangs"' in PAGE and "newtons" in PAGE and "kilogram" not in PAGE and "(kg" not in PAGE and "Total kg" not in PAGE
+    ws = parse_weights("0.1:0.001,0.2", 0.0005).unwrap()
+    assert [w.u_mass_kg for w in ws] == [0.001, 0.0005]
+    assert not isinstance(parse_weights("0.1:x", 0.0), type(ws))

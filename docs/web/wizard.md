@@ -96,3 +96,11 @@ only) is not imported by the app (its names collide with the app tokens) and is 
 in CI. Lints COLOR001, SPACE001, SIZE001 and TYPE001 are off (the app tokens are the source of
 truth; the vitest mirror test covers palette drift) and CRAFT012 is waived on one declaration in
 `styles.css`.
+
+## Newcomer guidance
+
+Each phase has a `STEP_GUIDE` entry (`components/wizard/stepGuide.ts`) rendered by `DoThisCard`.
+Server notes such as `ComputeCode.TOO_FEW_POINTS` are rewritten by `plainNote` (`plainText.ts`)
+into plain sentences with a next action; Results, wizard errors and review problems use it.
+The Setup page explains the test, labels each input with helper text and shows a numbered
+"what happens next" list.

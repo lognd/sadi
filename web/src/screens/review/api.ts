@@ -1,5 +1,6 @@
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
 // frob:accept COV001 because="covered by ReviewScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import { plainNote } from "../../components/wizard/plainText";
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
@@ -64,7 +65,7 @@ export function describeProblem(e: ApiError): string {
   try {
     const p = JSON.parse(e.body) as Partial<Problem>;
     if (typeof p.title === "string") {
-      const detail = p.detail ? `: ${p.detail}` : "";
+      const detail = p.detail ? `: ${plainNote(p.detail)}` : "";
       const hint = p.hint ? ` Hint: ${p.hint}` : "";
       return `${p.title}${detail}.${hint}`.replace("..", ".");
     }

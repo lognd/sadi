@@ -12,7 +12,7 @@ export function fakeLive(o: { view?: Partial<LiveView>; side?: Partial<SideState
   const snapshot = new TraceWindow(5, 0).snapshot(0);
   const side: SideState = { settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false, ...o.side };
   const view = { ...deriveLive(snapshot, conn, side.settle, side.simulated, side.driftVps), ...o.view };
-  return { snapshot, conn, notice: null, view, side };
+  return { snapshot, conn, notice: null, meta: null, view, side };
 }
 
 /** Wrap an element in a LiveContext carrying a fake feed (no socket is opened). */

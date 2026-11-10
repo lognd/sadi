@@ -6,6 +6,8 @@ import { DoctorScreen } from "./doctor/DoctorScreen";
 import { openDoctorOnConnectionError, useDoctorRoute } from "./doctor/useDoctorRoute";
 import { WizardHost } from "./screens/WizardHost";
 import { useTheme } from "./components/shell/theme";
+import { DebugStrip } from "./components/instrument/DebugStrip";
+import { InstrumentBar } from "./components/instrument/InstrumentBar";
 import { LiveProvider } from "./state/LiveContext";
 import { useStore } from "./state/store";
 
@@ -14,6 +16,7 @@ const log = getLogger("App");
 // frob:ticket 01M6WA9WZW89EA826DSJCJ0197
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
+// frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 // frob:accept COV001 because="vitest tests exist (src/App.test.tsx, src/api/log.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Root component: probes the backend, owns the one live stream subscription, shows the guided-run front panel and a persistent Doctor link. */
 export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React.JSX.Element {
@@ -34,6 +37,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
 
   return (
     <LiveProvider {...(trace === undefined ? {} : { trace })}>
+      <div className="app-top">
       <header className="app-header">
         <div className="app-header-inner">
           <div className="brand">
@@ -51,6 +55,9 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
           </button>
         </div>
       </header>
+      <InstrumentBar />
+      </div>
+      <DebugStrip backend={connection === "up" ? "[ok] up" : connection === "down" ? "(!) down" : "[..] checking"} />
       <div className="app-main">
         {visible ? <DoctorScreen /> : <WizardHost />}
       </div>

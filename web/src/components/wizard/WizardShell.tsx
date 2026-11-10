@@ -5,9 +5,9 @@ import { getLogger } from "../../api/log";
 import { useKeyCapture } from "../../keys/useKeyCapture";
 import type { KeyAction } from "../../keys/keymap";
 import { useLive } from "../../state/LiveContext";
-import { LiveReadout } from "../live/LiveReadout";
 import { LiveTrace } from "../live/TraceCanvas";
 import { StatusBar } from "../status/StatusBar";
+import { DoThisCard } from "./DoThisCard";
 import { ErrorNotice } from "./ErrorNotice";
 import { FrontPanel } from "./FrontPanel";
 import { NextActionPanel } from "./NextActionPanel";
@@ -82,14 +82,16 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
   const index = wizard === null || current === null ? -1 : wizard.rail.indexOf(current);
   const title = wizard === null ? "Guided run" : current === null ? "All steps finished" : current.title;
   const subtitle = wizard === null || current === null ? null : `Step ${String(index + 1)} of ${String(wizard.rail.length)}`;
+  const guide = wizard === null || current === null ? null : <DoThisCard phase={current.phase} index={index} total={wizard.rail.length} />;
 
   return (
     <FrontPanel
       title={title}
       subtitle={subtitle}
       rail={wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
-      shortcuts={help ? <ShortcutList /> : null}
-      live={<><LiveReadout /><LiveTrace /></>}
+      guide={guide}
+      shortcuts={help ? <details className="shortcuts"><summary>Keyboard shortcuts</summary><ShortcutList /></details> : null}
+      live={<LiveTrace />}
       status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} savedAt={savedAt} />}
       next={
         <NextActionPanel

@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R3TJETR6N3EVA9PMPWH8
+import { plainNote } from "../wizard/plainText";
 import { getLogger } from "../../api/log";
 import { PANEL_ROWS, type ResultSet, type ResultValue } from "./types";
 
@@ -75,7 +76,7 @@ export function ResultsPanel(props: {
       </table>
       {settleSource ? <p className="settle">E computed from settle value: {settleSource}</p> : null}
       {results.notes.length > 0 ? (
-        <ul className="notes">{results.notes.map((n) => <li key={n}>{n}</li>)}</ul>
+        <ul className="notes">{results.notes.map((n) => <li key={n}>{plainNote(n)}</li>)}</ul>
       ) : null}
       <button type="button" onClick={onCopy}>Copy values</button>
     </section>

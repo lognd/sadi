@@ -10,7 +10,7 @@ One `RunScreen` serves all four capture phases (`phases.ts`). It holds a single 
 subscription: `useRunLive` wraps `useTrace`'s injectable `open` and taps `state` and `result`
 messages, so there is no second socket. `TraceCanvas` draws the shared live scene.
 
-- Readout: the big volts, drift and settle state now live in the persistent `LiveReadout` card
+- Readout: the big volts, drift and settle state now live in the app-level `InstrumentBar`
   (see [front-panel.md](front-panel.md)); `settleText` stays in `components/live/settle.ts`.
 - Capture: the accept key (Space) posts `POST /api/session/points` (`capture.ts`).
   `decide` is the single rule table: Space never fires while Creeping, Saturated or

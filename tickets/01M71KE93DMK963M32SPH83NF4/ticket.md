@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T02:08:53Z"
-updated = "2026-11-10T02:39:22Z"
+updated = "2026-11-10T02:39:25Z"
 labels = ["model:sonnet"]
 scope = ["web/src/components/guidance/**", "web/src/api/schema.ts", "docs/web/guidance.md"]
 

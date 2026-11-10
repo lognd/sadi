@@ -109,6 +109,7 @@ makes `capture` answer 409 `no_device` until a board is attached. `LiveAcquisiti
 or low on disk, starts a run with a new SETTINGS record; the WAL is only ever appended to. It is a
 no-op while a healthy run is active, and a failed open returns a 409 problem with the session intact.
 
-`SessionService.finish_acquisition()` (wired by `set_acquisition`) calls `LiveAcquisition.finish()` before export
-rendering, on `POST /api/results/finish` and at close, so raw data is durable before computing. A finish fault is
+`SessionService.finish_acquisition()` (wired by `set_acquisition`) calls `LiveAcquisition.finish()` on `POST /api/results/finish` and at close.
+`GET /api/export/{fmt}` does not finish: it is read-only on acquisition and renders from what the WAL already holds.
+`capture_block_hint` also refuses capture (409, plain hint) when `stop_reason` is finished, low_disk, idle or no_device. A finish fault is
 logged and surfaced as `acquisition_fault` on `/api/device/status`; it is never raised and never discards WAL data.

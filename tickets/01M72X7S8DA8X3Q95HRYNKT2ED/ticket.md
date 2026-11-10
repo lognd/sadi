@@ -2,7 +2,8 @@
 id = "01M72X7S8DA8X3Q95HRYNKT2ED"
 title = "Weight-subset planner: choose which of the 8 inventory weights to hang, in order, with GP gain and saturation limits"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

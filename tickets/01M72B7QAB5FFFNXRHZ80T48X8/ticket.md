@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T09:04:44Z"
-updated = "2026-11-10T09:22:48Z"
+updated = "2026-11-10T09:23:07Z"
 scope = ["python/sadi/labs/lctt/capture.py", "python/tests/labs/lctt/test_capture.py", "python/tests/core/test_pipeline.py", "docs/lctt/capture.md"]
 
 [[acceptance]]

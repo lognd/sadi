@@ -55,6 +55,11 @@ contract in [core/lab-modules.md](core/lab-modules.md).
 - Work area: left, at least 60% of the width. Next-action panel: right,
   fixed width, never scrolls away.
 - Status bar: always visible, three indicators (section 5).
+- Sticky offset: `--top-h` (scroll padding and the sticky live panel's `top`) is
+  the measured height of the sticky header stack (`.app-top`: instrument bar,
+  debug strip, banners), published by `watchStickyTop` (`web/src/hooks/useStickyOffset.ts`)
+  via ResizeObserver, so banners appearing or a short viewport never leave
+  sticky content overlapping. `11rem` in `styles.css` is only the fallback.
 
 ### 2.1 Step rail states
 

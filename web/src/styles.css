@@ -35,7 +35,7 @@ em { color: var(--muted); }
 
 /* ---- App shell ---- */
 html { scroll-padding-top: var(--top-h); }
-:root { --top-h: 11rem; }
+:root { --top-h: 11rem; } /* fallback only: watchStickyTop (hooks/useStickyOffset.ts) overrides it with the measured .app-top height */
 h1, h2, h3, section, aside { scroll-margin-top: var(--top-h); }
 .app-top { position: sticky; top: 0; z-index: 10; background: var(--surface); box-shadow: var(--shadow-1); }
 .app-header {

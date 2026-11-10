@@ -2,7 +2,8 @@
 id = "01M727YGXCC6ZFVHWHG64KFA7D"
 title = "L1+L2: results/finish never called by UI and docs claim it; export filename ignores server name and fails silently"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 2
 reporter = "lognd"

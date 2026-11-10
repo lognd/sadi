@@ -1,0 +1,1 @@
+Raw device streaming into the WAL now stops (after draining every block already read) when the session is finished, after 10 minutes idle with no point in progress, or when free disk drops below 1 GiB, which surfaces a disk fault; no recorded data is dropped or deleted.

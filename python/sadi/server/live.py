@@ -2,26 +2,40 @@
 
 The pipeline writes raw blocks to the open session's WAL (the same `WriterHandle` the session
 service owns), so live data takes the normal durable path; nothing is displayed before it is
-durable. With no session open nothing is read from the device and nothing is recorded. Device or
+durable. With no session open nothing is read from the device and nothing is recorded. The run
+also stops itself (draining every block already read into the WAL first) when the session is
+finished, after an idle timeout with no point in progress, or when free disk space runs low;
+nothing recorded is ever dropped or deleted. Device or
 WAL faults are logged and kept on `LiveAcquisition.fault`; they never raise into the request path.
 """
 
 # frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6X12VGS7NHWM3EZWF4YK7XN
+# frob:ticket 01M723P32SR45XWMW7BE5QZE7H
 from __future__ import annotations
 
 import threading
+import time
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Final, cast
 
 import numpy as np
-from typani import Err, ErrorSet, Result
+from typani import Err, ErrorSet, Ok, Result
 
 from sadi.api.acquisition import AcquisitionDriver, DriverFault
 from sadi.bench.lctt_source import BOARD_FULL_SCALE_V
-from sadi.core.device import DEVICE_RATE_HZ
-from sadi.core.pipeline import AcquisitionPipeline, Bus, PipelineConfig, PipelineError
+from sadi.core.device import DEVICE_RATE_HZ, LIVE_MIN_FREE_BYTES, free_bytes
+from sadi.core.pipeline import (
+    AcquisitionPipeline,
+    Bus,
+    PipelineConfig,
+    PipelineError,
+    PipelineStopped,
+    ResultUpdate,
+    SettleUpdate,
+)
 from sadi.labs.lctt.settle import SettleConfig
-from sadi.labs.lctt.settle_stream import StreamConfig
+from sadi.labs.lctt.settle_stream import SettleState, StreamConfig
 from sadi.logging_setup import get_logger
 from sadi.store.records import SettingsV1
 
@@ -45,12 +59,23 @@ SIM_LOAD_STEP_KG: Final[float] = 0.1
 LIVE_SETTLE: Final[SettleConfig] = SettleConfig(
     window_s=0.5, threshold=0.05, min_dwell_s=0.5, min_points=10
 )
+#: Seconds with no load change and no unsettled point before raw streaming pauses.
+IDLE_TIMEOUT_S: Final[float] = 600.0  # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+#: How often the watchdog checks free space and idleness, seconds.
+WATCH_POLL_S: Final[float] = 1.0
+#: Stop reasons (`LiveAcquisition.stop_reason`).
+STOP_FINISHED: Final[str] = "finished"
+STOP_IDLE: Final[str] = "idle"
+STOP_LOW_DISK: Final[str] = "low_disk"
 
 
 class LiveError(ErrorSet):
     """Why a live-run command was refused; the description is the hint shown to the operator."""
 
     NoLiveSession = "No acquisition is running; open or resume a session first"
+    # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+    LowDisk = "Free disk space is too low to record; free space, then reopen the session"
+    Finished = "This session's acquisition was finished; resume the session to record again"
 
 
 class _Decimated:
@@ -87,7 +112,17 @@ class _DecimatingSource:
 class LiveAcquisition:
     """Starts a device-to-bus run when a session opens and stops it (draining) before it closes."""
 
-    def __init__(self, device: DeviceService, bus: Bus, settle: SettleConfig = LIVE_SETTLE) -> None:
+    def __init__(  # noqa: PLR0913 - tunables are keyword-only knobs
+        self,
+        device: DeviceService,
+        bus: Bus,
+        settle: SettleConfig = LIVE_SETTLE,
+        *,
+        idle_timeout_s: float = IDLE_TIMEOUT_S,
+        min_free_bytes: int = LIVE_MIN_FREE_BYTES,
+        watch_poll_s: float = WATCH_POLL_S,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
         """Hold the opened `device` and the `bus` the WebSocket hub subscribes to."""
         self._device = device
         self.bus = bus
@@ -100,6 +135,23 @@ class LiveAcquisition:
         self._driver: AcquisitionDriver | None = None
         self._pipe: AcquisitionPipeline | None = None
         self._fault: DriverFault | None = None
+        self._idle_timeout_s = idle_timeout_s
+        self._min_free = min_free_bytes
+        self._watch_poll_s = watch_poll_s
+        self._clock = clock
+        self._writer: WriterHandle | None = None
+        self._path: Path | None = None
+        self._stop_reason: str | None = None
+        self._last_activity = clock()
+        self._activity = bus.subscribe("live-activity")
+        self._watch: threading.Thread | None = None
+        self._watch_stop = threading.Event()
+
+    @property
+    def stop_reason(self) -> str | None:
+        """Why raw streaming stopped while the session stayed open (finished/idle/low_disk)."""
+        with self._lock:
+            return self._stop_reason
 
     @property
     def fault(self) -> DriverFault | None:
@@ -118,12 +170,34 @@ class LiveAcquisition:
     def mark_load_change(self) -> Result[Seq, LiveError | WriterError | PipelineError]:
         """Record a load-applied marker in the WAL and open a new settle point (Ok is its seq)."""
         with self._lock:
+            if self._pipe is None:
+                refused = self._resume_after_idle_locked()
+                if refused is not None:
+                    return Err(refused)
             pipe = self._pipe
+            self._last_activity = self._clock()
         if pipe is None:
             _log.warning("load change refused: no live run")
             return Err(LiveError.NoLiveSession)
         self._apply_sim_load()
         return pipe.mark_load_change()
+
+    # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+    def _resume_after_idle_locked(self) -> LiveError | None:
+        """Restart a run paused for idleness on a new load change; None means it is running."""
+        if self._writer is None or self._path is None:
+            return LiveError.NoLiveSession
+        if self._stop_reason == STOP_FINISHED:
+            return LiveError.Finished
+        if self._stop_reason == STOP_LOW_DISK:
+            return LiveError.LowDisk
+        if self._stop_reason != STOP_IDLE:
+            return LiveError.NoLiveSession
+        if self._low_disk_locked(self._path):
+            return LiveError.LowDisk
+        _log.info("resuming raw streaming after idle for %s", self._path.name)
+        self._start_run_locked(self._writer, self._path, record_settings=False)
+        return None if self._pipe is not None else LiveError.NoLiveSession
 
     def _apply_sim_load(self) -> None:
         """On the simulator, hang one more step of mass so the next point has a new voltage."""
@@ -144,28 +218,140 @@ class LiveAcquisition:
             if self._driver is not None:
                 _log.error("live run already active; not starting for %s", path.name)
                 return
-            pipe = AcquisitionPipeline(writer, self._cfg, self.bus)
+            self._writer = writer
+            self._path = path
+            self._stop_reason = None
+            self._last_activity = self._clock()
+            self._activity.drain()
+            if self._low_disk_locked(path):
+                self._stop_reason = STOP_LOW_DISK
+                _log.error("not streaming for %s: free disk space too low", path.name)
+                return
+            self._start_run_locked(writer, path, record_settings=True)
+            self._start_watch_locked()
+
+    def _start_run_locked(self, writer: WriterHandle, path: Path, *, record_settings: bool) -> None:
+        """Start pipeline, device and driver on `writer`; faults are kept, not raised."""
+        pipe = AcquisitionPipeline(writer, self._cfg, self.bus)
+        if record_settings:
             # frob:ticket 01M723P2Z9GC152RE82Y6JYAW5
             recorded = pipe.record_settings(self._settings_records())
             if recorded.is_err:
                 self._fault = DriverFault(origin="pipeline", detail=str(recorded.danger_err))
                 _log.error("settings not recorded for %s: %s", path.name, recorded.danger_err)
                 return
-            started = self._device.start_streaming()
-            if started.is_err:
-                self._fault = DriverFault(origin="device", detail=str(started.danger_err))
-                _log.error("device start failed for %s: %s", path.name, started.danger_err)
+        started = self._device.start_streaming()
+        if started.is_err:
+            self._fault = DriverFault(origin="device", detail=str(started.danger_err))
+            _log.error("device start failed for %s: %s", path.name, started.danger_err)
+            return
+        self._fault = None
+        driver = AcquisitionDriver(_DecimatingSource(self._device, DECIMATE), pipe)
+        began = driver.start()
+        if began.is_err:
+            _log.error("driver start failed: %s", began.danger_err)
+            self._device.stop_streaming()
+            return
+        self._driver = driver
+        self._pipe = pipe
+        self._stop_reason = None
+        self._last_activity = self._clock()
+        _log.info("live acquisition started for session %s", path.name)
+
+    # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+    def _low_disk_locked(self, path: Path) -> bool:
+        """True when free space at `path` is below the floor; an unreadable probe is not low."""
+        free = free_bytes(path)
+        if free.is_err:
+            return False
+        if free.danger_ok < self._min_free:
+            _log.error("free disk %d B below floor %d B", free.danger_ok, self._min_free)
+            return True
+        return False
+
+    def stop_streaming(self, reason: str) -> Result[int, DriverFault]:
+        """Stop raw streaming for `reason` but keep the session open.
+
+        Every block already read is drained into the WAL first; the writer, the session and all
+        recorded data are untouched. Ok is the number of trailing blocks saved.
+        """
+        with self._lock:
+            return self._stop_run_locked(reason)
+
+    def finish(self) -> Result[int, DriverFault]:
+        """Stop raw streaming because the session is finished (Results/Export reached)."""
+        return self.stop_streaming(STOP_FINISHED)
+
+    def _stop_run_locked(self, reason: str) -> Result[int, DriverFault]:
+        """Drain and stop the driver, remembering `reason`; Ok(0) when nothing was running."""
+        driver, self._driver = self._driver, None
+        self._pipe = None
+        if driver is None:
+            if self._stop_reason is None:
+                self._stop_reason = reason
+            return Ok(0)
+        self._stop_reason = reason
+        stopped = driver.stop()
+        if stopped.is_err:
+            fault = driver.fault or DriverFault(origin="driver", detail=str(stopped.danger_err))
+            self._fault = fault
+            _log.error("live acquisition stopped (%s) with fault: %s", reason, stopped.danger_err)
+            return Err(fault)
+        _log.info(
+            "live acquisition stopped (%s); %d trailing blocks saved", reason, stopped.danger_ok
+        )
+        return Ok(stopped.danger_ok)
+
+    def _start_watch_locked(self) -> None:
+        """Start the idle/free-space watchdog once per session."""
+        if self._watch is not None:
+            return
+        self._watch_stop.clear()
+        self._watch = threading.Thread(target=self._watch_loop, name="sadi-live-watch")
+        self._watch.start()
+
+    def _watch_loop(self) -> None:
+        """Poll free space and activity; stop raw streaming (never data) when warranted."""
+        while not self._watch_stop.wait(self._watch_poll_s):
+            self.check_once()
+
+    def check_once(self) -> None:
+        """One watchdog pass: stop on low disk, or on idleness with no point in progress."""
+        events = self._activity.drain()
+        with self._lock:
+            now = self._clock()
+            for ev in events:
+                if isinstance(ev, ResultUpdate) or (
+                    isinstance(ev, SettleUpdate)
+                    and ev.status.point_index is not None
+                    and ev.status.state != SettleState.SETTLED
+                ):
+                    self._last_activity = now
+            if self._driver is None or self._path is None:
                 return
-            self._fault = None
-            driver = AcquisitionDriver(_DecimatingSource(self._device, DECIMATE), pipe)
-            began = driver.start()
-            if began.is_err:
-                _log.error("driver start failed: %s", began.danger_err)
-                self._device.stop_streaming()
+            if self._low_disk_locked(self._path):
+                if self._stop_run_locked(STOP_LOW_DISK).is_err:
+                    _log.error("low-disk stop also faulted; recorded blocks remain")
+                self._fault = DriverFault(
+                    origin="disk",
+                    detail="Free disk space is low; streaming stopped, recorded data is safe",
+                )
+                last = self._writer.durable_seq if self._writer is not None else 0
+                self.bus.publish(
+                    PipelineStopped(
+                        reason=STOP_LOW_DISK,
+                        hint="Free disk space, then reopen the session; saved data is safe",
+                        last_durable_seq=last,
+                    )
+                )
                 return
-            self._driver = driver
-            self._pipe = pipe
-            _log.info("live acquisition started for session %s", path.name)
+            if now - self._last_activity >= self._idle_timeout_s:
+                _log.info(
+                    "idle for %.0f s with no open point; pausing raw streaming",
+                    now - self._last_activity,
+                )
+                if self._stop_run_locked(STOP_IDLE).is_err:
+                    _log.error("idle stop ended with a fault: %s", self._fault)
 
     def _settings_records(self) -> list[SettingsV1]:
         """Settings needed to decode and rescale the raw packets later (docs/data-safety.md 2.2)."""
@@ -187,16 +373,15 @@ class LiveAcquisition:
 
     def on_session_close(self) -> None:
         """Stop the run and drain its blocks into the WAL; must run before the writer closes."""
+        self._watch_stop.set()
+        watch, self._watch = self._watch, None
+        if watch is not None:
+            watch.join()
         with self._lock:
-            driver, self._driver = self._driver, None
-            self._pipe = None
-            if driver is None:
-                return
-            stopped = driver.stop()
-            if stopped.is_err:
-                self._fault = driver.fault or DriverFault(
-                    origin="driver", detail=str(stopped.danger_err)
-                )
-                _log.error("live acquisition stopped with fault: %s", stopped.danger_err)
-                return
-            _log.info("live acquisition stopped (%d trailing blocks saved)", stopped.danger_ok)
+            had_run = self._driver is not None
+            result = self._stop_run_locked("closed")
+            self._stop_reason = None
+            self._writer = None
+            self._path = None
+            if had_run and result.is_ok:
+                _log.info("live acquisition closed with session")

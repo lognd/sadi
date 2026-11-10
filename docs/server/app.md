@@ -81,3 +81,20 @@ Results, budgets, guidance and device status routes: [results.md](results.md). `
 Per-action state comes from `IncrementalReplay` (docs/store/incremental-replay.md), not a full WAL walk per request, so action latency stays flat as raw data accumulates.
 
 `create_app` builds one `SessionReplayCache` and hands it to the export, plots and curve-source wiring, so all three share one `IncrementalReplay` per session (bounded to a few sessions; eviction only costs a verified full replay).
+
+## Raw streaming lifecycle (audit2 H2b)
+
+`LiveAcquisition` (`sadi/server/live.py`) stops writing raw device blocks to the WAL when it
+should, without ever dropping recorded data: every block already read is drained into the WAL
+before the device is stopped, and the session, writer and WAL stay open and untouched.
+
+- `finish()` / `stop_streaming(reason)`: stop for a finished session (`stop_reason == "finished"`).
+  A later load change is refused (`LiveError.Finished`); resume the session to record again.
+- Idle: a watchdog thread (`WATCH_POLL_S`) pauses streaming after `IDLE_TIMEOUT_S` (600 s) with no
+  load change, no unsettled point update and no result. A new `mark_load_change` restarts the
+  stream on the same writer.
+- Low disk: below `LIVE_MIN_FREE_BYTES` (1 GiB, `sadi.core.device.free_bytes`) the stream stops,
+  `LiveAcquisition.fault` becomes `DriverFault(origin="disk")`, a `PipelineStopped(low_disk)`
+  event goes to the bus, and new capture is refused (`LiveError.LowDisk`). A session opened under
+  the floor starts no stream. Nothing is deleted; the writer's own 512/128 MiB guards still apply
+  (docs/data-safety.md 6.5).

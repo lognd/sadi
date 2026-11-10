@@ -2,7 +2,8 @@
 id = "01M71RCHHEM9EKV4SAEYTVC4WD"
 title = "Web: LabVIEW-style front panel with persistent live readout on every step"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 parent = "01M6W7RAH93KKNK1WH67KWS2S7"

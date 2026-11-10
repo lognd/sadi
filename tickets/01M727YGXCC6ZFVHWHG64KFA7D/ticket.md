@@ -7,8 +7,8 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:07:17Z"
-updated = "2026-11-10T08:07:33Z"
-scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx"]
+updated = "2026-11-10T08:08:12Z"
+scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx", "web/src/screens/run/exportTrace.test.ts"]
 
 [[acceptance]]
 text = "Docs match actual UI behavior; F3 export uses server-provided filename; export failure shows a visible error"

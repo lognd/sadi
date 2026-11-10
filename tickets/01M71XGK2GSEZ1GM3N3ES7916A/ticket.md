@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:54Z"
-updated = "2026-11-10T05:28:20Z"
+updated = "2026-11-10T05:28:29Z"
 scope = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**", "python/sadi/server/schemas.py", "python/tests/server/**", "web/src/screens/setup/SessionSetup.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts", "docs/data-safety.md", "changelog.d/01M71XGK2GSEZ1GM3N3ES7916A.changed.md", "python/sadi/server/routes/sessions.py"]
 
 [[acceptance]]

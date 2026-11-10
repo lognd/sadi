@@ -4,9 +4,10 @@ title = "L6: WS loop does sync session-locked work on the event loop"
 type = "bug"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-10T08:10:53Z"
-updated = "2026-11-10T08:10:53Z"
+updated = "2026-11-10T08:10:54Z"
 scope = ["python/sadi/server/ws.py"]
 
 [[acceptance]]

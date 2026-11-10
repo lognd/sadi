@@ -2,12 +2,12 @@
 id = "01M71Q480MJRE9N53DHGK19JT8"
 title = "JobManager reports DONE for a superseded job whose Done event races the kill (flaky on macOS)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T03:13:18Z"
-updated = "2026-11-10T03:13:18Z"
+updated = "2026-11-10T03:13:21Z"
 scope = ["python/sadi/jobs/manager.py", "python/tests/jobs/test_manager.py", "changelog.d/*", "frob.lock"]
 
 [[acceptance]]

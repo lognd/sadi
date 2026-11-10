@@ -2,7 +2,8 @@
 id = "01M71KE93DMK963M32SPH83NF4"
 title = "GP weight panel: recommended load, gain, alternatives, confidence, stop-early"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

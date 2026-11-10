@@ -2,7 +2,8 @@
 id = "01M709MS0TBDHNX4HSVFD80SXV"
 title = "docs: core/device.md reader queue default is now 4096 blocks"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

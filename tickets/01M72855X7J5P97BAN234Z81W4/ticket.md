@@ -4,6 +4,7 @@ title = "L7: fixed 11rem sticky offset collides at 800px height"
 type = "bug"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-10T08:10:55Z"
 updated = "2026-11-10T08:10:55Z"

@@ -1,0 +1,38 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T15:29:32Z"
+digest = "34da8f9a3caab2d2179d3991a8f0c34f9670465336a3d2d71953d4aaa44714ec"
+exit_code = 1
+failed_tests = ["python/tests/design/test_gui.py::test_page_is_self_contained_and_advisory"]
+head = "5d2e993fb96e4259b11839f818bc142b32161937"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 9 items
+
+python/tests/design/test_gui.py .....F...                                [100%]
+
+=================================== FAILURES ===================================
+___________________ test_page_is_self_contained_and_advisory ___________________
+
+    def test_page_is_self_contained_and_advisory():
+>       assert "Advisory only" in PAGE and "Add row" in PAGE and "LVDT slope" in PAGE
+E       assert ('Advisory only' in '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>SADI weight planner</title>\n<style>\nbody{font-f...cell(h.u_volts));\n    r.appendChild(cell(h.reason, "l"));\n  }\n  out.appendChild(t);\n});\n</script></body></html>\n' and 'Add row' in '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>SADI weight planner</title>\n<style>\nbody{font-f...cell(h.u_volts));\n    r.appendChild(cell(h.reason, "l"));\n  }\n  out.appendChild(t);\n});\n</script></body></html>\n' and 'LVDT slope' in '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><title>SADI weight planner</title>\n<style>\nbody{font-f...cell(h.u_volts));\n    r.appendChild(cell(h.reason, "l"));\n  }\n  out.appendChild(t);\n});\n</script></body></html>\n')
+
+python/tests/design/test_gui.py:58: AssertionError
+-------------- generated xml file: /tmp/frob-pytest-1327114-0.xml --------------
+========================= 1 failed, 8 passed in 2.88s ==========================
+'''
+passed = false
+provider = "pytest"
+ref = "python/tests/design/test_gui.py"
+size = 1670
+status = "measured"
+test_count = 9
+tests_digest = "bddcb836ad760e8467357d0fc36bef7aed6368c3165f44c8e7b4a60b764d265b"
+at = "2026-11-10T15:29:32Z"
+actor = "lognd"
+rev = 1

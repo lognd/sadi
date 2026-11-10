@@ -7,7 +7,7 @@ priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T15:28:52Z"
-updated = "2026-11-10T15:28:55Z"
+updated = "2026-11-10T15:29:32Z"
 scope = ["python/sadi/design/gui.py", "python/tests/design/test_gui.py", "docs/design/planner-gui.md"]
 
 [[acceptance]]

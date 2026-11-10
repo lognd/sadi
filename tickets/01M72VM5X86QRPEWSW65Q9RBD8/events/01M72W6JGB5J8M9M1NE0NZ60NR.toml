@@ -1,0 +1,76 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:01:10Z"
+digest = "a4b34dd7de27ad925499779e0264d600dc81b1705d17e0eb069c6e420a74db66"
+exit_code = 0
+head = "b26f89ea5f4d4cdb5fb3b74b419d638411628039"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/live/live.test.tsx > TraceWindow > keeps marks until they scroll out
+[plots.live.window] mark { t: 0.001, kind: 'load' }
+
+stdout | web/src/plots/live/live.test.tsx > applyMessage > turns state and result messages into marks
+[hooks.markClock] load mark { now: 5.256, timeSinceLoad: 0.1, t: 5.156000000000001 }
+[plots.live.window] mark { t: 5.156000000000001, kind: 'load' }
+[plots.live.window] mark { t: 5.1, kind: 'settled' }
+[plots.live.window] mark { t: 5.256, kind: 'forced' }
+
+stdout | web/src/plots/live/live.test.tsx > live scene > is titled with unit axes, legend, limits at +-4.9 V and renders (acceptance 1, 3)
+[plots.live.window] mark { t: 0.1, kind: 'load' }
+[plots.place] box placed { id: 'annotation', score: 38 }
+[plots.place] box placed { id: 'marker:mark0', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 349.20000000000005, y: 151, penalty: 38 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 360,
+  xTicks: 5,
+  yTicks: 3,
+  title: 'Live trace',
+  xTitle: 'Time (s)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 1,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 52, series: 1 }
+
+stdout | web/src/plots/live/live.test.tsx > live scene > renders with no data and describes connection states
+[plots.layout] layout computed {
+  width: 720,
+  height: 360,
+  xTicks: 6,
+  yTicks: 3,
+  title: 'Live trace',
+  xTitle: 'Time (s)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 51, series: 1 }
+
+ \u{2713} web/src/plots/live/live.test.tsx (12 tests) 424ms
+   \u{2713} benchmark: 50 kS/s > decode + window + snapshot stays far under 16 ms per frame  376ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  09:01:11
+   Duration  1.30s (transform 260ms, setup 0ms, collect 361ms, tests 424ms, environment 0ms, prepare 158ms)
+
+JSON report written to /tmp/frob-vitest-1166960-0.json
+stderr | web/src/plots/live/live.test.tsx > TraceWindow > counts dropped frames from seq gaps and tracks stale
+[plots.live.window] frame gap { missing: 3 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/live/live.test.tsx"
+size = 2123
+status = "measured"
+test_count = 12
+tests_digest = "7ac5a0e8f9539b78dd79f8a8e00909708c3e368d3aed9fc3366293ed41698732"
+at = "2026-11-10T14:01:10Z"
+actor = "lognd"
+rev = 1

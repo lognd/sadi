@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T08:28:54Z"
-updated = "2026-11-10T08:41:47Z"
+updated = "2026-11-10T08:41:56Z"
 labels = ["audit4"]
 scope = ["python/sadi/store/spill.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/tests/store", "python/sadi/store/manifest.py", "docs/data-safety.md", "python/tests/server/test_latest_lineage.py"]
 

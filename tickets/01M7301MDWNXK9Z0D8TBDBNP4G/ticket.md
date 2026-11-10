@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:08:24Z"
-updated = "2026-11-10T15:19:04Z"
+updated = "2026-11-10T15:19:38Z"
 labels = ["creates:python/tests/design/test_cal_fit.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 

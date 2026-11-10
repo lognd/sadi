@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/wizard/**"]
+new = ["web/src/components/wizard/**", "docs/web/wizard.md"]
+at = "2026-11-10T15:23:20Z"
+actor = "lognd"
+rev = 1

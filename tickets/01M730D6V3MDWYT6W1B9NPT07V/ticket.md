@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:14:44Z"
-updated = "2026-11-10T15:22:05Z"
-scope = ["web/src/components/wizard/**"]
+updated = "2026-11-10T15:23:20Z"
+scope = ["web/src/components/wizard/**", "docs/web/wizard.md"]
 
 [[links]]
 kind = "blocked-by"

@@ -958,6 +958,8 @@ export interface components {
             };
             /** Phase */
             phase: string;
+            /** Request Id */
+            request_id?: string | null;
             /**
              * Settled
              * @default false

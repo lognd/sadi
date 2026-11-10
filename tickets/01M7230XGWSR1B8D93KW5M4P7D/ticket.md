@@ -2,7 +2,8 @@
 id = "01M7230XGWSR1B8D93KW5M4P7D"
 title = "Audit2 H2/H5 web: Close session and Start another controls; CSV download via fetch with error and saved message"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

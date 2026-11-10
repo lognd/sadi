@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T14:56:48Z"
+updated = "2026-11-10T14:56:59Z"
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_calibration.py"]
 
 [[acceptance]]
 text = "Sim calibration passes the gate or the message says what to actually do."
-bound = false
+bound = true
 +++
 
 See /tmp/claude-1000/-home-logan-projects-SADI/4f193782-dc1d-4c66-a170-89d2ce998f4d/scratchpad/audit8.md section M5.

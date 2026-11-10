@@ -1,6 +1,7 @@
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
 /* frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD */
+/* frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5 */
 @import "./theme.css";
 
 /* ---- Base ---- */
@@ -106,7 +107,7 @@ fieldset legend { padding: 0 var(--space-2); font-weight: 600; color: var(--mute
   border-left: 4px solid var(--line);
   border-radius: var(--radius-sm);
 }
-.step-glyph { font-family: var(--mono); }
+.step-glyph { font-family: var(--mono); white-space: nowrap; flex-shrink: 0; }
 .step-body { display: flex; flex-direction: column; }
 .step-title { font-weight: 600; color: var(--fg); }
 .step-state { font-size: var(--text-xs); }
@@ -313,7 +314,7 @@ canvas { max-width: 100%; background: #ffffff; border: 1px solid var(--line); bo
 .instrument-bar[data-stale="true"] .ib-num { opacity: 0.55; }
 .debug-strip { margin: 0; padding: var(--space-2) var(--space-5); background: var(--surface); border-bottom: 1px solid var(--line); font-size: var(--text-xs); }
 .ds-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); font-family: var(--mono); }
-.ds-grid dd { word-break: break-all; }
+.ds-grid dd { overflow-wrap: anywhere; }
 .ds-grid div[data-state="stale"] dd { color: var(--warn); }
 
 /* ---- Wizard main column: instructions, primary action, inputs ---- */

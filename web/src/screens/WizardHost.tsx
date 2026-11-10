@@ -2,6 +2,7 @@
 // frob:ticket 01M6WZCNF9F9XSPWCKB34JHSD9
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
+// frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
 // frob:accept COV001 because="covered by WizardHost.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../api/log";
@@ -18,6 +19,7 @@ import { RunScreen } from "./run/RunScreen";
 import { ReviewScreen } from "./review/ReviewScreen";
 import { ClampCheckPanel } from "./setup/ClampCheckPanel";
 import { SessionSetup } from "./setup/SessionSetup";
+import { useStore } from "../state/store";
 
 const log = getLogger("screens.host");
 
@@ -61,6 +63,12 @@ function StaticStep({ kind, onWizard }: { kind: "setup" | "results" | "export"; 
   );
 }
 
+/** Whether a wizard load failure means the backend is unreachable (not a refusal), so the UI must not guess a screen. */
+export function isBackendDown(f: WizardFailure): boolean {
+  if (f.kind !== "transport") return false;
+  return f.error.kind === "network" || (f.error.status >= 502 && f.error.status <= 504);
+}
+
 /** Guided-run host: picks the screen for the current wizard step and remounts it when the step changes. */
 export function WizardHost(): React.JSX.Element {
   const [screen, setScreen] = useState<ScreenKind | null>(null);
@@ -72,9 +80,14 @@ export function WizardHost(): React.JSX.Element {
     });
   }, []);
 
+  const [down, setDown] = useState(false);
   const load = useCallback((): void => {
     void getWizard().then((r) => {
-      if (r.ok) onWizard(r.value);
+      if (r.ok) { setDown(false); onWizard(r.value); }
+      else if (isBackendDown(r.error)) {
+        log.warn("backend unreachable; waiting for it to return");
+        setDown(true);
+      }
       else if (r.error.kind === "problem" && r.error.problem.status === 409) {
         log.info("no open session; showing session setup");
         setScreen("session");
@@ -83,6 +96,12 @@ export function WizardHost(): React.JSX.Element {
   }, [onWizard]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Reload once when the connection recovers after the initial load found the backend down.
+  const connection = useStore((st) => st.connection);
+  useEffect(() => {
+    if (down && connection === "up") { log.info("backend back; reloading wizard"); load(); }
+  }, [down, connection, load]);
 
   const [phaseError, setPhaseError] = useState<WizardFailure | null>(null);
   useEffect(() => {
@@ -96,6 +115,7 @@ export function WizardHost(): React.JSX.Element {
     return () => { live = false; };
   }, [screen]);
 
+  if (down && screen === null) return <p role="alert" data-testid="backend-down">The SADI backend is not reachable. Waiting for it to come back; this page reloads by itself.</p>;
   if (screen === null) return <p>Loading steps...</p>;
   if (screen === "session") return <SessionSetup onOpened={load} />;
   if (screen === "setup" || screen === "results" || screen === "export") {

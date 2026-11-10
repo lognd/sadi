@@ -2036,6 +2036,11 @@
             ],
             "title": "Port"
           },
+          "probe_device": {
+            "default": true,
+            "title": "Probe Device",
+            "type": "boolean"
+          },
           "render_os": {
             "anyOf": [
               {

@@ -824,8 +824,11 @@ read into the bundle.
 
 ## 8. UI Doctor screen (~JCJ0197)
 
-Server side: `GET /api/doctor` returns the last `DoctorReport` (or 404
-`no-run-yet`), `POST /api/doctor/run` with a `RunOptions` body starts a run
+Server side: `GET /api/doctor` runs the checks with the server's real
+`--data-root` and `probe_device=False` (page load never opens or queries the
+serial port, so it cannot disturb a live acquisition; DEV- checks report
+`skip`/`read-only` until run explicitly via `POST /api/doctor/{id}/run`, which
+does probe); it returns a `DoctorReport` (or 404 `no-run-yet`), `POST /api/doctor/run` with a `RunOptions` body starts a run
 as a job (concurrency.md section 6; key class `interactive`, task
 `doctor.run`, runs in a thread of the server process because it must see the
 same environment, never in a worker) and streams `CheckResult` events on the

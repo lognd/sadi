@@ -171,6 +171,12 @@ def _gate(
         return _skipped(spec, SkipReason.NOT_APPLICABLE_OS, f"Not applicable on {os.value}")
     if spec.opt_in_flag is not None and not getattr(options, spec.opt_in_flag, False):
         return _skipped(spec, SkipReason.OPT_IN, f"Needs --{spec.opt_in_flag.replace('_', '-')}")
+    if not options.probe_device and spec.layer is Layer.DEV:
+        return _skipped(
+            spec,
+            SkipReason.READ_ONLY,
+            "Not run on page load; use Run on this check to query the board",
+        )
     blocker = next(
         (
             d

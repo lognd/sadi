@@ -1723,6 +1723,11 @@ export interface components {
             open_browser: boolean;
             /** Port */
             port?: string | null;
+            /**
+             * Probe Device
+             * @default true
+             */
+            probe_device: boolean;
             render_os?: components["schemas"]["Os"] | null;
             /**
              * Running

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
-import { DoctorScreen, FixSteps, type DoctorApi } from "./DoctorScreen";
+import { DoctorScreen, FixSteps, VerdictBanner, type DoctorApi } from "./DoctorScreen";
 import { useDoctorRoute, openDoctorOnConnectionError } from "./useDoctorRoute";
 import { getDoctor, runDoctorCheck } from "../api/client";
 import type { CheckResult } from "./types";
@@ -29,6 +29,15 @@ describe("doctor ui", () => {
     const api: DoctorApi = { list: vi.fn(), run: vi.fn() };
     const html = renderToString(<DoctorScreen api={api} />);
     expect(html).toContain("Doctor");
+  });
+
+  // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
+  // frob:tests web/src/doctor/DoctorScreen.tsx::VerdictBanner
+  it("shows the verdict, counts and first action (audit #33)", () => {
+    const html = renderToString(<VerdictBanner summary={{ verdict: "blocked", first_action: "Free port 8000" }} results={[failing]} />).replaceAll("<!-- -->", "");
+    expect(html).toContain("Verdict: blocked");
+    expect(html).toContain("1 failed");
+    expect(html).toContain("Do this first: Free port 8000");
   });
 
   it("opens from a connection error", () => {

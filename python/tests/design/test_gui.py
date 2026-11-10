@@ -55,7 +55,7 @@ def test_captured_points_accepted():
 
 
 def test_page_is_self_contained_and_advisory():
-    assert "Advisory only" in PAGE and "Add row" in PAGE and "OVERRIDE" in PAGE
+    assert "Advisory only" in PAGE and "Add row" in PAGE and "LVDT slope" in PAGE
     assert "http://" not in PAGE.replace("http://127", "") and "https://" not in PAGE
     assert 'name="cal_slope" required' not in PAGE
 

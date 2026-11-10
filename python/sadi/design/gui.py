@@ -65,21 +65,20 @@ points you have already captured to replan.</p>
 <label>Gauge length L0, m <input type="text" name="length" value="0.08313" required></label>
 <label>L0 uncertainty, m <input type="text" name="u_length" value="0"></label>
 </fieldset>
-<fieldset><legend>LVDT calibration (fitted from your height / volts points)</legend>
+<fieldset><legend>LVDT calibration (type it from your LabVIEW, or fit it from points)</legend>
+<label>LVDT slope, V per m (from your LabVIEW calibration)
+<input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
+<label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
+<small>A typed slope is used as given (no uncertainty) and is all the height plan needs. Or leave it blank and fit from points:</small>
 <table id="cal"><thead><tr><th>Height, m</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addrow">Add row</button>
 <small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
-<details><summary>Override (advanced)</summary>
-<label>OVERRIDE slope, V per m (skips the fit; no uncertainty)
-<input type="text" name="cal_slope" value="" placeholder="blank = use the fit"></label>
-<label>OVERRIDE offset, V (with override only) <input type="text" name="cal_offset" value="0"></label>
-</details>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>Gauge height inventory (which heights to calibrate with)</legend>
 <table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
-<small>Optional. Needs the override slope above as the nominal V per m; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
+<small>Optional. Enter each height you have and its uncertainty, just like the weights; uses the typed LVDT slope above; duplicates stay distinct. Fill it to get a height plan instead of a weight plan.</small>
 </fieldset>
 <fieldset><legend>Already captured</legend>
 <label>Points as N:volts, comma separated (blank = none)<br>

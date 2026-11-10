@@ -40,7 +40,7 @@ Each point may carry an optional height uncertainty (`h:v:u_h`, metres). When ev
 is weighted (effective variance: u_h scaled by the slope, re-weighted until settled) and the slope and
 intercept se reflect it; otherwise it is unweighted OLS.
 
-An explicit slope override (GUI "Override (advanced)", CLI `--cal-slope` / `--cal-offset`) skips the fit,
+An explicit slope override (GUI "LVDT slope" and "LVDT offset" fields, CLI `--cal-slope` / `--cal-offset`) skips the fit,
 is labelled OVERRIDE in the output and carries no calibration uncertainty. Points plus an override is an
 error. Diameter and L0 are REQUIRED: a blank field is an error, never a silent default.
 
@@ -57,7 +57,7 @@ weights: an inventory of heights (m), each with its own uncertainty `u_h`. Dupli
 (`h1`, `h2`, ...). Heights whose nominal volts exceed the saturation limit are dropped, then the same GP
 selector (`selector.select_next`, candidates with `x` = height, `u_x` = `u_h`) orders the rest. Fewer than 2
 distinct usable heights is a `HeightPlanError.TooFew` error. Because volts are not measured yet, a nominal
-LVDT slope (and offset) is required: GUI override slope field, CLI `--cal-slope`/`--cal-offset`.
+LVDT slope (and offset) is required: GUI "LVDT slope" field, CLI `--cal-slope`/`--cal-offset`.
 
 Each step reports its height, `u_h`, predicted volts and the running slope and intercept standard error
 propagated from the chosen heights (weighted least squares with sigma_v = |slope| u_h; a design estimate,

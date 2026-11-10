@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T15:42:53Z"
+digest = "e91c8df32f1e3672d06d45d9f2ca7e9fd9eb637f0a268237f5586c4b73958532"
+exit_code = 0
+head = "e66b8101bb26a9021cd4f3ede9d116d699970c3d"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/screens/run/designAdvice.test.ts (3 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  10:42:53
+   Duration  668ms (transform 97ms, setup 0ms, collect 90ms, tests 3ms, environment 0ms, prepare 187ms)
+
+JSON report written to /tmp/frob-vitest-1339587-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/designAdvice.test.ts"
+size = 326
+status = "measured"
+test_count = 3
+tests_digest = "d28d9f33b9b1a72ffbdbf374c12b4839b42f4dbd34619f4e2b9ce64c07ed9432"
+at = "2026-11-10T15:42:53Z"
+actor = "lognd"
+rev = 1

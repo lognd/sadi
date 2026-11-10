@@ -2,7 +2,8 @@
 id = "01M723P2Z9GC152RE82Y6JYAW5"
 title = "Audit2 H7: write SETTINGS WAL record at session open so Doctor WAL-040 passes"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

@@ -27,6 +27,7 @@ class RefitError(ErrorSet):
     """Server-side refit failure that is not a ModulusError."""
 
     NoData = "No stress-strain data is available to refit; record or open a session first"
+    NoOpenSession = "no_open_session: open or resume a session before refitting"
     Intercept = "The fit intercept could not be computed for this window"
 
 
@@ -101,7 +102,7 @@ def _status(error: ModulusError | RefitError) -> int:
     """HTTP status for a refit error: bad window 422, no data 409, others 422/500."""
     if error is ModulusError.BadWindow:
         return 422
-    if error is RefitError.NoData:
+    if error in (RefitError.NoData, RefitError.NoOpenSession):
         return 409
     if error in (ModulusError.Fit, ModulusError.NoWindow):
         return 422

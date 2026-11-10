@@ -1,5 +1,6 @@
-"""Read-only CurveSource over the active session: newest session dir under the data root."""
+"""Read-only CurveSource over the open session (path supplied by the SessionService)."""
 
+# frob:ticket 01M726PZNXA6BEXH97TQPK3176
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
 # frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
@@ -47,7 +48,10 @@ _EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 
 def active_session(data_root: Path) -> Path | None:
-    """Return the newest session dir (names sort by UTC stamp), or None; never writes."""
+    """Return the newest session dir by name, or None; CLI/offline use only, never the request path.
+
+    Names sort by family creation stamp, so this is NOT the open session once families resume.
+    """
     base = data_root / SESSIONS_DIRNAME
     try:
         dirs = sorted(p for p in base.iterdir() if p.is_dir() and (p / "wal").is_dir())
@@ -128,14 +132,21 @@ def session_events(
 def load_curve(
     data_root: Path, cache: dict[Path, IncrementalReplay] | None = None
 ) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded) stress-strain curve from the active session's events.
-
-    `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
-    """
+    """Build the curve of the newest session dir under `data_root` (CLI/offline use only)."""
     sdir = active_session(data_root)
     if sdir is None:
         _log.info("curve source: no session under %s", data_root)
         return Err(RefitError.NoData)
+    return load_session_curve(sdir, cache)
+
+
+def load_session_curve(
+    sdir: Path, cache: dict[Path, IncrementalReplay] | None = None
+) -> Result[Sequence[CurvePoint], RefitError]:
+    """Build the active (non-excluded) stress-strain curve from session dir `sdir`'s events.
+
+    `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
+    """
     replayer = None
     if cache is not None:
         replayer = cache.setdefault(sdir, IncrementalReplay(sdir))
@@ -222,23 +233,30 @@ class SessionReplayCache:
                 self._verified_at.pop(sdir, None)
             return res
 
-    def curve(self, data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
-        """Return the active-session curve, reading only newly appended WAL frames."""
+    def curve(self, sdir: Path) -> Result[Sequence[CurvePoint], RefitError]:
+        """Return the curve of session `sdir`, reading only newly appended WAL frames."""
         with self._lock:
-            sdir = active_session(data_root)
-            if sdir is not None:
-                self._replayer(sdir, False)  # applies the periodic re-verify policy
-            res = load_curve(data_root, self._cache)
+            self._replayer(sdir, False)  # applies the periodic re-verify policy
+            res = load_session_curve(sdir, self._cache)
             self._evict()
             return res
 
 
-def make_curve_source(data_root: Path, cache: SessionReplayCache | None = None) -> CurveSource:
-    """Return a CurveSource over the active session under `data_root` (incremental WAL tail)."""
+def make_curve_source(
+    open_session: Callable[[], Path | None], cache: SessionReplayCache | None = None
+) -> CurveSource:
+    """Return a CurveSource over the open session (incremental WAL tail).
+
+    `open_session` yields the open session dir, or None; None gives RefitError.NoOpenSession.
+    """
     shared = cache if cache is not None else SessionReplayCache()
 
     def source() -> Result[Sequence[CurvePoint], RefitError]:
-        """Delegate to the shared, lock-guarded cache."""
-        return shared.curve(data_root)
+        """Delegate to the shared, lock-guarded cache for the currently open session."""
+        sdir = open_session()
+        if sdir is None:
+            _log.info("curve source: no session is open")
+            return Err(RefitError.NoOpenSession)
+        return shared.curve(sdir)
 
     return source

@@ -263,7 +263,15 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             provenance=app.state.sessions.provenance(),
         )
         app.include_router(make_ws_router(app.state.stream_hub))
-    source = cfg.curve_source or make_curve_source(cfg.data_root, replays)
+    sessions = cast(SessionService, app.state.sessions)
+
+    def _open_path() -> Path | None:
+        """Open session dir from the service, or None when nothing is open."""
+        return sessions.session_path().unwrap_or(None)
+
+    source = cfg.curve_source or make_curve_source(
+        _open_path, replays
+    )  # frob:ticket 01M726PZNXA6BEXH97TQPK3176
     app.include_router(make_stress_strain_router(source, app.state.sessions.provenance()))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

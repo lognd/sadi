@@ -11,7 +11,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from sadi.server.app import AppSettings, create_app
-from sadi.server.curve_source import active_session, load_curve
+from sadi.server.curve_source import active_session, load_curve, make_curve_source
 from sadi.server.routes_stress_strain import RefitError
 from sadi.store.events import PointV1, PointWindow, point_record
 from sadi.store.records import NewRecord
@@ -54,7 +54,7 @@ def _tree_digest(root: Path) -> str:
 
 
 def test_no_session_is_no_data(tmp_path: Path) -> None:
-    """With no sessions the endpoint still answers 409 NoData."""
+    """With no sessions the offline loader says NoData; the endpoint says no open session."""
     # frob:tests python/sadi/server/curve_source.py::load_curve
     # frob:tests python/sadi/server/curve_source.py::active_session
     # frob:tests python/sadi/server/curve_source.py::make_curve_source
@@ -63,11 +63,11 @@ def test_no_session_is_no_data(tmp_path: Path) -> None:
     c = TestClient(create_app(AppSettings(data_root=tmp_path)))
     res = c.post("/api/stress-strain/fit", json={"first": 0, "last": 3})
     assert res.status_code == 409
-    assert res.json()["error"] == "NoData"
+    assert res.json()["error"] == "NoOpenSession"
 
 
 def test_active_session_feeds_fit_read_only(tmp_path: Path) -> None:
-    """create_app serves a fit from the newest session and leaves the data untouched."""
+    """create_app serves a fit from the supplied session path and leaves the data untouched."""
     # frob:tests python/sadi/server/app.py::create_app
     # frob:tests python/sadi/server/curve_source.py::load_curve
     sdir = _record_session(tmp_path)
@@ -75,7 +75,10 @@ def test_active_session_feeds_fit_read_only(tmp_path: Path) -> None:
     before = _tree_digest(sdir)
     curve = load_curve(tmp_path).danger_ok
     assert len(curve) == 8
-    c = TestClient(create_app(AppSettings(data_root=tmp_path, require_root_lock=False)))
+    source = make_curve_source(lambda: sdir)
+    c = TestClient(
+        create_app(AppSettings(data_root=tmp_path, require_root_lock=False, curve_source=source))
+    )
     res = c.post("/api/stress-strain/fit", json={"first": 1, "last": 6})
     assert res.status_code == 200, res.text
     assert res.json()["modulusMpa"] > 0

@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:53:21Z"
+updated = "2026-11-10T07:54:45Z"
 labels = ["creates:python/tests/server/test_failed_writer_spill.py"]
 scope = ["python/sadi/server/service.py", "python/sadi/store/spill.py", "python/tests/server/test_failed_writer_spill.py", "docs/data-safety.md", "python/sadi/store/writer_thread.py"]
 

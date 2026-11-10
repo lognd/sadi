@@ -4,6 +4,7 @@ title = "L3+L5: debug strip shows faulted device as ok; SEQ/DURABLE mix WS and W
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:13Z"
 updated = "2026-11-10T08:05:17Z"

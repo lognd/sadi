@@ -3,16 +3,18 @@
 import { SyntheticBanner } from "../provenance/SyntheticBanner";
 import { useEffect, useMemo, useRef } from "react";
 import { renderToCanvas } from "../../plots/core";
-import { buildLiveScene, type Snapshot } from "../../plots/live";
+import { buildLiveScene, useContainerSquare, type Snapshot } from "../../plots/live";
 import { useLive } from "../../state/LiveContext";
 import type { ConnState } from "../../ws/client";
 
 /** Canvas drawing the shared live scene from a snapshot (no second socket). */
 export function TraceCanvas({ snapshot, conn }: { readonly snapshot: Snapshot; readonly conn: ConnState }): React.JSX.Element {
-  const scene = useMemo(() => buildLiveScene(snapshot, { conn }), [snapshot, conn]);
+  const box = useRef<HTMLDivElement>(null);
+  const side = useContainerSquare(box);
+  const scene = useMemo(() => buildLiveScene(snapshot, { conn, width: side, height: side }), [snapshot, conn, side]);
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => { if (ref.current) renderToCanvas(ref.current, scene); }, [scene]);
-  return <canvas ref={ref} data-testid="live-canvas" aria-label={scene.title} />;
+  return <div ref={box} className="live-trace-box"><canvas ref={ref} data-testid="live-canvas" aria-label={scene.title} /></div>;
 }
 
 /** Persistent live trace card fed from the shared LiveProvider. */

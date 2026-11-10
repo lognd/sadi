@@ -19,6 +19,7 @@ from sadi.store.manifest import read_manifest
 from sadi.store.records import FRAME_HEADER_LEN, NewRecord, Record, RecordType, encode_frame
 from sadi.store.session import (
     SessionMeta,
+    TooManyVersions,
     create_session,
     session_is_synthetic,
     session_provenance_unknown,
@@ -413,6 +414,109 @@ def test_failed_fragment_verify_is_marked_and_not_recopied(
     assert (sp.parent / "s.wal.fragment-failed.json").is_file()
     before = sorted((root / "sessions").iterdir())
     again = import_all_spills(root, user, tmp)[0][1]
-    assert again.is_ok and again.danger_ok is None
+    assert again.is_ok and isinstance(again.danger_ok, spill.FragmentFailedSkip)
+    assert len(again.danger_ok.crashed_dirs) == 1 and again.danger_ok.crashed_dirs[0].is_dir()
     assert sorted((root / "sessions").iterdir()) == before
     assert sp.is_file()
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::_already_imported
+def test_marker_for_another_data_root_is_not_trusted(tmp_path: Path) -> None:
+    """M5: a marker naming a version under another data root is set aside and re-imported."""
+    _r, user, tmp = dirs(tmp_path)
+    root_a, root_b = tmp_path / "a", tmp_path / "b"
+    sp = tmp_path / "shared" / "s.wal"
+    data = make_spill(sp, 1, 2)
+    first = import_all_spills(root_a, user, tmp_path / "t1")  # no spill in root_a: nothing found
+    assert first == []
+    rep_a = spill.import_spill(root_a, scan_spill(sp).danger_ok).danger_ok
+    assert rep_a.marker_written
+    # the same spill dir as seen from root_b: marker points under root_a, so it must be re-imported
+    place = root_b / "spill"
+    place.mkdir(parents=True)
+    shutil.copy(sp, place / "s.wal")
+    shutil.copy(sp.with_name("s.wal.imported.json"), place / "s.wal.imported.json")
+    out = import_all_spills(root_b, user, tmp)
+    assert out[0][1].danger_ok is not None
+    assert len(list((root_b / "sessions").iterdir())) == 1
+    assert list(place.glob("s.wal.imported.json.stale-*"))  # old marker kept, not deleted
+    assert sp.read_bytes() == data
+    assert import_all_spills(root_b, user, tmp)[0][1].danger_ok is None
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::_already_imported
+def test_marker_with_vanished_version_dir_is_not_trusted(tmp_path: Path) -> None:
+    """M5: a marker whose version dir no longer exists does not hide the spill."""
+    root, user, tmp = dirs(tmp_path)
+    make_spill(root / "spill" / "s.wal", 1, 2)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    shutil.move(str(rep.version_dir), str(tmp_path / "moved-away"))
+    again = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert again is not None and again.version_dir.is_dir()
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def test_autouse_isolates_user_data_dir() -> None:
+    """M5: with no explicit fixture, the user data dir is not the real one."""
+    assert "isolated-home" in str(spill.user_data_dir())
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_join_error_before_bytes_clears_inprogress_and_retries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """L5a: _init_dir failing aborts the join, sets the sidecar aside, next start joins fully."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real = spill._init_dir
+    monkeypatch.setattr(spill, "_init_dir", lambda *a, **k: Err(TooManyVersions(family="x")))
+    assert import_all_spills(root, user, tmp)[0][1].is_err
+    assert not sp.with_name("s.wal.join-inprogress.json").exists()
+    assert list(sp.parent.glob("s.wal.join-inprogress.json.aborted-*"))
+    monkeypatch.setattr(spill, "_init_dir", real)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "joined"
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_closed_import_without_marker_gets_marker_not_duplicate(tmp_path: Path) -> None:
+    """L5b: a joined+closed version for this sha but no marker: marker is written, no v003."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    marker = sp.with_name("s.wal.imported.json")
+    marker.rename(tmp_path / "lost-marker")  # simulate crash before the marker write
+    sp.with_name("s.wal.join-inprogress.json").exists()
+    again = import_all_spills(root, user, tmp)[0][1]
+    assert again.is_ok and again.danger_ok is None
+    assert marker.is_file()
+    assert len(list((root / "sessions").iterdir())) == 2
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/server/app.py::_import_spills
+def test_app_logs_fragment_failed_skip_at_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """L6: the startup log names crashed copies at WARNING, not 'already imported'."""
+    from sadi.server import app as app_mod
+
+    crashed = tmp_path / "crashed.v001"
+    skip = spill.FragmentFailedSkip(spill=tmp_path / "s.wal", crashed_dirs=(crashed,))
+    monkeypatch.setattr(app_mod, "import_all_spills", lambda _root: [(skip.spill, spill.Ok(skip))])
+    cfg = type("C", (), {"data_root": tmp_path})()
+    with caplog.at_level("INFO"):
+        assert app_mod._import_spills(cfg) == 0  # type: ignore[arg-type]
+    recs = [r for r in caplog.records if "NOT recovered" in r.getMessage()]
+    assert recs and recs[0].levelname == "WARNING" and str(crashed) in recs[0].getMessage()
+    assert not any("already imported" in r.getMessage() for r in caplog.records)

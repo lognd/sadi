@@ -40,3 +40,6 @@ A framed section's first `h2`/`h3` is styled as a title strip (`--surface-2`, bo
 On-screen plots draw on a paper canvas (`#f8f6ee`) in both themes; exports (`exportFigure`) swap in
 `exportTheme` (white background, `Helvetica, Arial, sans-serif`) so figures drop into reports; thin 1.25px
 traces, restrained grid, monospace ticks (`src/plots/theme.ts`).
+The live trace is square and sized from its container (`useContainerSquare`, ResizeObserver): it re-renders at
+that size with logical fonts of 12 px or more instead of CSS-scaling a fixed 720x360 scene. Form helper text
+uses the `field-help` class (sentence case, `--text-sm`).

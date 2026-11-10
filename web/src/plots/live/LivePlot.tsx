@@ -6,6 +6,7 @@ import { isTextTarget, resolveKey } from "../../keys/keymap";
 import { exportFigure, renderToCanvas } from "../core";
 import { useTrace, type UseTraceOptions } from "../../hooks/useTrace";
 import { buildLiveScene } from "./scene";
+import { useContainerSquare } from "./useContainerSquare";
 
 const log = getLogger("plots.live.view");
 
@@ -22,10 +23,11 @@ function saveBlob(blob: Blob, name: string): void {
 /** Live scrolling trace: min/max envelope, event marks, saturation limits, in-plot reconnect state; F3 exports PNG. */
 export function LivePlot(props: UseTraceOptions & { readonly width?: number; readonly height?: number }) {
   const { snapshot, conn, notice } = useTrace(props);
-  const scene = useMemo(
-    () => buildLiveScene(snapshot, { conn, ...(props.width === undefined ? {} : { width: props.width }), ...(props.height === undefined ? {} : { height: props.height }) }),
-    [snapshot, conn, props.width, props.height],
-  );
+  const box = useRef<HTMLElement>(null);
+  const side = useContainerSquare(box);
+  const w = props.width ?? side;
+  const h = props.height ?? side;
+  const scene = useMemo(() => buildLiveScene(snapshot, { conn, width: w, height: h }), [snapshot, conn, w, h]);
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (ref.current) renderToCanvas(ref.current, scene);
@@ -51,7 +53,7 @@ export function LivePlot(props: UseTraceOptions & { readonly width?: number; rea
   }, [doExport]);
 
   return (
-    <figure data-testid="live-plot">
+    <figure ref={box} data-testid="live-plot">
       <canvas ref={ref} data-testid="live-canvas" aria-label={scene.title} />
       {notice === null ? null : <p role="status" data-testid="live-notice">{notice}</p>}
       <figcaption>Press F3 to export PNG.</figcaption>

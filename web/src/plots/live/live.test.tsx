@@ -7,7 +7,8 @@ import { applyMessage } from "../../hooks/useTrace";
 import { decodeFrame, type TraceFrame } from "../../ws/frame";
 import { encodeTrace } from "../../ws/testframes";
 import { LivePlot } from "./LivePlot";
-import { buildLiveScene, connLine, liveYRange } from "./scene";
+import { buildLiveScene, connLine, liveYRange, MIN_LIVE_FONT } from "./scene";
+import { squareSide } from "./useContainerSquare";
 import { TraceWindow } from "./window";
 
 function frame(seq: number, t0: number, n: number, amp = 1, dt = 0.001): TraceFrame {
@@ -139,5 +140,20 @@ describe("liveYRange", () => {
     expect(r.rails).toBe(true);
     expect(r.max).toBe(5.5);
     expect(buildLiveScene(w.snapshot(50)).fits).toHaveLength(2);
+  });
+});
+
+// frob:ticket 01M72VM5X86QRPEWSW65Q9RBD8
+describe("square live scene", () => {
+  it("is square at the container side and keeps fonts >= 12 px", () => {
+    const side = squareSide(350);
+    const sc = buildLiveScene(new TraceWindow(1, 0).snapshot(10), { width: side, height: side });
+    expect(sc.width).toBe(sc.height);
+    expect(sc.width).toBe(350);
+    expect(Math.min(...Object.values(sc.theme?.fontSize ?? {}))).toBeGreaterThanOrEqual(MIN_LIVE_FONT);
+  });
+  it("clamps tiny and unmeasured containers", () => {
+    expect(squareSide(10)).toBe(240);
+    expect(squareSide(0)).toBe(360);
   });
 });

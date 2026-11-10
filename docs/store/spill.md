@@ -78,3 +78,20 @@ and before the app serves. Each import is logged at WARNING (recovered), already
 spills at INFO. A failed spill is logged at ERROR with the file left intact; startup
 continues and `app.state.spill_failures` holds the failure count. Spills are never deleted
 or overwritten. Without the lock (degraded mode) no import is attempted.
+
+## Per-data-root markers, join cleanup, fragment-failed outcome (audit7 M5, L5, L6)
+
+- The `.imported.json` marker is trusted only when its `version_dir` exists and lies under the
+  data root being imported into. Otherwise it is renamed to `.imported.json.stale-<ns>` (kept,
+  never deleted) and the spill is imported again into this root. Tests isolate the user and temp
+  spill dirs with an autouse fixture in `python/tests/conftest.py`.
+- A join that fails before any segment byte is written (`SpillSession`: version numbering or
+  directory init) renames the in-progress sidecar to `.join-inprogress.json.aborted-<ns>`, so the
+  next start retries the full join.
+- The manifest records `spill_sha256`. If a closed imported version in this root already carries
+  the spill's sha256 (marker lost or a crash after close), the missing marker is written and no
+  duplicate version is created.
+- `import_all_spills` returns `Ok(FragmentFailedSkip(spill, crashed_dirs))` for a spill skipped
+  because of `.fragment-failed.json`; startup logs it at WARNING with the crashed-copy paths
+  instead of "already imported".
+

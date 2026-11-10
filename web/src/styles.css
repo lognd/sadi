@@ -315,6 +315,7 @@ canvas { max-width: 100%; background: #f8f6ee; border: 1px solid var(--line); bo
   border-radius: 0;
   text-transform: uppercase;
 }
+.live-trace-box { width: 100%; }
 .live-trace canvas { display: block; width: 100%; height: auto; }
 
 /* ---- Next action: prominent ---- */

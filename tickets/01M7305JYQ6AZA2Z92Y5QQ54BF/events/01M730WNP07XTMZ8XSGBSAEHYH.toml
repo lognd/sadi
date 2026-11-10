@@ -1,0 +1,34 @@
+kind = "evidence"
+accepts = [3]
+captured_at = "2026-11-10T15:23:06Z"
+digest = "329d96dc002c9ae10ecdb90cd6e154e8918234da9ae5654f470e27de507f1b71"
+exit_code = 0
+head = "6b2560ea3ddc525512a6c35d1c899e6fe8727d8a"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 54 items
+
+python/tests/design/test_cal_fit.py ..............                       [ 25%]
+python/tests/design/test_cli.py .......                                  [ 38%]
+python/tests/design/test_gui.py .........                                [ 55%]
+python/tests/design/test_height_plan.py .....                            [ 64%]
+python/tests/design/test_plan.py .........                               [ 81%]
+python/tests/design/test_selector.py ..........                          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1318011-0.xml --------------
+============================== 54 passed in 3.47s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/design"
+size = 922
+status = "measured"
+test_count = 54
+tests_digest = "1558da36c0633604ca9c8b5ef5a3fd8a2c95bfc6c68bc3ab5d790ea4c6d28925"
+at = "2026-11-10T15:23:06Z"
+actor = "lognd"
+rev = 1

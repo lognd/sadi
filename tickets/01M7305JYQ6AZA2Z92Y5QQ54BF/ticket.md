@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:10:34Z"
-updated = "2026-11-10T15:23:02Z"
+updated = "2026-11-10T15:23:06Z"
 labels = ["creates:python/tests/design/test_height_plan.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 
@@ -25,7 +25,7 @@ bound = true
 
 [[acceptance]]
 text = "Each chosen height reports its uncertainty and the propagated uncertainty in the calibration slope/intercept (weighted fit using per-height u)"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Duplicates in the height inventory stay distinct ids; error when fewer than 2 distinct usable heights"

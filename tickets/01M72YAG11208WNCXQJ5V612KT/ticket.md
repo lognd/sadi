@@ -2,7 +2,8 @@
 id = "01M72YAG11208WNCXQJ5V612KT"
 title = "Sim LVDT calibration step can never pass its quality gate; error text misleading (audit8 M5)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

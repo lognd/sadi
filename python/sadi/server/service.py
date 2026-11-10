@@ -94,13 +94,16 @@ class ClosedSession:
     torn_tail: str | None = None  # "segment/offset" when only the verified prefix was read
 
 
+# Live-derived input keys: they change on every sample, so they never identify a point.
+_LIVE_INPUT_KEYS = frozenset({"volts", "mean", "sd", "n"})
+
+
 def _capture_digest(body: CaptureBody) -> str:
-    """Stable digest of what makes a capture the same point (not its request id)."""
-    # frob:ticket 01M72T4R1WNQRV303D0WJXW1MW
-    keyed = body.model_dump(
-        mode="json", include={"phase", "inputs", "window", "settled", "forced_early"}
-    )
-    return hashlib.sha256(json.dumps(keyed, sort_keys=True).encode()).hexdigest()
+    """Stable digest of what the operator chose (phase, typed inputs, forced_early), not live data."""
+    # frob:ticket 01M72VM5RSJM7EMREPXDYDN79W
+    chosen = {k: v for k, v in body.inputs.items() if k not in _LIVE_INPUT_KEYS}
+    keyed = {"phase": body.phase, "inputs": chosen, "forced_early": body.forced_early}
+    return hashlib.sha256(json.dumps(keyed, sort_keys=True, default=str).encode()).hexdigest()
 
 
 @dataclass

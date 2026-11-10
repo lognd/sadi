@@ -1,0 +1,115 @@
+kind = "evidence"
+captured_at = "2026-11-10T03:42:02Z"
+digest = "6890ff56393210e0523b402b6d1cd1b45322ec35da87f5019c94ace5744f11f3"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+ \u{2713} src/state/LiveContext.test.tsx (3 tests) 17ms
+ \u{2713} src/components/live/LiveReadout.test.tsx (8 tests) 21ms
+stdout | src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+ \u{2713} src/components/wizard/wizard.test.tsx (16 tests) 52ms
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.run.loadChange] load change marked { seq: 5 }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+ \u{2713} src/screens/run/RunScreen.test.tsx (21 tests) 54ms
+ \u{2713} src/App.test.tsx (3 tests) 15ms
+ \u{2713} src/screens/WizardHost.test.tsx (4 tests) 14ms
+
+ Test Files  6 passed (6)
+      Tests  55 passed (55)
+   Start at  22:42:03
+   Duration  1.29s (transform 1.18s, setup 0ms, collect 3.40s, tests 172ms, environment 2ms, prepare 1.22s)
+
+JSON report written to /tmp/frob-vitest-81746-0.json
+stderr | src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export http error { format: 'x', status: 404 }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export network failure { format: 'x', message: 'down' }
+
+stderr | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] http error { path: '/api/session/load-change', status: 409 }
+
+stderr | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.run.loadChange] load change refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/App.test.tsx web/src/components/live/LiveReadout.test.tsx web/src/components/wizard/wizard.test.tsx web/src/screens/WizardHost.test.tsx web/src/screens/run/RunScreen.test.tsx web/src/state/LiveContext.test.tsx"
+size = 5509
+status = "measured"
+test_count = 55
+tests_digest = "2f160d6929aec6dc2430f19cd4785acbe67efa86aa02c8d198c868d16e7df156"
+at = "2026-11-10T03:42:02Z"
+actor = "lognd"
+rev = 1

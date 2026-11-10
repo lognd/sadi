@@ -1,0 +1,17 @@
++++
+id = "01M72D37RN0VN65DDCSPWHJMJ7"
+title = "Run-step guidance wording, accept-key repeat guard, capture request_id idempotency, sim load-change phase (audit5 M5 L1 L7 MED11)"
+type = "bug"
+category = "todo"
+priority = "high"
+reporter = "lognd"
+created = "2026-11-10T09:37:14Z"
+updated = "2026-11-10T09:37:14Z"
+scope = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/session_points.py", "python/tests/**", "web/src/screens/run/**", "web/src/keys/**", "web/src/api/**", "docs/lctt/**", "docs/server/**"]
+
+[[acceptance]]
+text = "No guidance text contains 'total'; accept keys ignore repeat and block duplicate accept; capture replay with same request_id returns existing commit; sim tare/calibrate mark does not add load; openapi regenerated"
+bound = false
++++
+
+audit5 M5, L1, L7, MED 11 part of M6. Data-safety: no data loss, atomic, never overwritten.

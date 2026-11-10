@@ -2,12 +2,12 @@
 id = "01M723P32SR45XWMW7BE5QZE7H"
 title = "Audit2 H2b: stop raw streaming once session finished/idle; free-space guard"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T06:52:46Z"
-updated = "2026-11-10T06:52:46Z"
+updated = "2026-11-10T06:59:03Z"
 labels = ["creates:python/tests/server/test_idle_raw.py"]
 scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_idle_raw.py"]
 

@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:10:34Z"
-updated = "2026-11-10T15:22:55Z"
+updated = "2026-11-10T15:23:02Z"
 labels = ["creates:python/tests/design/test_height_plan.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Returns the ordered subset of heights to use for calibration, accounting for LVDT saturation and the GP selector, same as weights"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Each chosen height reports its uncertainty and the propagated uncertainty in the calibration slope/intercept (weighted fit using per-height u)"

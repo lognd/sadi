@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:50:38Z"
+updated = "2026-11-10T14:51:20Z"
 scope = ["web/src/screens/run/**"]
 
 [[acceptance]]

@@ -7,8 +7,8 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T15:23:07Z"
-scope = ["web/src/screens/run/live.ts", "python/sadi/labs/lctt/lab.py", "python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/export_csv.py"]
+updated = "2026-11-10T15:23:08Z"
+scope = ["web/src/screens/run/live.ts", "python/sadi/labs/lctt/lab.py", "python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/sadi/core/models.py", "python/sadi/labs/lctt/export_csv.py", "web/src/screens/setup/SessionSetup.tsx"]
 
 [[acceptance]]
 text = "Load points post volts_sd/u_volts; CSV header has operator and description."

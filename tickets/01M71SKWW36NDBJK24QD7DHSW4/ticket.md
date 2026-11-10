@@ -2,7 +2,8 @@
 id = "01M71SKWW36NDBJK24QD7DHSW4"
 title = "Web: always-on instrument bar, debug strip, and newcomer-proof pages"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 8
 reporter = "lognd"

@@ -2901,13 +2901,12 @@ acked_at = "2026-11-08T07:05:06.531537257Z"
 identity = "web/src/screens/WizardHost.tsx"
 symref = "web/src/screens/WizardHost.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "d6b88029936afb06bb792b3ab131d707f910d2f996c321fba509620cb46ed985"
+body = "6acc4e57226881ef7345045a88c5a647ed152ca9a75ff715366dcafa8a1e2776"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T03:40:43.961830613Z"
-reason = "ticket YTVC4WD front panel rework, re-read"
+acked_at = "2026-11-10T05:16:34.818451905Z"
 
 [[symbol]]
 identity = "web/src/screens/WizardHost.tsx::BY_PHASE"
@@ -2964,6 +2963,17 @@ attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
 contract = "75eba3ffbfb3ea346f45a988b53d825dca4fd439293c6cf84e5549db59e17075"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-10T05:15:51.657258862Z"
+
+[[symbol]]
+identity = "web/src/screens/WizardHost.tsx::isBackendDown"
+symref = "web/src/screens/WizardHost.tsx::isBackendDown"
+sig = "a5dcd0d27aae0359c67bac1127a08a7e48981f069204bc2fa8d87fded6bba04f"
+body = "43f42fad45549dd8bde1df516db03d6ff5480bdc796776d9d17870a1e5300ec6"
+doc = "2eff70e3e1f2d141df1469f012ed3b0c3567e6e2415d771bbe84ea8786b28ff7"
+attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
+contract = "2bc146d616e37c6fd82232bb3dbd786a5f96b6a0b1e1b4f2b2aae014642ad791"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T05:16:34.818451905Z"
 
 [[symbol]]
 identity = "web/src/screens/WizardHost.tsx::log"

@@ -2,12 +2,12 @@
 id = "01M7279606J0ZW8ZY1RZG2ZHS9"
 title = "M3+M7: resume endpoint after idle pause; keep raw blocks when stop/reconnect fails"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:55:37Z"
-updated = "2026-11-10T07:55:45Z"
+updated = "2026-11-10T07:55:51Z"
 labels = ["creates:python/tests/server/test_resume_and_stop_keep.py"]
 scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/sadi/api/acquisition.py", "python/sadi/server/routes/acquisition.py"]
 

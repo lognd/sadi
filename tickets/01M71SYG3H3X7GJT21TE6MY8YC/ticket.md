@@ -2,7 +2,8 @@
 id = "01M71SYG3H3X7GJT21TE6MY8YC"
 title = "Synthetic 32 AWG copper specimen source, loudly labelled, opt-in only"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 8
 reporter = "lognd"

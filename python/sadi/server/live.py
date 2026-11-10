@@ -89,7 +89,7 @@ class LiveError(ErrorSet):
 _CAPTURE_STOP_HINTS: Final[dict[str, str]] = {
     STOP_FINISHED: LiveError.Finished.description,
     STOP_LOW_DISK: LiveError.LowDisk.description,
-    STOP_IDLE: "Recording is paused for idleness; press Mark load change to resume it",
+    STOP_IDLE: "Recording is paused for idleness; press Resume live readings to start again",
     STOP_NO_DEVICE: LiveError.NoDevice.description,
 }
 
@@ -309,6 +309,9 @@ class LiveAcquisition:
             return LiveError.NoDevice
         if self._stop_reason != STOP_IDLE:
             return LiveError.NoLiveSession
+        if not self.device_attached:
+            _log.warning("resume after idle refused: device not attached")
+            return LiveError.NoDevice
         if self._low_disk_locked(self._path):
             return LiveError.LowDisk
         _log.info("resuming raw streaming after idle for %s", self._path.name)
@@ -488,7 +491,7 @@ class LiveAcquisition:
             ("acquisition", "decimation", DECIMATE),
             ("acquisition", "packet_len", PACKET_LEN),
             ("device", "kind", kind),
-            ("device", "firmware", getattr(self._device, "firmware", None)),
+            ("device", "firmware", getattr(self._device, "firmware", None) or "unknown"),
         ]
         return [SettingsV1(scope=a, key=b, value=c) for a, b, c in rows]
 

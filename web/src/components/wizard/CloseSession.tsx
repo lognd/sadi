@@ -2,6 +2,7 @@
 // frob:accept COV001 because="covered by wizard.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useState } from "react";
 import { getLogger } from "../../api/log";
+import { useRefreshFacts } from "../instrument/FactsContext";
 import { closeSession, type WizardFailure } from "./wizardApi";
 import { ErrorNotice } from "./ErrorNotice";
 
@@ -47,15 +48,16 @@ export function CloseSession({ label = "Close session", onClosed, fetchImpl = fe
 }): React.JSX.Element {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
+  const refreshFacts = useRefreshFacts();
   const [failure, setFailure] = useState<WizardFailure | null>(null);
   const onConfirm = useCallback((): void => {
     setBusy(true);
     void closeSession(fetchImpl).then((r) => {
       setBusy(false);
-      if (r.ok) { log.info("session closed from the page"); setConfirming(false); setFailure(null); onClosed(); }
+      if (r.ok) { log.info("session closed from the page"); setConfirming(false); setFailure(null); refreshFacts(); onClosed(); }
       else { log.warn("close failed"); setFailure(r.error); }
     });
-  }, [fetchImpl, onClosed]);
+  }, [fetchImpl, onClosed, refreshFacts]);
   return (
     <CloseSessionView
       label={label}

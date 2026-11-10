@@ -503,8 +503,18 @@ On any `OSError` from open, write, flush or rename in the writer:
    `<data-root>/spill/`, the user data directory (`~/.local/share/sadi/spill`,
    `%LOCALAPPDATA%\sadi\spill`, `~/Library/Application Support/sadi/spill`),
    then the OS temp dir (`sadi-spill-*.wal`); every attempt and the final path
-   are logged. Spill files are picked up at next start by `import_all_spills`
-   and become a new version with a parent link. If NO location accepts the
+   are logged. The file name is deterministic (`sadi-spill-<session uuid>-<first seq>.wal`),
+   so a Close retry that spills the same records reuses the existing file instead of piling up
+   copies; a retry with different records for the same key is written beside it under a
+   content-hash suffix (nothing is overwritten). Spill files are picked up at next start by
+   `import_all_spills` and become a new version with a parent link. When the spill directly
+   continues the parent's verified records, the new version is self-contained: the parent's
+   verified records (calibration, tare, points; seals dropped) followed by the spill frames,
+   renumbered densely from 1, so it resumes and downloads like any session. The parent is
+   never modified and stays on disk; a complete successor supersedes an `incomplete` parent in
+   the setup list. A spill that does not continue the parent is kept alone as a fragment
+   version (`continuity_ok=false`), never dropped. Byte-identical spill copies in two
+   locations import once. If NO location accepts the
    records, close returns HTTP 409 (`undurable_records`), the session and its
    in-memory writer stay open, and the user can fix the disk and press Close
    session again; records are never dropped silently. If the process is
@@ -1136,3 +1146,14 @@ Live-stream guard (audit2 H2b): `LiveAcquisition` additionally stops raw streami
 `LIVE_MIN_FREE_BYTES = 1 GiB` free (before the writer's own 512 MiB warn level) and after an idle
 timeout or session finish. Stopping drains all blocks already read into the WAL first and deletes
 nothing; see docs/server/app.md.
+
+## Cross-site request guard
+
+`sadi.server.security.OriginGuard` (installed first in `create_app`) protects the
+session from web pages the operator happens to have open. Every request must carry a
+local `Host` (`localhost`, `127.0.0.1`, `[::1]`), which defeats DNS rebinding. Unsafe
+methods (POST/PUT/PATCH/DELETE) and WebSocket handshakes are additionally refused with
+403 when `Sec-Fetch-Site: cross-site` is present or an `Origin` header is not a local
+origin on the served port. Requests without `Origin` (curl, tests) pass. A dev server
+origin can be trusted via `AppSettings.extra_origins`. Refusals are logged and never
+touch session data, so undo/close/export/resume cannot be triggered cross-site.

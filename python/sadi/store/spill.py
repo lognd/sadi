@@ -15,6 +15,7 @@ import os
 import sys
 import tempfile
 import uuid
+from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -299,15 +300,17 @@ def _find_parent(data_root: Path, session_uuid: uuid.UUID) -> Manifest | None:
 
 
 @propagate
-def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, DurableError]:
+def _write_segment(
+    wal_dir: Path, header: bytes, frames: Iterable[bytes]
+) -> Result[None, DurableError]:
     """Create seg-000001.wal exclusively, write header and verified frames, fsync file and dir."""
     created = create_exclusive(wal_dir / segment_name(1))
     fd = created.unwrap()
     try:
-        os.write(fd, header)
-        view = memoryview(frames)
-        while view:
-            view = view[os.write(fd, view) :]
+        for chunk in (header, *frames):
+            view = memoryview(chunk)
+            while view:
+                view = view[os.write(fd, view) :]
         synced = fsync_file(fd)
     except OSError as exc:
         return Err(DurableIo(errno=exc.errno or 5, path=wal_dir))
@@ -318,9 +321,53 @@ def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, 
     return fsync_dir(wal_dir)
 
 
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _parent_prefix_ok(wal_dir: Path, scan: SpillScan) -> bool:
+    """Return True when the parent WAL verifies cleanly and the spill continues it directly."""
+    report = WalReader.scan(wal_dir)
+    if report.is_err:
+        _log.warning(
+            "parent WAL %s does not verify (%s); spill kept as fragment", wal_dir, report.danger_err
+        )
+        return False
+    rep = report.danger_ok
+    if rep.last_seq is None or scan.first_seq is None or scan.first_seq != rep.last_seq + 1:
+        _log.warning(
+            "spill %s does not continue parent %s (parent last_seq=%s, spill first_seq=%s); "
+            "kept as fragment",
+            scan.path,
+            wal_dir,
+            rep.last_seq,
+            scan.first_seq,
+        )
+        return False
+    return True
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _combined_frames(wal_dir: Path, spill_data: bytes, scan: SpillScan) -> Iterator[bytes]:
+    """Yield parent data frames then spill frames, renumbered densely from 1 (seals dropped)."""
+    seq = 0
+    for item in WalReader(wal_dir).records():
+        rec = item.danger_ok  # the prefix was verified by `_parent_prefix_ok`
+        seq += 1
+        yield encode_frame(rec.type, seq, rec.wall_ns, rec.flags, rec.payload)
+    pos = SEGMENT_HEADER_LEN
+    while pos < scan.valid_bytes:
+        rec, end = decode_frame(spill_data, pos).danger_ok
+        seq += 1
+        yield encode_frame(rec.type, seq, rec.wall_ns, rec.flags, rec.payload)
+        pos = end
+
+
 @propagate
 def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, SpillError]:
-    """Import the verified prefix of `scan` as a new version dir; the spill file is kept."""
+    """Import `scan` as a new version dir; the spill file and the parent are never modified.
+
+    When the spill directly continues a verified parent the successor is self-contained: the
+    parent's verified records followed by the spill frames, renumbered densely (calibration,
+    tare and points all travel). Otherwise the spill alone is kept as a fragment, never dropped.
+    """
     if scan.record_count == 0 or scan.first_seq is None or scan.last_seq is None:
         return Err(SpillEmpty(path=scan.path))
     parent = _find_parent(data_root, scan.header.session_uuid)
@@ -337,6 +384,14 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
     taken = _take_version(sessions, family, start)
     path, ver = taken.map_err(lambda e: SpillSession(error=e)).unwrap()
     new_uuid = uuid.uuid4()
+    data = scan.path.read_bytes()
+    join_wal: Path | None = None
+    if parent is not None and _parent_prefix_ok(sessions / parent.dir_name / "wal", scan):
+        join_wal = sessions / parent.dir_name / "wal"
+    joined = join_wal is not None
+    total = scan.last_seq
+    if join_wal is not None:
+        total = WalReader.scan(join_wal).danger_ok.record_count + scan.record_count
     manifest = Manifest(
         session_uuid=str(new_uuid),
         dir_name=path.name,
@@ -347,13 +402,17 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         created=now,
         lab_module=parent.lab_module if parent is not None else "",
         specimen=parent.specimen if parent is not None else {},
-        last_seq=scan.last_seq,
+        last_seq=total,
     )
     inited = _init_dir(path, manifest)
     handle = inited.map_err(lambda e: SpillSession(error=e)).unwrap()
-    data = scan.path.read_bytes()
-    header = encode_segment_header(1, scan.first_seq, new_uuid)
-    written = _write_segment(path / "wal", header, data[SEGMENT_HEADER_LEN : scan.valid_bytes])
+    if join_wal is not None:
+        header = encode_segment_header(1, 1, new_uuid)
+        frames: Iterable[bytes] = _combined_frames(join_wal, data, scan)
+    else:
+        header = encode_segment_header(1, scan.first_seq, new_uuid)
+        frames = (data[SEGMENT_HEADER_LEN : scan.valid_bytes],)
+    written = _write_segment(path / "wal", header, frames)
     if written.is_err:
         handle.close("crashed")
         return Err(SpillIo(error=written.danger_err, path=path))
@@ -365,9 +424,7 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         _log.error("imported segment in %s failed re-verification", path)
         return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
     marked = _write_marker(scan, path)
-    continuity = (
-        None if parent is None or parent.last_seq is None else scan.first_seq == parent.last_seq + 1
-    )
+    continuity = None if parent is None or parent.last_seq is None else joined
     if continuity is False:
         _log.warning("spill %s seq does not continue parent %s", scan.path, parent)
     _log.info("imported %s as %s (%d records)", scan.path, path, scan.record_count)
@@ -391,6 +448,7 @@ def import_all_spills(
 ) -> list[tuple[Path, Result[ImportReport | None, SpillError]]]:
     """Discover, verify and import every spill at start; Ok(None) means already imported."""
     outcomes: list[tuple[Path, Result[ImportReport | None, SpillError]]] = []
+    seen_content: dict[str, Path] = {}  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
     for spill in discover_spills(data_root, user_dir, temp_dir):
         scanned = scan_spill(spill)
         if scanned.is_err:
@@ -401,10 +459,19 @@ def import_all_spills(
             _log.info("spill %s already imported, skipping", spill)
             outcomes.append((spill, Ok(None)))
             continue
+        twin = seen_content.get(scan.sha256)
+        if twin is not None:
+            _log.info(
+                "spill %s is byte-identical to imported %s; marking, no new version", spill, twin
+            )
+            _write_marker(scan, twin)
+            outcomes.append((spill, Ok(None)))
+            continue
         imported = import_spill(data_root, scan)
         if imported.is_err:
             outcomes.append((spill, Err(imported.danger_err)))
         else:
+            seen_content[scan.sha256] = imported.danger_ok.version_dir
             outcomes.append((spill, Ok(imported.danger_ok)))
     return outcomes
 
@@ -450,6 +517,37 @@ def _publish_spill(directory: Path, name: str, blob: bytes) -> Result[Path, Dura
     return Ok(final)
 
 
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def spill_name(session_uuid: uuid.UUID, first_seq: int) -> str:
+    """Deterministic spill name for (session uuid, first seq): Close retries do not pile up."""
+    return f"sadi-spill-{session_uuid.hex}-{first_seq:010d}.wal"
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _publish_idempotent(directory: Path, name: str, blob: bytes) -> Result[Path, DurableError]:
+    """Publish `blob` as `name`; an identical existing file is reused, a different one is kept.
+
+    When `name` already holds different bytes (a retry that holds more or other records) the
+    new blob goes under a content-hash suffixed name instead: nothing is ever overwritten.
+    """
+    final = directory / name
+    try:
+        body = blob[SEGMENT_HEADER_LEN:]  # the header carries a timestamp; compare the frames
+        if final.is_file():
+            if final.read_bytes()[SEGMENT_HEADER_LEN:] == body:
+                _log.info("spill %s already present with identical content; reusing", final)
+                return Ok(final)
+            digest = hashlib.sha256(body).hexdigest()[:12]
+            name = f"{final.stem}-{digest}{final.suffix}"
+            _log.warning("spill %s exists with different content; writing %s", final, name)
+            alt = directory / name
+            if alt.is_file() and alt.read_bytes()[SEGMENT_HEADER_LEN:] == body:
+                return Ok(alt)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=final))
+    return _publish_spill(directory, name, blob)
+
+
 # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
 def write_spill(
     records: list[Record],
@@ -473,9 +571,10 @@ def write_spill(
     for run in _dense_runs(records):
         header = encode_segment_header(1, run[0].seq, session_uuid)
         frames = b"".join(encode_frame(r.type, r.seq, r.wall_ns, r.flags, r.payload) for r in run)
-        name = f"sadi-spill-{session_uuid.hex[:8]}-{run[0].seq:010d}-{uuid.uuid4().hex[:6]}.wal"
+        blob = header + frames
+        name = spill_name(session_uuid, run[0].seq)
         for directory in places:
-            published = _publish_spill(directory, name, header + frames)
+            published = _publish_idempotent(directory, name, blob)
             if published.is_ok:
                 _log.warning(
                     "spilled %d undurable record(s) seq %d..%d to %s",

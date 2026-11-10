@@ -23,7 +23,9 @@ _log = get_logger(__name__)
 MANIFEST_NAME = "manifest.json"
 MANIFEST_VERSION = 1
 
-SessionState = Literal["open", "closed", "crashed", "corrupt"]
+SessionState = Literal[
+    "open", "closed", "crashed", "corrupt", "incomplete"
+]  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
 
 
 class SessionPluginRef(BaseModel):

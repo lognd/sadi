@@ -8,7 +8,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from sadi.store.records import FRAME_HEADER_LEN, RecordType, encode_frame
+from sadi.store.manifest import read_manifest
+from sadi.store.records import FRAME_HEADER_LEN, NewRecord, Record, RecordType, encode_frame
 from sadi.store.session import SessionMeta, create_session
 from sadi.store.spill import (
     SpillEmpty,
@@ -16,8 +17,9 @@ from sadi.store.spill import (
     discover_spills,
     import_all_spills,
     scan_spill,
+    write_spill,
 )
-from sadi.store.wal import WalReader, encode_segment_header
+from sadi.store.wal import WalConfig, WalReader, WalWriter, encode_segment_header
 
 NOTE = int(RecordType.NOTE)
 
@@ -148,3 +150,73 @@ def test_parent_family_link_and_no_overwrite(tmp_path: Path) -> None:
     assert rep.parent == parent_name
     assert rep.version_dir.name.endswith(".v002")
     assert (root / "sessions" / parent_name).is_dir()
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _parent_with_records(root: Path, n: int, state: str = "incomplete") -> tuple[Path, uuid.UUID]:
+    """Create a parent session with n durable NOTE records (writer closed) and return it."""
+    h = create_session(root, SessionMeta(slug="cu"), datetime(2026, 11, 8, tzinfo=UTC)).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    for i in range(n):
+        assert w.append(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i]))).is_ok
+    w.close()
+    h.close(state)
+    return h.path, suid
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_import_joins_parent_records_and_spill(tmp_path: Path) -> None:
+    """The successor holds the parent's verified records plus the spill; parent is untouched."""
+    root, user, tmp = dirs(tmp_path)
+    parent, suid = _parent_with_records(root, 3)
+    before = sorted((parent / "wal").glob("*.wal"))[0].read_bytes()
+    make_spill(root / "spill" / "s.wal", 4, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is True
+    recs = [r.danger_ok for r in WalReader(rep.version_dir / "wal").records()]
+    assert [r.seq for r in recs] == [1, 2, 3, 4, 5]
+    assert [r.payload[8] for r in recs[:3]] == [0, 1, 2]
+    assert recs[3].payload == bytes([0]) * 20
+    assert read_manifest(rep.version_dir).danger_ok.last_seq == 5
+    assert sorted((parent / "wal").glob("*.wal"))[0].read_bytes() == before
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_non_continuing_spill_stays_fragment(tmp_path: Path) -> None:
+    """A spill that does not directly continue the parent is kept alone, never dropped."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 10, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 2
+
+
+# frob:tests python/sadi/store/spill.py::write_spill
+def test_write_spill_retry_is_idempotent_and_never_overwrites(tmp_path: Path) -> None:
+    """Same records twice reuse one file; different records for the same key keep both."""
+    root, user, tmp = dirs(tmp_path)
+    suid = uuid.uuid4()
+    recs = [Record(type=NOTE, seq=s, wall_ns=1, flags=0, payload=b"a" * 8, crc=0) for s in (4, 5)]
+    first = write_spill(recs, suid, root, user, tmp).danger_ok
+    again = write_spill(recs, suid, root, user, tmp).danger_ok
+    assert first == again and len(list((root / "spill").glob("*.wal"))) == 1
+    more = [*recs, Record(type=NOTE, seq=6, wall_ns=1, flags=0, payload=b"a" * 8, crc=0)]
+    third = write_spill(more, suid, root, user, tmp).danger_ok
+    assert third != first
+    assert len(list((root / "spill").glob("*.wal"))) == 2
+    assert first[0].exists()
+
+
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_identical_spills_in_two_locations_import_once(tmp_path: Path) -> None:
+    """Byte-identical spill copies in two locations yield a single new version."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    data = make_spill(root / "spill" / "a.wal", 4, 2, suid)
+    (user / "spill").mkdir(parents=True)
+    (user / "spill" / "b.wal").write_bytes(data)
+    out = import_all_spills(root, user, tmp)
+    assert [o[1].danger_ok is not None for o in out] == [True, False]
+    assert len(list((root / "sessions").iterdir())) == 2

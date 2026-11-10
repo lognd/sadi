@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from fastapi import APIRouter, Request
@@ -22,8 +23,8 @@ from sadi.server.curve_source import SessionReplayCache
 from sadi.server.routes.problem import ApiProblem, ProblemError, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import ClosedSession, SessionService
-from sadi.store.exports import ExportError, write_export
 from sadi.server.session_points import active_points, analyze, to_captured
+from sadi.store.exports import ExportError, write_export
 from sadi.synthetic.provenance import EXPORT_PREFIX, PROVENANCE_HEADER, stamp_export
 
 _log = get_logger(__name__)
@@ -138,6 +139,29 @@ SAVED_HEADER = "X-SADI-Saved"
 #: Response header set to "segment/offset" when a closed export holds only the verified WAL prefix.
 # frob:ticket 01M727965F98C8FB295P7A7FRS
 TORN_TAIL_HEADER = "X-SADI-Torn-Tail"
+#: Filename prefix on exports of a session whose torn tail was dropped (only the verified prefix was read).
+RECOVERED_PREFIX = "RECOVERED-"
+
+
+def stamp_recovered(body: bytes, media_type: str, torn_tail: str) -> bytes:
+    """Brand a torn-tail export: a `# RECOVERED:` first line for CSV, a `recovered` key for JSON."""
+    # frob:ticket 01M729FVNSJCVAHK4XBSG9NBYC
+    note = (
+        f"only the verified prefix of the session log was read (torn tail at {torn_tail}); "
+        "the last few seconds may be missing"
+    )
+    if media_type == "application/json":
+        try:
+            doc = json.loads(body)
+        except ValueError:
+            doc = None
+        if isinstance(doc, dict):
+            doc["recovered"] = note
+            return json.dumps(doc).encode("utf-8")
+        return json.dumps({"recovered": note, "data": doc}).encode("utf-8")
+    return f"# RECOVERED: {note}\n".encode() + body
+
+
 #: Largest figure upload accepted (bytes); a 600 dpi plot is a few MB.
 MAX_FIGURE_BYTES = 64 * 1024 * 1024
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -219,15 +243,18 @@ def make_export_router(
         """Download one export of a closed session; read-only, so no copy is kept and nothing is written."""
         fmt, closed, body = unwrap(render_closed_export(svc, name, format_id, replays))
         headers = {PROVENANCE_HEADER: "real"}
-        if closed.torn_tail is not None:
-            headers[TORN_TAIL_HEADER] = closed.torn_tail
         if closed.provenance.synthetic:
             body = stamp_export(body, fmt.media_type, closed.provenance)
             headers[PROVENANCE_HEADER] = "synthetic"
+        if closed.torn_tail is not None:
+            headers[TORN_TAIL_HEADER] = closed.torn_tail
+            body = stamp_recovered(body, fmt.media_type, closed.torn_tail)
         if _is_download(fmt):
             fname = f"{name}-{fmt.id}.{_EXT.get(fmt.media_type, 'bin')}"
             if closed.provenance.synthetic:
                 fname = EXPORT_PREFIX + fname
+            if closed.torn_tail is not None:
+                fname = RECOVERED_PREFIX + fname
             headers["Content-Disposition"] = f'attachment; filename="{fname}"'
         return Response(content=body, media_type=fmt.media_type, headers=headers)
 

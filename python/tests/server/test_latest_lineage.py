@@ -45,3 +45,11 @@ def test_newer_than_is_descendants_only() -> None:
     assert newer_than(items, "f-v003") == []
     assert newer_than(items, "f-v004") == []
     assert newer_than(items, "nope") == []
+
+
+# frob:tests python/sadi/server/routes/sessions.py::mark_latest
+def test_complete_successor_supersedes_incomplete_parent() -> None:
+    """A recovered (complete) successor makes its incomplete parent no longer latest."""
+    out = {i.name: i for i in mark_latest([_s(1, None, "incomplete"), _s(2, 1)])}
+    assert out["f-v001"].latest is False
+    assert out["f-v002"].latest is True

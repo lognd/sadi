@@ -9,7 +9,7 @@ import { useTheme } from "./components/shell/theme";
 import { DebugStrip } from "./components/instrument/DebugStrip";
 import { InstrumentBar } from "./components/instrument/InstrumentBar";
 import { useBackendFacts } from "./components/instrument/useBackendFacts";
-import { FactsContext } from "./components/instrument/FactsContext";
+import { FactsContext, RefreshFactsContext } from "./components/instrument/FactsContext";
 import { LiveProvider } from "./state/LiveContext";
 import { useProvenancePoll } from "./state/provenance";
 import { useStore } from "./state/store";
@@ -37,7 +37,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
   const { theme, toggle } = useTheme();
   useProvenancePoll();
 
-  const facts = useBackendFacts();
+  const { facts, refresh: refreshFacts } = useBackendFacts();
 
   const redirected = useRef(false);
   useEffect(() => {
@@ -60,6 +60,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
 
   return (
     <FactsContext.Provider value={facts}>
+    <RefreshFactsContext.Provider value={refreshFacts}>
     <LiveProvider {...(trace === undefined ? {} : { trace })}>
       <div className="app-top">
       <header className="app-header">
@@ -86,6 +87,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
         {visible ? <DoctorScreen /> : <WizardHost />}
       </div>
     </LiveProvider>
+    </RefreshFactsContext.Provider>
     </FactsContext.Provider>
   );
 }

@@ -36,6 +36,10 @@ it. Environment variables never enable the source. Combining it with
   `ProvenanceMismatch`); real and synthetic data are never mixed.
 - A `provenance` field on health, session, plot, results, modulus-fit
   payloads and the websocket hello and state messages.
+- Setup session list shows a SYNTHETIC badge per synthetic session.
+- A closed-session export that read only the verified prefix (torn tail) also gets a
+  `RECOVERED-` filename prefix (placed before `SYNTHETIC-`, never duplicated) and a
+  leading `# RECOVERED:` comment line (CSV) or `recovered` key (JSON).
 - Exports get a `SYNTHETIC-` filename prefix, an `X-Sadi-Provenance`
   header, and a stamp in the body (CSV comment lines, JSON key).
 - A banner at launch.

@@ -59,12 +59,13 @@ def mark_latest(items: list[SessionSummary]) -> list[SessionSummary]:
     """Flag a version `latest=False` only when a complete version descends from it by `parent`.
 
     Version numbers do not mean lineage: a branch resumed from an old version is a leaf of its
-    own and stays latest; `incomplete` versions never supersede their parent nor count as latest.
+    own and stays latest; `incomplete` versions never supersede their parent, but a complete
+    descendant (a recovered spill successor) does supersede an incomplete version.
     """
     out: list[SessionSummary] = []
     for item in items:
         newer = _descendants(items, item.name)
-        if item.state == INCOMPLETE or not newer:
+        if not newer:
             out.append(item)
             continue
         leaf = max(newer, key=lambda i: i.version)

@@ -59,3 +59,11 @@ describe("SessionSetup", () => {
     }
   });
 });
+
+describe("SessionSetup SYNTHETIC badge", () => {
+  it("source marks synthetic sessions with a visible badge", async () => {
+    const src = (await import("node:fs")).readFileSync(new URL("./SessionSetup.tsx", import.meta.url), "utf8");
+    expect(src).toContain("s.provenance.synthetic ?");
+    expect(src).toContain("SYNTHETIC</strong>");
+  });
+});

@@ -4,9 +4,10 @@ title = "Gaussian-process height (weight) selector: advisory next-load suggestio
 type = "story"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T12:21:51Z"
-updated = "2026-11-10T12:21:51Z"
+updated = "2026-11-10T12:21:56Z"
 labels = ["python", "web"]
 scope = ["python/sadi/design/*", "python/sadi/server/routes/design.py", "python/tests/design/*", "docs/design/*", "web/src/screens/run/*"]
 

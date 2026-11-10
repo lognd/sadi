@@ -2,7 +2,8 @@
 id = "01M72PGN2KAMZP8EPHDPV143B4"
 title = "Gaussian-process height (weight) selector: advisory next-load suggestion and stop indicator"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

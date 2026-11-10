@@ -36,7 +36,7 @@ def _svc(
 # frob:tests python/sadi/core/device.py::DeviceService._reader
 def test_stream_and_stop_against_simulator() -> None:
     svc = _svc()
-    assert svc.status == dev.DeviceStatus.ERROR
+    assert svc.status == dev.DeviceStatus.DISCONNECTED
     assert svc.open() == Ok(None)
     assert svc.status == dev.DeviceStatus.SIMULATED
     assert svc.start_streaming().is_ok

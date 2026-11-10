@@ -68,6 +68,9 @@ class DeviceStatus(StrEnum):
     CONNECTED = "connected"
     SIMULATED = "simulated"
     ERROR = "error"
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    #: No board is attached (never opened, or closed); Reconnect can open it.
+    DISCONNECTED = "disconnected"
 
 
 class DeviceSource(BaseModel):
@@ -143,13 +146,16 @@ class DeviceService:
         self._held: sp.Block | None = None
         self._sim_ctl: sp.sim.SimControl | None = None
 
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     @property
     def status(self) -> DeviceStatus:
-        """connected, simulated (sim source up), or error (open failed or reader faulted)."""
+        """connected, simulated, error (open failed/faulted) or disconnected (not open)."""
         with self._lock:
             idle = self._connected is None and self._streaming is None
-            if self._errored or self._fault is not None or idle:
+            if self._errored or self._fault is not None:
                 return DeviceStatus.ERROR
+            if idle:
+                return DeviceStatus.DISCONNECTED
             return DeviceStatus.SIMULATED if self._source.kind == "sim" else DeviceStatus.CONNECTED
 
     @property

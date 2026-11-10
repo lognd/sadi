@@ -173,6 +173,8 @@ class SessionService:
         self._open: _Open | None = None
         self._on_open: Callable[[WriterHandle, Path], None] | None = None
         self._before_close: Callable[[], None] | None = None
+        # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        self._capture_gate: Callable[[], str | None] | None = None
 
     def provenance(self) -> DataProvenance:
         """The data provenance every payload of this service carries (real unless synthetic)."""
@@ -186,6 +188,11 @@ class SessionService:
         """Register live-acquisition hooks: after a session opens, and before its writer closes."""
         self._on_open = on_open
         self._before_close = before_close
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    def set_capture_gate(self, gate: Callable[[], str | None]) -> None:
+        """Register a gate returning a hint while capture is blocked (no device), else None."""
+        self._capture_gate = gate
 
     # ---- discovery --------------------------------------------------------------------
 
@@ -340,6 +347,11 @@ class SessionService:
     @propagate
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
         """Validate typed inputs and window (nothing logged on rejection), then append a POINT."""
+        # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        blocked = None if self._capture_gate is None else self._capture_gate()
+        if blocked is not None:
+            _log.warning("capture refused: %s", blocked)
+            return Err(conflict("no_device", blocked, blocked))
         parsed = parse_inputs(body.phase, body.inputs)
         parsed_ok = parsed.map_err(
             lambda detail: _unprocessable(

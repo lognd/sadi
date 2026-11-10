@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/device/reconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Device Reconnect
+         * @description Open the board now (no restart); attaches to the open session, WAL untouched.
+         */
+        post: operations["device_reconnect_api_device_reconnect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/device/status": {
         parameters: {
             query?: never;
@@ -2064,6 +2084,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    device_reconnect_api_device_reconnect_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceView"];
+                };
+            };
+        };
+    };
     device_status_api_device_status_get: {
         parameters: {
             query?: never;

@@ -49,3 +49,10 @@ def open_real_device(port: str | None) -> Result[DeviceService, str]:
         return Err(describe_open_failure(opened.danger_err, port))
     _log.info("serial device open on %s", port)
     return Ok(svc)
+
+
+# frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+def unopened_real_device(port: str | None) -> DeviceService:
+    """A closed serial DeviceService (status disconnected) that Reconnect can open later."""
+    _log.info("no board yet on %s; service left unopened for Reconnect", port)
+    return DeviceService(DeviceSource(kind="serial", port=port))

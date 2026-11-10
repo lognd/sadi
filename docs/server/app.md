@@ -98,3 +98,13 @@ before the device is stopped, and the session, writer and WAL stay open and unto
   event goes to the bus, and new capture is refused (`LiveError.LowDisk`). A session opened under
   the floor starts no stream. Nothing is deleted; the writer's own 512/128 MiB guards still apply
   (docs/data-safety.md 6.5).
+
+## Reconnect and no-board start (audit2 H8c)
+
+With no board at start the launcher serves an unopened `DeviceService` (status `disconnected`).
+`LiveAcquisition.on_session_open` then sets `stop_reason == "no_device"` (`STOP_NO_DEVICE`) and a
+`DriverFault` instead of raising. `SessionService.set_capture_gate(LiveAcquisition.capture_block_hint)`
+makes `capture` answer 409 `no_device` until a board is attached. `LiveAcquisition.reconnect_device()`
+(behind `POST /api/device/reconnect`) reopens the device and, if a session is open and not finished
+or low on disk, starts a run with a new SETTINGS record; the WAL is only ever appended to. It is a
+no-op while a healthy run is active, and a failed open returns a 409 problem with the session intact.

@@ -12,6 +12,7 @@ WAL faults are logged and kept on `LiveAcquisition.fault`; they never raise into
 # frob:ticket 01M6X572N6WB1053QZ1WV4W4WY
 # frob:ticket 01M6X12VGS7NHWM3EZWF4YK7XN
 # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+# frob:ticket 01M724AKWJV8BRNRR3Q43553VR
 from __future__ import annotations
 
 import threading
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from sadi.core.device import DeviceService
+    from sadi.core.errors import DeviceError
     from sadi.store.wal import Seq
     from sadi.store.writer_thread import WriterError, WriterHandle
 
@@ -67,6 +69,10 @@ WATCH_POLL_S: Final[float] = 1.0
 STOP_FINISHED: Final[str] = "finished"
 STOP_IDLE: Final[str] = "idle"
 STOP_LOW_DISK: Final[str] = "low_disk"
+#: A session is open but no board is attached yet (frob:ticket 01M724AKWJV8BRNRR3Q43553VR).
+STOP_NO_DEVICE: Final[str] = "no_device"
+#: Device statuses from which a stream can be started.
+_READY_STATUSES: Final[frozenset[str]] = frozenset({"connected", "simulated"})
 
 
 class LiveError(ErrorSet):
@@ -76,6 +82,8 @@ class LiveError(ErrorSet):
     # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
     LowDisk = "Free disk space is too low to record; free space, then reopen the session"
     Finished = "This session's acquisition was finished; resume the session to record again"
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    NoDevice = "No instrument is attached; plug in the SADI board and press Reconnect"
 
 
 class _Decimated:
@@ -167,6 +175,50 @@ class LiveAcquisition:
         with self._lock:
             return self._driver is not None and self._driver.running
 
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    @property
+    def device_attached(self) -> bool:
+        """True when the device can stream (connected or simulated), else False."""
+        return str(self._device.status) in _READY_STATUSES
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    def capture_block_hint(self) -> str | None:
+        """Why capture is blocked right now (no device attached), or None when it is allowed."""
+        return None if self.device_attached else LiveError.NoDevice.description
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    def reconnect_device(self) -> Result[None, LiveError | DeviceError]:
+        """Open (or reopen) the board and, if a session is open, start recording from it.
+
+        Nothing already recorded is touched: the new run appends a fresh SETTINGS record and a
+        new block sequence to the open session's WAL. A running healthy stream is left alone.
+        """
+        with self._lock:
+            if self._driver is not None and self._driver.running and self.device_attached:
+                _log.info("reconnect ignored: acquisition already running")
+                return Ok(None)
+            if self._driver is not None:
+                _log.warning("reconnect: stopping faulted run first (blocks are drained)")
+                _ = self._stop_run_locked(STOP_NO_DEVICE)
+            res = self._device.reconnect()
+            if res.is_err:
+                _log.error("reconnect failed: %s", res.danger_err)
+                return Err(res.danger_err)
+            _log.info("device attached")
+            if self._writer is None or self._path is None:
+                return Ok(None)
+            if self._stop_reason in (STOP_FINISHED, STOP_LOW_DISK):
+                _log.info("device attached but session is %s; not streaming", self._stop_reason)
+                return Ok(None)
+            if self._low_disk_locked(self._path):
+                self._stop_reason = STOP_LOW_DISK
+                return Err(LiveError.LowDisk)
+            self._start_run_locked(self._writer, self._path, record_settings=True)
+            self._start_watch_locked()
+            if self._pipe is None:
+                return Err(LiveError.NoLiveSession)
+            return Ok(None)
+
     def mark_load_change(self) -> Result[Seq, LiveError | WriterError | PipelineError]:
         """Record a load-applied marker in the WAL and open a new settle point (Ok is its seq)."""
         with self._lock:
@@ -191,6 +243,8 @@ class LiveAcquisition:
             return LiveError.Finished
         if self._stop_reason == STOP_LOW_DISK:
             return LiveError.LowDisk
+        if self._stop_reason == STOP_NO_DEVICE:
+            return LiveError.NoDevice
         if self._stop_reason != STOP_IDLE:
             return LiveError.NoLiveSession
         if self._low_disk_locked(self._path):
@@ -226,6 +280,11 @@ class LiveAcquisition:
             if self._low_disk_locked(path):
                 self._stop_reason = STOP_LOW_DISK
                 _log.error("not streaming for %s: free disk space too low", path.name)
+                return
+            if not self.device_attached:
+                self._stop_reason = STOP_NO_DEVICE
+                self._fault = DriverFault(origin="device", detail=LiveError.NoDevice.description)
+                _log.warning("session %s open with no device; capture blocked", path.name)
                 return
             self._start_run_locked(writer, path, record_settings=True)
             self._start_watch_locked()

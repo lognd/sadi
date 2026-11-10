@@ -5,7 +5,7 @@ Status: current
 Owner: ~YNKT2ED.
 
 Advisory planner that chooses which of the (up to 12, normally 8) inventory weights to hang, in order,
-with the uncertainty of each hang. Code: `sadi/design/plan.py`; payloads: `sadi/design/models.py`
+with the uncertainty of each hang (front ends: [planner-gui.md](planner-gui.md)). Code: `sadi/design/plan.py`; payloads: `sadi/design/models.py`
 (`Weight`, `PlanRequest`, `Hang`, `WeightPlan`). It never writes data.
 
 ## Method

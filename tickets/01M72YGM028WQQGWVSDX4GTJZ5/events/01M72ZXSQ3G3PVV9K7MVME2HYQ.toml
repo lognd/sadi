@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1, 2]
+captured_at = "2026-11-10T15:06:13Z"
+digest = "3d859e7d3196612583ee0b9de86ea42ad5aaa7c24498cb758d14e61dc894ca25"
+exit_code = 0
+head = "ada931675c261b50a4c38abab142282dcc45dd8c"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 10 items
+
+python/tests/store/test_snapshot_notes.py ...                            [ 30%]
+python/tests/server/test_session_replay_cache.py .......                 [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1260613-0.xml --------------
+============================== 10 passed in 4.57s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_snapshot_notes.py python/tests/server/test_session_replay_cache.py"
+size = 602
+status = "measured"
+test_count = 10
+tests_digest = "1b051c728b1b74717dff0c5273465d514069b99c1ce7a6652544ad856a2e57a3"
+at = "2026-11-10T15:06:13Z"
+actor = "lognd"
+rev = 1

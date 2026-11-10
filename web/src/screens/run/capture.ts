@@ -1,4 +1,5 @@
 // frob:ticket 01M720QDN33FYFXX1SZ66Y1FQW
+// frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
@@ -22,6 +23,7 @@ export type Decision =
 export type Confirm = "idle" | "asking";
 
 const WHY = {
+  faulted: "The instrument faulted. Check the device connection; saved data is untouched.",
   disconnected: "The instrument stream is disconnected. Wait for it to reconnect; saved data is untouched.",
   saturated: "The reading is at its limit (saturated). Lower the load, then try again.",
   creeping: "The reading is still moving. Wait for Settled, or press Shift+Space to accept early.",
@@ -32,6 +34,7 @@ const WHY = {
 /** Decide the outcome of an accept key; saturation and disconnect block even a forced capture. */
 export function decide(view: LiveView, early: boolean, confirm: Confirm): Decision {
   if (view.source === "disconnected") return { kind: "blocked", why: WHY.disconnected };
+  if (view.source === "faulted") return { kind: "blocked", why: WHY.faulted };
   if (view.idle === true) return { kind: "blocked", why: WHY.idle };
   if (view.signal === "saturated") return { kind: "blocked", why: WHY.saturated };
   if (view.volts === null) return { kind: "blocked", why: WHY.unknown };
@@ -95,6 +98,13 @@ export interface FrozenAttempt {
   readonly body: CaptureBody;
   readonly specimen: CaptureBody | null;
   specimenDone: boolean;
+}
+
+/** True when the server answered "not recorded" (any 4xx, or 503 Backpressure); network errors, 5xx and other 503s stay ambiguous so the frozen body is kept. */
+export function wroteNothing(e: PostError): boolean {
+  if (e.kind !== "http") return false;
+  if (e.status >= 400 && e.status < 500) return true;
+  return e.status === 503 && e.problem !== null && e.problem.type.endsWith("backpressure");
 }
 
 const UUID_RE = /\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;

@@ -67,6 +67,11 @@ export function RunView(p: RunViewProps): React.JSX.Element {
           (!) Disconnected from the instrument. Reconnecting automatically; data already saved is untouched and capture is paused.
         </p>
       )}
+      {v.source === "faulted" && (
+        <p role="alert" data-testid="fault-notice">
+          (!) The instrument faulted. It is not connected; data already saved is untouched. Check the device connection.
+        </p>
+      )}
       <fieldset aria-label="Capture inputs" aria-describedby="hotkey-hint">
         <legend>Capture inputs (SI units)</legend>
         {PHASE_FIELDS[p.phase].filter((f) => f.derived !== true).map((f) => {

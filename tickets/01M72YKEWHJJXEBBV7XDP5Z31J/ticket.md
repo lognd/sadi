@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:49:50Z"
+updated = "2026-11-10T14:50:28Z"
 scope = ["python/sadi/server/**", "web/src/api/**", "web/src/screens/review/api.ts", "web/src/screens/review/problemText.test.ts", "python/tests/server/test_routes_problem.py"]
 
 [[acceptance]]

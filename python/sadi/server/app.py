@@ -280,7 +280,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     _dev = cfg.device
     app.include_router(
         make_health_router(
-            (lambda: _dev.status == "simulated") if _dev is not None else None,
+            (lambda: _dev.is_simulator) if _dev is not None else None,
             app.state.sessions.provenance(),
             cfg.data_root,
         )
@@ -293,7 +293,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             cfg.bus,
             app.state.sessions,
             app.state.results_stream,
-            simulated=(lambda: device.status == "simulated") if device is not None else None,
+            simulated=(lambda: device.is_simulator) if device is not None else None,
             guidance=make_guidance_provider(app.state.sessions, cfg.labs or LabRegistry()),
             provenance=app.state.sessions.provenance(),
         )

@@ -5,7 +5,7 @@ import type { LiveView } from "../../screens/run/live";
 import type { ConnState } from "../../ws/client";
 
 const SIGNAL = { ok: "OK", "near-limit": "Near limit", saturated: "SATURATED" } as const;
-const SOURCE = { connected: "Connected", simulated: "Simulated", disconnected: "Disconnected" } as const;
+const SOURCE = { connected: "Connected", simulated: "Simulated", faulted: "Faulted", disconnected: "Disconnected" } as const;
 
 /** Settle state as glyph plus word (never colour alone). */
 function settleWord(v: LiveView): string {
@@ -17,7 +17,7 @@ function settleWord(v: LiveView): string {
 /** Connection state in plain words, with the reconnect attempt when retrying. */
 function connWord(v: LiveView, conn: ConnState): string {
   if (conn.status === "reconnecting") return `(!) Reconnecting (attempt ${String(conn.attempt)})`;
-  return `${v.source === "disconnected" ? "(!)" : "[ok]"} ${SOURCE[v.source]}`;
+  return `${v.source === "disconnected" || v.source === "faulted" ? "(!)" : "[ok]"} ${SOURCE[v.source]}`;
 }
 
 /** Presentational live readout card: big LVDT volts, drift, settle, signal, connection, SIMULATED banner. */

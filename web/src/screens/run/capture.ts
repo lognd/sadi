@@ -23,6 +23,7 @@ export type Decision =
 export type Confirm = "idle" | "asking";
 
 const WHY = {
+  faulted: "The instrument faulted. Check the device connection; saved data is untouched.",
   disconnected: "The instrument stream is disconnected. Wait for it to reconnect; saved data is untouched.",
   saturated: "The reading is at its limit (saturated). Lower the load, then try again.",
   creeping: "The reading is still moving. Wait for Settled, or press Shift+Space to accept early.",
@@ -33,6 +34,7 @@ const WHY = {
 /** Decide the outcome of an accept key; saturation and disconnect block even a forced capture. */
 export function decide(view: LiveView, early: boolean, confirm: Confirm): Decision {
   if (view.source === "disconnected") return { kind: "blocked", why: WHY.disconnected };
+  if (view.source === "faulted") return { kind: "blocked", why: WHY.faulted };
   if (view.idle === true) return { kind: "blocked", why: WHY.idle };
   if (view.signal === "saturated") return { kind: "blocked", why: WHY.saturated };
   if (view.volts === null) return { kind: "blocked", why: WHY.unknown };

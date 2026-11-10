@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T06:01:04Z"
-updated = "2026-11-10T06:10:23Z"
+updated = "2026-11-10T06:11:02Z"
 scope = ["python/sadi/launcher.py", "python/sadi/server/app.py", "python/sadi/store/session.py", "python/tests/server/**", "python/tests/store/**", "python/tests/cli/test_launcher_live.py", "docs/server/app.md", "docs/synthetic.md"]
 
 [[acceptance]]

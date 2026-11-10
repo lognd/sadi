@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-10T14:19:26Z"
 updated = "2026-11-10T14:32:11Z"
 labels = ["creates:python/sadi/server/routes/weight_plan.py", "creates:python/tests/server/test_weight_plan_route.py", "creates:web/src/screens/setup/WeightPlanPanel.tsx", "creates:web/src/screens/setup/WeightPlanPanel.test.tsx"]
-scope = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx", "python/sadi/server/app.py", "web/src/App.tsx"]
+scope = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx", "python/sadi/server/app.py", "web/src/App.tsx", "web/src/api/openapi.json"]
 
 [[links]]
 kind = "blocked-by"

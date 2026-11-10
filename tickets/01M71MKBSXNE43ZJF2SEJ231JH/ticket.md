@@ -16,5 +16,5 @@ bound = false
 
 [[acceptance]]
 text = "Given the token export, when it is regenerated, then it matches the committed CSS variables (no TOKENS001 drift)"
-bound = false
+bound = true
 +++

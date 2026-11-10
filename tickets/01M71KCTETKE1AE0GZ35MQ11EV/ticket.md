@@ -7,9 +7,9 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:05Z"
-updated = "2026-11-10T02:08:05Z"
-labels = ["model:sonnet"]
-scope = ["python/sadi/labs/lctt/gp_suggester.py,python/tests/labs/lctt/test_gp_suggester.py,docs/labs/lctt-gp-selector.md"]
+updated = "2026-11-10T02:08:42Z"
+labels = ["model:sonnet", "creates:python/sadi/labs/lctt/gp_suggester.py", "creates:python/tests/labs/lctt/test_gp_suggester.py", "creates:docs/labs/lctt-gp-selector.md"]
+scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "python/sadi/server/models/guidance.py", "python/sadi/labs/lctt/gp_suggester.py", "python/tests/labs/lctt/test_gp_suggester.py", "docs/labs/lctt-gp-selector.md"]
 
 [[acceptance]]
 text = "GpLoadSuggester implements LoadSuggester: picks the candidate load (from the feasible weight combos in the LoadRange) maximising expected reduction of modulus-slope CI half-width (linear/elastic, rank-one update, weak prior) and uses a Matern/RBF GP over (load, displacement) for the plastic phase; cold start (<3 points) falls back to extremes then bisection; deterministic, ties to lowest index"

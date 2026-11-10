@@ -1,5 +1,6 @@
 // frob:ticket 01M6WZX63YFEAYQTPJXE2BTRN2
 // frob:ticket 01M729FVNSJCVAHK4XBSG9NBYC
+// frob:ticket 01M72T4R3X8833V8Z978SH4481
 // frob:accept COV001 because="covered by SessionSetup.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { getLogger } from "../../api/log";

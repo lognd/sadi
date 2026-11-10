@@ -2,12 +2,12 @@
 id = "01M71KCTETKE1AE0GZ35MQ11EV"
 title = "GP weight selector: GpLoadSuggester wired into LCTT guidance"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:05Z"
-updated = "2026-11-10T02:08:49Z"
+updated = "2026-11-10T02:08:57Z"
 labels = ["model:sonnet", "creates:python/sadi/labs/lctt/gp_suggester.py", "creates:python/tests/labs/lctt/test_gp_suggester.py", "creates:docs/labs/lctt-gp-selector.md"]
 scope = ["python/sadi/labs/lctt/guidance.py", "python/tests/labs/lctt/test_guidance.py", "python/sadi/labs/lctt/gp_suggester.py", "python/tests/labs/lctt/test_gp_suggester.py", "docs/labs/lctt-gp-selector.md"]
 

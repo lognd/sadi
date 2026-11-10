@@ -7,9 +7,9 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:49Z"
-updated = "2026-11-10T02:11:40Z"
+updated = "2026-11-10T02:12:14Z"
 labels = ["model:sonnet"]
-scope = ["web/src/styles.css", "web/src/App.tsx", "web/src/components/**", "web/src/screens/**", "web/src/doctor/**", "web/index.html", "docs/web/**"]
+scope = ["web/src/styles.css", "web/src/App.tsx", "web/src/components/**", "web/src/screens/**", "web/src/doctor/**", "web/index.html", "docs/web/**", "web/src/a11y/**"]
 
 [[acceptance]]
 text = "web/src/styles.css becomes a design system: CSS custom-property tokens (color, space, radius, shadow, type scale), light and dark themes via prefers-color-scheme plus a manual toggle persisted in localStorage, system font stack, focus rings, cards, buttons, inputs, tables, badges"

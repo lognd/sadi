@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:10:53Z"
-updated = "2026-11-10T08:13:04Z"
+updated = "2026-11-10T08:13:13Z"
 scope = ["python/sadi/server/ws.py", "docs/concurrency.md", "python/tests/server/test_ws_offloop.py"]
 
 [[acceptance]]

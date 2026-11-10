@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:57:32Z"
-updated = "2026-11-10T15:13:11Z"
+updated = "2026-11-10T15:13:13Z"
 labels = ["ux"]
 scope = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py", "docs/lctt/export-csv.md", "python/tests/labs/lctt/test_lab_export.py", "python/tests/labs/lctt/test_partial_export.py", "web/src/components/wizard/ExportNow.test.tsx", "changelog.d/01M72ZDQGAN0VQRKHM489H28J1.added.md"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "Step rail lets the operator view any step read-only without advancing; nothing is locked out of viewing"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Intermediate export is labelled PARTIAL in the file and never overwrites a prior export"

@@ -31,3 +31,5 @@ dominant-input panel.
 
 `sum(contribution) == total_variance` (math.fsum), equal to the `std_unc**2` of calling the
 function on the same inputs; property-tested with random correlations.
+
+See also: [weight-plan error propagation](weight-plan.md).

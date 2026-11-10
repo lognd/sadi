@@ -4,9 +4,10 @@ title = "Data safety: server never writes snapshots (snapshot.write_snapshot unu
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T05:29:43Z"
-updated = "2026-11-10T05:29:43Z"
+updated = "2026-11-10T05:34:28Z"
 scope = ["python/sadi/store/**", "python/sadi/server/service.py"]
 
 [[acceptance]]

@@ -2,7 +2,8 @@
 id = "01M720QDN33FYFXX1SZ66Y1FQW"
 title = "Audit1 #15 #32 web: hanger mass label and captured-uuid text"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -1,3 +1,4 @@
+/* frob:ticket 01M72PGN6FQEXXCFGXA3EMAPTS */
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
 /* SADI design tokens (color, space, radius, shadow, type) and the light/dark themes; imported by styles.css.
@@ -8,97 +9,97 @@
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f3f5f8;
-  --surface: #ffffff;
-  --surface-2: #eaeef3;
-  --fg: #14181d;
-  --muted: #475160;
-  --accent: #0b57b0;
-  --accent-fg: #ffffff;
-  --accent-soft: #dbe9fb;
-  --border: #66717f;
-  --line: #d3d9e1;
+  --bg: #efebe0;
+  --surface: #f8f6ee;
+  --surface-2: #e6e1d3;
+  --fg: #1c1b17;
+  --muted: #55514a;
+  --accent: #0e5a61;
+  --accent-fg: #f8f6ee;
+  --accent-soft: #cfe3e0;
+  --border: #6f6a5e;
+  --line: #c9c2b0;
   --focus: #a64f00;
-  --btn-bg: #eef1f5;
-  --ok: #17663a;
-  --ok-soft: #dcf2e4;
-  --warn: #7a4a00;
-  --warn-soft: #fbecce;
-  --bad: #a8201a;
-  --bad-soft: #fbe0de;
-  --shadow-1: 0 1px 2px rgb(16 24 40 / 8%), 0 1px 3px rgb(16 24 40 / 6%);
-  --shadow-2: 0 4px 12px rgb(16 24 40 / 12%);
+  --btn-bg: #ebe7da;
+  --ok: #1b6236;
+  --ok-soft: #d9e8d6;
+  --warn: #6b4300;
+  --warn-soft: #f3e2b0;
+  --bad: #a02218;
+  --bad-soft: #f2d9d3;
+  --shadow-1: none;
+  --shadow-2: none;
 }
 
 /* ---- Tokens: dark, from the OS when no manual choice is stored ---- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0e1217;
-    --surface: #171c23;
-    --surface-2: #212832;
-    --fg: #e8ecf1;
-    --muted: #a9b3c0;
-    --accent: #7ab6ff;
-    --accent-fg: #08111f;
-    --accent-soft: #1b2e48;
-    --border: #8792a1;
-    --line: #2d3541;
+    --bg: #151515;
+    --surface: #1d1d1c;
+    --surface-2: #272726;
+    --fg: #e6e3da;
+    --muted: #a8a499;
+    --accent: #5fc4c8;
+    --accent-fg: #0a1a1b;
+    --accent-soft: #1b3638;
+    --border: #8a867b;
+    --line: #343432;
     --focus: #ffb454;
-    --btn-bg: #232b36;
-    --ok: #6fd39a;
-    --ok-soft: #14301f;
+    --btn-bg: #262625;
+    --ok: #7bd39a;
+    --ok-soft: #17301e;
     --warn: #f0b45a;
-    --warn-soft: #36280f;
-    --bad: #ff8f87;
-    --bad-soft: #3b1a18;
-    --shadow-1: 0 1px 2px rgb(0 0 0 / 50%);
-    --shadow-2: 0 4px 14px rgb(0 0 0 / 55%);
+    --warn-soft: #35290f;
+    --bad: #ff9188;
+    --bad-soft: #3a1c19;
+    --shadow-1: none;
+    --shadow-2: none;
   }
 }
 
 /* ---- Tokens: dark, manual choice ---- */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0e1217;
-  --surface: #171c23;
-  --surface-2: #212832;
-  --fg: #e8ecf1;
-  --muted: #a9b3c0;
-  --accent: #7ab6ff;
-  --accent-fg: #08111f;
-  --accent-soft: #1b2e48;
-  --border: #8792a1;
-  --line: #2d3541;
+  --bg: #151515;
+  --surface: #1d1d1c;
+  --surface-2: #272726;
+  --fg: #e6e3da;
+  --muted: #a8a499;
+  --accent: #5fc4c8;
+  --accent-fg: #0a1a1b;
+  --accent-soft: #1b3638;
+  --border: #8a867b;
+  --line: #343432;
   --focus: #ffb454;
-  --btn-bg: #232b36;
-  --ok: #6fd39a;
-  --ok-soft: #14301f;
+  --btn-bg: #262625;
+  --ok: #7bd39a;
+  --ok-soft: #17301e;
   --warn: #f0b45a;
-  --warn-soft: #36280f;
-  --bad: #ff8f87;
-  --bad-soft: #3b1a18;
-  --shadow-1: 0 1px 2px rgb(0 0 0 / 50%);
-  --shadow-2: 0 4px 14px rgb(0 0 0 / 55%);
+  --warn-soft: #35290f;
+  --bad: #ff9188;
+  --bad-soft: #3a1c19;
+  --shadow-1: none;
+  --shadow-2: none;
 }
 
 /* ---- Tokens: theme-independent ---- */
 :root {
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  --text-xs: 0.78rem;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.6rem;
+  --text-xs: 0.72rem; /* micro-labels (silkscreen) */
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.4rem;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
   --radius-pill: 999px;
   --content-width: 72rem;
 }

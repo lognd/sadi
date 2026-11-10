@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T08:28:54Z"
-updated = "2026-11-10T09:10:53Z"
+updated = "2026-11-10T09:11:01Z"
 labels = ["audit4"]
 scope = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/figure_data.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt", "python/sadi/labs/lctt/live.py", "docs/lctt/export-csv.md"]
 

@@ -1,0 +1,9 @@
+kind = "create"
+title = "Fix test_readme_links_jobs_tasks: docs/README.md must link (jobs/tasks.md)"
+type = "bug"
+category = "todo"
+priority = "high"
+scope = ["docs/README.md"]
+at = "2026-11-10T02:24:35Z"
+actor = "lognd"
+rev = 1

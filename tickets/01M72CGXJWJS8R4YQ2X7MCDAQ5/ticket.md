@@ -2,7 +2,8 @@
 id = "01M72CGXJWJS8R4YQ2X7MCDAQ5"
 title = "Lint cleanup: eslint errors in web tests/useStickyOffset, E501 curve_source, app.md wording"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 1
 reporter = "lognd"

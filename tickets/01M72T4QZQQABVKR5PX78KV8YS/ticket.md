@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:27:44Z"
+updated = "2026-11-10T13:27:49Z"
 labels = ["creates:none"]
 scope = ["python/sadi/design/**", "python/sadi/server/routes/design.py", "python/tests/server/test_design_route.py", "python/tests/design/**", "web/src/screens/run/SuggestedWeightPanel.tsx", "web/src/screens/run/designAdvice.ts", "web/src/screens/run/SuggestedWeightPanel.test.tsx"]
 

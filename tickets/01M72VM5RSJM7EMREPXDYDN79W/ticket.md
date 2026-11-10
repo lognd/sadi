@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:54:40Z"
+updated = "2026-11-10T13:56:30Z"
 scope = ["python/sadi/server/service.py", "python/tests/server/test_capture_request_id.py", "web/src/screens/review/api.ts", "web/src/screens/run/RunScreen.tsx", "web/src/screens/run/capture.ts", "web/src/screens/run/*.test.ts*", "docs/web/run-screens.md", "web/src/screens/run/loadChange.ts"]
 
 [[acceptance]]

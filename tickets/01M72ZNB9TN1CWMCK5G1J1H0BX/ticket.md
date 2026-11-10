@@ -2,12 +2,12 @@
 id = "01M72ZNB9TN1CWMCK5G1J1H0BX"
 title = "Sim LVDT voltage never moves on calibrate mark; SIM_LOAD_STEP_KG mismatches panel masses"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:01:42Z"
-updated = "2026-11-10T15:01:42Z"
+updated = "2026-11-10T15:04:15Z"
 scope = ["python/sadi/server/live.py", "python/tests/server/test_live_sim.py"]
 
 [[acceptance]]

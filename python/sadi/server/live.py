@@ -86,6 +86,14 @@ class LiveError(ErrorSet):
     NoDevice = "No instrument is attached; plug in the SADI board and press Reconnect"
 
 
+_CAPTURE_STOP_HINTS: Final[dict[str, str]] = {
+    STOP_FINISHED: LiveError.Finished.description,
+    STOP_LOW_DISK: LiveError.LowDisk.description,
+    STOP_IDLE: "Recording is paused for idleness; press Mark load change to resume it",
+    STOP_NO_DEVICE: LiveError.NoDevice.description,
+}
+
+
 class _Decimated:
     """A device block seen through analysis decimation; `raw` is kept whole for the WAL."""
 
@@ -183,8 +191,15 @@ class LiveAcquisition:
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     def capture_block_hint(self) -> str | None:
-        """Why capture is blocked right now (no device attached), or None when it is allowed."""
-        return None if self.device_attached else LiveError.NoDevice.description
+        """Why capture is blocked now (no device or stopped: finished/low_disk/idle), else None."""
+        if not self.device_attached:
+            return LiveError.NoDevice.description
+        with self._lock:
+            reason = self._stop_reason
+        hint = _CAPTURE_STOP_HINTS.get(reason) if reason else None
+        if hint is not None:
+            _log.info("capture refused: stop_reason=%s", reason)
+        return hint
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     def reconnect_device(self) -> Result[None, LiveError | DeviceError]:

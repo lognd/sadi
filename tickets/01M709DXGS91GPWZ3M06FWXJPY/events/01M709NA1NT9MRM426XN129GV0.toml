@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-09T13:58:41Z"
+digest = "67240bf57e61a09a0525db6e96486b4c4ce4c7a39ec8f21a7ea99ed6f019f837"
+exit_code = 0
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_device_defaults.py .                              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1040894-0.xml --------------
+============================== 1 passed in 0.17s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/core/test_device_defaults.py::test_default_queue_rides_out_a_slow_runner"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "9900ec001c3c9cada7767963be93805c742ab7c53f9a5d280cfb1415ac5b4da7"
+at = "2026-11-09T13:58:41Z"
+actor = "lognd"
+rev = 1

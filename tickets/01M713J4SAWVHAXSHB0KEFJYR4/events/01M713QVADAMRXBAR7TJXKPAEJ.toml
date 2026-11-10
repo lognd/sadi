@@ -1,0 +1,49 @@
+kind = "evidence"
+captured_at = "2026-11-09T21:33:38Z"
+digest = "ddcef63c4494f543c516d9943068ba510d41afc887c860bc827e7ef6410f468e"
+exit_code = 0
+head = "cf697406adb3c3a5b3396629568a737c6af30e62"
+inline = '''
+   Compiling syn v3.0.9
+   Compiling num-traits v0.2.19
+   Compiling target-lexicon v0.13.5
+   Compiling pyo3-build-config v0.30.1
+   Compiling proptest v1.12.0
+   Compiling thiserror-impl v2.0.21
+   Compiling thiserror v2.0.21
+   Compiling unescaper v0.1.10
+   Compiling serde_derive v1.0.229
+   Compiling serialport v4.10.1
+   Compiling pyo3-ffi v0.30.1
+   Compiling serde v1.0.229
+   Compiling pyo3-macros-backend v0.30.1
+   Compiling sadi-proto v0.1.0 (<worktree>/crates/sadi-proto)
+   Compiling pyo3 v0.30.1
+   Compiling matrixmultiply v0.3.11
+   Compiling heck v0.5.0
+   Compiling rawpointer v0.2.1
+   Compiling numpy v0.30.0
+   Compiling num-complex v0.4.6
+   Compiling pyo3-macros v0.30.1
+   Compiling num-integer v0.1.47
+   Compiling ndarray v0.17.2
+   Compiling rustc-hash v2.1.3
+   Compiling sadi-py v0.1.0 (<worktree>/crates/sadi-py)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 50.68s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 36ac67af-f695-49b1-bd3a-94208d5142fc with nextest profile: default
+    Starting 1 test across 10 binaries (134 tests skipped)
+        PASS [   0.071s] sadi-proto::serial_loopback pty_round_trip
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.085s] 1 test run: 1 passed, 134 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "pty_round_trip"
+size = 1383
+status = "measured"
+test_count = 1
+tests_digest = "df35a6c4ce12946bf57f5956d4cc1f64645c8a12feb6aa8eef103e0c70d0931e"
+at = "2026-11-09T21:33:38Z"
+actor = "lognd"
+rev = 1

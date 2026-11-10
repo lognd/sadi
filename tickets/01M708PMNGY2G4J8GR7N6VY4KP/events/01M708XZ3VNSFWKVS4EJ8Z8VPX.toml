@@ -1,0 +1,29 @@
+kind = "evidence"
+captured_at = "2026-11-09T13:45:53Z"
+digest = "25d81dec4f4fcdd572622dc7ddcdbe1e54e2552db9cd698627033807d0177f95"
+exit_code = 0
+head = "2ace4df2d61b28f44723edc6b0bd3357aefdcd47"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 4 items
+
+python/tests/cli/test_launcher_ui.py .                                   [ 25%]
+python/tests/doctor/test_web_data_steps.py ...                           [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1037407-0.xml --------------
+============================== 4 passed in 3.33s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/cli/test_launcher_ui.py::test_fallback_independent_of_cwd python/tests/doctor/test_web_data_steps.py"
+size = 601
+status = "measured"
+test_count = 4
+tests_digest = "fe916d85e0ad8ce4daa2a365b6a38b1caca745a8cd2408ed3dce4ccfa7408d0d"
+at = "2026-11-09T13:45:53Z"
+actor = "lognd"
+rev = 1

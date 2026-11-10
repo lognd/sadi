@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at 7a2e6f6e7910 (browser e2e (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42628524861/job/129198463422): landing the fixes for the red base CI"
+at = "2026-11-09T14:00:29Z"
+actor = "lognd"
+rev = 1

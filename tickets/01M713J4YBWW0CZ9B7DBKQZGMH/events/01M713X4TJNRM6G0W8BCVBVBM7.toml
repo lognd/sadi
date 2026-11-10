@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/e2e/fixtures.ts"]
+new = ["web/e2e/fixtures.ts", "web/e2e/lctt-data.spec.ts"]
+at = "2026-11-09T21:37:23Z"
+actor = "lognd"
+rev = 1

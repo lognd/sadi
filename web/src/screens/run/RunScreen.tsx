@@ -12,7 +12,7 @@ import type { KeyAction } from "../../keys/keymap";
 import type { WizardState } from "../../components/wizard/types";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, buildSpecimenBody, decide, postCapture, type Confirm } from "./capture";
+import { buildBody, buildSpecimenBody, capturedMessage, decide, postCapture, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunView, type PhasePlot } from "./RunView";
@@ -79,7 +79,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     }
     const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
     setConfirm("idle");
-    if (r.ok) { setMessage(`Captured: ${r.value.summary}`); setSavedTick((n) => n + 1); p.onCaptured?.(); }
+    if (r.ok) { setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
   }, [p, side.rawSeq, view, fields]);
 

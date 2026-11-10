@@ -2,6 +2,7 @@
 // frob:ticket 01M6X241EV9Z0JS4TCJPQBZCCN
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
+import { capturedMessage } from "./capture";
 import { PHASE_FIELDS, collectInputs, plausibilityNote, splitSpecimen } from "./inputFields";
 
 describe("collectInputs", () => {
@@ -64,5 +65,20 @@ describe("plausibilityNote", () => {
     const n = plausibilityNote(dia!, "1e-9");
     expect(n).not.toBeNull();
     expect(n?.suggest).toBeNull();
+  });
+});
+
+describe("user-facing wording (audit1 #15 #32)", () => {
+  it("mass label says the hanger is added for you", () => {
+    for (const ph of ["elastic", "plastic"] as const) {
+      const f = PHASE_FIELDS[ph].find((x) => x.key === "mass_kg");
+      expect(f?.label).toContain("hanger is added for you");
+    }
+  });
+  it("captured message hides raw uuids", () => {
+    const m = capturedMessage("captured 123e4567-e89b-12d3-a456-426614174000");
+    expect(m).toBe("Captured.");
+    expect(m).not.toMatch(/[0-9a-f]{8}-/);
+    expect(capturedMessage("captured p1 123e4567-e89b-12d3-a456-426614174000")).toBe("Captured: captured p1");
   });
 });

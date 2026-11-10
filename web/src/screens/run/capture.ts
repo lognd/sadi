@@ -1,3 +1,4 @@
+// frob:ticket 01M720QDN33FYFXX1SZ66Y1FQW
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
@@ -76,4 +77,12 @@ export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, raw
     window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
     settled: true, forced_early: false, drift_rate: view.driftVps,
   };
+}
+
+const UUID_RE = /\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+
+/** User-facing "Captured: ..." line from a commit summary, with raw UUIDs removed. */
+export function capturedMessage(summary: string): string {
+  const clean = summary.replace(UUID_RE, "").trim();
+  return clean === "" || clean === "captured" ? "Captured." : `Captured: ${clean}`;
 }

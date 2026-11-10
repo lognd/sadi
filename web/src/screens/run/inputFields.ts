@@ -44,8 +44,8 @@ export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
     { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true },
   ],
-  elastic: [LIVE_V, { key: "mass_kg", label: "Total hanging mass", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
-  plastic: [LIVE_V, { key: "mass_kg", label: "Total hanging mass", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  elastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  plastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
 };
 
 /** Parse one raw field text; Err is a clear operator message. Blank optional gives null. */

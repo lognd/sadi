@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
+import { capturedMessage } from "../run/capture";
 import { captureCycle, getClampStatus, parseCycle, type ClampStatus } from "./clampApi";
 
 const log = getLogger("setup.clamp");
@@ -76,7 +77,7 @@ export function ClampCheckPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
     void captureCycle(parsed.value, fetchImpl).then((r) => {
       inFlight.current = false;
       setBusy(false);
-      if (r.ok) { log.info("cycle captured"); setMessage(`Captured: ${r.value.summary}`); load(); }
+      if (r.ok) { log.info("cycle captured"); setMessage(capturedMessage(r.value.summary)); load(); }
       else setMessage(apiErrorText(r.error));
     });
   }, [fetchImpl, load]);

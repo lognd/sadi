@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T05:01:05Z"
+updated = "2026-11-10T05:02:10Z"
 scope = ["web/src/screens/run/**", "web/src/screens/setup/**", "web/src/plots/live/**", "web/src/components/wizard/**", "docs/web/**"]
 
 [[acceptance]]

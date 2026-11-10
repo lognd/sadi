@@ -114,3 +114,11 @@ def test_page_orders_heights_and_calibration_before_weights():
 def test_page_uses_grams_and_millimetres():
     assert "Mass, g" in PAGE and "Height, mm" in PAGE and "Mass, kg" not in PAGE and "Height, m<" not in PAGE
     assert "G_TO_KG" in PAGE and "MM_TO_M" in PAGE
+
+
+def test_page_script_has_no_raw_newline_in_regex():
+    """A raw newline inside a JS regex literal breaks the whole page (Python str escapes)."""
+    import re
+
+    js = re.search(r"<script>(.*)</script>", PAGE, re.S).group(1)
+    assert not re.search(r"/\[?\n", js.replace("//", ""))

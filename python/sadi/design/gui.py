@@ -124,7 +124,7 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
   body.u_mass = scaleNum(body.u_mass, G_TO_KG);
-  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/\n/g, ","), G_TO_KG, false) : "";
+  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), G_TO_KG, false) : "";
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
   body.cal_points = pts.join(",");

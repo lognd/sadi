@@ -2,7 +2,8 @@
 id = "01M72YENT6PZMVDMYGZ2BWDNK9"
 title = "Weight plan: persist inventory via append-only events and replan on Run screen"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 5
 reporter = "lognd"

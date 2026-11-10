@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/guidance/**", "web/src/api/schema.ts"]
+new = ["web/src/components/guidance/**", "web/src/api/schema.ts", "docs/web/guidance.md"]
+at = "2026-11-10T02:38:17Z"
+actor = "lognd"
+rev = 1

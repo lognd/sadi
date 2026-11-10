@@ -2,12 +2,12 @@
 id = "01M71XGJ7JM6YWRWCPMTRQJ0A5"
 title = "Audit1 #10 #11 #33 #16 #37 #38 #39: data-root in Doctor/UI, Doctor must not probe the port, shell UI (backend-down, polling, focus order, doctor verdict)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:53Z"
-updated = "2026-11-10T05:04:54Z"
+updated = "2026-11-10T05:05:58Z"
 scope = ["python/sadi/server/routes_doctor.py", "python/sadi/doctor/**", "web/src/App.tsx", "web/src/doctor/**", "web/src/components/instrument/**", "web/src/components/status/**", "web/src/screens/WizardHost.tsx"]
 
 [[acceptance]]

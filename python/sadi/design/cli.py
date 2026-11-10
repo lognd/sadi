@@ -1,7 +1,7 @@
 """Command-line weight planner: type your weights and wire, get the hang order (advisory)."""
 
 # Usage: python -m sadi.design.cli --weights 0.1,0.1,0.2,0.2,0.5 --diameter 2.019e-4 \
-#   --length 0.5 --cal-slope 12.0 [--u-mass 1e-4] [--captured 0.1:0.5,0.3:1.4]
+#   --length 0.5 --cal-points 0.001:0.05,0.002:0.11,... [--u-mass 1e-4] [--captured 0.1:0.5,0.3:1.4]
 
 # frob:ticket 01M72ZGDCC7C75SMXSJRH6VBAE
 
@@ -14,6 +14,7 @@ import sys
 from pydantic import ValidationError
 from typani import Err, Ok, Result
 
+from sadi.design.cal_fit import Calibration, resolve_calibration
 from sadi.design.models import CapturedPoint, PlanRequest, Weight
 from sadi.design.plan import plan
 from sadi.logging_setup import get_logger
@@ -55,8 +56,7 @@ def build_request(
     u_diameter: float,
     length: float,
     u_length: float,
-    cal_slope: float,
-    cal_offset: float,
+    cal: Calibration,
     saturation: float | None,
     captured: str,
 ) -> Result[PlanRequest, str]:
@@ -72,7 +72,8 @@ def build_request(
             PlanRequest(
                 weights=tuple(ws.value), diameter_m=diameter, u_diameter_m=u_diameter,
                 length_m=length, u_length_m=u_length,
-                cal_slope_v_per_m=cal_slope, cal_offset_v=cal_offset,
+                cal_slope_v_per_m=cal.slope_v_per_m, cal_offset_v=cal.offset_v,
+                u_cal_slope_v_per_m=cal.se_slope, u_cal_offset_v=cal.se_offset, cal_cov=cal.cov,
                 saturation_v=saturation, captured=tuple(cs.value),
             )
         )
@@ -90,18 +91,25 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--u-diameter", type=float, default=0.0, help="diameter uncertainty, m")
     ap.add_argument("--length", type=float, required=True, help="gauge length L0, m")
     ap.add_argument("--u-length", type=float, default=0.0, help="L0 uncertainty, m")
-    ap.add_argument("--cal-slope", type=float, required=True, help="LVDT calibration slope, V per m")
-    ap.add_argument("--cal-offset", type=float, default=0.0, help="LVDT calibration offset, V")
+    ap.add_argument("--cal-points", default="", help="calibration points height_m:volts,... (>= 3; fitted)")
+    ap.add_argument("--cal-slope", type=float, default=None,
+                    help="OVERRIDE: typed LVDT slope, V per m (skips the fit; no uncertainty)")
+    ap.add_argument("--cal-offset", type=float, default=0.0, help="OVERRIDE offset, V (with --cal-slope only)")
     ap.add_argument("--saturation", type=float, default=None, help="saturation limit, V")
     ap.add_argument("--captured", default="", help="already-hung points to replan from: kg:volts,kg:volts")
     args = ap.parse_args(argv)
     logging.getLogger("sadi").setLevel(logging.WARNING)  # keep the table readable; errors still show
     logging.getLogger("plan").setLevel(logging.WARNING)
     logging.getLogger("design").setLevel(logging.WARNING)
+    # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
+    cal = resolve_calibration(args.cal_points, args.cal_slope, args.cal_offset)
+    if isinstance(cal, Err):
+        sys.stdout.write(f"No plan: {cal.error}\n")
+        return 1
+    sys.stdout.write(cal.value.summary() + "\n")
     built = build_request(
         weights=args.weights, u_mass=args.u_mass, diameter=args.diameter, u_diameter=args.u_diameter,
-        length=args.length, u_length=args.u_length, cal_slope=args.cal_slope,
-        cal_offset=args.cal_offset, saturation=args.saturation, captured=args.captured,
+        length=args.length, u_length=args.u_length, cal=cal.value, saturation=args.saturation, captured=args.captured,
     )
     if isinstance(built, Err):
         sys.stdout.write(f"No plan: {built.error}\n")

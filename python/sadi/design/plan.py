@@ -73,7 +73,7 @@ def _subsets(weights: tuple[Weight, ...], res: float) -> list[_Load]:
 
 def _finite(req: PlanRequest) -> bool:
     vals = [req.diameter_m, req.u_diameter_m, req.length_m, req.u_length_m, req.cal_slope_v_per_m]
-    vals += [req.cal_offset_v]
+    vals += [req.cal_offset_v, req.u_cal_slope_v_per_m, req.u_cal_offset_v, req.cal_cov]
     vals += [x for w in req.weights for x in (w.mass_kg, w.u_mass_kg)]
     vals += [x for c in req.captured for x in (c.mass_kg, c.volts, c.u_volts)]
     return all(math.isfinite(v) for v in vals)
@@ -85,15 +85,25 @@ def _volts_per_kg(req: PlanRequest) -> float:
     return req.cal_slope_v_per_m * STANDARD_G * req.length_m / (area * req.config.copper.e_pa)
 
 
-def _predict(req: PlanRequest, mass: float, phase: DesignPhase) -> float:
-    """Predicted LVDT volts at `mass`: linear in the elastic phase, copper curve in yield."""
-    cfg = req.config
+# frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
+def _dl(req: PlanRequest, mass: float, phase: DesignPhase) -> float:
+    """Predicted extension (m) at `mass`: Hooke in the elastic phase, copper curve in yield."""
     area = math.pi * req.diameter_m**2 / 4.0
     if phase is DesignPhase.YIELD:
         stress = mass * STANDARD_G / area
-        dl = cfg.copper.strain(stress, stress) * req.length_m
-        return req.cal_offset_v + req.cal_slope_v_per_m * dl
-    return req.cal_offset_v + _volts_per_kg(req) * mass
+        return req.config.copper.strain(stress, stress) * req.length_m
+    return mass * STANDARD_G * req.length_m / (area * req.config.copper.e_pa)
+
+
+def _predict(req: PlanRequest, mass: float, phase: DesignPhase) -> float:
+    """Predicted LVDT volts at `mass`: offset + calibration slope * extension."""
+    return req.cal_offset_v + req.cal_slope_v_per_m * _dl(req, mass, phase)
+
+
+def _u_cal_volts(req: PlanRequest, dl: float) -> float:
+    """Volts uncertainty from the calibration fit: var = dl^2 se_a^2 + se_b^2 + 2 dl cov(a,b)."""
+    var = dl**2 * req.u_cal_slope_v_per_m**2 + req.u_cal_offset_v**2 + 2.0 * dl * req.cal_cov
+    return math.sqrt(max(var, 0.0))
 
 
 def _phase(req: PlanRequest) -> DesignPhase:
@@ -254,7 +264,10 @@ def _hang(
         u_mass_kg=ld.u_mass,
         tension_n=ld.mass * STANDARD_G,
         predicted_volts=_predict(req, ld.mass, phase),
-        u_predicted_volts=abs(_volts_per_kg(req)) * ld.u_mass,
+        # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
+        u_predicted_volts=math.hypot(
+            abs(_volts_per_kg(req)) * ld.u_mass, _u_cal_volts(req, _dl(req, ld.mass, phase))
+        ),
         expected_gain=gain,
         slope_half_width_v_per_kg=slope_half,
         e_half_width_pa=e_half,

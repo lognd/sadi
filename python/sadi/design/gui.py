@@ -18,6 +18,7 @@ from typing import Any
 
 from typani import Err, Ok, Result
 
+from sadi.design.cal_fit import resolve_calibration
 from sadi.design.cli import build_request
 from sadi.design.plan import plan
 from sadi.logging_setup import get_logger
@@ -62,11 +63,15 @@ points you have already captured to replan.</p>
 <label>Gauge length L0, m <input type="text" name="length" value="0.08313" required></label>
 <label>L0 uncertainty, m <input type="text" name="u_length" value="0"></label>
 </fieldset>
-<fieldset><legend>LVDT calibration</legend>
-<label>Calibration slope, V per m (REQUIRED, from your own calibration; no default is assumed)
-<input type="text" name="cal_slope" required placeholder="e.g. your measured V/m"></label>
-<small>An earlier 40 V/m figure was only a placeholder and is NOT used here.</small>
-<label>Calibration offset, V <input type="text" name="cal_offset" value="0"></label>
+<fieldset><legend>LVDT calibration (fitted from your height / volts points)</legend>
+<table id="cal"><thead><tr><th>Height, m</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
+<button type="button" id="addrow">Add row</button>
+<small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
+<details><summary>Override (advanced)</summary>
+<label>OVERRIDE slope, V per m (skips the fit; no uncertainty)
+<input type="text" name="cal_slope" value="" placeholder="blank = use the fit"></label>
+<label>OVERRIDE offset, V (with override only) <input type="text" name="cal_offset" value="0"></label>
+</details>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>Already captured</legend>
@@ -78,11 +83,21 @@ points you have already captured to replan.</p>
 <div id="out"></div>
 <script>
 const out = document.getElementById("out");
+const calBody = document.querySelector("#cal tbody");
+function addRow(h, v){
+  const tr = calBody.insertRow();
+  for (const val of [h, v]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
+}
+for (let k = 0; k < 4; k++) addRow("", "");
+document.getElementById("addrow").addEventListener("click", () => addRow("", ""));
 function cell(t, cls){const td=document.createElement("td"); if(cls) td.className=cls; td.textContent=t; return td;}
 document.getElementById("f").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
+  const pts = [];
+  for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(h + ":" + v); }
+  body.cal_points = pts.join(",");
   out.textContent = "Planning...";
   let data;
   try {
@@ -95,6 +110,7 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   s.textContent = "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
     ", usable " + data.n_usable + ". Dropped: " + data.dropped_saturation + " saturating, " + data.dropped_capacity + " over wire capacity. (Advisory; nothing saved.)";
   out.appendChild(s);
+  const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
   const t = document.createElement("table");
   const hr = t.insertRow();
   for (const h of ["#", "Hang (weights)", "Total kg", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
@@ -131,7 +147,7 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     nums: dict[str, float | None] = {}
     spec = {
         "u_mass": (False, 0.0), "diameter": (True, None), "u_diameter": (False, 0.0),
-        "length": (True, None), "u_length": (False, 0.0), "cal_slope": (True, None),
+        "length": (True, None), "u_length": (False, 0.0), "cal_slope": (False, None),
         "cal_offset": (False, 0.0), "saturation": (False, None),
     }
     for key, (required, default) in spec.items():
@@ -139,11 +155,15 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}
         nums[key] = got.value
+    # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
+    cal = resolve_calibration(str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0)
+    if isinstance(cal, Err):
+        return {"ok": False, "error": cal.error}
     built = build_request(
         weights=str(form.get("weights", "")), u_mass=nums["u_mass"] or 0.0,
         diameter=nums["diameter"] or 0.0, u_diameter=nums["u_diameter"] or 0.0,
         length=nums["length"] or 0.0, u_length=nums["u_length"] or 0.0,
-        cal_slope=nums["cal_slope"] or 0.0, cal_offset=nums["cal_offset"] or 0.0,
+        cal=cal.value,
         saturation=nums["saturation"], captured=str(form.get("captured", "")),
     )
     if isinstance(built, Err):
@@ -156,6 +176,8 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     return {
         "ok": True,
         "advisory": True,
+        "calibration": cal.value.summary(),
+        "cal": cal.value.model_dump(),
         "phase": p.phase.value,
         "n_inventory": p.n_inventory,
         "n_achievable": p.n_achievable,

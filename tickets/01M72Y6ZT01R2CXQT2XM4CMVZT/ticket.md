@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:36:23Z"
-updated = "2026-11-10T14:40:25Z"
+updated = "2026-11-10T14:40:29Z"
 labels = ["creates:python/tests/store/test_incremental_roll.py"]
 scope = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py", "python/tests/store/test_incremental_roll.py"]
 

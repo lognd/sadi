@@ -2,7 +2,8 @@
 id = "01M7274EKWS410XEGZGFD6HWHK"
 title = "M8: calibration layout - capture card above Finish, one vocabulary"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

@@ -2,12 +2,12 @@
 id = "01M72YAFYMKFSSKG8EZNGBTFZA"
 title = "Elastic suggestion is always the 3.0 kg cap after cold start (audit8 M3)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T14:38:18Z"
+updated = "2026-11-10T14:40:20Z"
 scope = ["python/sadi/design/**"]
 
 [[acceptance]]

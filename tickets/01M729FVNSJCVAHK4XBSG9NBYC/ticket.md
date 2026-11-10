@@ -2,12 +2,12 @@
 id = "01M729FVNSJCVAHK4XBSG9NBYC"
 title = "audit4 L3+L4+L5+L7: phase hints, session facts refresh, sticky offset, SYNTHETIC badge, RECOVERED export"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T08:34:13Z"
-updated = "2026-11-10T08:34:25Z"
+updated = "2026-11-10T08:34:38Z"
 labels = ["audit4"]
 scope = ["web/src/screens/run/phases.ts", "web/src/hooks/useStickyOffset.ts", "web/src/screens/setup/SessionSetup.tsx", "python/sadi/server/routes/export.py", "web/src/components/instrument/useBackendFacts.ts", "web/src/components/instrument/FactsContext.tsx", "web/src/components/wizard/CloseSession.tsx", "web/src/hooks/useStickyOffset.test.ts", "web/src/screens/setup/SessionSetup.test.tsx"]
 

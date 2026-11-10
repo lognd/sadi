@@ -2,12 +2,12 @@
 id = "01M71T683VDS38T2GYYW9SXT5B"
 title = "Backend: expose firmware, sample rate, and active data root in a status endpoint"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T04:06:50Z"
-updated = "2026-11-10T15:33:44Z"
+updated = "2026-11-10T15:33:45Z"
 labels = ["creates:python/tests/server/test_status_route.py", "creates:python/sadi/server/routes/status.py", "creates:docs/server/status.md"]
 scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md"]
 

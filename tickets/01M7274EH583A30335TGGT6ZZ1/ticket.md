@@ -2,7 +2,7 @@
 id = "01M7274EH583A30335TGGT6ZZ1"
 title = "M1+M2: show stop_reason banner and add Reconnect button in instrument bar"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"

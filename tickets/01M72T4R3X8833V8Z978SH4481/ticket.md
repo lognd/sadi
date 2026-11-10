@@ -7,9 +7,9 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:25:27Z"
+updated = "2026-11-10T13:27:21Z"
 labels = ["creates:none"]
-scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/store/test_spill.py", "python/tests/server/test_latest_lineage.py", "web/src/screens/setup/SessionSetup.tsx"]
+scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/store/test_spill.py", "python/tests/server/test_latest_lineage.py", "web/src/screens/setup/SessionSetup.tsx", "docs/store/spill.md"]
 
 [[acceptance]]
 text = "Verify failure -> crashed + failed marker + fragment import; in-progress sidecar prevents repeat copies; fragment->resume keeps parent as latest; orphan provenance unknown not synthetic; SessionSetup labels fragment/joined; tests incl. a6 repros. No data deleted."

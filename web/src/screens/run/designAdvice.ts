@@ -39,6 +39,8 @@ export function getDesignAdvice(phase: string, fetchImpl: typeof fetch = fetch):
 
 /** Plain-language reading of the indicator for a student. */
 export function indicatorText(i: DesignIndicator): string {
+  if (i.reasons.includes("no_elastic_fit")) return "Take at least 3 elastic points first; the yield suggestion needs the straight-line fit.";
+  if (i.reasons.includes("no_calibration")) return "No LVDT calibration was recorded, so the yield offset cannot be worked out. Choose loads yourself.";
   if (i.reasons.includes("cold_start")) return `Keep going: collect a few more points first (you have ${String(i.n)}).`;
   if (i.reasons.includes("departure_from_linear")) return "The last point is off the straight line. Check it before adding more.";
   if (i.reasons.includes("yield_not_reached")) return "The curve has not bent over yet. Try a heavier load.";
@@ -50,7 +52,8 @@ export function indicatorText(i: DesignIndicator): string {
   }
 }
 
-/** Format a load in kg and the matching force in newtons. */
+/** Format a load in kg and newtons, or a gauge height in mm. */
 export function loadText(x: number, unit: string): string {
-  return unit === "kg" ? `${x.toFixed(2)} kg (${(x * 9.80665).toFixed(1)} N)` : `${x.toPrecision(3)} ${unit}`;
+  if (unit === "kg") return `${x.toFixed(2)} kg (${(x * 9.80665).toFixed(1)} N)`;
+  return unit === "m" ? `${(x * 1000).toFixed(1)} mm` : `${x.toPrecision(3)} ${unit}`;
 }

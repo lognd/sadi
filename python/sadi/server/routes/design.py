@@ -4,17 +4,28 @@
 
 from __future__ import annotations
 
+import numpy as np
 from fastapi import APIRouter, Query
 
 from sadi.core.point_inputs import (
     PHASE_CALIBRATION,
-    PHASE_LOAD,
     CalibrationInputs,
     LoadInputs,
     parse_inputs,
 )
-from sadi.design.models import Candidate, DesignAdvice, DesignPhase, Obs, SelectorConfig, TargetSpec
+from sadi.design.models import (
+    Candidate,
+    ConfidenceIndicator,
+    CurrentFit,
+    DesignAdvice,
+    DesignPhase,
+    GpState,
+    Obs,
+    SelectorConfig,
+    TargetSpec,
+)
 from sadi.design.selector import select_next
+from sadi.labs.lctt.loading import SHORT_L0_M
 from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import ApiProblem, ProblemError, unwrap
 from sadi.server.schemas import PointView
@@ -27,14 +38,49 @@ LOAD_MAX_KG = 5.0
 N_CANDIDATES = 41
 #: Default gauge-height range (m) for the LVDT calibration phase.
 HEIGHT_MAX_M = 0.02
+#: Wizard point phases that feed each design phase (the yield fit needs the elastic line too).
+PHASES_FOR: dict[DesignPhase, frozenset[str]] = {
+    DesignPhase.LVDT_CAL: frozenset({PHASE_CALIBRATION}),
+    DesignPhase.ELASTIC: frozenset({"elastic"}),
+    DesignPhase.YIELD: frozenset({"elastic", "plastic"}),
+}
+#: Offset strain of the yield criterion (0.2 %).
+OFFSET_STRAIN = 0.002
+#: Minimum elastic points before a yield offset can be derived.
+MIN_ELASTIC = 3
+
+
+def offset_volts(views: list[PointView]) -> tuple[float | None, str]:
+    """0.2 % offset in volts from the recorded calibration; (None, reason) when it is not derivable."""
+    if len(design_obs(views, DesignPhase.ELASTIC)) < MIN_ELASTIC:
+        return None, "no_elastic_fit"
+    cal = design_obs(views, DesignPhase.LVDT_CAL)
+    volts = np.array([o.y for o in cal])
+    if len(cal) < 2 or float(np.ptp(volts)) <= 0.0:
+        return None, "no_calibration"
+    slope = float(np.polyfit(volts, [o.x for o in cal], 1)[0])
+    if slope == 0.0 or not np.isfinite(slope):
+        return None, "no_calibration"
+    return OFFSET_STRAIN * SHORT_L0_M / abs(slope), ""
+
+
+def _unavailable(phase: DesignPhase, n: int, target: TargetSpec, reason: str) -> DesignAdvice:
+    """Advice with no suggestion and a collecting indicator that names why."""
+    cfg = SelectorConfig()
+    ind = ConfidenceIndicator(
+        phase=phase, job_version=n, n=n, target=target,
+        current=CurrentFit(half_width=None, value=None, dof=0.0), ratio=None,
+        state=GpState.COLLECTING, consecutive_ok=0, patience=cfg.patience, reasons=(reason,),
+    )
+    return DesignAdvice(suggestion=None, indicator=ind)
 
 
 def design_obs(views: list[PointView], phase: DesignPhase) -> list[Obs]:
     """Observations from active, settled (or human force-accepted) points of the phase's kind."""
-    want = PHASE_CALIBRATION if phase is DesignPhase.LVDT_CAL else PHASE_LOAD
+    want = PHASES_FOR[phase]
     out: list[Obs] = []
     for p in sorted(views, key=lambda v: v.seq):
-        if p.excluded or p.phase != want or not (p.settled or p.forced_early):
+        if p.excluded or p.phase not in want or not (p.settled or p.forced_early):
             continue
         parsed = parse_inputs(p.phase, p.inputs)
         item = parsed.danger_ok if parsed.is_ok else None
@@ -69,6 +115,11 @@ def make_design_router(svc: SessionService) -> APIRouter:
         views = unwrap(svc.points())
         obs = design_obs(views, phase)
         cal = phase is DesignPhase.LVDT_CAL
+        if phase is DesignPhase.YIELD and offset is None:
+            offset, why = offset_volts(views)
+            if offset is None:
+                _log.info("design: yield suggestion unavailable (%s)", why)
+                return _unavailable(phase, len(obs), TargetSpec(half_width=target), why)
         cands = candidate_grid(HEIGHT_MAX_M if cal else LOAD_MAX_KG, "h" if cal else "m")
         res = select_next(
             phase,

@@ -1,0 +1,12 @@
++++
+id = "01M71YT5187FRY2MHEDXVARY5B"
+title = "Update server tests for capture validation and completion gates"
+type = "bug"
+category = "todo"
+priority = "medium"
+reporter = "lognd"
+created = "2026-11-10T05:27:36Z"
+updated = "2026-11-10T05:27:36Z"
++++
+
+found while working ~G13SHSE: python/tests/server/test_service_revert.py completes calibrate with one point (needs 2+ distinct points for a valid fit); python/tests/server/test_clamp_route.py::test_capture_then_status_and_complete completes setup after a failed clamp check (now 422 step_quality_gate; should skip instead).

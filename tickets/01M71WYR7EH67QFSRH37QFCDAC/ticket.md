@@ -2,12 +2,13 @@
 id = "01M71WYR7EH67QFSRH37QFCDAC"
 title = "Audit1 #1 #28: real SADI serial device path in sadi serve, device-missing UX"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T05:04:48Z"
+updated = "2026-11-10T05:04:54Z"
 scope = ["python/sadi/launcher.py", "python/sadi/server/device*", "python/tests/server/**", "python/tests/cli/**", "docs/server/launcher.md", "changelog.d/01M71WYR7EH67QFSRH37QFCDAC*"]
 
 [[acceptance]]

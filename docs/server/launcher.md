@@ -52,6 +52,12 @@ Verification status: `open_sim_device` was exercised against a real `sadi_py` bu
 `maturin develop` (it opened, streamed a 50-sample block, stopped and closed cleanly); the pytest
 `test_open_sim_device_real_simulator_streams_samples` re-runs this and is skipped when `sadi_py`
 is not importable. The other launcher tests inject a fake device.
+Real board: with none of `--sim`, `--synthetic-specimen` or `--ad3`, the launcher opens the SADI
+board over serial (`sadi/server/device_open.py::open_real_device`, a `DeviceSource(kind="serial")`)
+on `--device-port`, else `SADI_PORT`, else `/dev/ttyUSB0` (auto-detect by FTDI id on Windows) and
+passes it as `AppSettings.device`, so `/api/stream` works. If the board cannot be opened the launcher
+prints a plain-language message (port, cause, "plug in the SADI board...") and exits 6 rather than
+serving with no device. Tests use a fake serial opener; none touch a real port.
 The app never reads the environment itself. `python -m sadi` runs the same launcher.
 
 ## Live acquisition

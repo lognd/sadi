@@ -303,6 +303,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     serve.add_argument("--no-browser", action="store_true", help="do not open the browser")
     serve.add_argument("--sim", action="store_true", help="prefer the built-in simulator")
+    serve.add_argument(
+        "--device-port",
+        default=None,
+        help="serial port of the SADI board (default: SADI_PORT, else /dev/ttyUSB0)",
+    )
     serve.add_argument("--ad3", action="store_true", help="open the Digilent AD3 (closed on exit)")
     serve.add_argument(
         "--synthetic-specimen",
@@ -414,6 +419,17 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             return EXIT_DEVICE
         device = opened.danger_ok
     from sadi.bench.ad3.launch import ad3_requested, open_managed_ad3
+
+    if device is None and not synthetic and not ad3_requested(args.ad3):
+        from sadi.server.device_open import open_real_device, resolve_device_port
+
+        dev_port = resolve_device_port(args.device_port)
+        _log.info("opening the real SADI board on %s", dev_port)
+        real = open_real_device(dev_port)
+        if real.is_err:
+            _err(f"sadi: {real.danger_err}\n")
+            return EXIT_DEVICE
+        device = real.danger_ok
 
     ad3: Ad3Guard | None = None
     if ad3_requested(args.ad3):

@@ -7,10 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T13:32:29Z"
-updated = "2026-11-10T13:35:56Z"
+updated = "2026-11-10T13:36:48Z"
 scope = ["python/sadi/store/spill.py", "python/tests/store/test_spill.py"]
 
 [[acceptance]]
 text = "A fragment whose verify fails is marked so later starts do not re-copy it; nothing deleted"
-bound = false
+bound = true
 +++

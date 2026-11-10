@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-10T14:41:38Z"
 updated = "2026-11-10T14:58:08Z"
-scope = ["python/sadi/store/**", "python/sadi/server/curve_source.py", "python/sadi/server/service.py"]
+scope = ["python/sadi/store/**", "python/sadi/server/curve_source.py", "python/sadi/server/service.py", "python/tests/store/test_snapshot_notes.py"]
 
 [[acceptance]]
 text = "_scan_notes needs no whole-WAL walk after a snapshot rebase."

@@ -2,11 +2,12 @@
 id = "01M71V64DQEC0SSZ6AYFBEJTAX"
 title = "Regenerate web/src/api/openapi.json for DataProvenance fields"
 type = "bug"
-category = "todo"
+category = "done"
+outcome = "duplicate"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T04:24:14Z"
-updated = "2026-11-10T04:24:14Z"
+updated = "2026-11-10T04:32:29Z"
 scope = ["web/src/api/openapi.json"]
 +++
 

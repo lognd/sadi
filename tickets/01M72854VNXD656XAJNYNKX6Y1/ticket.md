@@ -7,8 +7,8 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:10:53Z"
-updated = "2026-11-10T08:11:05Z"
-scope = ["python/sadi/server/ws.py"]
+updated = "2026-11-10T08:12:30Z"
+scope = ["python/sadi/server/ws.py", "docs/concurrency.md"]
 
 [[acceptance]]
 text = "WS handler never blocks the event loop on session-locked work; test proves it"

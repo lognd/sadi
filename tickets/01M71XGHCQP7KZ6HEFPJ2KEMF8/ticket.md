@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:53Z"
-updated = "2026-11-10T05:59:55Z"
+updated = "2026-11-10T06:00:06Z"
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/**", "python/sadi/uncertainty/**", "python/sadi/core/lab.py", "python/sadi/server/routes/results.py", "python/sadi/server/live.py", "docs/lctt/**"]
 
 [[acceptance]]

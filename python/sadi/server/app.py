@@ -13,6 +13,7 @@
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
 
 # frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+# frob:ticket 01M729645YNC58VB5NTJE6Q1RK
 
 from __future__ import annotations
 
@@ -49,6 +50,7 @@ from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_health import make_health_router
 from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
+from sadi.server.security import OriginGuard
 from sadi.server.service import SessionService
 from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
@@ -79,6 +81,8 @@ class AppSettings(BaseModel):
     results: ResultsStream | None = None
     # Set only by the launcher after the flag + typed phrase; never read from the environment.
     synthetic: bool = False  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # Extra exact Origins trusted for writes/WS (e.g. a dev server); local same-port is implicit.
+    extra_origins: frozenset[str] = frozenset()
 
 
 class _SessionWriterSource:
@@ -178,6 +182,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     """Build a fresh FastAPI app (no global state) with all routers mounted."""
     cfg = settings if settings is not None else AppSettings()
     app = FastAPI(title="SADI", lifespan=_lifespan)
+    app.add_middleware(OriginGuard, extra_origins=cfg.extra_origins)
     app.state.settings = cfg
     app.state.root_lock = None
     app.state.root_lock_failure = None

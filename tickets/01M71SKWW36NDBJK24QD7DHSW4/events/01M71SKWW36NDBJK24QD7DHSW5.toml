@@ -1,0 +1,10 @@
+kind = "create"
+title = "Web: always-on instrument bar, debug strip, and newcomer-proof pages"
+type = "story"
+category = "todo"
+priority = "medium"
+scope = ["web/src/**", "docs/web/**"]
+acceptance = ["Instrument bar (large live LVDT volts, displacement/load when calibrated, drift, settle, connection, sim banner) renders on EVERY page including pre-session Setup, at the top, with no scrolling", "Debug strip shows device/firmware, sample rate, seq/durable seq, frame age, backend state, session id, data-root, save/WAL state, last error, all visible at a glance", "Landing/session-setup page explains the tension test in plain language, has labelled well-spaced form, and Results/error states show plain-language messages (no raw enum reprs)", "vitest, tsc, eslint, crunk check pass; docs/web updated"]
+at = "2026-11-10T03:56:48Z"
+actor = "lognd"
+rev = 1

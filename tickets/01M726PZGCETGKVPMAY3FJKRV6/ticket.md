@@ -2,12 +2,12 @@
 id = "01M726PZGCETGKVPMAY3FJKRV6"
 title = "H1: export must not finish acquisition (GET export mid-run kills recording)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:45:45Z"
+updated = "2026-11-10T07:45:46Z"
 labels = ["creates:python/tests/server/test_export_no_finish.py"]
 scope = ["python/sadi/server/routes/export.py", "python/sadi/server/live.py", "python/tests/server/test_export_no_finish.py", "docs/server/results.md", "docs/server/app.md"]
 

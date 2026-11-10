@@ -7,10 +7,10 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:01:53Z"
-updated = "2026-11-10T08:02:03Z"
+updated = "2026-11-10T08:04:17Z"
 scope = ["python/tests/api/test_point_roundtrip.py"]
 
 [[acceptance]]
 text = "python/tests/api/test_point_roundtrip.py::test_record_recover_fit_round_trip passes by opening a session in the test setup, without weakening the NoOpenSession guard"
-bound = false
+bound = true
 +++

@@ -1,3 +1,4 @@
+// frob:ticket 01M72TEVXXFP3PZ84SABZEDX7H
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M6WWN96C55R68VNZF2D1NB2V
 // frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
@@ -19,6 +20,7 @@ import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
 import { getPoints } from "../review/api";
+import { guidanceText } from "./guidance";
 import { SuggestedWeightPanel } from "./SuggestedWeightPanel";
 import { countPhasePoints, finishBlockedWhy } from "./pointCount";
 
@@ -32,11 +34,6 @@ function saveBlob(blob: Blob, name: string): void {
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
-}
-
-/** Replace a meaningless "Add 0.000 kg of masses ..." suggestion (no load computed yet) with plain advice. */
-export function guidanceText(next: string): string {
-  return /add 0(\.0+)? kg of masses/i.test(next) ? "Add a weight to the hanger, click I added a weight, then wait for Settled." : next;
 }
 
 /** Props of the run screen. */
@@ -147,7 +144,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     <WizardShell onKeyAction={onKey} onWizard={p.onWizard} finishBlockedWhy={finishBlockedWhy(p.phase, pointCount)} after={<RunPlot plot={p.plot ?? null} />}>
       {side.guidance != null && (
         <p data-testid="guidance-note">
-          {guidanceText(side.guidance.nextAction)}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
+          {guidanceText(side.guidance.nextAction)}
         </p>
       )}
       {(p.phase === "elastic" || p.phase === "plastic" || p.phase === "calibrate") && (

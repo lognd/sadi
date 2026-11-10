@@ -3,6 +3,7 @@
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M7274EKWS410XEGZGFD6HWHK
+// frob:ticket 01M72YKF3EN8RJX7RCH78JDPQC
 import { CalibrationPlot } from "../../plots/calibration";
 import type { CalibrationData } from "../../plots/calibration";
 import { StressStrainScreen } from "../StressStrainScreen";
@@ -10,6 +11,7 @@ import type { StressStrainData } from "../../plots/stressstrain";
 import type { LiveView } from "./live";
 export { settleText } from "../../components/live/settle";
 import { PHASE_FIELDS, plausibilityNote } from "./inputFields";
+import { RepeatedReadingsPanel } from "./RepeatedReadingsPanel";
 import { PHASES, type RunPhase } from "./phases";
 import { TEXT_FIELD_HOTKEY_HINT } from "../../keys/keymap";
 
@@ -90,6 +92,12 @@ export function RunView(p: RunViewProps): React.JSX.Element {
           );
         })}
       </fieldset>
+      {p.phase === "tare" && (
+        <RepeatedReadingsPanel
+          label="specimen diameter" unit="m"
+          onUse={(mean, u95) => { p.onField("diameter", String(mean)); p.onField("u_diameter", String(u95)); }}
+        />
+      )}
       <small data-testid="hotkey-hint" id="hotkey-hint" role="note"> {TEXT_FIELD_HOTKEY_HINT}</small>
       {p.confirming ? (
         <div role="alertdialog" aria-label="Accept early" data-testid="confirm-early">

@@ -305,3 +305,24 @@ def test_registry_known_tracks_register_and_forget() -> None:
     assert reg.known("a") and not reg.known("b")
     reg.forget("a")
     assert not reg.known("a")
+
+
+# frob:ticket 01M72YKF3EN8RJX7RCH78JDPQC
+# frob:tests sadi.uncertainty.measured.Measured.from_readings
+def test_from_readings_rss():
+    """Mean, type-A standard error and instrument term combine in quadrature."""
+    from sadi.uncertainty.measured import Measured
+
+    m = Measured.from_readings([1.0, 2.0, 3.0], 0.5, "m").danger_ok
+    assert m.value == 2.0
+    assert abs(m.std_unc - (1 / 3 + 0.25) ** 0.5) < 1e-12
+    assert m.dof == 2
+
+
+def test_from_readings_single_and_empty():
+    """One reading has only the instrument term; none is an error."""
+    from sadi.uncertainty.measured import Measured
+
+    one = Measured.from_readings([5.0], 0.2).danger_ok
+    assert abs(one.std_unc - 0.2) < 1e-12 and one.dof is None
+    assert Measured.from_readings([]).is_err

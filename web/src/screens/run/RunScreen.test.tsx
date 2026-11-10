@@ -16,7 +16,7 @@ import { countPhasePoints, finishBlockedWhy } from "./pointCount";
 import type { PointView } from "../review/types";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
 import { RunPlot, RunView, settleText, type RunViewProps } from "./RunView";
-import { guidanceText } from "./RunScreen";
+import { guidanceText, GENERIC_GUIDANCE } from "./guidance";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
 
@@ -239,7 +239,11 @@ describe("audit1 run-screen fixes", () => {
   });
   it("guidanceText replaces a zero-kg hang instruction", () => {
     expect(guidanceText("Add 0.000 kg of masses to the hanger (the hanger is added for you)")).not.toMatch(/0\.000/);
-    expect(guidanceText("Add 0.250 kg of masses to the hanger (the hanger is added for you)")).toContain("0.250");
+    // frob:ticket 01M72TEVXXFP3PZ84SABZEDX7H
+    // single source: any load in guidance is dropped so it cannot disagree with SuggestedWeightPanel
+    expect(guidanceText("Add 0.250 kg of masses to the hanger (the hanger is added for you)")).toBe(GENERIC_GUIDANCE);
+    expect(guidanceText("Add 0.625 kg of masses")).not.toMatch(/0\.625/);
+    expect(guidanceText("Wait for Settled")).toBe("Wait for Settled");
   });
   it("RunView warns on an implausible diameter and offers metres", () => {
     const out = html(<RunView {...props({ phase: "tare", fields: { diameter: "0.2" } })} />);

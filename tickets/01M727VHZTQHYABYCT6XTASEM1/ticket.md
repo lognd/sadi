@@ -2,12 +2,12 @@
 id = "01M727VHZTQHYABYCT6XTASEM1"
 title = "L4: two contradictory save indicators; Saved shown with no session"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:39Z"
-updated = "2026-11-10T08:05:44Z"
+updated = "2026-11-10T08:05:55Z"
 scope = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx"]
 
 [[acceptance]]

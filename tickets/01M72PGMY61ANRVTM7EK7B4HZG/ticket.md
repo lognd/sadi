@@ -4,9 +4,10 @@ title = "Live trace canvas distorted: keep scene aspect ratio when CSS scales wi
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T12:21:51Z"
-updated = "2026-11-10T12:21:51Z"
+updated = "2026-11-10T12:21:55Z"
 labels = ["web"]
 scope = ["web/src/plots/core/canvas.ts", "web/src/plots/core/canvas.test.ts", "web/src/components/live/*", "web/src/plots/live/*"]
 

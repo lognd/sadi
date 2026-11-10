@@ -7,9 +7,9 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T09:37:14Z"
-updated = "2026-11-10T09:37:42Z"
+updated = "2026-11-10T09:37:46Z"
 labels = ["creates:python/tests/server/test_capture_request_id.py", "creates:python/tests/server/test_live_load_change.py"]
-scope = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/session_points.py", "web/src/screens/run/**", "web/src/keys/**", "web/src/api/**", "docs/lctt/**", "docs/server/**", "python/tests/server/test_routes_acquisition.py", "python/tests/server/test_service_snapshots.py", "python/tests/server/test_capture_request_id.py", "python/tests/server/test_live_load_change.py", "python/tests/labs/lctt/test_guidance.py", "python/tests/labs/lctt/test_gp_suggester.py", "python/tests/labs/lctt/test_capture.py", "python/tests/labs/lctt/test_capture_record.py", "python/tests/labs/lctt/test_settle_stream.py"]
+scope = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/session_points.py", "web/src/screens/run/**", "web/src/keys/**", "docs/lctt/**", "docs/server/**", "python/tests/server/test_routes_acquisition.py", "python/tests/server/test_service_snapshots.py", "python/tests/server/test_capture_request_id.py", "python/tests/server/test_live_load_change.py", "python/tests/labs/lctt/test_guidance.py", "python/tests/labs/lctt/test_gp_suggester.py", "python/tests/labs/lctt/test_capture.py", "python/tests/labs/lctt/test_capture_record.py", "python/tests/labs/lctt/test_settle_stream.py", "web/src/api/client.ts", "web/src/api/client.test.ts"]
 
 [[acceptance]]
 text = "No guidance text contains 'total'; accept keys ignore repeat and block duplicate accept; capture replay with same request_id returns existing commit; sim tare/calibrate mark does not add load; openapi regenerated"

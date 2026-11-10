@@ -3,6 +3,7 @@
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
+// frob:ticket 01M727YGXCC6ZFVHWHG64KFA7D
 // frob:accept COV001 because="covered by WizardHost.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../api/log";
@@ -38,20 +39,26 @@ export function screenFor(rail: readonly RailItem[]): ScreenKind {
   return BY_PHASE[cur.phase] ?? "setup";
 }
 
-/** Key handler for the export step: F3 downloads the CSV export, other keys are ignored. */
-function useExportKey(): (a: KeyAction) => void {
+/** Key handler for the export step: F3 downloads the CSV export (failures set `onError`; recorded data is untouched), other keys are ignored. */
+function useExportKey(onError: (text: string | null) => void): (a: KeyAction) => void {
   return useCallback((a: KeyAction): void => {
     if (a !== "export") return;
+    onError(null);
     void fetchRunExport(DEFAULT_RUN_EXPORT).then((r) => {
       if (r.ok) { saveBlob(r.value.blob, r.value.filename); log.info("export saved", { filename: r.value.filename }); }
-      else log.warn("export failed", { text: exportErrorText(r.error) });
+      else {
+        const text = exportErrorText(r.error);
+        log.warn("export failed", { text });
+        onError(text);
+      }
     });
-  }, []);
+  }, [onError]);
 }
 
 /** Non-run steps: shell with rail around setup, review or export content. */
 function StaticStep({ kind, onWizard, onClosed }: { kind: "setup" | "results" | "export"; onWizard: (w: WizardState) => void; onClosed: () => void }): React.JSX.Element {
-  const onKey = useExportKey();
+  const [exportError, setExportError] = useState<string | null>(null);
+  const onKey = useExportKey(setExportError);
   return (
     <WizardShell
       onWizard={onWizard}
@@ -59,6 +66,12 @@ function StaticStep({ kind, onWizard, onClosed }: { kind: "setup" | "results" | 
       onKeyAction={kind === "export" ? onKey : undefined}
       delegateUndo={kind === "results"}
     >
+      {exportError !== null && (
+        <div role="alert" data-testid="export-error">
+          <p>! {exportError}</p>
+          <p>Your recorded data is safe on the server; use the format list below to download it.</p>
+        </div>
+      )}
       {kind === "setup" ? <ClampCheckPanel /> : kind === "results" ? <ReviewScreen /> : <ExportScreen />}
     </WizardShell>
   );

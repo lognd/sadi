@@ -2,12 +2,12 @@
 id = "01M71V64GMPG77XEX6MKYMTZJH"
 title = "lctt context_from_inputs uses one L0/specimen/tare for all points"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T04:24:15Z"
-updated = "2026-11-10T15:43:08Z"
+updated = "2026-11-10T15:43:10Z"
 scope = ["python/sadi/labs/lctt/**"]
 +++
 

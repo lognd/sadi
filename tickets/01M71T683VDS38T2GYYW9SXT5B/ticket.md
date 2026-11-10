@@ -9,7 +9,7 @@ reporter = "lognd"
 created = "2026-11-10T04:06:50Z"
 updated = "2026-11-10T15:34:55Z"
 labels = ["creates:python/tests/server/test_status_route.py", "creates:python/sadi/server/routes/status.py", "creates:docs/server/status.md"]
-scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py"]
+scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py", "python/sadi/server/live.py"]
 
 [[acceptance]]
 text = "GET /api/status returns firmware, sample_rate_hz and data_root (the active --data-root); tested"

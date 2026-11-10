@@ -2,7 +2,8 @@
 id = "01M7305JYQ6AZA2Z92Y5QQ54BF"
 title = "Planner picks which gauge heights to use (height inventory like weights) with per-height uncertainty"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

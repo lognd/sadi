@@ -7,8 +7,8 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:44:46Z"
-updated = "2026-11-10T14:45:34Z"
-scope = ["web/src/screens/run/designAdvice.ts", "web/src/api/schema.ts", "web/src/api/openapi.json"]
+updated = "2026-11-10T14:46:17Z"
+scope = ["web/src/screens/run/designAdvice.ts", "web/src/api/schema.ts", "web/src/api/openapi.json", "web/src/screens/run/designAdvice.test.ts"]
 
 [[acceptance]]
 text = "designAdvice says the top of the elastic range is reached; schema.ts and openapi.json list range_exhausted."

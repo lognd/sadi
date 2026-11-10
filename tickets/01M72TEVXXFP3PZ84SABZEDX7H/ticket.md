@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T13:30:47Z"
-updated = "2026-11-10T13:35:14Z"
+updated = "2026-11-10T13:38:10Z"
 labels = ["creates:none"]
 scope = ["web/src/screens/run/RunScreen.tsx", "web/src/screens/run/RunScreen.test.tsx", "web/src/screens/run/guidance.ts"]
 

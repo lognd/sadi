@@ -2,7 +2,8 @@
 id = "01M72YKEYW6QFR5YTFSV2YBKMJ"
 title = "Audit8 LOW wording/type fixes: L3 panel wording, L4 mark button hint, L6 DesignIndicator.reasons type, L7 health provenance"
 type = "chore"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 2
 reporter = "lognd"

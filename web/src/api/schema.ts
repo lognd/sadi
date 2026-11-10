@@ -304,6 +304,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/results/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish Results
+         * @description Results reached: drain raw blocks to the WAL and stop streaming (session stays open).
+         */
+        post: operations["finish_results_api_results_finish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/results/guidance": {
         parameters: {
             query?: never;
@@ -1098,6 +1118,8 @@ export interface components {
          * @description Device state for the header: coarse status, whether a service exists, and any fault.
          */
         DeviceView: {
+            /** Acquisition Fault */
+            acquisition_fault?: string | null;
             /** Attached */
             attached: boolean;
             /** Fault */
@@ -1118,6 +1140,8 @@ export interface components {
             provenance: components["schemas"]["DataProvenance"];
             /** Status */
             status: string;
+            /** Stop Reason */
+            stop_reason?: string | null;
         };
         /**
          * DoctorReport
@@ -2446,6 +2470,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResultBudget"][];
+                };
+            };
+        };
+    };
+    finish_results_api_results_finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceView"];
                 };
             };
         };

@@ -615,6 +615,17 @@
       "DeviceView": {
         "description": "Device state for the header: coarse status, whether a service exists, and any fault.",
         "properties": {
+          "acquisition_fault": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acquisition Fault"
+          },
           "attached": {
             "title": "Attached",
             "type": "boolean"
@@ -647,6 +658,17 @@
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "stop_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Reason"
           }
         },
         "required": [
@@ -3130,6 +3152,25 @@
           }
         },
         "summary": "Result Budgets"
+      }
+    },
+    "/api/results/finish": {
+      "post": {
+        "description": "Results reached: drain raw blocks to the WAL and stop streaming (session stays open).",
+        "operationId": "finish_results_api_results_finish_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Finish Results"
       }
     },
     "/api/results/guidance": {

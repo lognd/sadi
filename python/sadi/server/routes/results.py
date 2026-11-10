@@ -143,6 +143,9 @@ class DeviceView(BaseModel):
     fault: str | None = None
     hint: str = ""
     provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    stop_reason: str | None = None
+    acquisition_fault: str | None = None
 
 
 class QuantityProvenance(BaseModel):
@@ -317,6 +320,14 @@ def make_results_router(
         """Live recompute of the open session's results."""
         return unwrap(live_results(svc, labs))
 
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    @r.post("/results/finish")
+    def finish_results() -> DeviceView:
+        """Results reached: drain raw blocks to the WAL and stop streaming (session stays open)."""
+        unwrap(svc.info())
+        svc.finish_acquisition()
+        return device_status()
+
     @r.get("/results/budgets")
     def result_budgets() -> list[ResultBudget]:
         """Per-result uncertainty budgets from the injected source, else the lab's own hook."""
@@ -335,8 +346,11 @@ def make_results_router(
     @r.get("/device/status")
     def device_status() -> DeviceView:
         """Device status; attached=false (status error) when no device service is configured."""
+        reason, acq_fault = svc.acquisition_state()
         if device is None:
             return DeviceView(
+                stop_reason=reason,
+                acquisition_fault=acq_fault,
                 status="error",
                 attached=False,
                 hint="No device service is configured; start the server with a device source.",
@@ -353,6 +367,8 @@ def make_results_router(
             fault=None if fault is None else repr(fault)[:300],
             hint=hint,
             provenance=svc.provenance(),
+            stop_reason=reason,
+            acquisition_fault=acq_fault,
         )
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR

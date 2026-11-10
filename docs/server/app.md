@@ -108,3 +108,7 @@ makes `capture` answer 409 `no_device` until a board is attached. `LiveAcquisiti
 (behind `POST /api/device/reconnect`) reopens the device and, if a session is open and not finished
 or low on disk, starts a run with a new SETTINGS record; the WAL is only ever appended to. It is a
 no-op while a healthy run is active, and a failed open returns a 409 problem with the session intact.
+
+`SessionService.finish_acquisition()` (wired by `set_acquisition`) calls `LiveAcquisition.finish()` before export
+rendering, on `POST /api/results/finish` and at close, so raw data is durable before computing. A finish fault is
+logged and surfaced as `acquisition_fault` on `/api/device/status`; it is never raised and never discards WAL data.

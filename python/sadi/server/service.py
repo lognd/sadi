@@ -186,6 +186,9 @@ class SessionService:
         self._before_close: Callable[[], None] | None = None
         # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
         self._capture_gate: Callable[[], str | None] | None = None
+        # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        self._finisher: Callable[[], Result[int, object]] | None = None
+        self._acq_state: Callable[[], tuple[str | None, str | None]] | None = None
 
     def provenance(self) -> DataProvenance:
         """The data provenance every payload of this service carries (real unless synthetic)."""
@@ -204,6 +207,37 @@ class SessionService:
     def set_capture_gate(self, gate: Callable[[], str | None]) -> None:
         """Register a gate returning a hint while capture is blocked (no device), else None."""
         self._capture_gate = gate
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def set_acquisition(
+        self,
+        finish: Callable[[], Result[int, object]],
+        state: Callable[[], tuple[str | None, str | None]],
+    ) -> None:
+        """Register the live-acquisition finish action and its (stop_reason, fault) reader."""
+        self._finisher = finish
+        self._acq_state = state
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def finish_acquisition(self) -> bool:
+        """Drain raw blocks into the WAL and stop streaming; True when it ended cleanly or is unwired.
+
+        Idempotent and data-safe: nothing is deleted or truncated, the session stays open, and a
+        fault is logged and kept for the status API, never raised into the request.
+        """
+        if self._finisher is None:
+            return True
+        done = self._finisher()
+        if done.is_err:
+            _log.error("finish_acquisition faulted (recorded blocks remain): %s", done.danger_err)
+            return False
+        _log.info("finish_acquisition ok: %d trailing blocks saved", done.danger_ok)
+        return True
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def acquisition_state(self) -> tuple[str | None, str | None]:
+        """(stop_reason, fault detail) of raw streaming; (None, None) when no live acquisition."""
+        return self._acq_state() if self._acq_state is not None else (None, None)
 
     # ---- discovery --------------------------------------------------------------------
 
@@ -349,6 +383,7 @@ class SessionService:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
+            self.finish_acquisition()  # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
             if self._before_close is not None:
                 self._before_close()
             closed = cur.writer.close()
@@ -658,7 +693,9 @@ class SessionService:
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
             durable.map_err(_from_store).unwrap()
             after = self._replay(cur).unwrap()
-            self._snapshot(cur, forced=any(r.type in _SNAPSHOT_FORCING for r in cmd.danger_ok.records))
+            self._snapshot(
+                cur, forced=any(r.type in _SNAPSHOT_FORCING for r in cmd.danger_ok.records)
+            )
             _log.info("committed seq %d: %s", seq, cmd.danger_ok.summary)
             return Ok(
                 Committed(

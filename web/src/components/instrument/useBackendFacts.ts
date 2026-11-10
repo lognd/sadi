@@ -26,7 +26,13 @@ export interface BackendFacts {
 const EMPTY: BackendFacts = { save: null, device: null, session: null, rootLockOk: null, dataRoot: null, version: null, lastError: null };
 
 interface SaveWire { state?: string; label?: string; pending?: number; hint?: string }
-interface DeviceWire { status?: string; attached?: boolean; fault?: string | null; hint?: string }
+interface DeviceWire { status?: string; attached?: boolean; fault?: string | null; hint?: string; stop_reason?: string | null; acquisition_fault?: string | null }
+
+/** Operator text for why raw streaming stopped or faulted (empty when running normally). */
+function acquisitionHint(d: DeviceWire): string {
+  if (d.acquisition_fault) return `Acquisition fault: ${d.acquisition_fault}`;
+  return d.stop_reason ? `Raw streaming stopped (${d.stop_reason}); recorded data is safe.` : "";
+}
 interface SessionWire { name?: string; lab?: string; durable_seq?: number | null }
 interface LockWire { ok?: boolean; hint?: string }
 
@@ -47,7 +53,7 @@ export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = f
   return {
     ...prev,
     save: save.ok ? { state: save.value.state ?? "unknown", label: save.value.label ?? "", pending: save.value.pending ?? 0, hint: save.value.hint ?? "" } : null,
-    device: d === null ? null : { status: d.status ?? "unknown", attached: d.attached ?? false, fault: d.fault ?? null, hint: d.hint ?? "" },
+    device: d === null ? null : { status: d.status ?? "unknown", attached: d.attached ?? false, fault: d.fault ?? null, hint: d.hint || acquisitionHint(d) },
     session: ses === null ? prev.session : ses.ok ? { name: ses.value.name ?? "", lab: ses.value.lab ?? "", durableSeq: ses.value.durable_seq ?? null } : null,
     rootLockOk: lock.ok ? lock.value.ok !== false : null,
     lastError: errs.length > 0 ? errs.join("; ") : null,

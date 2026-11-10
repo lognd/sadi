@@ -182,6 +182,8 @@ def test_device_status_attached(tmp_path: Path) -> None:
         body = c.get("/api/device/status").json()
         # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
         assert body.pop("provenance")["synthetic"] is False
+        assert body.pop("stop_reason") is None  # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        assert body.pop("acquisition_fault") is None
         assert body == {"status": "simulated", "attached": True, "fault": None, "hint": ""}
 
 

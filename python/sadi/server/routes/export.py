@@ -115,6 +115,7 @@ def render_export(
 ) -> Result[tuple[ExportFormat, str, bytes], ApiProblem]:
     """Render `format_id` for the open session in memory; nothing is written to disk or the WAL."""
     name, lab = _open_lab(svc, labs).unwrap()
+    svc.finish_acquisition()  # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
     views = svc.points().unwrap()
     return _render(lab, name, svc.session_path().unwrap(), views, format_id, cache)
 

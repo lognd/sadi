@@ -167,6 +167,13 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
             _log.info("data-root lock released on shutdown")
 
 
+def _acq_state(live: LiveAcquisition) -> tuple[str | None, str | None]:
+    """(stop_reason, fault text) of `live` for the status API."""
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    fault = live.fault
+    return live.stop_reason, None if fault is None else f"{fault.origin}: {fault.detail}"[:300]
+
+
 def create_app(settings: AppSettings | None = None) -> FastAPI:
     """Build a fresh FastAPI app (no global state) with all routers mounted."""
     cfg = settings if settings is not None else AppSettings()
@@ -211,14 +218,24 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
 
     app.state.sessions.set_hooks(_on_open, _before_close)
     if live is not None:
-        app.state.sessions.set_capture_gate(live.capture_block_hint)  # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        app.state.sessions.set_capture_gate(
+            live.capture_block_hint
+        )  # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        app.state.sessions.set_acquisition(live.finish, lambda: _acq_state(live))
     app.include_router(make_sessions_router(app.state.sessions))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
     # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
     app.include_router(make_acquisition_router(cfg.live.mark_load_change if cfg.live else None))
     app.include_router(
-        make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets, cfg.live.reconnect_device if cfg.live else None)
+        make_results_router(
+            app.state.sessions,
+            cfg.labs or LabRegistry(),
+            cfg.device,
+            cfg.budgets,
+            cfg.live.reconnect_device if cfg.live else None,
+        )
     )
     replays = SessionReplayCache()  # one incremental replayer per session, shared
     app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry(), replays))

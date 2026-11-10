@@ -2,7 +2,8 @@
 id = "01M730D6V3MDWYT6W1B9NPT07V"
 title = "Read-only step view should render the step's data panels, not hide them behind a banner"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

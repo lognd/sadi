@@ -2159,6 +2159,8 @@ export interface components {
              *     }
              */
             provenance: components["schemas"]["DataProvenance"];
+            /** Spill Import */
+            spill_import?: string | null;
             /** State */
             state: string;
             /** Version */

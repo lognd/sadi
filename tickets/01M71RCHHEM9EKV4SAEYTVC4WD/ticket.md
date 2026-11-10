@@ -8,7 +8,7 @@ points = 8
 parent = "01M6W7RAH93KKNK1WH67KWS2S7"
 reporter = "lognd"
 created = "2026-11-10T03:35:19Z"
-updated = "2026-11-10T03:42:17Z"
+updated = "2026-11-10T03:42:21Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Step rail is a left sidebar with plain-language titles; primary next action is prominent"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Existing vitest suites pass; crunk check passes; data-safety text preserved"

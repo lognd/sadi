@@ -476,6 +476,22 @@ def _with_calibration(res: AnalysisResult, inputs: Sequence[PointInputs]) -> Ana
     return res.model_copy(update={"values": {**res.values, **_calibration_quantities(inputs, ctx)}})
 
 
+#: Two-specimen results that need both an elastic and a plastic run.
+_TWO_SPECIMEN_NAMES = ("E", "r2", "yield_stress")
+
+
+def _with_unavailable(res: AnalysisResult, reason: str) -> AnalysisResult:
+    """Return `res` with the two-specimen results marked pending and `reason` as a note."""
+    # frob:ticket 01M720GS24E4C7S5H9H1DPD95G
+    have = tuple(n for n in _TWO_SPECIMEN_NAMES if n not in res.values)
+    return res.model_copy(
+        update={
+            "pending": tuple(dict.fromkeys((*res.pending, *have))),
+            "notes": (*res.notes, reason),
+        }
+    )
+
+
 def _inflate_modulus_unc(
     value: float, unc: float, inputs: Sequence[PointInputs], ctx: LoadingContext
 ) -> float:
@@ -577,8 +593,14 @@ class LcttLab:
             return base
         loads = [i for i in inputs if isinstance(i, LoadInputs)]
         by_role = {role: tuple(i for i in loads if i.phase == role.value) for role in SpecimenRole}
-        if not all(by_role.values()):
-            return Ok(_with_calibration(base.danger_ok, inputs))
+        missing = [r.value for r in SpecimenRole if not by_role[r]]
+        if missing:
+            return Ok(
+                _with_unavailable(
+                    _with_calibration(base.danger_ok, inputs),
+                    f"yield_stress: needs a {' and a '.join(missing)} run (none captured yet)",
+                )
+            )
         shared = tuple(i for i in inputs if not isinstance(i, LoadInputs))
         combined = combine_runs(
             SpecimenRun(
@@ -591,7 +613,12 @@ class LcttLab:
         )
         if isinstance(combined, Err):
             _log.warning("lctt analyze: combine_runs failed: %s", combined.danger_err)
-            return Ok(_with_calibration(base.danger_ok, inputs))
+            return Ok(
+                _with_unavailable(
+                    _with_calibration(base.danger_ok, inputs),
+                    f"yield_stress: two-specimen fit failed ({combined.danger_err})",
+                )
+            )
         ctx = LcttLab(context_from_inputs(inputs)).context
         values = dict(base.danger_ok.values)
         values.update(_calibration_quantities(inputs, ctx))

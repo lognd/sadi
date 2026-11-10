@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/launcher.py", "python/sadi/server/app.py", "python/sadi/store/session.py", "python/tests/server/**", "python/tests/store/**", "python/tests/cli/test_launcher_live.py"]
+new = ["python/sadi/launcher.py", "python/sadi/server/app.py", "python/sadi/store/session.py", "python/tests/server/**", "python/tests/store/**", "python/tests/cli/test_launcher_live.py", "docs/server/app.md"]
+at = "2026-11-10T06:09:57Z"
+actor = "lognd"
+rev = 1

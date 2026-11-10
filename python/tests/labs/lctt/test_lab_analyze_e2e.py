@@ -81,3 +81,13 @@ def test_analyze_yield_omitted_when_plastic_run_never_yields() -> None:
     vals = LcttLab().analyze(_captured(inputs), inputs).danger_ok.values
     assert "yield_stress" not in vals
     assert "E" in vals and "r2" in vals
+
+
+# frob:tests python/sadi/labs/lctt/lab.py::LcttLab.analyze
+def test_analyze_reports_pending_and_note_when_plastic_run_missing() -> None:
+    """With no plastic run, E/r2/yield_stress are pending and a note says what is missing."""
+    inputs = [*_shared(), *_phased(_curved_elastic(), "elastic")]
+    res = LcttLab().analyze(_captured(inputs), inputs).danger_ok
+    assert "yield_stress" not in res.values
+    assert set(res.pending) == {"E", "r2", "yield_stress"}
+    assert any("plastic" in n for n in res.notes)

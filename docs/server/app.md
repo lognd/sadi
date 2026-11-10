@@ -113,3 +113,5 @@ no-op while a healthy run is active, and a failed open returns a 409 problem wit
 `GET /api/export/{fmt}` does not finish: it is read-only on acquisition and renders from what the WAL already holds.
 `capture_block_hint` also refuses capture (409, plain hint) when `stop_reason` is finished, low_disk, idle or no_device. A finish fault is
 logged and surfaced as `acquisition_fault` on `/api/device/status`; it is never raised and never discards WAL data.
+
+`GET /api/design/next-weight` (`routes/design.py`) is read-only: it builds observations from active settled points and returns the advisory next weight plus the enough-data indicator; see [design/gp-selector.md](../design/gp-selector.md).

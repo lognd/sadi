@@ -4,6 +4,7 @@
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M7274EKWS410XEGZGFD6HWHK
+// frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -18,6 +19,7 @@ import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
 import { getPoints } from "../review/api";
+import { SuggestedWeightPanel } from "./SuggestedWeightPanel";
 import { countPhasePoints, finishBlockedWhy } from "./pointCount";
 
 const log = getLogger("screens.run");
@@ -144,6 +146,9 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
         <p data-testid="guidance-note">
           {guidanceText(side.guidance.nextAction)}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
         </p>
+      )}
+      {(p.phase === "elastic" || p.phase === "plastic" || p.phase === "calibrate") && (
+        <SuggestedWeightPanel phase={p.phase === "plastic" ? "yield" : p.phase === "calibrate" ? "lvdt_cal" : "elastic"} tick={savedTick} fetchImpl={p.fetchImpl} />
       )}
       <RunView
         phase={p.phase} view={view} pointCount={pointCount}

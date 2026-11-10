@@ -53,3 +53,5 @@ ignored while a field has focus (typing never captures); a hint under the inputs
 
 `web/src/screens/run/RunScreen.test.tsx` feeds mocked sim-like TRACE frames and state texts
 through the real decoder, `TraceWindow` and `foldSide`. A real-browser sim run is a follow-up.
+
+`SuggestedWeightPanel` (Run screen, elastic/plastic/calibrate) shows the suggested next weight in kg and N, one plain sentence why, up to three alternatives and an enough-data indicator; it refetches `/api/design/next-weight` after each capture and is advice only. See [design/gp-selector.md](../design/gp-selector.md).

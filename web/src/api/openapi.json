@@ -25,6 +25,30 @@
         "title": "Action",
         "type": "object"
       },
+      "AltCandidate": {
+        "description": "A runner-up candidate with its expected gain.",
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "x",
+          "expected_gain"
+        ],
+        "title": "AltCandidate",
+        "type": "object"
+      },
       "BudgetRow": {
         "description": "One input's line in the budget: value, u, sensitivity and variance share.",
         "properties": {
@@ -581,6 +605,130 @@
         "title": "Confidence",
         "type": "object"
       },
+      "ConfidenceIndicator": {
+        "description": "The \"confidence is enough\" payload (advisory; the user always decides).",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "consecutive_ok": {
+            "title": "Consecutive Ok",
+            "type": "integer"
+          },
+          "current": {
+            "$ref": "#/components/schemas/CurrentFit"
+          },
+          "job_version": {
+            "title": "Job Version",
+            "type": "integer"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "patience": {
+            "title": "Patience",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          },
+          "ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratio"
+          },
+          "reasons": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "state": {
+            "$ref": "#/components/schemas/GpState"
+          },
+          "target": {
+            "$ref": "#/components/schemas/TargetSpec"
+          }
+        },
+        "required": [
+          "phase",
+          "job_version",
+          "n",
+          "target",
+          "current",
+          "ratio",
+          "state",
+          "consecutive_ok",
+          "patience"
+        ],
+        "title": "ConfidenceIndicator",
+        "type": "object"
+      },
+      "Criterion": {
+        "description": "Acquisition criterion; `target` is c-optimal (expected shrink of the target interval).",
+        "enum": [
+          "target",
+          "d_opt",
+          "a_opt"
+        ],
+        "title": "Criterion",
+        "type": "string"
+      },
+      "CurrentFit": {
+        "description": "Current estimate of the target quantity; `half_width` is None while it cannot be formed.",
+        "properties": {
+          "dof": {
+            "title": "Dof",
+            "type": "number"
+          },
+          "half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Half Width"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "half_width",
+          "value",
+          "dof"
+        ],
+        "title": "CurrentFit",
+        "type": "object"
+      },
       "DataProvenance": {
         "description": "Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.",
         "properties": {
@@ -624,6 +772,46 @@
         },
         "title": "DataProvenance",
         "type": "object"
+      },
+      "DesignAdvice": {
+        "description": "REST payload: the suggestion (None when there is nothing to suggest) plus the indicator.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "indicator": {
+            "$ref": "#/components/schemas/ConfidenceIndicator"
+          },
+          "suggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextSuggestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "suggestion",
+          "indicator"
+        ],
+        "title": "DesignAdvice",
+        "type": "object"
+      },
+      "DesignPhase": {
+        "description": "Which model the design uses: LVDT calibration, elastic fit or yield GP.",
+        "enum": [
+          "lvdt_cal",
+          "elastic",
+          "yield"
+        ],
+        "title": "DesignPhase",
+        "type": "string"
       },
       "DeviceView": {
         "description": "Device state for the header: coarse status, whether a service exists, and any fault.",
@@ -914,6 +1102,17 @@
         ],
         "title": "FitWindowRequest",
         "type": "object"
+      },
+      "GpState": {
+        "description": "Advisory model state shown in the UI; never gates anything.",
+        "enum": [
+          "collecting",
+          "enough",
+          "diminishing",
+          "unreliable"
+        ],
+        "title": "GpState",
+        "type": "string"
       },
       "GuidanceState": {
         "description": "Everything the guidance panel shows for one phase after one point.",
@@ -1375,6 +1574,94 @@
         ],
         "title": "Mutates",
         "type": "string"
+      },
+      "NextSuggestion": {
+        "description": "Recommended next candidate with the expected gain; never acts on the machine.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "alternatives": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AltCandidate"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "budget_exceeded": {
+            "default": false,
+            "title": "Budget Exceeded",
+            "type": "boolean"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "criterion": {
+            "$ref": "#/components/schemas/Criterion",
+            "default": "target"
+          },
+          "elapsed_ms": {
+            "default": 0.0,
+            "title": "Elapsed Ms",
+            "type": "number"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "expected_half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Half Width"
+          },
+          "job_version": {
+            "title": "Job Version",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "why": {
+            "default": "",
+            "title": "Why",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          }
+        },
+        "required": [
+          "phase",
+          "job_version",
+          "candidate_id",
+          "x",
+          "unit",
+          "expected_gain",
+          "expected_half_width"
+        ],
+        "title": "NextSuggestion",
+        "type": "object"
       },
       "Os": {
         "description": "Detected host OS; WSL is distinct because its fixes differ.",
@@ -2672,6 +2959,30 @@
         "title": "Summary",
         "type": "object"
       },
+      "TargetSpec": {
+        "description": "User target half-width of the 95 % interval; relative to the estimate unless stated.",
+        "properties": {
+          "half_width": {
+            "title": "Half Width",
+            "type": "number"
+          },
+          "relative": {
+            "default": true,
+            "title": "Relative",
+            "type": "boolean"
+          },
+          "unit": {
+            "default": "",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "half_width"
+        ],
+        "title": "TargetSpec",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -2801,6 +3112,73 @@
         "tags": [
           "acquisition"
         ]
+      }
+    },
+    "/api/design/next-weight": {
+      "get": {
+        "description": "Advisory next load (kg) or height (m) and the enough-data indicator; never acts.",
+        "operationId": "next_weight_api_design_next_weight_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "phase",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/DesignPhase",
+              "default": "elastic"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target",
+            "required": false,
+            "schema": {
+              "default": 0.05,
+              "exclusiveMinimum": 0,
+              "title": "Target",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignAdvice"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Next Weight"
       }
     },
     "/api/device/reconnect": {

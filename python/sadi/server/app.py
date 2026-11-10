@@ -36,6 +36,7 @@ from sadi.server.live import LiveAcquisition
 from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.acquisition import make_acquisition_router
 from sadi.server.routes.clamp import make_clamp_router
+from sadi.server.routes.design import make_design_router
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.plots import make_plots_router
@@ -240,6 +241,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_sessions_router(app.state.sessions))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
+    app.include_router(make_design_router(app.state.sessions))
     # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
     app.include_router(
         make_acquisition_router(

@@ -93,6 +93,7 @@ docs current are in [README.md](README.md).
 - [lctt/modulus.md](lctt/modulus.md) - E fit, r^2, secant E, yield, saturation
 - [lctt/creep.md](lctt/creep.md) - Creep fit: strain vs log-time per hold
 - [labs/lctt-gp-selector.md](labs/lctt-gp-selector.md) - GP/c-optimal load selector for the guided run
+- [design/gp-selector.md](design/gp-selector.md) - Sequential-design selector: next weight and enough-data indicator
 - [lctt/calibration.md](lctt/calibration.md) - Calibration: LINEST-equivalent fit with standard errors
 - [lctt/lab-module.md](lctt/lab-module.md) - Lab module and two-specimen workflow
 - [lctt/live-results.md](lctt/live-results.md) - Live recompute engine

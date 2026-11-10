@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/design/next-weight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Next Weight
+         * @description Advisory next load (kg) or height (m) and the enough-data indicator; never acts.
+         */
+        get: operations["next_weight_api_design_next_weight_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/device/reconnect": {
         parameters: {
             query?: never;
@@ -873,6 +893,18 @@ export interface components {
             ref: string;
         };
         /**
+         * AltCandidate
+         * @description A runner-up candidate with its expected gain.
+         */
+        AltCandidate: {
+            /** Candidate Id */
+            candidate_id: string;
+            /** Expected Gain */
+            expected_gain: number;
+            /** X */
+            x: number;
+        };
+        /**
          * BudgetRow
          * @description One input's line in the budget: value, u, sensitivity and variance share.
          */
@@ -1102,6 +1134,60 @@ export interface components {
             target_half_width?: number | null;
         };
         /**
+         * ConfidenceIndicator
+         * @description The "confidence is enough" payload (advisory; the user always decides).
+         */
+        ConfidenceIndicator: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /** Consecutive Ok */
+            consecutive_ok: number;
+            current: components["schemas"]["CurrentFit"];
+            /** Job Version */
+            job_version: number;
+            /** N */
+            n: number;
+            /** Patience */
+            patience: number;
+            phase: components["schemas"]["DesignPhase"];
+            /** Ratio */
+            ratio: number | null;
+            /**
+             * Reasons
+             * @default []
+             */
+            reasons: string[];
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            state: components["schemas"]["GpState"];
+            target: components["schemas"]["TargetSpec"];
+        };
+        /**
+         * Criterion
+         * @description Acquisition criterion; `target` is c-optimal (expected shrink of the target interval).
+         * @enum {string}
+         */
+        Criterion: "target" | "d_opt" | "a_opt";
+        /**
+         * CurrentFit
+         * @description Current estimate of the target quantity; `half_width` is None while it cannot be formed.
+         */
+        CurrentFit: {
+            /** Dof */
+            dof: number;
+            /** Half Width */
+            half_width: number | null;
+            /** Value */
+            value: number | null;
+        };
+        /**
          * DataProvenance
          * @description Where data came from; `synthetic` is locked to `source` so the stamp cannot be dropped.
          */
@@ -1135,6 +1221,26 @@ export interface components {
              */
             warning: string;
         };
+        /**
+         * DesignAdvice
+         * @description REST payload: the suggestion (None when there is nothing to suggest) plus the indicator.
+         */
+        DesignAdvice: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            indicator: components["schemas"]["ConfidenceIndicator"];
+            suggestion: components["schemas"]["NextSuggestion"] | null;
+        };
+        /**
+         * DesignPhase
+         * @description Which model the design uses: LVDT calibration, elastic fit or yield GP.
+         * @enum {string}
+         */
+        DesignPhase: "lvdt_cal" | "elastic" | "yield";
         /**
          * DeviceView
          * @description Device state for the header: coarse status, whether a service exists, and any fault.
@@ -1274,6 +1380,12 @@ export interface components {
             /** Last */
             last: number;
         };
+        /**
+         * GpState
+         * @description Advisory model state shown in the UI; never gates anything.
+         * @enum {string}
+         */
+        GpState: "collecting" | "enough" | "diminishing" | "unreliable";
         /**
          * GuidanceState
          * @description Everything the guidance panel shows for one phase after one point.
@@ -1492,6 +1604,58 @@ export interface components {
          * @enum {string}
          */
         Mutates: "none" | "process" | "system" | "install" | "data-dir" | "data";
+        /**
+         * NextSuggestion
+         * @description Recommended next candidate with the expected gain; never acts on the machine.
+         */
+        NextSuggestion: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /**
+             * Alternatives
+             * @default []
+             */
+            alternatives: components["schemas"]["AltCandidate"][];
+            /**
+             * Budget Exceeded
+             * @default false
+             */
+            budget_exceeded: boolean;
+            /** Candidate Id */
+            candidate_id: string;
+            /** @default target */
+            criterion: components["schemas"]["Criterion"];
+            /**
+             * Elapsed Ms
+             * @default 0
+             */
+            elapsed_ms: number;
+            /** Expected Gain */
+            expected_gain: number;
+            /** Expected Half Width */
+            expected_half_width: number | null;
+            /** Job Version */
+            job_version: number;
+            phase: components["schemas"]["DesignPhase"];
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            /** Unit */
+            unit: string;
+            /**
+             * Why
+             * @default
+             */
+            why: string;
+            /** X */
+            x: number;
+        };
         /**
          * Os
          * @description Detected host OS; WSL is distinct because its fixes differ.
@@ -2114,6 +2278,24 @@ export interface components {
             verdict: "ready" | "degraded" | "blocked";
             worst_severity_failed: components["schemas"]["Severity"] | null;
         };
+        /**
+         * TargetSpec
+         * @description User target half-width of the 95 % interval; relative to the estimate unless stated.
+         */
+        TargetSpec: {
+            /** Half Width */
+            half_width: number;
+            /**
+             * Relative
+             * @default true
+             */
+            relative: boolean;
+            /**
+             * Unit
+             * @default
+             */
+            unit: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -2179,6 +2361,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumeOut"];
+                };
+            };
+        };
+    };
+    next_weight_api_design_next_weight_get: {
+        parameters: {
+            query?: {
+                phase?: components["schemas"]["DesignPhase"];
+                target?: number;
+                offset?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DesignAdvice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

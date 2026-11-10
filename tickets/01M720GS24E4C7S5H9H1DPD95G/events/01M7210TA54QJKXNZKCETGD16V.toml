@@ -1,0 +1,36 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T06:06:07Z"
+digest = "e8bfd8182250a477ad6fd07c39ad0347170c894794b072662f74196780f9a700"
+exit_code = 0
+head = "d2071114e6fc42042372793699e708929fb58fc4"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/synthetic/test_results_pending.py .                         [ 20%]
+python/tests/labs/lctt/test_lab_analyze_e2e.py ....                      [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-628531-0.xml ---------------
+========================= 5 passed, 1 warning in 1.99s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/synthetic/test_results_pending.py python/tests/labs/lctt/test_lab_analyze_e2e.py"
+size = 1083
+status = "measured"
+test_count = 5
+tests_digest = "41e84487c5f282f99b73b0a568faed082b9e614aff25478b06d3048f4ddc2017"
+at = "2026-11-10T06:06:07Z"
+actor = "lognd"
+rev = 1

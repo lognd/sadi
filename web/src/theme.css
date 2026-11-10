@@ -1,7 +1,8 @@
 /* frob:ticket 01M72PGN6FQEXXCFGXA3EMAPTS */
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
-/* SADI design tokens (color, space, radius, shadow, type) and the light/dark themes; imported by styles.css.
+/* Terminal look (frob:ticket 01M72XNR6Q58FDDMHYEVBPNC2P): monospace everywhere, phosphor-green on black (dark) or ink on pale phosphor (light), square corners.
+   SADI design tokens (color, space, radius, shadow, type) and the light/dark themes; imported by styles.css.
    The colours mirror [palette] in crunk.toml (a vitest check fails on drift); crunk does not lint this file.
    Theme: html[data-theme] (set by the toggle, persisted in localStorage) wins; otherwise prefers-color-scheme. */
 
@@ -9,24 +10,24 @@
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #efebe0;
-  --surface: #f8f6ee;
-  --surface-2: #e6e1d3;
-  --fg: #1c1b17;
-  --muted: #55514a;
-  --accent: #0e5a61;
-  --accent-fg: #f8f6ee;
-  --accent-soft: #cfe3e0;
-  --border: #6f6a5e;
-  --line: #c9c2b0;
-  --focus: #a64f00;
-  --btn-bg: #ebe7da;
-  --ok: #1b6236;
-  --ok-soft: #d9e8d6;
-  --warn: #6b4300;
-  --warn-soft: #f3e2b0;
-  --bad: #a02218;
-  --bad-soft: #f2d9d3;
+  --bg: #d6ebd0;
+  --surface: #e6f5e1;
+  --surface-2: #c5dfbe;
+  --fg: #06200c;
+  --muted: #2b5636;
+  --accent: #0a5a2a;
+  --accent-fg: #e6f5e1;
+  --accent-soft: #b9dcb1;
+  --border: #3a6845;
+  --line: #a6c79e;
+  --focus: #8a4400;
+  --btn-bg: #cbe4c4;
+  --ok: #0a5a2a;
+  --ok-soft: #c3e6bb;
+  --warn: #5e3b00;
+  --warn-soft: #efdfa6;
+  --bad: #9a1a10;
+  --bad-soft: #f2d4cd;
   --shadow-1: none;
   --shadow-2: none;
 }
@@ -35,24 +36,24 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #151515;
-    --surface: #1d1d1c;
-    --surface-2: #272726;
-    --fg: #e6e3da;
-    --muted: #a8a499;
-    --accent: #5fc4c8;
-    --accent-fg: #0a1a1b;
-    --accent-soft: #1b3638;
-    --border: #8a867b;
-    --line: #343432;
-    --focus: #ffb454;
-    --btn-bg: #262625;
-    --ok: #7bd39a;
-    --ok-soft: #17301e;
-    --warn: #f0b45a;
-    --warn-soft: #35290f;
-    --bad: #ff9188;
-    --bad-soft: #3a1c19;
+    --bg: #070b07;
+    --surface: #0c130c;
+    --surface-2: #132013;
+    --fg: #7dff9a;
+    --muted: #6cc784;
+    --accent: #5dffa0;
+    --accent-fg: #03100a;
+    --accent-soft: #0f3a20;
+    --border: #4fa468;
+    --line: #1d3a25;
+    --focus: #ffd24a;
+    --btn-bg: #10200f;
+    --ok: #7bffa0;
+    --ok-soft: #0e3a1a;
+    --warn: #ffcf5a;
+    --warn-soft: #3a2d08;
+    --bad: #ff8a80;
+    --bad-soft: #3f1512;
     --shadow-1: none;
     --shadow-2: none;
   }
@@ -61,35 +62,35 @@
 /* ---- Tokens: dark, manual choice ---- */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #151515;
-  --surface: #1d1d1c;
-  --surface-2: #272726;
-  --fg: #e6e3da;
-  --muted: #a8a499;
-  --accent: #5fc4c8;
-  --accent-fg: #0a1a1b;
-  --accent-soft: #1b3638;
-  --border: #8a867b;
-  --line: #343432;
-  --focus: #ffb454;
-  --btn-bg: #262625;
-  --ok: #7bd39a;
-  --ok-soft: #17301e;
-  --warn: #f0b45a;
-  --warn-soft: #35290f;
-  --bad: #ff9188;
-  --bad-soft: #3a1c19;
+  --bg: #070b07;
+  --surface: #0c130c;
+  --surface-2: #132013;
+  --fg: #7dff9a;
+  --muted: #6cc784;
+  --accent: #5dffa0;
+  --accent-fg: #03100a;
+  --accent-soft: #0f3a20;
+  --border: #4fa468;
+  --line: #1d3a25;
+  --focus: #ffd24a;
+  --btn-bg: #10200f;
+  --ok: #7bffa0;
+  --ok-soft: #0e3a1a;
+  --warn: #ffcf5a;
+  --warn-soft: #3a2d08;
+  --bad: #ff8a80;
+  --bad-soft: #3f1512;
   --shadow-1: none;
   --shadow-2: none;
 }
 
 /* ---- Tokens: theme-independent ---- */
 :root {
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --text-xs: 0.72rem; /* micro-labels (silkscreen) */
   --text-sm: 0.8125rem;
-  --text-md: 0.9375rem;
+  --text-md: 0.875rem;
   --text-lg: 1.125rem;
   --text-xl: 1.4rem;
   --space-1: 0.25rem;
@@ -98,8 +99,8 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
-  --radius-sm: 2px;
-  --radius-md: 3px;
+  --radius-sm: 0;
+  --radius-md: 0;
   --radius-pill: 999px;
   --content-width: 72rem;
 }

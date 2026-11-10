@@ -1,4 +1,5 @@
 /* frob:ticket 01M72PGN6FQEXXCFGXA3EMAPTS */
+/* frob:ticket 01M72XNR6Q58FDDMHYEVBPNC2P */
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
 /* frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD */
@@ -21,6 +22,7 @@ body {
 
 h1, h2, h3 { line-height: 1.25; margin: var(--space-4) 0 var(--space-2); font-weight: 600; letter-spacing: 0; }
 h1 { font-size: var(--text-xl); font-weight: 700; }
+h1::before, h2::before { content: "> "; color: var(--accent); font-weight: 400; } /* terminal prompt, decorative only */
 h2 { font-size: var(--text-lg); }
 h3 { font-size: var(--text-md); }
 p, ul, ol, table, fieldset { margin: var(--space-2) 0; }
@@ -253,8 +255,8 @@ main[aria-label="Doctor"] > ul > li > span:first-child {
   border-radius: var(--radius-sm);
 }
 
-/* Plots draw on a light paper canvas in both themes (print-faithful); frame it like a chart-recorder window. */
-canvas { max-width: 100%; background: #f8f6ee; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+/* Plots draw on the dark phosphor theme (plots/theme.ts) in both UI themes; frame them like a CRT window. */
+canvas { max-width: 100%; background: #0c130c; border: 1px solid var(--line); border-radius: var(--radius-sm); }
 
 /* ---- Accessibility ---- */
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

@@ -91,7 +91,7 @@ describe("canvas draw calls", () => {
   it("records a stable golden call sequence", () => {
     const { ctx, log } = recorder();
     paintScene(ctx, scene(), 2);
-    expect(log.slice(0, 3)).toEqual(["save()", "scale(2,2)", "fillStyle=#f8f6ee"]);
+    expect(log.slice(0, 3)).toEqual(["save()", "scale(2,2)", "fillStyle=#0c130c"]);
     expect(log.join("\n")).toMatchSnapshot();
   });
 });

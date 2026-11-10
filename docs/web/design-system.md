@@ -32,7 +32,7 @@ of a framed section, fieldset legends, table heads, form labels, readout labels)
 uppercase letter-spaced micro-labels like silkscreen legends, but labels longer than 3 words or
 carrying an instruction use sentence case at `--text-sm`, with the instruction in normal-case helper
 text under the field (`InputField.help`). Scale (`--text-xs..xl`):
-0.72, 0.8125, 0.9375, 1.125, 1.4 rem. Only font stacks are used; no web fonts.
+0.72, 0.8125, 0.875, 1.125, 1.4 rem. Terminal look (ticket VBPNC2P): one system monospace stack (`--font`, no web fonts), phosphor-green on black (dark) or ink on pale phosphor (light), square corners, status always glyph plus word. Plots always draw on the dark phosphor theme (`plots/theme.ts`, shared `plots/core` backend) and stay square; the export theme stays white paper.
 
 ## Panels and plots
 

@@ -1,106 +1,106 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`creep golden and component > matches the golden SVG for creeping and slipping holds (acceptance 2) > creep 1`] = `
-"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="440" viewBox="0 0 640 440" font-family="ui-monospace, Menlo, Consolas, monospace">
+"<svg xmlns="http://www.w3.org/2000/svg" width="640" height="440" viewBox="0 0 640 440" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
 <defs><clipPath id="clip0"><rect x="79.28" y="56" width="538.72" height="158"/></clipPath><clipPath id="clip1"><rect x="79.28" y="228" width="538.72" height="162"/></clipPath></defs>
-<rect x="0" y="0" width="640" height="220" fill="#f8f6ee"/>
-<rect x="79.28" y="56" width="538.72" height="158" fill="#f8f6ee"/>
-<line x1="79.28" y1="56" x2="79.28" y2="214" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="258.85" y1="56" x2="258.85" y2="214" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="438.43" y1="56" x2="438.43" y2="214" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="618" y1="56" x2="618" y2="214" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="214" x2="618" y2="214" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="161.33" x2="618" y2="161.33" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="108.67" x2="618" y2="108.67" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="56" x2="618" y2="56" stroke="#e0dbcc" stroke-width="1"/>
+<rect x="0" y="0" width="640" height="220" fill="#0c130c"/>
+<rect x="79.28" y="56" width="538.72" height="158" fill="#0c130c"/>
+<line x1="79.28" y1="56" x2="79.28" y2="214" stroke="#1d3a25" stroke-width="1"/>
+<line x1="258.85" y1="56" x2="258.85" y2="214" stroke="#1d3a25" stroke-width="1"/>
+<line x1="438.43" y1="56" x2="438.43" y2="214" stroke="#1d3a25" stroke-width="1"/>
+<line x1="618" y1="56" x2="618" y2="214" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="214" x2="618" y2="214" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="161.33" x2="618" y2="161.33" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="108.67" x2="618" y2="108.67" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="56" x2="618" y2="56" stroke="#1d3a25" stroke-width="1"/>
 <g clip-path="url(#clip0)">
-<polygon points="79.28,161.33 618,161.33 618,56 79.28,56" fill="#0072b2" fill-opacity="0.22"/>
-<polyline points="79.28,214 97.25,209.15 115.21,204.29 133.18,199.44 151.14,194.59 169.11,189.74 187.07,184.88 205.04,180.03 223,175.18 240.97,170.32 258.93,165.47 276.9,160.62 294.86,155.76 312.83,150.91 330.8,146.06 348.76,141.21 366.73,136.35 384.69,131.5 402.66,126.65 420.62,121.79 438.59,116.94 456.55,112.09 474.52,107.24 492.48,102.38" fill="none" stroke="#d55e00" stroke-width="1.75" stroke-dasharray="6 4"/>
-<circle cx="79.28" cy="214" r="3" fill="#0072b2"/>
-<circle cx="133.34" cy="199.4" r="3" fill="#0072b2"/>
-<circle cx="204.8" cy="180.09" r="3" fill="#0072b2"/>
-<circle cx="258.85" cy="165.49" r="3" fill="#0072b2"/>
-<circle cx="312.91" cy="150.89" r="3" fill="#0072b2"/>
-<circle cx="384.37" cy="131.59" r="3" fill="#0072b2"/>
-<circle cx="438.43" cy="116.98" r="3" fill="#0072b2"/>
-<circle cx="492.48" cy="102.38" r="3" fill="#0072b2"/>
+<polygon points="79.28,161.33 618,161.33 618,56 79.28,56" fill="#56b4e9" fill-opacity="0.28"/>
+<polyline points="79.28,214 97.25,209.15 115.21,204.29 133.18,199.44 151.14,194.59 169.11,189.74 187.07,184.88 205.04,180.03 223,175.18 240.97,170.32 258.93,165.47 276.9,160.62 294.86,155.76 312.83,150.91 330.8,146.06 348.76,141.21 366.73,136.35 384.69,131.5 402.66,126.65 420.62,121.79 438.59,116.94 456.55,112.09 474.52,107.24 492.48,102.38" fill="none" stroke="#ff9f40" stroke-width="2" stroke-dasharray="6 4"/>
+<circle cx="79.28" cy="214" r="3" fill="#56b4e9"/>
+<circle cx="133.34" cy="199.4" r="3" fill="#56b4e9"/>
+<circle cx="204.8" cy="180.09" r="3" fill="#56b4e9"/>
+<circle cx="258.85" cy="165.49" r="3" fill="#56b4e9"/>
+<circle cx="312.91" cy="150.89" r="3" fill="#56b4e9"/>
+<circle cx="384.37" cy="131.59" r="3" fill="#56b4e9"/>
+<circle cx="438.43" cy="116.98" r="3" fill="#56b4e9"/>
+<circle cx="492.48" cy="102.38" r="3" fill="#56b4e9"/>
 </g>
-<rect x="79.28" y="56" width="538.72" height="158" fill="none" stroke="#3a372f" stroke-width="1"/>
-<line x1="79.28" y1="214" x2="79.28" y2="218" stroke="#3a372f" stroke-width="1"/>
-<line x1="258.85" y1="214" x2="258.85" y2="218" stroke="#3a372f" stroke-width="1"/>
-<line x1="438.43" y1="214" x2="438.43" y2="218" stroke="#3a372f" stroke-width="1"/>
-<line x1="618" y1="214" x2="618" y2="218" stroke="#3a372f" stroke-width="1"/>
-<line x1="75.28" y1="214" x2="79.28" y2="214" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="217.85" font-size="11" fill="#1c1b17" text-anchor="end">1.0e-4</text>
-<line x1="75.28" y1="161.33" x2="79.28" y2="161.33" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="165.18" font-size="11" fill="#1c1b17" text-anchor="end">1.5e-4</text>
-<line x1="75.28" y1="108.67" x2="79.28" y2="108.67" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="112.52" font-size="11" fill="#1c1b17" text-anchor="end">2.0e-4</text>
-<line x1="75.28" y1="56" x2="79.28" y2="56" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="59.85" font-size="11" fill="#1c1b17" text-anchor="end">2.5e-4</text>
-<text x="22" y="135" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 135)">Strain 10 kN (1)</text>
-<text x="79.28" y="28" font-size="16" fill="#1c1b17" text-anchor="start" font-weight="bold">Creep, strain versus time since load</text>
-<text x="79.28" y="44" font-size="12" fill="#55514a" text-anchor="start">shaded band: settle threshold; x marks: detected slips</text>
-<rect x="525.72" y="64" width="84.28" height="40" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
-<circle cx="540.72" cy="76" r="3" fill="#0072b2"/>
-<text x="555.72" y="79.85" font-size="11" fill="#1c1b17" text-anchor="start">strain</text>
-<polyline points="531.72,92 549.72,92" fill="none" stroke="#d55e00" stroke-width="1.75" stroke-dasharray="6 4"/>
-<text x="555.72" y="95.85" font-size="11" fill="#1c1b17" text-anchor="start">fit</text>
-<rect x="287.76" y="168" width="322.24" height="38" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
-<text x="295.76" y="184" font-size="11" fill="#1c1b17" text-anchor="start">strain = 0.000100 + (0.0000200 +/- 4.0e-7) ln(t)</text>
-<text x="295.76" y="199" font-size="11" fill="#1c1b17" text-anchor="start">r^2 = 0.9991</text>
-<rect x="0" y="220" width="640" height="220" fill="#f8f6ee"/>
-<rect x="79.28" y="228" width="538.72" height="162" fill="#f8f6ee"/>
-<line x1="79.28" y1="228" x2="79.28" y2="390" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="258.85" y1="228" x2="258.85" y2="390" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="438.43" y1="228" x2="438.43" y2="390" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="618" y1="228" x2="618" y2="390" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="390" x2="618" y2="390" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="336" x2="618" y2="336" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="282" x2="618" y2="282" stroke="#e0dbcc" stroke-width="1"/>
-<line x1="79.28" y1="228" x2="618" y2="228" stroke="#e0dbcc" stroke-width="1"/>
+<rect x="79.28" y="56" width="538.72" height="158" fill="none" stroke="#4fa468" stroke-width="1"/>
+<line x1="79.28" y1="214" x2="79.28" y2="218" stroke="#4fa468" stroke-width="1"/>
+<line x1="258.85" y1="214" x2="258.85" y2="218" stroke="#4fa468" stroke-width="1"/>
+<line x1="438.43" y1="214" x2="438.43" y2="218" stroke="#4fa468" stroke-width="1"/>
+<line x1="618" y1="214" x2="618" y2="218" stroke="#4fa468" stroke-width="1"/>
+<line x1="75.28" y1="214" x2="79.28" y2="214" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="217.85" font-size="11" fill="#7dff9a" text-anchor="end">1.0e-4</text>
+<line x1="75.28" y1="161.33" x2="79.28" y2="161.33" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="165.18" font-size="11" fill="#7dff9a" text-anchor="end">1.5e-4</text>
+<line x1="75.28" y1="108.67" x2="79.28" y2="108.67" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="112.52" font-size="11" fill="#7dff9a" text-anchor="end">2.0e-4</text>
+<line x1="75.28" y1="56" x2="79.28" y2="56" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="59.85" font-size="11" fill="#7dff9a" text-anchor="end">2.5e-4</text>
+<text x="22" y="135" font-size="13" fill="#7dff9a" text-anchor="middle" transform="rotate(-90 22 135)">Strain 10 kN (1)</text>
+<text x="79.28" y="28" font-size="16" fill="#7dff9a" text-anchor="start" font-weight="bold">Creep, strain versus time since load</text>
+<text x="79.28" y="44" font-size="12" fill="#6cc784" text-anchor="start">shaded band: settle threshold; x marks: detected slips</text>
+<rect x="525.72" y="64" width="84.28" height="40" fill="#132013" stroke="#4fa468" stroke-width="1"/>
+<circle cx="540.72" cy="76" r="3" fill="#56b4e9"/>
+<text x="555.72" y="79.85" font-size="11" fill="#7dff9a" text-anchor="start">strain</text>
+<polyline points="531.72,92 549.72,92" fill="none" stroke="#ff9f40" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="555.72" y="95.85" font-size="11" fill="#7dff9a" text-anchor="start">fit</text>
+<rect x="287.76" y="168" width="322.24" height="38" fill="#132013" stroke="#4fa468" stroke-width="1"/>
+<text x="295.76" y="184" font-size="11" fill="#7dff9a" text-anchor="start">strain = 0.000100 + (0.0000200 +/- 4.0e-7) ln(t)</text>
+<text x="295.76" y="199" font-size="11" fill="#7dff9a" text-anchor="start">r^2 = 0.9991</text>
+<rect x="0" y="220" width="640" height="220" fill="#0c130c"/>
+<rect x="79.28" y="228" width="538.72" height="162" fill="#0c130c"/>
+<line x1="79.28" y1="228" x2="79.28" y2="390" stroke="#1d3a25" stroke-width="1"/>
+<line x1="258.85" y1="228" x2="258.85" y2="390" stroke="#1d3a25" stroke-width="1"/>
+<line x1="438.43" y1="228" x2="438.43" y2="390" stroke="#1d3a25" stroke-width="1"/>
+<line x1="618" y1="228" x2="618" y2="390" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="390" x2="618" y2="390" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="336" x2="618" y2="336" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="282" x2="618" y2="282" stroke="#1d3a25" stroke-width="1"/>
+<line x1="79.28" y1="228" x2="618" y2="228" stroke="#1d3a25" stroke-width="1"/>
 <g clip-path="url(#clip1)">
-<polygon points="79.28,363 618,363 618,309 79.28,309" fill="#0072b2" fill-opacity="0.22"/>
-<polyline points="79.28,390 97.25,385.02 115.21,380.05 133.18,375.07 151.14,370.1 169.11,365.12 187.07,360.15 205.04,355.16999999999996 223,350.19 240.97,345.22 258.93,340.24 276.9,335.27 294.86,330.29 312.83,325.31 330.8,320.34000000000003 348.76,315.36 366.73,310.39 384.69,305.40999999999997 402.66,300.44 420.62,295.46 438.59,290.48 456.55,285.51 474.52,280.53 492.48,275.56" fill="none" stroke="#d55e00" stroke-width="1.75" stroke-dasharray="6 4"/>
-<circle cx="79.28" cy="390" r="3" fill="#0072b2"/>
-<circle cx="133.34" cy="375.03" r="3" fill="#0072b2"/>
-<circle cx="204.8" cy="355.24" r="3" fill="#0072b2"/>
-<circle cx="258.85" cy="340.26" r="3" fill="#0072b2"/>
-<circle cx="312.91" cy="325.29" r="3" fill="#0072b2"/>
-<circle cx="384.37" cy="289.3" r="3" fill="#0072b2"/>
-<circle cx="438.43" cy="274.33" r="3" fill="#0072b2"/>
-<circle cx="492.48" cy="259.36" r="3" fill="#0072b2"/>
-<line x1="381.37" y1="284.4" x2="387.37" y2="290.4" stroke="#0072b2" stroke-width="1.25"/>
-<line x1="381.37" y1="290.4" x2="387.37" y2="284.4" stroke="#0072b2" stroke-width="1.25"/>
+<polygon points="79.28,363 618,363 618,309 79.28,309" fill="#56b4e9" fill-opacity="0.28"/>
+<polyline points="79.28,390 97.25,385.02 115.21,380.05 133.18,375.07 151.14,370.1 169.11,365.12 187.07,360.15 205.04,355.16999999999996 223,350.19 240.97,345.22 258.93,340.24 276.9,335.27 294.86,330.29 312.83,325.31 330.8,320.34000000000003 348.76,315.36 366.73,310.39 384.69,305.40999999999997 402.66,300.44 420.62,295.46 438.59,290.48 456.55,285.51 474.52,280.53 492.48,275.56" fill="none" stroke="#ff9f40" stroke-width="2" stroke-dasharray="6 4"/>
+<circle cx="79.28" cy="390" r="3" fill="#56b4e9"/>
+<circle cx="133.34" cy="375.03" r="3" fill="#56b4e9"/>
+<circle cx="204.8" cy="355.24" r="3" fill="#56b4e9"/>
+<circle cx="258.85" cy="340.26" r="3" fill="#56b4e9"/>
+<circle cx="312.91" cy="325.29" r="3" fill="#56b4e9"/>
+<circle cx="384.37" cy="289.3" r="3" fill="#56b4e9"/>
+<circle cx="438.43" cy="274.33" r="3" fill="#56b4e9"/>
+<circle cx="492.48" cy="259.36" r="3" fill="#56b4e9"/>
+<line x1="381.37" y1="284.4" x2="387.37" y2="290.4" stroke="#56b4e9" stroke-width="1.25"/>
+<line x1="381.37" y1="290.4" x2="387.37" y2="284.4" stroke="#56b4e9" stroke-width="1.25"/>
 </g>
-<rect x="79.28" y="228" width="538.72" height="162" fill="none" stroke="#3a372f" stroke-width="1"/>
-<line x1="79.28" y1="390" x2="79.28" y2="394" stroke="#3a372f" stroke-width="1"/>
-<text x="79.28" y="407" font-size="11" fill="#1c1b17" text-anchor="middle">1</text>
-<line x1="258.85" y1="390" x2="258.85" y2="394" stroke="#3a372f" stroke-width="1"/>
-<text x="258.85" y="407" font-size="11" fill="#1c1b17" text-anchor="middle">10</text>
-<line x1="438.43" y1="390" x2="438.43" y2="394" stroke="#3a372f" stroke-width="1"/>
-<text x="438.43" y="407" font-size="11" fill="#1c1b17" text-anchor="middle">100</text>
-<line x1="618" y1="390" x2="618" y2="394" stroke="#3a372f" stroke-width="1"/>
-<text x="618" y="407" font-size="11" fill="#1c1b17" text-anchor="middle">1000</text>
-<line x1="75.28" y1="390" x2="79.28" y2="390" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="393.85" font-size="11" fill="#1c1b17" text-anchor="end">1e-4</text>
-<line x1="75.28" y1="336" x2="79.28" y2="336" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="339.85" font-size="11" fill="#1c1b17" text-anchor="end">2e-4</text>
-<line x1="75.28" y1="282" x2="79.28" y2="282" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="285.85" font-size="11" fill="#1c1b17" text-anchor="end">3e-4</text>
-<line x1="75.28" y1="228" x2="79.28" y2="228" stroke="#3a372f" stroke-width="1"/>
-<text x="72.28" y="231.85" font-size="11" fill="#1c1b17" text-anchor="end">4e-4</text>
-<text x="348.64" y="428" font-size="13" fill="#1c1b17" text-anchor="middle">Time since load (s)</text>
-<text x="22" y="309" font-size="13" fill="#1c1b17" text-anchor="middle" transform="rotate(-90 22 309)">Strain 20 kN (1)</text>
-<rect x="525.72" y="236" width="84.28" height="40" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
-<circle cx="540.72" cy="248" r="3" fill="#0072b2"/>
-<text x="555.72" y="251.85" font-size="11" fill="#1c1b17" text-anchor="start">strain</text>
-<polyline points="531.72,264 549.72,264" fill="none" stroke="#d55e00" stroke-width="1.75" stroke-dasharray="6 4"/>
-<text x="555.72" y="267.85" font-size="11" fill="#1c1b17" text-anchor="start">fit</text>
-<rect x="287.76" y="344" width="322.24" height="38" fill="#f1ede2" stroke="#999999" stroke-width="1"/>
-<text x="295.76" y="360" font-size="11" fill="#1c1b17" text-anchor="start">strain = 0.000100 + (0.0000400 +/- 8.0e-7) ln(t)</text>
-<text x="295.76" y="375" font-size="11" fill="#1c1b17" text-anchor="start">r^2 = 0.9991</text>
-<text x="291.43" y="289.9" font-size="11" fill="#1c1b17" text-anchor="start">slip 0.012 mm</text>
+<rect x="79.28" y="228" width="538.72" height="162" fill="none" stroke="#4fa468" stroke-width="1"/>
+<line x1="79.28" y1="390" x2="79.28" y2="394" stroke="#4fa468" stroke-width="1"/>
+<text x="79.28" y="407" font-size="11" fill="#7dff9a" text-anchor="middle">1</text>
+<line x1="258.85" y1="390" x2="258.85" y2="394" stroke="#4fa468" stroke-width="1"/>
+<text x="258.85" y="407" font-size="11" fill="#7dff9a" text-anchor="middle">10</text>
+<line x1="438.43" y1="390" x2="438.43" y2="394" stroke="#4fa468" stroke-width="1"/>
+<text x="438.43" y="407" font-size="11" fill="#7dff9a" text-anchor="middle">100</text>
+<line x1="618" y1="390" x2="618" y2="394" stroke="#4fa468" stroke-width="1"/>
+<text x="618" y="407" font-size="11" fill="#7dff9a" text-anchor="middle">1000</text>
+<line x1="75.28" y1="390" x2="79.28" y2="390" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="393.85" font-size="11" fill="#7dff9a" text-anchor="end">1e-4</text>
+<line x1="75.28" y1="336" x2="79.28" y2="336" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="339.85" font-size="11" fill="#7dff9a" text-anchor="end">2e-4</text>
+<line x1="75.28" y1="282" x2="79.28" y2="282" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="285.85" font-size="11" fill="#7dff9a" text-anchor="end">3e-4</text>
+<line x1="75.28" y1="228" x2="79.28" y2="228" stroke="#4fa468" stroke-width="1"/>
+<text x="72.28" y="231.85" font-size="11" fill="#7dff9a" text-anchor="end">4e-4</text>
+<text x="348.64" y="428" font-size="13" fill="#7dff9a" text-anchor="middle">Time since load (s)</text>
+<text x="22" y="309" font-size="13" fill="#7dff9a" text-anchor="middle" transform="rotate(-90 22 309)">Strain 20 kN (1)</text>
+<rect x="525.72" y="236" width="84.28" height="40" fill="#132013" stroke="#4fa468" stroke-width="1"/>
+<circle cx="540.72" cy="248" r="3" fill="#56b4e9"/>
+<text x="555.72" y="251.85" font-size="11" fill="#7dff9a" text-anchor="start">strain</text>
+<polyline points="531.72,264 549.72,264" fill="none" stroke="#ff9f40" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="555.72" y="267.85" font-size="11" fill="#7dff9a" text-anchor="start">fit</text>
+<rect x="287.76" y="344" width="322.24" height="38" fill="#132013" stroke="#4fa468" stroke-width="1"/>
+<text x="295.76" y="360" font-size="11" fill="#7dff9a" text-anchor="start">strain = 0.000100 + (0.0000400 +/- 8.0e-7) ln(t)</text>
+<text x="295.76" y="375" font-size="11" fill="#7dff9a" text-anchor="start">r^2 = 0.9991</text>
+<text x="291.43" y="289.9" font-size="11" fill="#7dff9a" text-anchor="start">slip 0.012 mm</text>
 </svg>
 "
 `;

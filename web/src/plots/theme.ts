@@ -29,34 +29,42 @@ export interface Theme {
   readonly bandOpacity: number;
 }
 
-/** The on-screen light theme: cream paper canvas, monospace ticks, colour-blind-safe palette. */
+/** The on-screen terminal theme: black phosphor canvas, monospace ticks, colour-blind-safe palette (name kept for import sites). */
 export const lightTheme: Theme = {
-  name: "light",
-  fontFamily: "ui-monospace, Menlo, Consolas, monospace",
-  background: "#f8f6ee",
-  plotBackground: "#f8f6ee",
-  text: "#1c1b17",
-  mutedText: "#55514a",
-  axis: "#3a372f",
-  grid: "#e0dbcc",
-  annotationFill: "#f1ede2",
-  annotationStroke: "#999999",
+  name: "terminal",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  background: "#0c130c",
+  plotBackground: "#0c130c",
+  text: "#7dff9a",
+  mutedText: "#6cc784",
+  axis: "#4fa468",
+  grid: "#1d3a25",
+  annotationFill: "#132013",
+  annotationStroke: "#4fa468",
   // frob:ticket 01M6XB9EBAP0ZTTYAMG9NEG3KJ
-  palette: ["#0072b2", "#d55e00", "#009e73", "#b8588f", "#a86f00", "#2f87c0"],
+  palette: ["#56b4e9", "#ff9f40", "#4ee0a0", "#f78fc0", "#f0e442", "#a9a9ff"],
   fontSize: { title: 16, subtitle: 12, label: 13, tick: 11, legend: 11, annotation: 11, footer: 10 },
-  lineWidth: 1.25,
-  fitWidth: 1.75,
+  lineWidth: 1.5,
+  fitWidth: 2,
   markerRadius: 3,
-  bandOpacity: 0.22,
+  bandOpacity: 0.28,
 };
 
-/** The export theme for SVG/PNG figures: white background and a sans stack that Word and Inkscape resolve. */
+/** The export theme for SVG/PNG figures: white paper, dark ink and a sans stack that Word and Inkscape resolve. */
 export const exportTheme: Theme = {
   ...lightTheme,
   name: "export",
   fontFamily: "Helvetica, Arial, sans-serif",
   background: "#ffffff",
   plotBackground: "#ffffff",
-  annotationFill: "#f4f4f4",
+  text: "#1c1b17",
+  mutedText: "#55514a",
+  axis: "#3a372f",
   grid: "#dddddd",
+  annotationFill: "#f4f4f4",
+  annotationStroke: "#999999",
+  palette: ["#0072b2", "#d55e00", "#009e73", "#b8588f", "#a86f00", "#2f87c0"],
+  lineWidth: 1.25,
+  fitWidth: 1.75,
+  bandOpacity: 0.22,
 };

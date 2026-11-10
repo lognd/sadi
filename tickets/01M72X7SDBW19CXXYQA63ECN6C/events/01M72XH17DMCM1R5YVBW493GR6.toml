@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/propagate.py", "python/tests/labs/lctt/test_propagate.py", "docs/uncertainty/weight-plan.md"]
+new = ["python/sadi/labs/lctt/propagate.py", "python/tests/labs/lctt/test_propagate.py", "docs/uncertainty/weight-plan.md", "docs/uncertainty/budget.md"]
+at = "2026-11-10T14:24:23Z"
+actor = "lognd"
+rev = 1

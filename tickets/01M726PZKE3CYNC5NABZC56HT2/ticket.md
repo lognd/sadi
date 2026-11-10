@@ -4,9 +4,10 @@ title = "H2: failed writer must spill undurable records on close/shutdown"
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:45:41Z"
+updated = "2026-11-10T07:45:49Z"
 labels = ["creates:python/tests/server/test_failed_writer_spill.py"]
 scope = ["python/sadi/server/service.py", "python/sadi/store/spill.py", "python/tests/server/test_failed_writer_spill.py", "docs/data-safety.md"]
 

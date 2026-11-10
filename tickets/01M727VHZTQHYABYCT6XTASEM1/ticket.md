@@ -2,7 +2,8 @@
 id = "01M727VHZTQHYABYCT6XTASEM1"
 title = "L4: two contradictory save indicators; Saved shown with no session"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

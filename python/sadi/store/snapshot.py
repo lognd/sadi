@@ -12,7 +12,7 @@ import errno
 import os
 import secrets
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
@@ -96,6 +96,8 @@ class SnapshotV1(BaseModel):
     code_version: dict[str, Any] = {}
     lab_module: str = ""
     state: dict[str, Any]
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    notes: list[str] | None = None  # JSON NOTE payloads up to covers_seq; None on old snapshots
 
 
 class SnapshotRef(BaseModel):
@@ -254,8 +256,13 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     code_version: dict[str, Any] | None = None,
     ref_sink: RefSink | None = None,
     now: datetime | None = None,
+    notes: Sequence[str] | None = None,
 ) -> Result[Path, SnapshotError]:
-    """Write `state` as an atomic snapshot covering WAL seq `covers_seq`; return its path."""
+    """Write `state` as an atomic snapshot covering WAL seq `covers_seq`; return its path.
+
+    `notes` (all NOTE payloads up to `covers_seq`) is stored additively so replay need not rewalk
+    the WAL for them; it is dropped, never failing the snapshot, if it would make it too large.
+    """
     session_dir = session.path
     if prefix_hash_hex is None:
         computed = prefix_hash(session_dir / "wal", covers_seq)
@@ -266,8 +273,13 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
         code_version=code_version or {},
         lab_module=lab_module,
         state=state.model_dump(mode="json"),
+        notes=None if notes is None else list(notes),
     )
     payload = body.model_dump_json().encode("utf-8")
+    if len(payload) > MAX_PAYLOAD and notes is not None:
+        _log.warning("snapshot with notes is %d bytes; storing it without notes", len(payload))
+        body = body.model_copy(update={"notes": None})
+        payload = body.model_dump_json().encode("utf-8")
     if len(payload) > MAX_PAYLOAD:
         _log.error("snapshot payload %d bytes exceeds limit", len(payload))
         return Err(SnapshotTooLarge(size=len(payload)))

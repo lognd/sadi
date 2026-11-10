@@ -112,6 +112,7 @@ class IncrementalReplay:
         self._hash, self._hash_seq = None, None
         base: ReplayState | None = None
         base_hash: Any = None
+        base_notes: list[str] | None = None
         loaded = snapshot.load_latest_snapshot_hashed(self._session_dir)
         if loaded.is_err:
             _log.warning("snapshot lookup failed (%s); replaying whole WAL", loaded.danger_err)
@@ -119,6 +120,7 @@ class IncrementalReplay:
             base = restore_state(loaded.danger_ok[0])
             if base is not None:
                 base_hash = loaded.danger_ok[1]
+                base_notes = loaded.danger_ok[0].notes
         reader = WalReader(self._wal)
         recs = []
         for item in reader.records(from_seq=(base.covers_seq + 1) if base else 1):
@@ -139,7 +141,7 @@ class IncrementalReplay:
         seals = report.seal_seqs if report else ()
         folded = replay(recs, base, seals)
         state = folded.unwrap()
-        notes = self._scan_notes(recs, base).unwrap()
+        notes = self._scan_notes(recs, base, base_notes).unwrap()
         if report is None or not report.segments:
             _log.info("no segment position for %s; incremental cache stays cold", self._wal)
             return Ok(state)
@@ -161,16 +163,32 @@ class IncrementalReplay:
         )
         return Ok(state)
 
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
     @propagate
     def _scan_notes(
-        self, recs: list[Record], base: ReplayState | None
+        self, recs: list[Record], base: ReplayState | None, base_notes: list[str] | None
     ) -> Result[list[str], EventsError]:
-        """Collect NOTE payloads; snapshots hold no notes, so a snapshot base needs a full walk."""
-        if base is not None:
-            recs = []
-            for item in WalReader(self._wal).records():
-                recs.append(item.map_err(lambda e: EventsWal(error=e)).unwrap())
-        return Ok([_note_text(r) for r in recs if _is_note(r)])
+        """Collect NOTE payloads; a snapshot carrying notes needs only the post-snapshot tail.
+
+        `recs` are the records after the snapshot. Old snapshots (no stored notes) keep the
+        whole-WAL walk, so the WAL stays the source of truth.
+        """
+        if base is None:
+            return Ok([_note_text(r) for r in recs if _is_note(r)])
+        if base_notes is not None:
+            return Ok([*base_notes, *(_note_text(r) for r in recs if _is_note(r))])
+        _log.info("snapshot at %d has no stored notes; walking the whole WAL", base.covers_seq)
+        walked = []
+        for item in WalReader(self._wal).records():
+            walked.append(item.map_err(lambda e: EventsWal(error=e)).unwrap())
+        return Ok([_note_text(r) for r in walked if _is_note(r)])
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def notes_at(self, covers_seq: int) -> list[str] | None:
+        """Return the NOTE payloads folded so far if the warm state is exactly at `covers_seq`."""
+        if self._acc is None or self._frozen is None or self._frozen.covers_seq != covers_seq:
+            return None
+        return list(self._notes)
 
     def _advance(self) -> bool:
         """Apply frames appended since the last call; False means 'fall back to a rebase'.

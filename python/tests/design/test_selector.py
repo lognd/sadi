@@ -139,7 +139,7 @@ def test_elastic_cold_start_steps_up_never_zero() -> None:
 
 
 # frob:ticket 01M72YAFYMKFSSKG8EZNGBTFZA
-# frob:tests sadi.design.selector.select_next
+# frob:tests python/sadi/design/selector.py::select_next
 def test_elastic_never_suggests_current_or_lower_load() -> None:
     """After cold start picks stay above the hang; an exhausted range yields no suggestion."""
     cands = [Candidate(candidate_id=f"m{i}", x=3.0 * i / 24) for i in range(25)]

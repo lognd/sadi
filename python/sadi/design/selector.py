@@ -305,7 +305,7 @@ def select_next(  # noqa: PLR0913
 
     fit = _fit(phase, obs, lo, hi, cfg)
     if monotonic and not pool:
-        # frob:ticket NGBTFZA
+        # frob:ticket 01M72YAFYMKFSSKG8EZNGBTFZA
         _log.info("design %s n=%d range exhausted at x=%.4g", phase.value, n, obs[-1].x)
         cur0 = (
             CurrentFit(half_width=None, value=None, dof=float(max(n - 2, 0)))
@@ -369,7 +369,8 @@ def select_next(  # noqa: PLR0913
         elastic = phase is DesignPhase.ELASTIC
         gain_pool = _halving_pool(pool, obs, hi) if elastic else pool
         gains = sorted(
-            ((fit.gain(c.x), c) for c in gain_pool), key=lambda g: (-g[0], g[1].x, g[1].candidate_id)
+            ((fit.gain(c.x), c) for c in gain_pool),
+            key=lambda g: (-g[0], g[1].x, g[1].candidate_id),
         )
         best_gain = gains[0][0]
         if phase is not DesignPhase.YIELD and _departs(obs, lo, hi):

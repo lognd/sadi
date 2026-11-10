@@ -2,7 +2,8 @@
 id = "01M71XGK2GSEZ1GM3N3ES7916A"
 title = "Audit1 #12 #22 #34 #41: store versions/forks, exports written into session folder, slug collisions, manifest last_seq"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

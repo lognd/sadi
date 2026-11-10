@@ -7,8 +7,8 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:10:55Z"
-updated = "2026-11-10T08:11:23Z"
-scope = ["web/src/styles.css", "web/src/hooks/useStickyOffset.ts"]
+updated = "2026-11-10T08:11:24Z"
+scope = ["web/src/styles.css", "web/src/hooks/useStickyOffset.ts", "web/src/hooks/useStickyOffset.test.ts"]
 
 [[acceptance]]
 text = "Sticky offset derived from measured header height; no overlap at 800px"

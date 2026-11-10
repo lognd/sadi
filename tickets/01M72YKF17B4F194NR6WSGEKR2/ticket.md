@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:53:07Z"
+updated = "2026-11-10T14:54:00Z"
 scope = ["python/sadi/store/**", "python/sadi/server/**", "python/tests/store/test_spill.py"]
 
 [[acceptance]]

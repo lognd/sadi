@@ -103,6 +103,8 @@ class _Open:
     replayer: IncrementalReplay = field(init=False)
     # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
     cadence: SnapshotCadence = field(default_factory=SnapshotCadence)
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    requests: dict[str, int] = field(default_factory=dict)  # capture request_id -> submitted seq
 
     def __post_init__(self) -> None:
         """Attach the incremental replay cache for this session's directory."""
@@ -332,7 +334,9 @@ class SessionService:
             torn = None if tail is None else f"{tail.segment}/{tail.offset}"
             if tail is not None:
                 # A torn tail is the normal result of a crash: export the verified prefix.
-                _log.warning("read_closed %s: torn tail at %s; exporting verified prefix", name, torn)
+                _log.warning(
+                    "read_closed %s: torn tail at %s; exporting verified prefix", name, torn
+                )
             state = recover_state(path)
             if state.is_err:
                 _log.error("read_closed %s: replay failed: %s", name, state.danger_err)
@@ -504,7 +508,16 @@ class SessionService:
 
     @propagate
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
-        """Validate typed inputs and window (nothing logged on rejection), then append a POINT."""
+        """Validate typed inputs and window (nothing logged on rejection), then append a POINT.
+
+        A `request_id` makes the call idempotent: a replay returns the existing commit and
+        never records a second point.
+        """
+        # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        if body.request_id is not None:
+            existing = self._existing_capture(body.request_id).unwrap()
+            if existing is not None:
+                return Ok(existing)
         # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
         blocked = None if self._capture_gate is None else self._capture_gate()
         if blocked is not None:
@@ -532,8 +545,42 @@ class SessionService:
             settled=body.settled,
             forced_early=body.forced_early,
         )
-        point = build_point(parsed_ok, body.window, meta)
-        return self._act(lambda cur, rp: cur.wizard.capture(rp, point))
+        point = build_point(parsed_ok, body.window, meta).model_copy(
+            update={"request_id": body.request_id}
+        )
+        return self._act(lambda cur, rp: cur.wizard.capture(rp, point), request_id=body.request_id)
+
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    @propagate
+    def _existing_capture(self, request_id: str) -> Result[Committed | None, ApiProblem]:
+        """The commit of an earlier capture with this `request_id`, else None (nothing written).
+
+        Covers both a point already in the replay and one submitted whose durability wait
+        timed out: the latter is waited on again instead of being recorded twice.
+        """
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            rp = self._replay(cur).unwrap()
+            seq = cur.requests.get(request_id)
+            if seq is None:
+                seq = next(
+                    (p.seq for p in rp.view().points if p.point.request_id == request_id), None
+                )
+            if seq is None:
+                return Ok(None)
+            cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S).map_err(_from_store).unwrap()
+            after = self._replay(cur).unwrap()
+            _log.info("capture replay request_id=%s -> existing seq %d", request_id, seq)
+            return Ok(
+                Committed(
+                    seq=seq,
+                    summary="captured (replayed request)",
+                    wizard=cur.wizard.state(after),
+                    history=cur.wizard.history(after),
+                )
+            )
 
     def edit(self, target: str, body: EditBody) -> Result[Committed, ApiProblem]:
         """Append an edit of `target`; the original value stays in the log."""
@@ -722,9 +769,15 @@ class SessionService:
 
     @propagate
     def _act(
-        self, fn: Callable[[_Open, ReplayState], Result[Command, WizardError]]
+        self,
+        fn: Callable[[_Open, ReplayState], Result[Command, WizardError]],
+        request_id: str | None = None,
     ) -> Result[Committed, ApiProblem]:
-        """Run a wizard command, append its records, wait for durability, return the new state."""
+        """Run a wizard command, append its records, wait for durability, return the new state.
+
+        With a `request_id` the last submitted seq is remembered before the durability wait,
+        so a retry after a timeout finds the in-flight record instead of writing another.
+        """
         with self._lock:
             cur = self._open
             if cur is None:
@@ -735,6 +788,8 @@ class SessionService:
             for rec in cmd.map_err(from_wizard).unwrap().records:
                 sub = cur.writer.submit(rec)
                 seq = sub.map_err(_from_store).unwrap()
+            if request_id is not None:
+                cur.requests[request_id] = seq
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
             durable.map_err(_from_store).unwrap()
             after = self._replay(cur).unwrap()

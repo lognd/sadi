@@ -106,6 +106,11 @@ class LoadSuggester(Protocol):
         ...
 
 
+def mass_guidance_text(kg: float) -> str:
+    """The one shared guidance wording: masses only, because the hanger is added for you."""
+    return f"Add {kg:.3f} kg of masses to the hanger (the hanger is added for you)"
+
+
 class EvenScheduleSuggester:
     """Default suggester: step evenly from the range minimum up to its maximum."""
 
@@ -120,7 +125,7 @@ class EvenScheduleSuggester:
         return Ok(
             LoadSuggestion(
                 load_kg=kg,
-                text=f"Add {kg:.3f} kg of masses to the hanger (hanger is added for you)",
+                text=mass_guidance_text(kg),
             )
         )
 

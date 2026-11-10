@@ -91,6 +91,8 @@ class CaptureBody(_Body):
     drift_rate: float | None = None
     settled: bool = False
     forced_early: bool = False
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    request_id: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class EditBody(_Body):

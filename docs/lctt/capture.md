@@ -29,6 +29,13 @@ blocks and `tick()` on a timer.
 `settled=false` and returns a warning in `Captured.warnings` (also logged). After
 settling it records a normal settled point.
 
+## Auto-capture and re-arming
+
+`CaptureController` in auto mode captures once per `start_point` (armed flag). After a
+capture it will not record the same load again until the next `start_point`, so a
+signal that stays settled cannot produce duplicate points. A human `accept()` is
+unaffected.
+
 ## Point event and re-editing
 
 The averaging window is mapped to the raw WAL seq range by an injected

@@ -28,6 +28,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
 from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
+from sadi.labs.lctt.guidance import Phase
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import SessionReplayCache, make_curve_source
@@ -171,6 +172,12 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
             _log.info("data-root lock released on shutdown")
 
 
+def _recorded_phase(sessions: SessionService) -> Phase | None:
+    """The run phase recorded in the open session (None when none or unreadable)."""
+    got = sessions.run_phase()
+    return got.danger_ok.phase if got.is_ok else None
+
+
 def _acq_state(live: LiveAcquisition) -> tuple[str | None, str | None]:
     """(stop_reason, fault text) of `live` for the status API."""
     # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
@@ -227,6 +234,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             live.capture_block_hint
         )  # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
         # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        live.set_phase_source(lambda: _recorded_phase(cast(SessionService, app.state.sessions)))
         app.state.sessions.set_acquisition(live.finish, lambda: _acq_state(live))
     app.include_router(make_sessions_router(app.state.sessions))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9

@@ -1,7 +1,7 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M6WV6TC9NXXA0GCFGJNV4CSJ
 import { describe, expect, it } from "vitest";
-import { isControlTarget, isTextTarget, resolveKey, shouldBlurOnEscape, SHORTCUTS, TEXT_FIELD_HOTKEY_HINT, type KeyLike } from "./keymap";
+import { isControlTarget, isHeldAccept, isTextTarget, resolveKey, shouldBlurOnEscape, SHORTCUTS, TEXT_FIELD_HOTKEY_HINT, type KeyLike } from "./keymap";
 
 const ev = (key: string, o: Partial<KeyLike> = {}): KeyLike =>
   ({ key, ctrlKey: false, metaKey: false, altKey: false, shiftKey: false, ...o });
@@ -73,5 +73,15 @@ describe("text-field hotkey hint (U-04)", () => {
   });
   it("hint names Esc and Tab", () => {
     expect(TEXT_FIELD_HOTKEY_HINT).toMatch(/Esc.*Tab/);
+  });
+});
+
+// frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+describe("held accept key", () => {
+  it("ignores auto-repeat of accept keys only", () => {
+    expect(isHeldAccept(true, "accept")).toBe(true);
+    expect(isHeldAccept(true, "accept-unsettled")).toBe(true);
+    expect(isHeldAccept(false, "accept")).toBe(false);
+    expect(isHeldAccept(true, "export")).toBe(false);
   });
 });

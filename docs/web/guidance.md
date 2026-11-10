@@ -41,4 +41,4 @@ See also the [Results/Export screen](export-screen.md).
 - Capture and clamp-cycle submits ignore a second press while one is in flight; the clamp form
   resets after a valid submit and its zero readings are optional (blank is 0).
 - The Saved indicator is set after each successful capture (`savedTick` on `WizardShell`).
-- Guidance text "Hang a total of 0.000 kg" is rewritten UI-side by `guidanceText`.
+- Guidance text "Add 0.000 kg of masses to the hanger" (the hanger itself is added for you) is rewritten UI-side by `guidanceText`.

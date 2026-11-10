@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:44:46Z"
-updated = "2026-11-10T14:46:59Z"
+updated = "2026-11-10T14:47:36Z"
 scope = ["web/src/screens/run/designAdvice.ts", "web/src/api/schema.ts", "web/src/api/openapi.json", "web/src/screens/run/designAdvice.test.ts"]
 
 [[acceptance]]

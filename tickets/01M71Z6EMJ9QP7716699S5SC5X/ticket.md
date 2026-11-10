@@ -2,7 +2,8 @@
 id = "01M71Z6EMJ9QP7716699S5SC5X"
 title = "Audit1 #5 #23 #40: stale lock guidance, SO_REUSEADDR port check, unwritable root hint"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

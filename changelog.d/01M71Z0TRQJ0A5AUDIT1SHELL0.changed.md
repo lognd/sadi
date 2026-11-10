@@ -1,1 +1,0 @@
-Doctor page load no longer probes the serial port (`probe_device=False`) and reports the real `--data-root`; DATA-010 names an unwritable parent; the web shell notices a dead or recovered backend, shows a Doctor verdict banner, the device "plug in" hint with no false "ok" when disconnected, and fixes step-rail focus order and glyph wrapping.

@@ -11,7 +11,7 @@ from enum import StrEnum
 from pydantic import BaseModel, Field, model_validator
 from typani import Err, ErrorSet, Ok, Result
 
-from sadi.labs.lctt.settle import SettleConfig, SettleError, SettleScanner
+from sadi.labs.lctt.settle import SettleConfig, SettleError, SettleScanner, _window_slope
 from sadi.logging_setup import get_logger
 from sadi.uncertainty import Measured
 
@@ -169,6 +169,9 @@ class StreamingSettleDetector:
             if a >= pt.t_load:
                 pt.t.append(a)
                 pt.y.append(b)
+        if pt.latched is not None and len(pt.t) > pt.checked_n:
+            pt.checked_n = len(pt.t)
+            self._recheck_latched(pt)
         if pt.latched is None and len(pt.t) > pt.checked_n:
             pt.checked_n = len(pt.t)
             res = self._evaluate(pt)
@@ -178,16 +181,52 @@ class StreamingSettleDetector:
         return Ok(pt.status)
 
     def close_point(self) -> Result[PointRecord, StreamError]:
-        """Finalize the open point as it stands (settled if latched, else unsettled)."""
+        """Finalize the open point (settled if latched, else unsettled) and open the next."""
         if self._open is None:
             return Err(StreamError.NoOpenPoint)
-        return Ok(self._finalize(forced=False))
+        rec = self._finalize(forced=False)
+        self._reopen()
+        return Ok(rec)
 
     def force_early(self) -> Result[PointRecord, StreamError]:
-        """Finalize the open point as forced early unless it already settled."""
+        """Finalize the open point as forced early unless settled, and open the next."""
         if self._open is None:
             return Err(StreamError.NoOpenPoint)
-        return Ok(self._finalize(forced=self._open.latched is None))
+        rec = self._finalize(forced=self._open.latched is None)
+        self._reopen()
+        return Ok(rec)
+
+    def _reopen(self) -> None:
+        """Open a fresh point at the latest sample so the next capture needs no manual mark."""
+        t = max(self._raw_t[-1] if self._raw_t else -math.inf, self._last_marker)
+        if not math.isfinite(t):
+            return
+        self._last_marker = t
+        self._open = _Point(self._count, t)
+        self._count += 1
+        _log.info("auto-opened point %d at t=%g after capture", self._open.index, t)
+
+    def _recheck_latched(self, pt: _Point) -> None:
+        """Drop a drift-mode settle verdict when the trailing window drifts above threshold."""
+        if self._cfg.mode is SettleMode.FIXED_DWELL:
+            return
+        cfg = self._cfg.settle
+        lo = len(pt.t) - 1
+        while lo > 0 and pt.t[-1] - pt.t[lo - 1] <= cfg.window_s:
+            lo -= 1
+        if len(pt.t) - lo < max(cfg.min_points, 3):
+            return
+        slope, _ = _window_slope(pt.t[lo:], pt.y[lo:])
+        if abs(slope) <= cfg.threshold:
+            return
+        _log.info("point %d unsettled again: trailing drift %.3g", pt.index, slope)
+        pt.latched, pt.latched_n = None, 0
+        pt.capped = False
+        pt.scanner = None
+        pt.fed_n = lo
+        pt.status = StreamStatus(
+            state=SettleState.CREEPING, point_index=pt.index, time_since_load=pt.t[-1] - pt.t_load
+        )
 
     def _evaluate(self, pt: _Point) -> Result[StreamStatus, SettleError]:
         """Run the detector on the point's samples and map to a status; latch on settle."""

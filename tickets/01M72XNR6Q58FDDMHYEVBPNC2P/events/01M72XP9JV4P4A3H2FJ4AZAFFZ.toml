@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/VBPNC2P; scope: web/index.html, web/src/styles.css, web/src/tokens.css, web/src/theme.css, web/src/plots/theme.ts; ttl 7200s"
+at = "2026-11-10T14:27:12Z"
+actor = "lognd"
+rev = 1

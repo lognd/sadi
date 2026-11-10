@@ -807,13 +807,13 @@ acked_at = "2026-11-10T04:06:53.946356897Z"
 [[symbol]]
 identity = "web/src/components/instrument/DebugStrip.tsx::DebugStrip"
 symref = "web/src/components/instrument/DebugStrip.tsx::DebugStrip"
-sig = "be05bce0e7cd6b200f55d16572c3b55fb014435e55d948dafc0f79eb1c71b17c"
-body = "d21053e58ec704410b8fb48048b001a7eb3e027a4d85eda46a11ff8221ea279c"
+sig = "8c3791dd4f59de23f0a7af528bf839e589174662a4d228ea229757da407df525"
+body = "892a93bcafa6b4c704b4632bc319e9372fe8d08202f1d18fb66b2f91fa03a14b"
 doc = "d1a2c865a9422ffe368dc921d40d735b61722bdda7220c2bfdd54d41de428a05"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "d36dc348510eec7f307931d333b3f31458abd6c5e7e56e568c3abf1481367f90"
+contract = "3fb3f3b5e3bfdfd7f02bd3aca1799f4a90c1ba7e6aea93353641e4eebabd9c39"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T04:06:53.946356897Z"
+acked_at = "2026-11-10T05:15:48.969665687Z"
 
 [[symbol]]
 identity = "web/src/components/instrument/DebugStrip.tsx::DebugStripView"

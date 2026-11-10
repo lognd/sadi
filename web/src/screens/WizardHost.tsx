@@ -50,11 +50,12 @@ function useExportKey(): (a: KeyAction) => void {
 }
 
 /** Non-run steps: shell with rail around setup, review or export content. */
-function StaticStep({ kind, onWizard }: { kind: "setup" | "results" | "export"; onWizard: (w: WizardState) => void }): React.JSX.Element {
+function StaticStep({ kind, onWizard, onClosed }: { kind: "setup" | "results" | "export"; onWizard: (w: WizardState) => void; onClosed: () => void }): React.JSX.Element {
   const onKey = useExportKey();
   return (
     <WizardShell
       onWizard={onWizard}
+      onClosed={onClosed}
       onKeyAction={kind === "export" ? onKey : undefined}
       delegateUndo={kind === "results"}
     >
@@ -119,7 +120,7 @@ export function WizardHost(): React.JSX.Element {
   if (screen === null) return <p>Loading steps...</p>;
   if (screen === "session") return <SessionSetup onOpened={load} />;
   if (screen === "setup" || screen === "results" || screen === "export") {
-    return <StaticStep key={screen} kind={screen} onWizard={onWizard} />;
+    return <StaticStep key={screen} kind={screen} onWizard={onWizard} onClosed={load} />;
   }
   return (
     <>

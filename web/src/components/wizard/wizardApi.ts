@@ -68,3 +68,24 @@ export function toFailure(error: ApiError): WizardFailure {
   }
   return { kind: "transport", error };
 }
+
+/** POST /api/session/close: closes the open session; its data stays in the session folder. */
+export async function closeSession(fetchImpl: typeof fetch = fetch): Promise<Result<null, WizardFailure>> {
+  const path = "/api/session/close";
+  log.info("closing session", { path });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "transport", error: { kind: "network", message } });
+  }
+  if (!res.ok) {
+    const body = await res.text();
+    log.warn("close refused", { path, status: res.status });
+    return err(toFailure({ kind: "http", status: res.status, body }));
+  }
+  log.info("session closed");
+  return ok(null);
+}

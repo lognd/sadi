@@ -2,7 +2,8 @@
 // frob:accept COV001 because="covered by ExportScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { getJson, type ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
-import type { Result } from "../../api/result";
+import { err, ok, type Result } from "../../api/result";
+import { currentlySynthetic, exportFilename } from "../../state/provenance";
 import type { ExportFormatView, Problem, ResultSet } from "./types";
 
 const log = getLogger("screens.export.api");
@@ -62,4 +63,47 @@ export function toProblem(e: ApiError): Problem {
     log.warn("non-json error body", { status: e.status });
     return { title: `HTTP ${String(e.status)}`, detail: e.body, hint: "", status: e.status };
   }
+}
+
+/** A downloaded export: bytes, file name and where the server kept its own copy ("" when none, "failed" when it could not). */
+export interface DownloadedExport {
+  readonly blob: Blob;
+  readonly filename: string;
+  readonly saved: string;
+}
+
+/** Name from a Content-Disposition header, else `fallback`. */
+export function dispositionName(header: string | null, fallback: string): string {
+  const m = header === null ? null : /filename="?([^";]+)"?/.exec(header);
+  return m?.[1] ?? fallback;
+}
+
+/** Download one export format with fetch so a refusal can be shown in the page; never throws. */
+export async function downloadExport(formatId: string, fetchImpl: typeof fetch = fetch): Promise<Result<DownloadedExport, ApiError>> {
+  log.info("download requested", { formatId });
+  let res: Response;
+  try {
+    res = await fetchImpl(exportUrl(formatId));
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("download network failure", { formatId, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    const body = await res.text();
+    log.warn("download refused", { formatId, status: res.status });
+    return err({ kind: "http", status: res.status, body });
+  }
+  const blob = await res.blob();
+  const name = dispositionName(res.headers.get("Content-Disposition"), `sadi-${formatId}.csv`);
+  const saved = res.headers.get("X-SADI-Saved") ?? "";
+  log.info("download fetched", { formatId, bytes: blob.size, saved });
+  return ok({ blob, filename: exportFilename(name, currentlySynthetic()), saved });
+}
+
+/** Page message for the server's saved-copy header, or "" when it sent none. */
+export function savedMessage(saved: string): string {
+  if (saved === "") return "";
+  if (saved === "failed") return "Downloaded, but SADI could not keep its own copy in the session folder.";
+  return `Saved a copy in ${saved}`;
 }

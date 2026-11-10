@@ -41,3 +41,10 @@ Network errors and non-JSON bodies get a plain message.
 ## Layout and provenance (Audit1 #27, #36)
 
 Results are shown first, above the point table. Tables sit in a horizontally scrolling wrapper so nothing clips at 800 px. Long point ids are shortened (full id in the tooltip). Numbers are rounded to 4 significant figures.
+
+## Exclusions in export and plots
+
+Excluding any point (calibration, tare, specimen or load) removes it from the
+fit used by the results, the calibration plot and the LCTT CSV, so all three
+agree. Nothing is deleted: the point and the exclusion stay in the WAL, and an
+excluded load point is still written to the CSV with `excluded` set.

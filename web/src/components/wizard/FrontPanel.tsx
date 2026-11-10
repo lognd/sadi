@@ -20,6 +20,8 @@ export interface FrontPanelProps {
   readonly guide?: React.ReactNode;
   /** Main column footer: the prominent next-action panel. */
   readonly next: React.ReactNode;
+  /** Header controls such as Close session, or null. */
+  readonly actions?: React.ReactNode;
   /** Main column: the step content. */
   readonly children?: React.ReactNode;
 }
@@ -31,6 +33,7 @@ export function FrontPanel(p: FrontPanelProps): React.JSX.Element {
       <header className="fp-head">
         <h1>{p.title}</h1>
         {p.subtitle === null ? null : <p className="fp-sub">{p.subtitle}</p>}
+        {p.actions}
       </header>
       {/* DOM order is focus order: step content first, rail after; CSS grid-area keeps the layout (audit #39). */}
       <main className="fp-main">

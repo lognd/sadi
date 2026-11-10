@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:54:05Z"
+updated = "2026-11-10T14:00:47Z"
 scope = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts", "web/src/components/live/TraceCanvas.tsx", "docs/web/design-system.md", "web/src/screens/run/SuggestedWeightPanel.test.tsx"]
 
 [[acceptance]]

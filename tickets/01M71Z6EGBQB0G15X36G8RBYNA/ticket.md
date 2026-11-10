@@ -4,9 +4,10 @@ title = "Audit1 #8 #43: synthetic driver verifies server results, fault path, qu
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T05:34:19Z"
-updated = "2026-11-10T05:34:19Z"
+updated = "2026-11-10T05:34:25Z"
 scope = ["python/sadi/synthetic/**", "python/tests/synthetic/**"]
 
 [[acceptance]]

@@ -4,9 +4,10 @@ title = "Audit1 #10 #11 #33 #16 #37 #38 #39: data-root in Doctor/UI, Doctor must
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:53Z"
-updated = "2026-11-10T05:04:53Z"
+updated = "2026-11-10T05:04:54Z"
 scope = ["python/sadi/server/routes_doctor.py", "python/sadi/doctor/**", "web/src/App.tsx", "web/src/doctor/**", "web/src/components/instrument/**", "web/src/components/status/**", "web/src/screens/WizardHost.tsx"]
 
 [[acceptance]]

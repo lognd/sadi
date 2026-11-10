@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:26:58Z"
-updated = "2026-11-10T14:31:56Z"
+updated = "2026-11-10T14:32:21Z"
 scope = ["web/index.html", "web/src/styles.css", "web/src/tokens.css", "web/src/theme.css", "web/src/plots/theme.ts", "web/crunk.toml", "docs/web/design-system.md", "web/src/plots/calibration/__snapshots__/*", "web/src/plots/core/__snapshots__/*", "web/src/plots/creep/__snapshots__/*", "web/src/plots/stressstrain/__snapshots__/*", "web/src/plots/core/plots.test.ts"]
 
 [[acceptance]]

@@ -2,12 +2,13 @@
 id = "01M72YAG11208WNCXQJ5V612KT"
 title = "Sim LVDT calibration step can never pass its quality gate; error text misleading (audit8 M5)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T14:56:59Z"
+updated = "2026-11-10T14:58:40Z"
 scope = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_calibration.py"]
 
 [[acceptance]]

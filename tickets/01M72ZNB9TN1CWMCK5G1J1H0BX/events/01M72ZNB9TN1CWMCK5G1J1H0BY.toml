@@ -1,0 +1,12 @@
+kind = "create"
+title = "Sim LVDT voltage never moves on calibrate mark; SIM_LOAD_STEP_KG mismatches panel masses"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 3
+scope = ["python/sadi/server/live.py", "python/tests/server/test_live_sim.py"]
+acceptance = ["Sim calibrate marks at different gauge blocks yield distinct volts so the calibration gate can pass", "SIM_LOAD_STEP_KG matches the 0.075/1.05/2.325 kg masses the panel instructs"]
+body = "Follow-up from ~5V612KT: only the message was fixed; the sim still cannot pass the cal gate (audit8 M5)."
+at = "2026-11-10T15:01:42Z"
+actor = "lognd"
+rev = 1

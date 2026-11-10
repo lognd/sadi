@@ -2,12 +2,13 @@
 id = "01M72YKF3EN8RJX7RCH78JDPQC"
 title = "Expose repeated-readings uncertainty (RSS) in the web app (parity M4)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:56:56Z"
+updated = "2026-11-10T14:58:40Z"
 scope = ["python/sadi/uncertainty/measured.py", "web/src/screens/run/**", "python/tests/uncertainty/test_measured.py"]
 
 [[acceptance]]

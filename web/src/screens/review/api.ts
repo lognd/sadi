@@ -9,12 +9,49 @@ import type { Committed, EditRequest, HistoryState, PointView, Problem } from ".
 
 const log = getLogger("screens.review.api");
 
-/** POST JSON (or nothing) and return the parsed body or an ApiError Result. */
+/** The parts of a problem+json body a student may read, parsed once. */
+export interface ProblemParts {
+  readonly type: string;
+  readonly title: string;
+  readonly detail: string;
+  readonly hint: string;
+}
+
+/** An ApiError whose http form also carries the parsed problem (null when the body was not problem JSON). */
+export type PostError =
+  | { kind: "network"; message: string }
+  | { kind: "http"; status: number; body: string; problem: ProblemParts | null };
+
+/** Parse a problem+json body once; null when it is not one. */
+function parseProblem(body: string): ProblemParts | null {
+  try {
+    const p = JSON.parse(body) as Partial<Problem> | null;
+    if (p === null || typeof p !== "object" || typeof p.title !== "string") return null;
+    return { type: p.type ?? "", title: p.title, detail: p.detail ?? "", hint: p.hint ?? "" };
+  } catch {
+    return null;
+  }
+}
+
+/** Plain-text message for a failed POST: hint, else detail, else title; never raw JSON or an HTTP code (status stays in the log). */
+export function problemText(e: PostError, what: string): string {
+  if (e.kind === "network") return `Network error: ${e.message}. Check the connection, then try again.`;
+  const p = e.problem;
+  const text = p === null ? "" : p.hint !== "" ? p.hint : p.detail !== "" ? p.detail : p.title;
+  return text === "" ? `${what} was refused. Try again.` : `${what} refused. ${plainNote(text)}`;
+}
+
+/** True when the failure is the server saying this request id was already used for a different point. */
+export function isRequestIdReused(e: PostError): boolean {
+  return e.kind === "http" && e.problem !== null && e.problem.type.endsWith("request_id_reused");
+}
+
+/** POST JSON (or nothing) and return the parsed body or a PostError Result. */
 export async function postJson<T>(
   path: string,
   body: unknown,
   fetchImpl: typeof fetch = fetch,
-): Promise<Result<T, ApiError>> {
+): Promise<Result<T, PostError>> {
   log.debug("request", { path, method: "POST" });
   let res: Response;
   try {
@@ -29,8 +66,10 @@ export async function postJson<T>(
     return err({ kind: "network", message });
   }
   if (!res.ok) {
-    log.warn("http error", { path, status: res.status });
-    return err({ kind: "http", status: res.status, body: await res.text() });
+    const body = await res.text();
+    const problem = parseProblem(body);
+    log.warn("http error", { path, status: res.status, type: problem?.type ?? null });
+    return err({ kind: "http", status: res.status, body, problem });
   }
   return ok((await res.json()) as T);
 }

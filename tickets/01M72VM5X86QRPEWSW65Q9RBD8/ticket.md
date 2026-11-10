@@ -2,13 +2,13 @@
 id = "01M72VM5X86QRPEWSW65Q9RBD8"
 title = "Live trace sized from container (square, readable text); setup helper text; gauge height units"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:51:09Z"
-scope = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts"]
+updated = "2026-11-10T13:54:05Z"
+scope = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts", "web/src/components/live/TraceCanvas.tsx", "docs/web/design-system.md", "web/src/screens/run/SuggestedWeightPanel.test.tsx"]
 
 [[acceptance]]
 text = "live scene width==height from ResizeObserver, rendered fonts >=12 CSS px; setup helper text sentence case at text-sm; gauge height suggestion shown in field unit (m) with mm in parentheses"

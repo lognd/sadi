@@ -116,3 +116,20 @@ def test_benchmark_beats_random_and_deterministic() -> None:
     a = {r.policy: r for r in run_benchmark(trials=4)}
     assert a == {r.policy: r for r in run_benchmark(trials=4)}
     assert a["gp_selector"].mean_final_half_width <= a["random"].mean_final_half_width
+
+
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
+# frob:tests python/sadi/design/selector.py::select_next
+def test_elastic_cold_start_steps_up_never_zero() -> None:
+    """Elastic suggestions rise from the smallest real mass and never unload or hit 0 kg."""
+    cands = [Candidate(candidate_id=f"m{i}", x=3.0 * i / 24) for i in range(25)]
+    obs: list[Obs] = []
+    xs: list[float] = []
+    for _ in range(5):
+        adv = select_next(DesignPhase.ELASTIC, obs, cands, TARGET).unwrap()
+        x = adv.suggestion.x
+        xs.append(x)
+        obs.append(Obs(x=x, y=2 * x, u=1e-6))
+    assert xs[0] == cands[1].x
+    assert all(b >= a for a, b in zip(xs, xs[1:], strict=False))
+    assert all(x > 0.0 for x in xs)

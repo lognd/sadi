@@ -1,6 +1,7 @@
 """Read-only REST route for the advisory next-weight suggestion and enough-data indicator."""
 
 # frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
 
 from __future__ import annotations
 
@@ -38,11 +39,13 @@ LOAD_MAX_KG = 5.0
 N_CANDIDATES = 41
 #: Default gauge-height range (m) for the LVDT calibration phase.
 HEIGHT_MAX_M = 0.02
-#: Wizard point phases that feed each design phase (the yield fit needs the elastic line too).
+#: Fraction of the load range the elastic run may reach (keeps it below the expected yield load).
+ELASTIC_MAX_FRAC = 0.6
+#: Wizard point phases that feed each design phase (elastic and plastic are different specimens).
 PHASES_FOR: dict[DesignPhase, frozenset[str]] = {
     DesignPhase.LVDT_CAL: frozenset({PHASE_CALIBRATION}),
     DesignPhase.ELASTIC: frozenset({"elastic"}),
-    DesignPhase.YIELD: frozenset({"elastic", "plastic"}),
+    DesignPhase.YIELD: frozenset({"plastic"}),
 }
 #: Offset strain of the yield criterion (0.2 %).
 OFFSET_STRAIN = 0.002
@@ -120,7 +123,10 @@ def make_design_router(svc: SessionService) -> APIRouter:
             if offset is None:
                 _log.info("design: yield suggestion unavailable (%s)", why)
                 return _unavailable(phase, len(obs), TargetSpec(half_width=target), why)
-        cands = candidate_grid(HEIGHT_MAX_M if cal else LOAD_MAX_KG, "h" if cal else "m")
+        top = HEIGHT_MAX_M if cal else LOAD_MAX_KG
+        if phase is DesignPhase.ELASTIC:
+            top = LOAD_MAX_KG * ELASTIC_MAX_FRAC
+        cands = candidate_grid(top, "h" if cal else "m")
         res = select_next(
             phase,
             obs,

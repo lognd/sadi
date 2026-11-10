@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts", "web/src/components/live/TraceCanvas.tsx", "docs/web/design-system.md"]
+new = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts", "web/src/components/live/TraceCanvas.tsx", "docs/web/design-system.md", "web/src/screens/run/SuggestedWeightPanel.test.tsx"]
+at = "2026-11-10T13:54:05Z"
+actor = "lognd"
+rev = 1

@@ -38,6 +38,10 @@ after every captured point.
 
 `GET /api/design/next-weight?phase=elastic|lvdt_cal|yield&target=0.05[&offset=...]`. Only active,
 settled (or force-accepted) points of the matching phase are used. Load range 0..5 kg, 41 candidates.
+The yield phase uses plastic points only (elastic and plastic are different specimens); the
+indicator `n` counts plastic points. Elastic and yield suggestions are loads at or above the
+current hang and never 0 kg once a point exists; cold start steps up evenly from the smallest real
+mass, and the elastic run is capped at 60 % of the range, below the expected yield load.
 
 ## Benchmark
 

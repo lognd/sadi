@@ -16,7 +16,7 @@ messages, so there is no second socket. `TraceCanvas` draws the shared live scen
   `decide` is the single rule table: Space never fires while Creeping, Saturated or
   Disconnected. Shift+Space asks for confirmation, then records the point as unsettled
   (`settled: false`, `forced_early: true`).
-  Each accept attempt sends a stable `request_id`, reused on retry until it succeeds. A held key (auto-repeat) never re-accepts, and after a successful capture a further accept is refused until the load change is marked.
+  Each accept attempt freezes its whole request body together with its `request_id` (and a separate id for the specimen point) and resends exactly that on retry, so the server replays instead of saving twice; the freeze is dropped on success, a field edit, a load change, a phase change, or a `request_id_reused` refusal. The server matches a retried id on the operator-chosen fields only (phase, non-live inputs, forced_early), never on live volts or the window. Refusals show the server hint (else detail) in plain text, never raw JSON or an HTTP code. A held key (auto-repeat) never re-accepts, and after a successful capture a further accept is refused until the load change is marked.
 - Saturation: above 4.9 V in the recent envelope the view shows a warning, the status bar signal
   reads SATURATED, and capture is blocked even when forced.
 - Disconnect: Source becomes Disconnected, the readout is marked stale, capture is paused and a

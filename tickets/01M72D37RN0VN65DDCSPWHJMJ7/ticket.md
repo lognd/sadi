@@ -4,9 +4,10 @@ title = "Run-step guidance wording, accept-key repeat guard, capture request_id 
 type = "bug"
 category = "todo"
 priority = "high"
+points = 8
 reporter = "lognd"
 created = "2026-11-10T09:37:14Z"
-updated = "2026-11-10T09:37:14Z"
+updated = "2026-11-10T09:37:24Z"
 scope = ["python/sadi/labs/lctt/gp_suggester.py", "python/sadi/labs/lctt/guidance.py", "python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/sadi/server/session_points.py", "python/tests/**", "web/src/screens/run/**", "web/src/keys/**", "web/src/api/**", "docs/lctt/**", "docs/server/**"]
 
 [[acceptance]]

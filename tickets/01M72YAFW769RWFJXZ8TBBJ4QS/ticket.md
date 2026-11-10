@@ -2,7 +2,8 @@
 id = "01M72YAFW769RWFJXZ8TBBJ4QS"
 title = "Frozen retry body outlives refusals that wrote nothing; later Accept saves stale data (audit8 M2)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

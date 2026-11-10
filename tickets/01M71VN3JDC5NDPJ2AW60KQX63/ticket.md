@@ -2,7 +2,8 @@
 id = "01M71VN3JDC5NDPJ2AW60KQX63"
 title = "Web: loud SYNTHETIC DATA banner in instrument bar, session, results, export"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

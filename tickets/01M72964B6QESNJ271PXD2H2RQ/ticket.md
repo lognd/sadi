@@ -2,7 +2,8 @@
 id = "01M72964B6QESNJ271PXD2H2RQ"
 title = "audit4 L1+L2+L6: idle-pause capture hint wrong, resume ignores device health, SETTINGS firmware always null"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

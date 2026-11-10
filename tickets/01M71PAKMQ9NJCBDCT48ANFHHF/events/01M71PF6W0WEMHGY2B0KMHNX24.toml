@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/guidance/types.ts", "web/src/api/**", "changelog.d/**"]
+new = ["web/src/components/guidance/types.ts", "web/src/api/**", "changelog.d/**", "frob.lock"]
+at = "2026-11-10T03:01:49Z"
+actor = "lognd"
+rev = 1

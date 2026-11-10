@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at 414e87b1f355 (python (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597696183; python (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597696029; python (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597695975; rust (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597695912; web (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597695880; web (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597695878; web (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42745837793/job/129597695755): CI-fix ticket: base is red from the eslint and OpenAPI drift failures this ticket fixes"
+at = "2026-11-10T03:01:49Z"
+actor = "lognd"
+rev = 1

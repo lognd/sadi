@@ -36,7 +36,7 @@ namespaces = ["frob", "grimble", "crunk"]
 # Identities (git `user.email`) that may attest a criterion; `frob init` and `config sync` write the repository owner's email, and an empty list means nobody may.
 attesters = ["logandapp@gmail.com"]
 # Tools an evidence run may invoke; the Astral Python stack is added to the defaults.
-allowed_tools = ["cargo", "git", "pytest", "vitest", "jest", "dotnet", "uv", "ruff", "ty", "npx"]
+allowed_tools = ["cargo", "git", "pytest", "vitest", "jest", "dotnet", "uv", "ruff", "ty", "npx", "crunk"]
 
 [git]
 # Compare-and-swap retries when moving a ledger ref.

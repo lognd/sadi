@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["A wait_durable poll timeout is logged below ERROR while real writer failures still log ERROR"]
+moved = []
+at = "2026-11-10T02:49:30Z"
+actor = "lognd"
+rev = 1

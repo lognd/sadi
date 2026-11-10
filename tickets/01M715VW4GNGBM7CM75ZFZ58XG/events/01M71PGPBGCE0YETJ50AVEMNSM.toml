@@ -1,0 +1,73 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T03:02:20Z"
+digest = "b1ff132a41033c8e36f87f75b908e281c29c313122c1d0d3ac48552165dda128"
+failed_tests = ["python/tests/core/test_pipeline.py::test_wait_durable_poll_timeout_is_not_logged_at_error"]
+head = "532fcfc2a435bc15bd5054e7f4268d388c799925"
+inline = '''
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/core/test_pipeline.py F                                     [100%]
+
+=================================== FAILURES ===================================
+____________ test_wait_durable_poll_timeout_is_not_logged_at_error _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0')
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7f698642c620>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6985b7c980>
+
+    def test_wait_durable_poll_timeout_is_not_logged_at_error(
+        tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An expected wait_durable poll timeout logs below ERROR; closed-writer failures stay ERROR."""
+        h = _open(tmp_path)
+        with caplog.at_level("DEBUG", logger="sadi.store.writer_thread"):
+            res = h.wait_durable(10_000, 0.05)
+        assert res.is_err
+        assert isinstance(res.danger_err, Stalled)
+>       assert not [r for r in caplog.records if r.levelno >= logging.ERROR]
+E       assert not [<LogRecord: sadi.store.wal, 40, ~/projects/SADI/python/sadi/store/wal.py, 460, "wait_durable(%d) timed out ...e.writer_thread, 40, ~/projects/SADI/python/sadi/store/writer_thread.py, 333, "wait_durable(%d) failed: %s">]
+
+python/tests/core/test_pipeline.py:487: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+failpoints cleared
+------------------------------ Captured log setup ------------------------------
+DEBUG    sadi.store.failpoints:failpoints.py:84 failpoints cleared
+----------------------------- Captured stdout call -----------------------------
+created /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal/seg-000001.wal exclusively
+fsync_file(fd=11) ok
+fsync_dir(/tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal) ok
+WAL opened at /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal/seg-000001.wal first_seq=1 session=00000000-0000-0000-0000-0000000060fd
+writer handle ready at /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal
+----------------------------- Captured stderr call -----------------------------
+ERROR: wait_durable(10000) timed out after 0.1s
+ERROR: wait_durable(10000) failed: hint='The data disk is not responding. Data already shown is safe; new data is held in memory. Free space or change disk, then resume.' waited_s=0.05 durable_seq=0 enqueued_seq=0
+------------------------------ Captured log call -------------------------------
+INFO     sadi.store.durable:durable.py:243 created /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal/seg-000001.wal exclusively
+DEBUG    sadi.store.durable:durable.py:129 fsync_file(fd=11) ok
+DEBUG    sadi.store.durable:durable.py:192 fsync_dir(/tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal) ok
+INFO     sadi.store.wal:wal.py:379 WAL opened at /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal/seg-000001.wal first_seq=1 session=00000000-0000-0000-0000-0000000060fd
+INFO     sadi.store.writer_thread:writer_thread.py:283 writer handle ready at /tmp/pytest-of-logan/pytest-12/test_wait_durable_poll_timeout0/wal
+ERROR    sadi.store.wal:wal.py:460 wait_durable(10000) timed out after 0.1s
+ERROR    sadi.store.writer_thread:writer_thread.py:333 wait_durable(10000) failed: hint='The data disk is not responding. Data already shown is safe; new data is held in memory. Free space or change disk, then resume.' waited_s=0.05 durable_seq=0 enqueued_seq=0
+--------------------------- Captured stdout teardown ---------------------------
+failpoints cleared
+---------------------------- Captured log teardown -----------------------------
+DEBUG    sadi.store.failpoints:failpoints.py:84 failpoints cleared
+--------------- generated xml file: /tmp/frob-pytest-70602-0.xml ---------------
+============================== 1 failed in 1.93s ===============================
+'''
+provider = "pytest"
+ref = "python/tests/core/test_pipeline.py::test_wait_durable_poll_timeout_is_not_logged_at_error"
+size = 4238
+status = "unmeasured"
+test_count = 1
+tests_digest = "54737ffef17af03cbd0427319d55bfcde9200b00b90e86d9751b978189a57423"
+at = "2026-11-10T03:02:20Z"
+actor = "lognd"
+rev = 1

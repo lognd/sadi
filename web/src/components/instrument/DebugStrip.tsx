@@ -1,9 +1,11 @@
+// frob:ticket 01M727VHZTQHYABYCT6XTASEM1
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { useLive } from "../../state/LiveContext";
 import type { FrameMeta } from "../../hooks/useTrace";
+import { saveView } from "../status/saveView";
 import type { BackendFacts } from "./useBackendFacts";
 
 /** Frame age (ms) above which the stream counts as stale. */
@@ -23,7 +25,8 @@ export function frameAge(meta: FrameMeta | null | undefined, nowMs: number): { t
 export function DebugStripView({ meta, nowMs, facts, backend }: { readonly meta: FrameMeta | null | undefined; readonly nowMs: number; readonly facts: BackendFacts; readonly backend: string }): React.JSX.Element {
   const age = frameAge(meta, nowMs);
   const rate = meta == null || meta.dtS <= 0 ? "--" : `${(1 / meta.dtS).toFixed(0)} Hz`;
-  const save = facts.save === null ? unavailable("save status not reachable") : `${facts.save.state === "saved" ? "[ok]" : "(!)"} ${facts.save.label || facts.save.state}${facts.save.pending > 0 ? ` (${String(facts.save.pending)} pending)` : ""}`;
+  const sv = saveView(facts);
+  const save = `${sv.state === "saved" ? "[ok]" : sv.state === "saving" ? "[..]" : "(!)"} ${sv.text}`;
   const device = facts.device === null ? unavailable("device status not reachable") : `${facts.device.attached || facts.device.status === "simulated" ? "[ok]" : "(!)"} ${facts.device.status}`;
   const rows: readonly (readonly [string, string, string?])[] = [
     ["Device", device],

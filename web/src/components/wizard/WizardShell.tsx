@@ -1,3 +1,4 @@
+// frob:ticket 01M727VHZTQHYABYCT6XTASEM1
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
@@ -8,6 +9,8 @@ import { useKeyCapture } from "../../keys/useKeyCapture";
 import type { KeyAction } from "../../keys/keymap";
 import { useLive } from "../../state/LiveContext";
 import { LiveTrace } from "../live/TraceCanvas";
+import { useFacts } from "../instrument/FactsContext";
+import { saveView } from "../status/saveView";
 import { StatusBar } from "../status/StatusBar";
 import { CloseSession } from "./CloseSession";
 import { DoThisCard } from "./DoThisCard";
@@ -31,8 +34,6 @@ export interface WizardShellProps {
   onWizard?: (w: WizardState) => void;
   /** When true, undo and redo keys go to `onKeyAction` instead of the shell (the work area owns history). */
   delegateUndo?: boolean;
-  /** Host bumps this after each accepted point capture so the Saved indicator updates. */
-  savedTick?: number;
   /** Called after the session was closed; defaults to reloading the page so it shows session setup. */
   onClosed?: () => void;
   /** Why Finish (button and Enter) is disabled right now, or null/absent when allowed. */
@@ -43,15 +44,13 @@ export interface WizardShellProps {
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Wizard shell: the front panel (step rail, step content, next action, live readout, live trace, status bar) plus keyboard capture. */
-export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0, onClosed, finishBlockedWhy = null, after }: WizardShellProps): React.JSX.Element {
+export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, onClosed, finishBlockedWhy = null, after }: WizardShellProps): React.JSX.Element {
   const { view } = useLive();
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
   const [busy, setBusy] = useState(false);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const facts = useFacts();
   const [help, setHelp] = useState(true);
-  // A point capture (not a wizard write) also persists data: stamp the Saved indicator when the host bumps this.
-  useEffect(() => { if (savedTick > 0) setSavedAt(new Date().toLocaleTimeString()); }, [savedTick]);
   const wizardCb = useRef(onWizard);
   wizardCb.current = onWizard;
 
@@ -73,7 +72,6 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
       setWizard(r.value.wizard);
       wizardCb.current?.(r.value.wizard);
       setFailure(null);
-      setSavedAt(new Date().toLocaleTimeString());
     } else {
       log.warn("write failed", { what });
       setFailure(r.error);
@@ -112,7 +110,7 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
       after={after}
       shortcuts={help ? <details className="shortcuts"><summary>Keyboard shortcuts</summary><ShortcutList /></details> : null}
       live={<LiveTrace />}
-      status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} savedAt={savedAt} />}
+      status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} save={saveView(facts)} />}
       next={
         <NextActionPanel
           step={current}

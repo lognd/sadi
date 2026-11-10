@@ -2,7 +2,8 @@
 id = "01M724E09H9X4DDW9ATK14JQ5C"
 title = "Wire LiveAcquisition.finish() into results/export and show stop_reason/fault in the UI"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

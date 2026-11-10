@@ -175,7 +175,7 @@ def _guidance_problem(err: ErrorSet) -> ApiProblem:
 
 
 def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, ApiProblem]:
-    """Recompute the open session's results and their provenance (the lctt recompute is a stub)."""
+    """Recompute the open session's results and their provenance, with pending/notes when a value is unavailable."""
     info = svc.info()
     pts = svc.points()
     if info.is_err or pts.is_err:

@@ -1954,6 +1954,20 @@
         "title": "ResultsView",
         "type": "object"
       },
+      "ResumeOut": {
+        "description": "Result of resuming: streaming is running again and nothing was written to the WAL.",
+        "properties": {
+          "streaming": {
+            "title": "Streaming",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "streaming"
+        ],
+        "title": "ResumeOut",
+        "type": "object"
+      },
       "RevertBody": {
         "additionalProperties": false,
         "description": "Reopen the latest finished step; `step` (optional) must name exactly that step.",
@@ -2746,6 +2760,28 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/acquisition/resume": {
+      "post": {
+        "description": "Restart streaming after an idle pause; writes no marker and applies no load.",
+        "operationId": "resume_api_acquisition_resume_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Resume",
+        "tags": [
+          "acquisition"
+        ]
+      }
+    },
     "/api/device/reconnect": {
       "post": {
         "description": "Open the board now (no restart); attaches to the open session, WAL untouched.",

@@ -2125,6 +2125,72 @@ acked_at = "2026-11-10T03:40:43.961830613Z"
 reason = "ticket YTVC4WD front panel rework, re-read"
 
 [[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts"
+symref = "web/src/components/wizard/stepGuide.test.ts"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "5396d17dbcc2e18fcb4861480247b3dbebc89edfe06584a270c6262897711e3f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts::LABELS"
+symref = "web/src/components/wizard/stepGuide.test.ts::LABELS"
+sig = "007c9fe59653cb061996dde8e490c57c322d6a1c7536b5f22f58fa7f8a99b73f"
+body = "6503040ad0609353d0664a12d00f61260bd66a70d90bd40ad3402304d2c49751"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "a80293812d35a222369d8e5a07a5c5de1997e139d7af809493de6e78da266f29"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields"
+symref = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields"
+sig = "e5721ecbf804748156eb6511eb79319f2e062a221394e13a434016c364f474cf"
+body = "1f37bc84907244b68c064b50db46ace9e61fbbb1fe45b7bbef6084ba628c5cf9"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "29f8a1cecfa0468fb45fe2897b5b9a046fba332050ba033448fbdab148b02281"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields.test$every_typed_label_exists_in_PHASE_FIELDS"
+symref = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields.test$every_typed_label_exists_in_PHASE_FIELDS"
+sig = "6969f7a786a5e448764303f3c40d07e5c8ba19fab1d9a45745b749e64b029d58"
+body = "73d1475790ebd8a995cedca6f41481aee010a093fd6de25b0c10e1590894690f"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "52d2ede0368d5fc901114eefc47ca939d83a293e7d05b1a03e7c4f572503262d"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields.test$finds_at_least_one_typed_label"
+symref = "web/src/components/wizard/stepGuide.test.ts::suite$instruction_text_names_real_fields.test$finds_at_least_one_typed_label"
+sig = "e0f96f656e7cb88f79f1cdc1c14323f57b268fd9cae6a211e58c6c74f062a3f2"
+body = "865e7f0ad05d802d790d0010ed6f44ded8dadf1bd6cf1d544d7daf60a1fb9913"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "0b517b6db6363c57b6a2c458366136be29e51227193a55819bd3d9960a7563e0"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
+identity = "web/src/components/wizard/stepGuide.test.ts::typedLabels"
+symref = "web/src/components/wizard/stepGuide.test.ts::typedLabels"
+sig = "ce980ea2d0b57890d78685c0a3f299d54a99516b72bc321e13c47913c3860acc"
+body = "03ef7203ddfa7a57c696d265d406222cb05d795496e8f3b8f62223f906efa485"
+doc = "3add36ba3e0b3987e83d2cffaa48f3c1fd7f73232abbc47bee6daab660ad1477"
+attr = "3046deb40fc94ef9c1cd24923a377c10bd9705e9a6dd25041bfa936b7d4540e6"
+contract = "f641dbbd260d81aadf63cee298abfc496f977a70007855598a239f75399b4058"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T13:54:26.108297131Z"
+
+[[symbol]]
 identity = "web/src/components/wizard/wizardApi.ts::getWizard"
 symref = "web/src/components/wizard/wizardApi.ts::getWizard"
 sig = "c6495ae39691fcce2a1a8e77535fd13fdb483e00f79add4fe9a03d43edf2a1c0"

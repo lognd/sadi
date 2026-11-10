@@ -7,10 +7,10 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:44:56Z"
-updated = "2026-11-10T13:47:29Z"
+updated = "2026-11-10T13:49:23Z"
 scope = ["python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/tests/server/test_readonly_export.py", "python/sadi/server/ws.py", "python/sadi/server/routes_stress_strain.py", "python/sadi/server/app.py", "docs/synthetic.md"]
 
 [[acceptance]]
 text = "Open session resumed from an unknown-provenance session reports unknown in live payloads and open-session exports; never real"
-bound = false
+bound = true
 +++

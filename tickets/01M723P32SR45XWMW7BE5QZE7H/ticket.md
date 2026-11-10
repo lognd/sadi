@@ -2,7 +2,8 @@
 id = "01M723P32SR45XWMW7BE5QZE7H"
 title = "Audit2 H2b: stop raw streaming once session finished/idle; free-space guard"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

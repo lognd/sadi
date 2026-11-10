@@ -121,6 +121,20 @@ def test_tick_after_capture_is_noop() -> None:
     assert not isinstance(tick, Err) and tick.danger_ok.captured is None
 
 
+# frob:ticket 01M72B7QAB5FFFNXRHZ80T48X8
+# frob:tests python/sadi/labs/lctt/capture.py::CaptureController.tick
+def test_auto_tick_and_push_after_auto_capture_do_not_assert() -> None:
+    ctl, clock = make(mode=CaptureMode.AUTO, max_wait_s=500.0)
+    first = ctl.push(*block(0, 60))
+    assert not isinstance(first, Err) and first.danger_ok.captured is not None
+    for _ in range(2):
+        tick = ctl.tick()
+        assert not isinstance(tick, Err) and tick.danger_ok.captured is None
+    clock.now += 1000.0
+    nxt = ctl.push(*block(60, 62))
+    assert not isinstance(nxt, Err)
+
+
 def test_fixed_dwell_captures_after_dwell() -> None:
     ctl, _ = make(FIXED, mode=CaptureMode.FIXED_DWELL)
     early = ctl.push(*block(0, 12, decay))

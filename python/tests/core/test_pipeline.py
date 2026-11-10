@@ -366,16 +366,17 @@ def test_settle_state_and_result_updates(tmp_path: Path) -> None:
     for _ in range(3):
         assert pipe.ingest(_Block()).is_ok
     assert pipe.close_point().is_ok
-    assert pipe.force_early().is_ok  # no open point: reported, not fatal
+    assert pipe.force_early().is_ok  # settle auto-opens the next point: it is force-closed
     assert h.wait_durable(6, WAIT_S).is_ok
     pipe.pump()
     events = sub.drain()
     states = [e.status.state for e in events if isinstance(e, SettleUpdate)]
     assert states[-1] is SettleState.SETTLED
     results = [e for e in events if isinstance(e, ResultUpdate)]
-    assert len(results) == 1
+    assert len(results) == 2  # settled close + the auto-opened point force-closed
     assert results[0].record.settled
-    assert sum(isinstance(e, AnalysisFailed) for e in events) == 1
+    assert results[1].record.forced_early
+    assert sum(isinstance(e, AnalysisFailed) for e in events) == 0
     h.close()
     types = [r.danger_ok.type for r in WalReader(tmp_path / "wal").records() if r.is_ok]
     assert types.count(int(RecordType.MARKER)) == 3

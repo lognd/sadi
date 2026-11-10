@@ -198,7 +198,8 @@ class CaptureController:
 
     def _waited(self) -> float:
         """Clock seconds since the point was started."""
-        assert self._started is not None
+        if self._started is None:
+            self._started = self._clock()
         return self._clock() - self._started
 
     def _window_volts(self, start: float, end: float) -> tuple[float, float, float | None]:
@@ -221,7 +222,8 @@ class CaptureController:
         if isinstance(rec_res, Err):
             return Err(rec_res.danger_err)
         rec = rec_res.danger_ok
-        self._started = None
+        # the detector auto-opens the next point: restart the max-wait clock for it
+        self._started = self._clock()
         if rec.window_start is None or rec.window_end is None:
             _log.error("point %d has no averaging window", rec.point_index)
             return Err(CaptureError.NoRawRange)

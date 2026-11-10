@@ -18,7 +18,8 @@ blocks and `tick()` on a timer.
   indicator says settled.
 - `auto`: captures as soon as the detector settles; if `max_wait_s` (clock seconds since
   `start_point`) passes first, the point is captured with `forced_early=true` and a
-  warning.
+  warning. After a capture the detector auto-opens the next point and the max-wait clock
+  restarts for it.
 - `fixed_dwell`: requires a `StreamConfig` in fixed_dwell mode (and vice versa,
   else `CaptureError.ModeMismatch`); captures once the dwell has elapsed.
 

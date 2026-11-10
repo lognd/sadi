@@ -4,9 +4,10 @@ title = "Lint cleanup: eslint errors in web tests/useStickyOffset, E501 curve_so
 type = "chore"
 category = "todo"
 priority = "low"
+points = 1
 reporter = "lognd"
 created = "2026-11-10T09:27:14Z"
-updated = "2026-11-10T09:27:14Z"
+updated = "2026-11-10T09:27:22Z"
 scope = ["web/src/**/StopBanner.test.tsx", "web/src/**/exportTrace.test.ts", "web/src/**/inputFields.test.ts", "web/src/**/useStickyOffset.ts", "python/sadi/labs/lctt/curve_source.py", "docs/server/app.md"]
 
 [[acceptance]]

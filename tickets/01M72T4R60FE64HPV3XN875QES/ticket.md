@@ -2,7 +2,8 @@
 id = "01M72T4R60FE64HPV3XN875QES"
 title = "Restyle: sentence-case readable long labels; white sans export theme"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

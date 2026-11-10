@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T09:12:30Z"
-updated = "2026-11-10T09:13:52Z"
+updated = "2026-11-10T09:13:58Z"
 labels = ["audit4"]
 scope = ["web/src/api/openapi.json", "web/src/api/schema.ts"]
 

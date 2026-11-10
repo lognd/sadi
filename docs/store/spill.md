@@ -52,12 +52,20 @@ tail); it is a data-bearing version whose lineage is in its manifest.
   `routes/sessions.py` lets only a `joined` import in state `closed` supersede an incomplete
   parent; fragment and crashed imports never do.
 - Provenance (M3): the import inherits the parent's synthetic flag/marker. An orphan spill has
-  no provenance and is conservatively imported as synthetic (never labelled real).
+  no provenance: the manifest bool cannot say "unknown", so it stays set (never labelled real)
+  and the setup list shows an orphan (no parent, `spill_import` set) as "Provenance unknown".
 - Space and failure (M4): before joining, free space must cover the parent WAL size plus the
   spill plus 64 MiB, else the spill is imported as a fragment (WARNING "join deferred"). If the
   join write fails anyway, the partial dir is kept (state `crashed`), a sidecar
   `<name>.join-failed.json` names it, the spill is imported as a fragment, and later starts
   never attempt the join again for that content. Nothing is deleted or overwritten.
+- Verify before close: the joined segment is re-scanned before the version is closed. A failed
+  re-read marks it `crashed` (kept), writes the failed-join marker and imports the fragment.
+  An exclusive `<name>.join-inprogress.json` is created before the join copy, so a join killed
+  mid-copy is also never retried (fragment instead).
+- Lineage: `_descendants` does not walk through a non-superseding spill import, so resuming a
+  fragment never marks the full parent as superseded. The setup list labels fragments
+  ("Recovered fragment ...") and joined imports ("Recovered (complete)").
 
 ## Startup
 

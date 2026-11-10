@@ -75,10 +75,11 @@ describe("plausibilityNote", () => {
 });
 
 describe("user-facing wording (audit1 #15 #32)", () => {
-  it("mass label says the hanger is added for you", () => {
+  it("mass label explains in helper text that the hanger is added for you", () => {
     for (const ph of ["elastic", "plastic"] as const) {
       const f = PHASE_FIELDS[ph].find((x) => x.key === "mass_kg");
-      expect(f?.label).toContain("hanger is added for you");
+      expect(f?.label).not.toContain("hanger");
+      expect(f?.help).toContain("hanger is added for you");
     }
   });
   it("captured message hides raw uuids", () => {

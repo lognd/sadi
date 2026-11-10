@@ -1,0 +1,11 @@
+kind = "create"
+title = "Spill import: failed fragment verify is retried (new crashed copy) on every start"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 2
+scope = ["python/sadi/store/spill.py", "python/tests/store/test_spill.py"]
+acceptance = ["A fragment whose verify fails is marked so later starts do not re-copy it; nothing deleted"]
+at = "2026-11-10T13:32:29Z"
+actor = "lognd"
+rev = 1

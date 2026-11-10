@@ -60,6 +60,8 @@ TEMP_SPILL_GLOB = "sadi-spill-*.wal"
 MARKER_SUFFIX = ".imported.json"
 IMPORT_SLUG = "spill-import"
 FAILED_SUFFIX = ".join-failed.json"
+#: Sidecar created before a join copy starts; present without an imported marker = it died.
+INPROGRESS_SUFFIX = ".join-inprogress.json"
 #: Free space kept in reserve beyond the copy itself before a join is attempted (M4).
 JOIN_MARGIN_BYTES = 64 * 1024 * 1024
 
@@ -356,13 +358,46 @@ def _failed_marker_path(spill: Path) -> Path:
     return spill.with_name(spill.name + FAILED_SUFFIX)
 
 
-def _join_failed_before(scan: SpillScan) -> bool:
-    """Return True when a failed-join marker names this exact spill content (M4)."""
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _inprogress_path(spill: Path) -> Path:
+    """Return the sidecar path recording that a join of `spill` was started."""
+    return spill.with_name(spill.name + INPROGRESS_SUFFIX)
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _sidecar_names(path: Path, sha256: str) -> bool:
+    """Return True when the JSON sidecar at `path` names the content hash `sha256`."""
     try:
-        marker = json.loads(_failed_marker_path(scan.path).read_text("utf-8"))
-        return bool(marker.get("sha256") == scan.sha256)
+        return bool(json.loads(path.read_text("utf-8")).get("sha256") == sha256)
     except (OSError, ValueError, AttributeError):
         return False
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _join_failed_before(scan: SpillScan) -> bool:
+    """Return True when a failed or interrupted join of this exact spill content exists (M4)."""
+    return _sidecar_names(_failed_marker_path(scan.path), scan.sha256) or _sidecar_names(
+        _inprogress_path(scan.path), scan.sha256
+    )
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _begin_join(scan: SpillScan) -> bool:
+    """Exclusively create the in-progress sidecar; False means do not join (fragment instead)."""
+    created = create_exclusive(_inprogress_path(scan.path))
+    if created.is_err:
+        _log.warning("cannot record join start for %s: %s", scan.path, created.danger_err)
+        return False
+    fd = created.danger_ok
+    body = {"sha256": scan.sha256, "started": datetime.now(UTC).isoformat()}
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("in-progress marker write for %s failed: %s", scan.path, exc)
+    finally:
+        os.close(fd)
+    return True
 
 
 def _write_failed_marker(scan: SpillScan, partial: Path | None, why: str) -> None:
@@ -491,11 +526,20 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
     join = (
         None if parent is None else _plan_join(sessions, parent, scan, _spill_records(data, scan))
     )
+    if join is not None and not _begin_join(scan):  # frob:ticket 01M72T4R3X8833V8Z978SH4481
+        join = None
     result = _import_version(data_root, scan, data, parent, join)
-    if join is not None and result.is_err and isinstance(result.danger_err, SpillIo):
+    if (
+        join is not None
+        and result.is_err
+        and isinstance(result.danger_err, SpillIo | SpillVerifyFailed)
+    ):
         err = result.danger_err
         _log.error("join of %s failed (%s); importing the fragment instead", scan.path, err)
-        _write_failed_marker(scan, err.path, str(err.error))
+        if isinstance(err, SpillIo):
+            _write_failed_marker(scan, err.path, str(err.error))
+        else:
+            _write_failed_marker(scan, err.version_dir, f"verify failed: {err.error}")
         return _import_version(data_root, scan, data, parent, None, continuity_hint=False)
     return result
 
@@ -521,12 +565,14 @@ def _import_version(
     path, ver = taken.map_err(lambda e: SpillSession(error=e)).unwrap()
     new_uuid = uuid.uuid4()
     total = scan.last_seq if join is None else join.parent_records + len(join.tail)
-    # Provenance (M3): inherit from the parent; an orphan has none, so it is NOT labelled real.
+    # Provenance (M3/L2): inherit from the parent. An orphan has none: the manifest bool cannot
+    # say "unknown", so it stays True (never labelled real) and the UI shows an orphan
+    # (parent None + spill_import set) as "provenance unknown", not SYNTHETIC.
     if parent is not None:
         synthetic = session_is_synthetic(sessions / parent.dir_name)
     else:
         synthetic = True
-        _log.warning("orphan spill %s has no parent; imported as synthetic/unknown", scan.path)
+        _log.warning("orphan spill %s has no parent; imported with unknown provenance", scan.path)
     manifest = Manifest(
         session_uuid=str(new_uuid),
         dir_name=path.name,
@@ -552,13 +598,14 @@ def _import_version(
     if written.is_err:
         handle.close("crashed")
         return Err(SpillIo(error=written.danger_err, path=path))
-    verified = WalReader.scan(path / "wal")
+    verified = WalReader.scan(path / "wal")  # frob:ticket 01M72T4R3X8833V8Z978SH4481
+    if verified.is_err:
+        _log.error("imported segment in %s failed re-verification; kept, marked crashed", path)
+        handle.close("crashed")
+        return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
     closed = handle.close("closed")
     if closed.is_err:
         _log.warning("closing imported session %s: %s", path, closed.danger_err)
-    if verified.is_err:
-        _log.error("imported segment in %s failed re-verification", path)
-        return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
     marked = _write_marker(scan, path)
     if continuity_hint is not None:
         continuity = continuity_hint

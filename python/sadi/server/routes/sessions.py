@@ -64,9 +64,13 @@ def _descendants(items: list[SessionSummary], name: str) -> list[SessionSummary]
             if kid.name in seen:
                 continue
             seen.add(kid.name)
-            stack.append(kid.name)  # an incomplete child may still have complete descendants
-            if _supersedes(kid):
+            if _supersedes(kid):  # frob:ticket 01M72T4R3X8833V8Z978SH4481
                 out.append(kid)
+                stack.append(kid.name)
+            elif kid.spill_import is None:
+                stack.append(kid.name)  # an incomplete child may still have complete descendants
+            # a non-superseding spill import (fragment/crashed) holds only its own records, so
+            # its subtree does not descend from the parent's data: never walk through it
     return out
 
 

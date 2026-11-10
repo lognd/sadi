@@ -1,5 +1,6 @@
 // frob:ticket 01M6WZX63YFEAYQTPJXE2BTRN2
 // frob:ticket 01M729FVNSJCVAHK4XBSG9NBYC
+// frob:ticket 01M72T4R3X8833V8Z978SH4481
 // frob:accept COV001 because="covered by SessionSetup.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -144,7 +145,9 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
             <ul aria-label="Existing sessions" className="session-list">
               {sessions.map((s) => (
                 <li key={s.name}>
-                  <span>{s.name} {s.provenance.synthetic ? <strong className="synthetic-badge" role="note" data-testid={`synthetic-${s.name}`}>SYNTHETIC</strong> : null} <small>({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
+                  <span>{s.name} {s.spill_import != null && s.parent == null ? <strong role="note" data-testid={`unknown-${s.name}`}>Provenance unknown (recovered without its original session)</strong> : s.provenance.synthetic ? <strong className="synthetic-badge" role="note" data-testid={`synthetic-${s.name}`}>SYNTHETIC</strong> : null}{" "}
+                    {s.spill_import === "fragment" ? <small role="note" data-testid={`fragment-${s.name}`}>Recovered fragment (only the last few records; the full data is in {s.parent ?? "the original session"})</small> : null}
+                    {s.spill_import === "joined" ? <small role="note" data-testid={`joined-${s.name}`}>Recovered (complete)</small> : null}{" "}<small>({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
                     {s.latest ? null : <small role="note" data-testid={`newer-${s.name}`}>Newer work exists: {s.latest_name ?? "a later version"}. Resume that one unless you want this older copy.</small>}</span>
                   <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
                     Resume {s.name}

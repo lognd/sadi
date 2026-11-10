@@ -71,7 +71,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
           const note = plausibilityNote(f, p.fields[f.key] ?? "");
           return (
             <span key={f.key}>
-              <label className="field">
+              <label className="field" data-long={f.help !== undefined || f.label.split(/\s+/).length > 3 ? "true" : undefined}>
                 {f.label}{f.unit ? ` (${f.unit})` : ""}{f.required ? " *" : ""}{" "}
                 <input
                   type="text" inputMode="decimal" name={f.key} value={p.fields[f.key] ?? ""}
@@ -79,6 +79,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
                   onChange={(e) => { p.onField(f.key, e.target.value); }}
                 />
               </label>
+              {f.help !== undefined && <small className="field-help" data-testid={`help-${f.key}`}> {f.help}</small>}
               {note !== null && (
                 <span role="alert" data-testid={`plausible-${f.key}`}>
                   {" "}(!) {note.message}

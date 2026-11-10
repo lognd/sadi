@@ -29,7 +29,7 @@ export interface Theme {
   readonly bandOpacity: number;
 }
 
-/** The default light, print-friendly theme (ASCII-safe font stack, colour-blind-safe palette). */
+/** The on-screen light theme: cream paper canvas, monospace ticks, colour-blind-safe palette. */
 export const lightTheme: Theme = {
   name: "light",
   fontFamily: "ui-monospace, Menlo, Consolas, monospace",
@@ -48,4 +48,15 @@ export const lightTheme: Theme = {
   fitWidth: 1.75,
   markerRadius: 3,
   bandOpacity: 0.22,
+};
+
+/** The export theme for SVG/PNG figures: white background and a sans stack that Word and Inkscape resolve. */
+export const exportTheme: Theme = {
+  ...lightTheme,
+  name: "export",
+  fontFamily: "Helvetica, Arial, sans-serif",
+  background: "#ffffff",
+  plotBackground: "#ffffff",
+  annotationFill: "#f4f4f4",
+  grid: "#dddddd",
 };

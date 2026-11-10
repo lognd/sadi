@@ -2,7 +2,8 @@
 id = "01M71YY12XP2ZDM402A00A7RJW"
 title = "Data safety: server never writes snapshots (snapshot.write_snapshot unused)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

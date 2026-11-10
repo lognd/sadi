@@ -2,12 +2,12 @@
 id = "01M72VM5X86QRPEWSW65Q9RBD8"
 title = "Live trace sized from container (square, readable text); setup helper text; gauge height units"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:51:09Z"
+updated = "2026-11-10T13:51:49Z"
 scope = ["web/src/plots/live/**", "web/src/plots/core/canvas.ts", "web/src/styles.css", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/run/designAdvice.ts"]
 
 [[acceptance]]

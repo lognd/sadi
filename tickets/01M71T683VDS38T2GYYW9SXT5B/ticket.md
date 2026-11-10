@@ -7,9 +7,9 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T04:06:50Z"
-updated = "2026-11-10T15:34:55Z"
+updated = "2026-11-10T15:34:56Z"
 labels = ["creates:python/tests/server/test_status_route.py", "creates:python/sadi/server/routes/status.py", "creates:docs/server/status.md"]
-scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py", "python/sadi/server/live.py", "web/src/components/instrument/DebugStrip.tsx", "web/src/components/instrument/useBackendFacts.ts"]
+scope = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py", "python/sadi/server/live.py", "web/src/components/instrument/DebugStrip.tsx", "web/src/components/instrument/useBackendFacts.ts", "web/src/components/instrument/instrument.test.tsx"]
 
 [[acceptance]]
 text = "GET /api/status returns firmware, sample_rate_hz and data_root (the active --data-root); tested"

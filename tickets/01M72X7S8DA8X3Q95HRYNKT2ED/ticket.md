@@ -2,12 +2,12 @@
 id = "01M72X7S8DA8X3Q95HRYNKT2ED"
 title = "Weight-subset planner: choose which of the 8 inventory weights to hang, in order, with GP gain and saturation limits"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:19:20Z"
-updated = "2026-11-10T14:19:20Z"
+updated = "2026-11-10T14:19:28Z"
 labels = ["creates:python/sadi/design/plan.py", "creates:python/tests/design/test_plan.py", "creates:docs/design/weight-plan.md"]
 scope = ["python/sadi/design/plan.py", "python/sadi/design/models.py", "python/tests/design/test_plan.py", "docs/design/weight-plan.md"]
 

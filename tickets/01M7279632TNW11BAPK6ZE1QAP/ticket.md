@@ -4,9 +4,10 @@ title = "M4: auto-open settle point after each captured point; align settle voca
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:55:37Z"
-updated = "2026-11-10T07:55:45Z"
+updated = "2026-11-10T07:55:46Z"
 scope = ["python/sadi/labs/lctt/settle_stream.py"]
 
 [[acceptance]]

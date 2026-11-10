@@ -2,7 +2,8 @@
 id = "01M72ZGDCC7C75SMXSJRH6VBAE"
 title = "Standalone weight-planner GUI (no sadi session; for use beside LabVIEW) plus cli.py tests/docs"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

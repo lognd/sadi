@@ -10,7 +10,7 @@ updated = "2026-11-10T15:50:09Z"
 
 [[acceptance]]
 text = "Given the tracked docs, when the course-material test runs, then no doc names a course VI"
-bound = false
+bound = true
 +++
 
 found while working HQEPVZH; line 120 names lctt_export_calibration.vi

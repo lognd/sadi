@@ -122,3 +122,16 @@ def test_page_script_has_no_raw_newline_in_regex():
 
     js = re.search(r"<script>(.*)</script>", PAGE, re.S).group(1)
     assert not re.search(r"/\[?\n", js.replace("//", ""))
+
+
+def test_height_plan_needs_no_slope_and_has_default_uncertainty():
+    out = plan_from_form({"heights": "0.001,0.002,0.004,0.006", "cal_slope": ""})
+    assert out["ok"] and out["height_steps"] and out["slope_known"] is False
+    assert out["rel_se_slope"] is not None and out["se_slope_v_per_m"] is None
+    assert all(s["predicted_volts"] is None and s["u_height_m"] == 1e-4 for s in out["height_steps"])
+
+
+def test_height_default_uncertainty_is_overridable():
+    out = plan_from_form({"heights": "0.001,0.002,0.004", "u_height_default": "0.0005"})
+    assert all(s["u_height_m"] == 0.0005 for s in out["height_steps"])
+    assert "Default height uncertainty" in PAGE

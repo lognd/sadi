@@ -69,8 +69,11 @@ Prints the same table to stdout; exit code 1 when no plan exists.
 weights: an inventory of heights (m), each with its own uncertainty `u_h`. Duplicates stay distinct ids
 (`h1`, `h2`, ...). Heights whose nominal volts exceed the saturation limit are dropped, then the same GP
 selector (`selector.select_next`, candidates with `x` = height, `u_x` = `u_h`) orders the rest. Fewer than 2
-distinct usable heights is a `HeightPlanError.TooFew` error. Because volts are not measured yet, a nominal
-LVDT slope (and offset) is required: GUI "LVDT slope" field, CLI `--cal-slope`/`--cal-offset`.
+distinct usable heights is a `HeightPlanError.TooFew` error. The LVDT slope is optional: without
+one the plan ranks heights by spread only (no saturation filtering, no predicted volts) and reports the slope
+standard error relative to the slope (`rel_se_slope`, `slope_known` false). A typed slope (GUI "LVDT slope", CLI
+`--cal-slope`/`--cal-offset`) adds predicted volts, saturation filtering and absolute errors. A height without an
+uncertainty gets the default 0.1 mm (`DEFAULT_U_HEIGHT_M`; GUI "Default height uncertainty, mm", CLI `--u-height`).
 
 Each step reports its height, `u_h`, predicted volts and the running slope and intercept standard error
 propagated from the chosen heights (weighted least squares with sigma_v = |slope| u_h; a design estimate,

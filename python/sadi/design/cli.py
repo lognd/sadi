@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import Calibration, resolve_calibration
-from sadi.design.height_plan import HeightPlan, parse_heights, plan_heights
+from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, HeightPlan, parse_heights, plan_heights
 from sadi.design.models import CapturedPoint, PlanRequest, Weight
 from sadi.design.plan import plan
 from sadi.labs.lctt.loading import STANDARD_G
@@ -103,19 +103,19 @@ def format_height_plan(p: HeightPlan) -> str:
     for h in p.steps:
         ses = "-" if h.se_slope_v_per_m is None else f"{h.se_slope_v_per_m:.4g}"
         seo = "-" if h.se_offset_v is None else f"{h.se_offset_v:.4g}"
+        pv = "-" if h.predicted_volts is None else f"{h.predicted_volts:.3f}"
+        if not p.slope_known and h.rel_se_slope is not None:
+            ses = f"{h.rel_se_slope:.3g}rel"
         lines.append(
             f"{h.order:<2} {h.height_id:<6} {h.height_m:<10.6g} {h.u_height_m:<11.3g} "
-            f"{h.predicted_volts:7.3f}  {ses:<9}  {seo}"
+            f"{pv:>7}  {ses:<9}  {seo}"
         )
     return "\n".join(lines) + "\n"
 
 
 def _run_heights(args: argparse.Namespace) -> HeightPlan | None:
     """Plan which gauge heights to use first; None (after printing why) when no plan exists."""
-    if args.cal_slope is None:
-        sys.stdout.write("No plan: --heights needs --cal-slope (nominal V per m) to turn height into volts\n")
-        return None
-    hs = parse_heights(args.heights)
+    hs = parse_heights(args.heights, args.u_height)
     if isinstance(hs, Err):
         sys.stdout.write(f"No plan: {hs.error}\n")
         return None
@@ -134,7 +134,9 @@ def main(argv: list[str] | None = None) -> int:
     """Print the planned hang order as a table; non-zero exit when no plan exists."""
     ap = argparse.ArgumentParser(description="Plan which weights to hang, in order.")
     ap.add_argument("--heights", default="",
-                    help="height inventory h:u,... (m); plans which heights to calibrate with (needs --cal-slope)")
+                    help="height inventory h:u,... (m); plans which heights to calibrate with (--cal-slope optional)")
+    ap.add_argument("--u-height", type=float, default=DEFAULT_U_HEIGHT_M,
+                    help="uncertainty for heights entered without one, m (default 1e-4 = 0.1 mm)")
     ap.add_argument("--weights", default="", help="comma list of weight masses in kg, e.g. 0.1,0.1,0.2")
     ap.add_argument("--u-mass", type=float, default=0.0, help="mass uncertainty per weight, kg")
     ap.add_argument("--diameter", type=float, default=2.019e-4, help="wire diameter, m")

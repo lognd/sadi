@@ -21,6 +21,8 @@ _log = get_logger(__name__)
 
 #: Hard limit on the height inventory, matching the weight inventory.
 MAX_HEIGHTS = 12
+#: Height uncertainty (m) used for any height entered without one: 0.1 mm.
+DEFAULT_U_HEIGHT_M = 1e-4
 _TARGET = TargetSpec(half_width=0.05)
 _CONFIG = SelectorConfig()
 
@@ -54,9 +56,10 @@ class HeightStep(BaseModel):
     height_id: str
     height_m: float
     u_height_m: float
-    predicted_volts: float
+    predicted_volts: float | None
     se_slope_v_per_m: float | None
     se_offset_v: float | None
+    rel_se_slope: float | None = None
     expected_gain: float
     reason: str
 
@@ -72,11 +75,13 @@ class HeightPlan(BaseModel):
     dropped_saturation: int
     se_slope_v_per_m: float | None
     se_offset_v: float | None
+    rel_se_slope: float | None = None
+    slope_known: bool = True
     basis: Literal["design"] = "design"
 
 
-def parse_heights(text: str) -> Result[list[Height], str]:
-    """Parse 'h:u,h:u' (metres; u optional) into heights h1, h2, ...; duplicates stay distinct."""
+def parse_heights(text: str, default_u_m: float = DEFAULT_U_HEIGHT_M) -> Result[list[Height], str]:
+    """Parse 'h:u,h:u' (metres; u optional, default_u_m when blank) into h1, h2, ...; duplicates stay distinct."""
     out: list[Height] = []
     parts = [t.strip() for t in text.replace(";", ",").replace("\n", ",").split(",")]
     for i, part in enumerate(p for p in parts if p):
@@ -84,7 +89,7 @@ def parse_heights(text: str) -> Result[list[Height], str]:
             f = part.split(":")
             if len(f) not in (1, 2):
                 raise ValueError("expected height or height:uncertainty")
-            u = float(f[1]) if len(f) == 2 and f[1].strip() else 0.0
+            u = float(f[1]) if len(f) == 2 and f[1].strip() else default_u_m
             out.append(Height(height_id=f"h{i + 1}", height_m=float(f[0]), u_height_m=u))
         except (ValueError, ValidationError) as exc:
             _log.warning("bad height %r: %s", part, exc)
@@ -113,27 +118,33 @@ def _se(chosen: list[Height], slope: float) -> tuple[float | None, float | None]
 def plan_heights(  # noqa: PLR0913
     heights: list[Height],
     *,
-    nominal_slope_v_per_m: float,
+    nominal_slope_v_per_m: float | None = None,
     nominal_offset_v: float = 0.0,
     saturation_v: float | None = None,
     target: TargetSpec = _TARGET,
     config: SelectorConfig = _CONFIG,
 ) -> Result[HeightPlan, HeightPlanError]:
-    """Pick the ordered heights to use via the GP selector, dropping saturating ones."""
+    """Pick the ordered heights via the GP selector; without a slope, plan in height space only.
+
+    With no nominal slope there is no volts prediction and no saturation filter; the slope
+    uncertainty is then reported relative to the (unknown) slope.
+    """
+    known = nominal_slope_v_per_m is not None
+    slope = nominal_slope_v_per_m if nominal_slope_v_per_m is not None else 1.0
     if len(heights) > MAX_HEIGHTS:
         return Err(HeightPlanError.TooMany)
     if not all(math.isfinite(v) for h in heights for v in (h.height_m, h.u_height_m)) or not all(
-        math.isfinite(v) for v in (nominal_slope_v_per_m, nominal_offset_v)
+        math.isfinite(v) for v in (slope, nominal_offset_v)
     ):
         return Err(HeightPlanError.NonFinite)
-    if nominal_slope_v_per_m == 0:
+    if slope == 0:
         return Err(HeightPlanError.ZeroSlope)
     sat = saturation_v if saturation_v is not None else DEFAULT_SATURATION_V
 
     def volts(h: Height) -> float:
-        return nominal_offset_v + nominal_slope_v_per_m * h.height_m
+        return nominal_offset_v + slope * h.height_m
 
-    usable = [h for h in heights if abs(volts(h)) <= sat]
+    usable = [h for h in heights if abs(volts(h)) <= sat] if known else list(heights)
     n_sat = len(heights) - len(usable)
     if len({h.height_m for h in usable}) < 2:
         _log.warning(
@@ -167,23 +178,24 @@ def plan_heights(  # noqa: PLR0913
         if sug is None:  # range exhausted: no remaining height is beyond the last one used
             break
         h = by_id[sug.candidate_id]
-        obs.append(Obs(x=h.height_m, y=volts(h), u=abs(nominal_slope_v_per_m) * h.u_height_m))
+        obs.append(Obs(x=h.height_m, y=volts(h), u=abs(slope) * h.u_height_m))
         chosen.append((sug.candidate_id, sug.expected_gain, sug.why))
         remaining.remove(sug.candidate_id)
 
     steps: list[HeightStep] = []
     for i, (cid, gain, why) in enumerate(chosen):
         h = by_id[cid]
-        ses, seo = _se([by_id[c] for c, _, _ in chosen[: i + 1]], nominal_slope_v_per_m)
+        ses, seo = _se([by_id[c] for c, _, _ in chosen[: i + 1]], slope)
         steps.append(
             HeightStep(
                 order=i + 1,
                 height_id=h.height_id,
                 height_m=h.height_m,
                 u_height_m=h.u_height_m,
-                predicted_volts=volts(h),
-                se_slope_v_per_m=ses,
-                se_offset_v=seo,
+                predicted_volts=volts(h) if known else None,
+                se_slope_v_per_m=ses if known else None,
+                se_offset_v=seo if known else None,
+                rel_se_slope=None if known or ses is None else ses / abs(slope),
                 expected_gain=gain,
                 reason=f"Height #{i + 1}: {why}",
             )
@@ -203,5 +215,7 @@ def plan_heights(  # noqa: PLR0913
             dropped_saturation=n_sat,
             se_slope_v_per_m=last.se_slope_v_per_m,
             se_offset_v=last.se_offset_v,
+            rel_se_slope=last.rel_se_slope,
+            slope_known=known,
         )
     )

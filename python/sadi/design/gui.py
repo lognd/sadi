@@ -20,7 +20,7 @@ from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import resolve_calibration
 from sadi.design.cli import build_request
-from sadi.design.height_plan import parse_heights, plan_heights
+from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, parse_heights, plan_heights
 from sadi.design.plan import plan
 from sadi.logging_setup import get_logger
 
@@ -56,13 +56,14 @@ points you have already captured to replan.</p>
 <fieldset><legend>1. Height inventory (which heights you have)</legend>
 <table id="hts"><thead><tr><th>Height, mm</th><th>Uncertainty, mm</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
-<small>Enter each height you have and its uncertainty, same as the weights; duplicates stay distinct. Needs the LVDT slope below.</small>
+<label>Default height uncertainty, mm <input type="text" name="u_height_default" value="0.1"></label>
+<small>Enter each height you have and its uncertainty, same as the weights; duplicates stay distinct. The LVDT slope below is optional here; without it heights are ranked by spread only.</small>
 </fieldset>
 <fieldset><legend>2. LVDT calibration (type it from your LabVIEW, or fit it from points)</legend>
 <label>LVDT slope, V per m (from your LabVIEW calibration)
 <input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
 <label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
-<small>A typed slope is used as given (no uncertainty) and is all the height plan needs. Or leave it blank and fit from points:</small>
+<small>A typed slope is used as given (no uncertainty); the height plan does not need it. Or leave it blank and fit from points:</small>
 <table id="cal"><thead><tr><th>Height, mm</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addrow">Add row</button>
 <small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
@@ -124,6 +125,7 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
   body.u_mass = scaleNum(body.u_mass, G_TO_KG);
+  body.u_height_default = scaleNum(body.u_height_default, MM_TO_M);
   body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), G_TO_KG, false) : "";
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
@@ -145,14 +147,14 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const hp = data.height_steps ? data : data.heights_plan;
   if (hp) {
     const c0 = document.createElement("p");
-    c0.textContent = "1. Heights to use (design estimate): slope se " + hp.se_slope_v_per_m + " V/m, intercept se " + hp.se_offset_v + " V.";
+    c0.textContent = hp.slope_known ? "1. Heights to use (design estimate): slope se " + hp.se_slope_v_per_m + " V/m, intercept se " + hp.se_offset_v + " V." : "1. Heights to use (no slope given, ranked by spread): slope se is " + (hp.rel_se_slope === null ? "-" : (hp.rel_se_slope * 100).toPrecision(3) + " % of the slope") + ".";
     out.appendChild(c0);
     const t0 = document.createElement("table");
     const hr0 = t0.insertRow();
     for (const h of ["#", "Id", "Height mm", "u mm", "Predicted V", "Slope se", "Offset se"]) { const th = document.createElement("th"); th.textContent = h; hr0.appendChild(th); }
     for (const h of hp.height_steps) {
       const r = t0.insertRow();
-      for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, h.se_slope_v_per_m, h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
+      for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, hp.slope_known ? h.se_slope_v_per_m : (h.rel_se_slope === null ? null : (h.rel_se_slope * 100).toPrecision(3) + " %"), h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
     if (data.height_steps) return;
@@ -196,17 +198,20 @@ def _num(form: dict[str, Any], key: str, *, required: bool, default: float | Non
 # frob:ticket 01M7305JYQ6AZA2Z92Y5QQ54BF
 def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
     """Plan which gauge heights to use; the override slope is the nominal V per m."""
-    slope = _num(form, "cal_slope", required=True, default=None)
+    slope = _num(form, "cal_slope", required=False, default=None)
     off = _num(form, "cal_offset", required=False, default=0.0)
     sat = _num(form, "saturation", required=False, default=None)
     for got in (slope, off, sat):
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}
-    hs = parse_heights(str(form["heights"]))
+    du = _num(form, "u_height_default", required=False, default=DEFAULT_U_HEIGHT_M)
+    if isinstance(du, Err):
+        return {"ok": False, "error": du.error}
+    hs = parse_heights(str(form["heights"]), du.value if du.value is not None else DEFAULT_U_HEIGHT_M)
     if isinstance(hs, Err):
         return {"ok": False, "error": hs.error}
     res = plan_heights(
-        hs.value, nominal_slope_v_per_m=slope.value or 0.0, nominal_offset_v=off.value or 0.0,
+        hs.value, nominal_slope_v_per_m=slope.value, nominal_offset_v=off.value or 0.0,
         saturation_v=sat.value,
     )
     if isinstance(res, Err):
@@ -216,6 +221,7 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
     return {
         "ok": True, "advisory": True, "calibration": "heights plan (design estimate)",
         "se_slope_v_per_m": p.se_slope_v_per_m, "se_offset_v": p.se_offset_v,
+        "rel_se_slope": p.rel_se_slope, "slope_known": p.slope_known,
         "n_inventory": p.n_inventory, "n_usable": p.n_usable, "dropped_saturation": p.dropped_saturation,
         "height_steps": [s.model_dump() for s in p.steps],
     }

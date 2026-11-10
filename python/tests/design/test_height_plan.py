@@ -22,7 +22,7 @@ def test_parse_heights_distinct_ids_and_errors() -> None:
     """Duplicates stay distinct ids; bad text is a clear error."""
     hs = parse_heights("0.1:0.001,0.1:0.002,0.2").unwrap()
     assert [h.height_id for h in hs] == ["h1", "h2", "h3"]
-    assert hs[2].u_height_m == 0.0
+    assert hs[2].u_height_m == 1e-4  # blank u falls back to the 0.1 mm default
     assert isinstance(parse_heights("a:b"), Err)
     assert isinstance(parse_heights("0.1:-1"), Err)
 
@@ -62,11 +62,11 @@ def test_duplicates_distinct_and_too_few_errors() -> None:
 
 # frob:tests python/sadi/design/cli.py::main
 def test_cli_heights(capsys) -> None:
-    """--heights prints the height table; missing slope or too few heights exits 1."""
+    """--heights prints the height table; too few heights exits 1."""
     assert main(["--heights", INV, "--cal-slope", "-100"]) == 0
     out = capsys.readouterr().out
     assert "slope se=" in out and "h1" in out
-    assert main(["--heights", INV]) == 1
+    assert main(["--heights", INV]) == 0  # slope is optional
     assert main(["--heights", "0.001,0.001", "--cal-slope", "-100"]) == 1
     assert "at least 2 distinct" in capsys.readouterr().out
     plan = plan_heights(parse_heights(INV).unwrap(), nominal_slope_v_per_m=-100.0)
@@ -78,5 +78,18 @@ def test_gui_heights() -> None:
     """The form with a heights table returns height steps with se; errors are reported."""
     rep = plan_from_form({"heights": INV, "cal_slope": "-100"})
     assert rep["ok"] and rep["height_steps"] and rep["se_slope_v_per_m"] > 0
-    assert not plan_from_form({"heights": INV})["ok"]
+    assert plan_from_form({"heights": INV})["ok"]  # slope is optional
     assert not plan_from_form({"heights": "0.1,0.1", "cal_slope": "-100"})["ok"]
+
+
+# frob:tests python/sadi/design/height_plan.py::plan_heights
+def test_plan_without_slope_ranks_by_spread() -> None:
+    plan = plan_heights(parse_heights("0.001,0.002,0.004,0.006").unwrap()).unwrap()
+    assert not plan.slope_known and plan.rel_se_slope is not None and plan.se_slope_v_per_m is None
+    assert plan.dropped_saturation == 0
+
+
+# frob:tests python/sadi/design/height_plan.py::parse_heights
+def test_parse_heights_blank_uncertainty_uses_default() -> None:
+    hs = parse_heights("0.1,0.2:0.003").unwrap()
+    assert [h.u_height_m for h in hs] == [1e-4, 0.003]

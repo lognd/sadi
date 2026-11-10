@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R3TJETR6N3EVA9PMPWH8
+import { SyntheticBanner } from "../provenance/SyntheticBanner";
 import { plainNote } from "../wizard/plainText";
 import { getLogger } from "../../api/log";
 import { PANEL_ROWS, type ResultSet, type ResultValue } from "./types";
@@ -59,6 +60,7 @@ export function ResultsPanel(props: {
   };
   return (
     <section aria-label="Results" data-testid="results-panel">
+      <SyntheticBanner provenance={results.data_provenance} />
       <h2>{`Results (${String(results.n_points)} points)`}</h2>
       <table>
         <tbody>

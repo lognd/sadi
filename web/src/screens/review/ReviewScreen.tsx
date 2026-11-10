@@ -2,6 +2,7 @@
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
 // frob:ticket 01M6X9Y0CWQ6YRMDT8QF5JD036
 // frob:accept COV001 because="covered by ReviewScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
 import type * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -283,6 +284,7 @@ export function ReviewScreen({ initial, fetchImpl }: { initial?: ReviewData; fet
   return (
     <section aria-label="Review" aria-busy={busy}>
       <h1>Review</h1>
+      <SyntheticBanner />
       <p>{SAFETY_NOTE}</p>
       <div>
         <button type="button" disabled={busy || data.history.undo.length === 0} aria-keyshortcuts="Control+Z"

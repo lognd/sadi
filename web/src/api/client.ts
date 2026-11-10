@@ -1,5 +1,6 @@
 import { getLogger } from "./log";
 import { err, ok, type Result } from "./result";
+import type { components } from "./schema";
 import type { CheckResult, DoctorReport } from "../doctor/types";
 
 const log = getLogger("api.client");
@@ -13,6 +14,8 @@ export type ApiError =
 export interface Health {
   status: string;
   version: string;
+  /** Data provenance stamp; absent on older backends (treated as real). */
+  provenance?: components["schemas"]["DataProvenance"];
 }
 
 /** Fetch JSON from an API path, returning a Result instead of throwing. */

@@ -1,5 +1,6 @@
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:accept COV001 because="covered by LiveReadout.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import { SyntheticBanner } from "../provenance/SyntheticBanner";
 import { useEffect, useMemo, useRef } from "react";
 import { renderToCanvas } from "../../plots/core";
 import { buildLiveScene, type Snapshot } from "../../plots/live";
@@ -20,6 +21,7 @@ export function LiveTrace(): React.JSX.Element {
   return (
     <section className="card live-trace" aria-label="Live trace">
       <h2>Live trace</h2>
+      <SyntheticBanner compact />
       <TraceCanvas snapshot={snapshot} conn={conn} />
       {notice === null ? null : <p role="status" data-testid="live-notice">{notice}</p>}
     </section>

@@ -349,3 +349,28 @@ canvas { max-width: 100%; background: #ffffff; border: 1px solid var(--line); bo
   .app-top { position: static; }
   .fp-live { position: static; }
 }
+
+/* frob:ticket ~60KQX63 */
+/* ---- Synthetic data banner: loud, text + icon + hazard stripe so it never relies on color alone ---- */
+.synthetic-banner {
+  display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  margin: 0 0 var(--space-2); padding: var(--space-2) var(--space-3);
+  font-size: var(--text-md); font-weight: 750; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--synthetic-fg, #fff); background: var(--synthetic-bg, #b00020);
+  border: 3px solid var(--synthetic-fg, #fff); outline: 3px solid var(--synthetic-bg, #b00020);
+  border-radius: var(--radius-sm);
+}
+.synthetic-banner::before {
+  content: ""; align-self: stretch; flex: none; width: 1.1rem;
+  background: repeating-linear-gradient(135deg, var(--synthetic-fg, #fff) 0 6px, transparent 6px 12px);
+}
+:root[data-theme="dark"] .synthetic-banner { --synthetic-bg: #ff3b52; --synthetic-fg: #14040a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .synthetic-banner { --synthetic-bg: #ff3b52; --synthetic-fg: #14040a; }
+}
+.synthetic-banner strong { font-weight: 750; }
+.synthetic-icon { width: 1.6em; height: 1.6em; flex: none; }
+.synthetic-warning { font-size: var(--text-sm); font-weight: 600; letter-spacing: 0; text-transform: none; flex-basis: 100%; }
+.instrument-bar .synthetic-banner { max-width: var(--content-width); margin: 0 auto var(--space-1); }
+.synthetic-banner[data-compact="true"] { padding: var(--space-1) var(--space-2); font-size: var(--text-sm); }
+.instrument-bar .synthetic-warning { display: none; } /* keep the sticky bar short; full warning is in the tooltip and on other views */

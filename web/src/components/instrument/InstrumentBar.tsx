@@ -1,5 +1,8 @@
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
+// frob:ticket ~60KQX63
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import { SyntheticBanner } from "../provenance/SyntheticBanner";
+import type { DataProvenance } from "../../state/provenance";
 import { useLive } from "../../state/LiveContext";
 import type { LiveView } from "../../screens/run/live";
 import type { ConnState } from "../../ws/client";
@@ -22,12 +25,13 @@ export function connWord(v: LiveView, conn: ConnState): string {
 }
 
 /** Presentational instrument bar: volts, displacement, load, drift, settle, connection and a SIMULATED banner. */
-export function InstrumentBarView({ view, conn, calib }: { readonly view: LiveView; readonly conn: ConnState; readonly calib: Calib | null }): React.JSX.Element {
+export function InstrumentBarView({ view, conn, calib, provenance }: { readonly view: LiveView; readonly conn: ConnState; readonly calib: Calib | null; readonly provenance?: DataProvenance | null }): React.JSX.Element {
   const volts = view.volts === null ? "--" : view.volts.toFixed(4);
   const disp = calib === null || view.volts === null ? NOT_CAL : `${displacementMm(calib, view.volts).toFixed(3)} mm`;
   const drift = view.driftVps === null ? "--" : `${(view.driftVps * 1000).toFixed(1)} mV/s`;
   return (
     <section className="instrument-bar" aria-label="Instrument" data-stale={view.stale ? "true" : "false"}>
+      <SyntheticBanner provenance={provenance} />
       {view.source === "simulated" && <p className="sim-banner" role="status" data-testid="sim-banner">SIMULATED DATA - not from the instrument</p>}
       <dl className="ib-grid">
         <div className="ib-big"><dt>LVDT</dt><dd data-testid="ib-volts"><span className="ib-num">{volts}</span> V</dd></div>

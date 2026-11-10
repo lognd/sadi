@@ -32,6 +32,8 @@ export interface ResultSet {
   pending: string[];
   notes: string[];
   refinement: string[];
+  /** Real-vs-synthetic stamp; absent on older backends. */
+  data_provenance?: { source: "real" | "synthetic"; synthetic: boolean; label: string; warning: string };
 }
 
 /** Result names the panel shows, in display order, with human labels. */

@@ -3,6 +3,7 @@
 import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
+import { currentlySynthetic, exportFilename } from "../../state/provenance";
 import { exportUrl } from "../export/api";
 
 const log = getLogger("screens.run.export");
@@ -35,7 +36,7 @@ export async function fetchRunExport(format: string, fetchImpl: typeof fetch = f
   }
   const blob = await res.blob();
   log.info("export fetched", { format, bytes: blob.size });
-  return ok({ blob, filename: `sadi-${format}.csv` });
+  return ok({ blob, filename: exportFilename(`sadi-${format}.csv`, currentlySynthetic()) });
 }
 
 /** User-facing text for a failed export. */

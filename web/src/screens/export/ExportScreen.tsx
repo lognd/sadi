@@ -5,6 +5,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
 import { exportFigure, validateDrawable, type ExportOptions } from "../../plots/core";
+import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
+import { currentlySynthetic, EXPORT_PREFIX, type DataProvenance, exportFilename, isSynthetic, useProvenance } from "../../state/provenance";
 import { exportUrl, getExportFormats, getFigureData, getResults, toProblem } from "./api";
 import { figureDataScenes, isFigureData } from "./figureScenes";
 import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
@@ -14,9 +16,9 @@ const log = getLogger("screens.export");
 /** PNG resolutions offered for figure export. */
 export const DPI_CHOICES = [96, 192, 300, 600] as const;
 
-/** Download file name for a figure export. */
+/** Download file name for a figure export (SYNTHETIC- prefixed when the data is synthetic). */
 export function figureFileName(formatId: string, fmt: ExportOptions["format"]): string {
-  return `${formatId}.${fmt}`;
+  return exportFilename(`${formatId}.${fmt}`, currentlySynthetic());
 }
 
 /** Save a blob through a temporary link; browser only. */
@@ -114,6 +116,7 @@ export function ReportView({ results }: { results: ResultSet | null }) {
   return (
     <section aria-label="Report">
       <h2>Report</h2>
+      <SyntheticBanner provenance={results.data_provenance} />
       <p>{`Based on ${String(results.n_points)} points.`}</p>
       {results.values.length === 0 ? <p>No values computable yet.</p> : (
         <table>
@@ -149,23 +152,28 @@ export function FormatList(props: {
   dpi: number;
   onDpi?: (dpi: number) => void;
   onFigure?: (f: ExportFormatView, format: ExportOptions["format"]) => void;
+  provenance?: DataProvenance | null;
 }) {
-  const { formats, dpi, onDpi, onFigure } = props;
+  const { formats, dpi, onDpi, onFigure, provenance } = props;
   if (formats.length === 0) {
     return <section aria-label="Export formats"><p data-testid="no-formats">This lab declares no export formats yet.</p></section>;
   }
   // frob:ticket 01M6XAASK3B2CWRRHQZ995FN7K
   // Downloads (the primary CSV deliverable) come first so they are first in Tab order (U-08).
+  const stored = useProvenance((s) => s.provenance);
+  const synthetic = isSynthetic(provenance === undefined ? stored : provenance);
   const downloads = formats.filter((f) => f.download);
   const figures = formats.filter((f) => !f.download);
   return (
     <section aria-label="Export formats">
       <h2>Export</h2>
+      <SyntheticBanner provenance={provenance} />
       {downloads.length > 0 ? (
         <ul aria-label="Downloads">
           {downloads.map((f) => (
             <li key={f.id} data-testid={`format-${f.id}`}>
               <a href={exportUrl(f.id)} download>{`Download ${f.title}`}</a>
+              {synthetic ? <code className="synthetic-file" data-testid={`prefix-${f.id}`}>{` (saved as ${EXPORT_PREFIX}...)`}</code> : null}
             </li>
           ))}
         </ul>
@@ -198,6 +206,7 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
   const [results, setResults] = useState<ResultSet | null>(null);
   const [formats, setFormats] = useState<ExportFormatView[]>([]);
   const [problem, setProblem] = useState<Problem | null>(null);
+  const observe = useProvenance((s) => s.observe);
   const [dpi, setDpi] = useState<number>(300);
 
   useEffect(() => {
@@ -205,11 +214,11 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
     void (async () => {
       const [r, f] = await Promise.all([getResults(fetchImpl), getExportFormats(fetchImpl)]);
       if (!live.current) return;
-      if (r.ok) setResults(r.value); else { log.warn("results failed", { kind: r.error.kind }); setProblem(toProblem(r.error)); }
+      if (r.ok) { setResults(r.value); observe(r.value.data_provenance); } else { log.warn("results failed", { kind: r.error.kind }); setProblem(toProblem(r.error)); }
       if (f.ok) setFormats(f.value); else { log.warn("formats failed", { kind: f.error.kind }); setProblem((p) => p ?? toProblem(f.error)); }
     })();
     return () => { live.current = false; };
-  }, [fetchImpl]);
+  }, [fetchImpl, observe]);
 
   const onFigure = useCallback((f: ExportFormatView, format: ExportOptions["format"]) => {
     log.info("figure export requested", { id: f.id, format, dpi });

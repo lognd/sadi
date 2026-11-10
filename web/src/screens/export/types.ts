@@ -45,6 +45,8 @@ export interface ResultSet {
   notes: string[];
   refinement: string[];
   provenance: QuantityProvenance[];
+  /** Real-vs-synthetic stamp; absent on older backends. */
+  data_provenance?: components["schemas"]["DataProvenance"];
 }
 
 /** Parsed problem+json body; `hint` says what to do next. */

@@ -2,7 +2,8 @@
 id = "01M72XJMDHV60KRBV1ANWKHKC9"
 title = "Record a large raw-sample block per tare/capture and store mean, sd, n (like the VI 2500-sample block)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

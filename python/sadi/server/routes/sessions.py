@@ -29,29 +29,56 @@ from sadi.server.service import SessionService
 
 _log = logging.getLogger(__name__)
 
+#: Manifest state of a session whose fold failed; never counts as newer work.
+INCOMPLETE = "incomplete"
 
-# frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
-def mark_latest(items: list[SessionSummary]) -> list[SessionSummary]:
-    """Flag every version that has a newer sibling in its family as `latest=False` (audit1 #12)."""
-    newest: dict[str, SessionSummary] = {}
+
+# frob:ticket 01M727965F98C8FB295P7A7FRS
+def _descendants(items: list[SessionSummary], name: str) -> list[SessionSummary]:
+    """Complete versions that descend from `name` through `parent` links (not `name` itself)."""
+    kids: dict[str, list[SessionSummary]] = {}
     for item in items:
-        if item.family not in newest or item.version > newest[item.family].version:
-            newest[item.family] = item
-    return [
-        item
-        if item is newest[item.family]
-        else item.model_copy(update={"latest": False, "latest_name": newest[item.family].name})
-        for item in items
-    ]
+        if item.parent is not None:
+            kids.setdefault(item.parent, []).append(item)
+    out: list[SessionSummary] = []
+    seen = {name}
+    stack = [name]
+    while stack:
+        for kid in kids.get(stack.pop(), []):
+            if kid.name in seen:
+                continue
+            seen.add(kid.name)
+            stack.append(kid.name)  # an incomplete child may still have complete descendants
+            if kid.state != INCOMPLETE:
+                out.append(kid)
+    return out
 
 
-# frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+# frob:ticket 01M727965F98C8FB295P7A7FRS
+def mark_latest(items: list[SessionSummary]) -> list[SessionSummary]:
+    """Flag a version `latest=False` only when a complete version descends from it by `parent`.
+
+    Version numbers do not mean lineage: a branch resumed from an old version is a leaf of its
+    own and stays latest; `incomplete` versions never supersede their parent nor count as latest.
+    """
+    out: list[SessionSummary] = []
+    for item in items:
+        newer = _descendants(items, item.name)
+        if item.state == INCOMPLETE or not newer:
+            out.append(item)
+            continue
+        leaf = max(newer, key=lambda i: i.version)
+        out.append(item.model_copy(update={"latest": False, "latest_name": leaf.name}))
+    return out
+
+
+# frob:ticket 01M727965F98C8FB295P7A7FRS
 def newer_than(items: list[SessionSummary], name: str) -> list[str]:
-    """Names of versions in `name`'s family that are newer than it (empty if unknown or latest)."""
+    """Names of complete versions descended from `name` (empty if unknown or a leaf)."""
     me = next((i for i in items if i.name == name), None)
     if me is None:
         return []
-    return [i.name for i in items if i.family == me.family and i.version > me.version]
+    return [i.name for i in _descendants(items, name)]
 
 
 def make_sessions_router(svc: SessionService) -> APIRouter:

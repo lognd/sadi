@@ -30,6 +30,12 @@ function labName(id: string): string { return LAB_NAMES[id] ?? id; }
 /** Option text for a lab. */
 function labTitle(l: LabInfo): string { return LAB_NAMES[l.id] ?? l.title; }
 
+/** True for sessions whose log may end in a torn tail (interrupted writer or failed fold). */
+// frob:ticket 01M727965F98C8FB295P7A7FRS
+export function isRecoverable(state: string): boolean {
+  return state === "open" || state === "incomplete";
+}
+
 /**
  * Setup screen shown when no session is open: resume an existing one or start a new one.
  * Resuming makes a new version and creating gets a new id, so existing data is never overwritten.
@@ -143,6 +149,11 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
                   {s.state === "closed" && csvFormatFor(s.lab) !== null ? (
                     <button type="button" disabled={pending !== null} onClick={() => { download(s); }}>
                       Download {s.name}
+                    </button>
+                  ) : null}
+                  {isRecoverable(s.state) && csvFormatFor(s.lab) !== null ? (
+                    <button type="button" disabled={pending !== null} onClick={() => { download(s); }}>
+                      Download recovered data (may be missing the last few seconds): {s.name}
                     </button>
                   ) : null}
                 </li>

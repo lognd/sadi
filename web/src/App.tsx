@@ -9,6 +9,7 @@ import { useTheme } from "./components/shell/theme";
 import { DebugStrip } from "./components/instrument/DebugStrip";
 import { InstrumentBar } from "./components/instrument/InstrumentBar";
 import { useBackendFacts } from "./components/instrument/useBackendFacts";
+import { FactsContext } from "./components/instrument/FactsContext";
 import { LiveProvider } from "./state/LiveContext";
 import { useProvenancePoll } from "./state/provenance";
 import { useStore } from "./state/store";
@@ -18,6 +19,7 @@ const log = getLogger("App");
 /** Health poll period in ms: how fast the UI notices a dead or recovered backend. */
 export const HEALTH_POLL_MS = 3000;
 
+// frob:ticket 01M727VHZTQHYABYCT6XTASEM1
 // frob:ticket 01M6WA9WZW89EA826DSJCJ0197
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
@@ -57,6 +59,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
   }, [setConnection]);
 
   return (
+    <FactsContext.Provider value={facts}>
     <LiveProvider {...(trace === undefined ? {} : { trace })}>
       <div className="app-top">
       <header className="app-header">
@@ -83,5 +86,6 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
         {visible ? <DoctorScreen /> : <WizardHost />}
       </div>
     </LiveProvider>
+    </FactsContext.Provider>
   );
 }

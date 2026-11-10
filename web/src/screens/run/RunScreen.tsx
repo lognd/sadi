@@ -133,7 +133,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [accept, doExport]);
 
   return (
-    <WizardShell onKeyAction={onKey} onWizard={p.onWizard} savedTick={savedTick} finishBlockedWhy={finishBlockedWhy(p.phase, pointCount)} after={<RunPlot plot={p.plot ?? null} />}>
+    <WizardShell onKeyAction={onKey} onWizard={p.onWizard} finishBlockedWhy={finishBlockedWhy(p.phase, pointCount)} after={<RunPlot plot={p.plot ?? null} />}>
       {side.guidance != null && (
         <p data-testid="guidance-note">
           {guidanceText(side.guidance.nextAction)}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}

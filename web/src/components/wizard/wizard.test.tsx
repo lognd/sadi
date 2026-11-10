@@ -62,7 +62,7 @@ describe("NextActionPanel", () => {
 
 describe("StatusBar", () => {
   it("renders words for all indicators", () => {
-    const html = renderToString(<StatusBar source="simulated" motion="creeping" signal="saturated" savedAt="12:04:11" />);
+    const html = renderToString(<StatusBar source="simulated" motion="creeping" signal="saturated" save={{ state: "saved", text: "Saved 12:04:11" }} />);
     expect(html).toContain("Simulated");
     expect(html).toContain("Creeping");
     expect(html).toContain("SATURATED");

@@ -56,7 +56,6 @@ from sadi.store.events import EventsWal, ReplayState, recover_state
 from sadi.store.incremental import IncrementalReplay
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FLAG_JSON, NewRecord, RecordType
-from sadi.store.snapshot import SnapshotCadence, write_snapshot
 from sadi.store.session import (
     SESSIONS_DIRNAME,
     SessionHandle,
@@ -66,6 +65,8 @@ from sadi.store.session import (
     resume_session_in_held_root,
     session_is_synthetic,
 )
+from sadi.store.snapshot import SnapshotCadence, write_snapshot
+from sadi.store.spill import write_spill
 from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
 from sadi.synthetic.provenance import REAL, SYNTHETIC, DataProvenance
@@ -387,17 +388,52 @@ class SessionService:
             if self._before_close is not None:
                 self._before_close()
             closed = cur.writer.close()
-            self._open = None
             if closed.is_ok:
+                self._open = None
                 self._snapshot(cur, forced=True)  # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
-            if closed.is_err:
+            else:
+                # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
                 _log.error("writer close failed: %s", closed.danger_err)
+                kept = self._spill_failed(cur)
+                if kept is not None:
+                    return Err(kept)
+                self._open = None
                 cur.handle.close(state="incomplete")
                 return Err(from_model(closed.danger_err, "store"))
             shut = cur.handle.close()
             shut.map_err(_from_store).unwrap()
             _log.info("session %s closed", cur.handle.path.name)
             return Ok(None)
+
+    # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+    def _spill_failed(self, cur: _Open) -> ApiProblem | None:
+        """Spill a failed writer's undurable records; return a 409 when they could not be saved.
+
+        None means nothing was lost (spilled to disk, or there was nothing undurable); on a
+        409 the writer stays open in memory so the user can fix the disk and retry Close.
+        """
+        pending = cur.writer.undurable_records()
+        if not pending:
+            return None
+        spilled = write_spill(pending, uuid.UUID(cur.handle.manifest.session_uuid), self._root)
+        if spilled.is_ok:
+            _log.warning(
+                "failed writer: %d undurable record(s) spilled to %s; import_all_spills "
+                "recovers them at next start",
+                len(pending),
+                [str(p) for p in spilled.danger_ok],
+            )
+            return None
+        _log.critical(
+            "failed writer: %d undurable record(s) could NOT be spilled (%s); kept in memory",
+            len(pending),
+            spilled.danger_err.attempts,
+        )
+        return conflict(
+            "undurable_records",
+            f"{len(pending)} unsaved record(s) could not be written to any spill location",
+            "Free disk space or reattach the drive, then press Close session again.",
+        )
 
     def shutdown(self) -> None:
         """Close any open session at app shutdown; failures are logged, never raised."""

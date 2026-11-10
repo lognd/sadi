@@ -2,7 +2,8 @@
 id = "01M72D2TZS82YV31D8FPXPD3AB"
 title = "Spill import: join on real fsync failure, safe supersede, provenance, bounded copy"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

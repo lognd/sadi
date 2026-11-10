@@ -20,6 +20,15 @@ export function slugFrom(text: string): string {
   return s === "" ? "session" : s;
 }
 
+/** Plain display names per lab id (ids stay stable; server titles are technical). */
+const LAB_NAMES: Readonly<Record<string, string>> = { lctt: "Copper wire tension test (weights and displacement)" };
+
+/** Display name for a lab id, falling back to the server title. */
+function labName(id: string): string { return LAB_NAMES[id] ?? id; }
+
+/** Option text for a lab. */
+function labTitle(l: LabInfo): string { return LAB_NAMES[l.id] ?? l.title; }
+
 /**
  * Setup screen shown when no session is open: resume an existing one or start a new one.
  * Resuming makes a new version and creating gets a new id, so existing data is never overwritten.
@@ -72,38 +81,58 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
   };
 
   return (
-    <section aria-label="Session setup">
-      <h2>Session setup</h2>
-      <p>No session is open. Resume an existing session (it is saved as a new version; the original is kept) or start a new one.</p>
-      <h3>Existing sessions</h3>
-      {sessions === null ? <p>Loading sessions...</p> : sessions.length === 0 ? <p>No saved sessions.</p> : (
-        <ul aria-label="Existing sessions">
-          {sessions.map((s) => (
-            <li key={s.name}>
-              <span>{s.name} ({s.lab}, v{s.version}, {s.state})</span>{" "}
-              <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
-                Resume {s.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <h3>New session</h3>
-      <form onSubmit={create} aria-label="New session">
-        <label>Lab{" "}
-          <select value={lab} onChange={(e) => { setLab(e.target.value); }}>
-            {labs.map((l) => <option key={l.id} value={l.id}>{l.title}</option>)}
-          </select>
-        </label>{" "}
-        <label>Specimen name{" "}
-          <input value={name} onChange={(e) => { setName(e.target.value); }} autoFocus />
-        </label>{" "}
-        <label>Material{" "}
-          <input value={material} onChange={(e) => { setMaterial(e.target.value); }} />
-        </label>{" "}
-        <button type="submit" disabled={pending !== null || lab === ""}>Create session</button>
-      </form>
-      {labs.length === 0 ? <p>No labs are registered, so a new session cannot be created.</p> : null}
+    <section aria-label="Session setup" className="setup">
+      <h2>Start a tension test</h2>
+      <p className="setup-intro">
+        This lab pulls a copper wire with weights and measures how much it stretches. From that it works out
+        how stiff the wire is and where it starts to deform for good.
+      </p>
+      <div className="setup-cols">
+        <div className="setup-new">
+          <h3>New session</h3>
+          <form onSubmit={create} aria-label="New session" className="stack">
+            <label>Lab
+              <select value={lab} onChange={(e) => { setLab(e.target.value); }}>
+                {labs.map((l) => <option key={l.id} value={l.id}>{labTitle(l)}</option>)}
+              </select>
+              <small>Which experiment to run.</small>
+            </label>
+            <label>Specimen name
+              <input value={name} onChange={(e) => { setName(e.target.value); }} placeholder="cu-wire-1" autoFocus />
+              <small>Used to name the saved files, e.g. cu-wire-1.</small>
+            </label>
+            <label>Material
+              <input value={material} onChange={(e) => { setMaterial(e.target.value); }} placeholder="copper" />
+              <small>Optional; recorded with the results.</small>
+            </label>
+            <button type="submit" className="btn btn-primary" data-variant="primary" disabled={pending !== null || lab === ""}>Create session</button>
+          </form>
+          {labs.length === 0 ? <p>No labs are registered, so a new session cannot be created.</p> : null}
+        </div>
+        <div className="setup-side">
+          <h3>What happens next</h3>
+          <ol className="next-steps">
+            <li>Clamp the wire and check it does not slip.</li>
+            <li>Calibrate and tare the displacement sensor.</li>
+            <li>Add weights and capture each settled reading.</li>
+            <li>Read the results and export the data.</li>
+          </ol>
+          <h3>Resume a session</h3>
+          {sessions === null ? <p>Loading sessions...</p> : sessions.length === 0 ? <p>No saved sessions.</p> : (
+            <ul aria-label="Existing sessions" className="session-list">
+              {sessions.map((s) => (
+                <li key={s.name}>
+                  <span>{s.name} <small>({labName(s.lab)}, v{s.version}, {s.state})</small></span>
+                  <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
+                    Resume {s.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+      <p className="data-safety"><small>Your data is safe: resuming makes a new version, the original is kept, and nothing is ever overwritten.</small></p>
       <p role="status">{message}</p>
     </section>
   );

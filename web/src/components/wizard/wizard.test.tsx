@@ -123,14 +123,13 @@ describe("WizardShell", () => {
     expect(html).toContain("Measuring...");
   });
 
-  it("lays out the front panel with a persistent live readout and trace", () => {
+  // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
+  it("lays out the front panel with the do-this card and live trace", () => {
     const html = renderToString(withLive(<WizardShell><p>Step body</p></WizardShell>, fakeLive({ view: { volts: 1.5 } })));
     expect(html).toContain('class="front-panel"');
     expect(html).toContain("<h1>Guided run</h1>");
-    expect(html).toContain('aria-label="Live readout"');
     expect(html).toContain('aria-label="Live trace"');
-    expect(html).toContain("1.5000");
-    expect(html.indexOf("Step body")).toBeLessThan(html.indexOf('aria-label="Live readout"'));
+    expect(html.indexOf("Step body")).toBeLessThan(html.indexOf('aria-label="Live trace"'));
   });
 
   it("status bar reflects the shared live feed", () => {

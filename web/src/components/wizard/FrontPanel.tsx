@@ -15,6 +15,8 @@ export interface FrontPanelProps {
   readonly live: React.ReactNode;
   /** Right column footer: the status bar. */
   readonly status: React.ReactNode;
+  /** Main column top: the "Do this" instructions card, or null. */
+  readonly guide?: React.ReactNode;
   /** Main column footer: the prominent next-action panel. */
   readonly next: React.ReactNode;
   /** Main column: the step content. */
@@ -34,8 +36,9 @@ export function FrontPanel(p: FrontPanelProps): React.JSX.Element {
         {p.shortcuts}
       </div>
       <main className="fp-main">
-        {p.children}
+        {p.guide}
         {p.next}
+        {p.children}
       </main>
       <aside className="fp-live" aria-label="Live instrument">
         {p.live}

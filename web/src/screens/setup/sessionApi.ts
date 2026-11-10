@@ -3,6 +3,7 @@ import { getJson } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { err, ok, type Result } from "../../api/result";
 import type { components } from "../../api/schema";
+import { plainNote } from "../../components/wizard/plainText";
 import { toFailure, type WizardFailure } from "../../components/wizard/wizardApi";
 
 const log = getLogger("setup.api");
@@ -57,6 +58,6 @@ export async function resumeSession(name: string, fetchImpl: typeof fetch = fetc
 
 /** Human text for a failed session call. */
 export function failureText(f: WizardFailure): string {
-  if (f.kind === "problem") return `${f.problem.title}: ${f.problem.hint}`;
-  return f.error.kind === "http" ? `Server error ${String(f.error.status)}` : `Network error: ${f.error.message}`;
+  if (f.kind === "problem") return `${f.problem.title}: ${plainNote(f.problem.hint)}`;
+  return f.error.kind === "http" ? `Server error ${String(f.error.status)} - try again, and open Doctor if it keeps happening` : `Network error: ${f.error.message}`;
 }

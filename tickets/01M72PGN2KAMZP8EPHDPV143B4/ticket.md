@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T12:21:51Z"
-updated = "2026-11-10T13:11:53Z"
+updated = "2026-11-10T13:11:56Z"
 labels = ["python", "web", "creates:docs/design/gp-selector.md"]
 scope = ["python/sadi/design/*", "python/sadi/server/routes/design.py", "python/tests/design/*", "docs/design/*", "web/src/screens/run/*", "python/sadi/server/app.py", "web/src/api/schema.ts", "web/src/components/guidance/GpLoadPanel.test.tsx", "web/src/components/guidance/GpLoadPanel.tsx", "web/src/components/guidance/GuidancePanel.test.tsx", "web/src/components/guidance/GuidancePanel.tsx", "web/src/components/guidance/api.ts", "web/src/components/guidance/types.ts", "python/tests/server/test_design_route.py", "docs/server/app.md", "docs/web/run-screens.md", "web/src/api/openapi.json", "docs/index.md", "docs/design/gp-selector.md"]
 

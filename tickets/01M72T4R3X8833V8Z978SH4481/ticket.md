@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:30:28Z"
+updated = "2026-11-10T13:30:35Z"
 labels = ["creates:none"]
 scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/store/test_spill.py", "python/tests/server/test_latest_lineage.py", "web/src/screens/setup/SessionSetup.tsx", "docs/store/spill.md"]
 

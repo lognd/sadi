@@ -48,13 +48,13 @@ acked_at = "2026-11-10T04:35:54.264742697Z"
 [[symbol]]
 identity = "web/src/App.tsx::App"
 symref = "web/src/App.tsx::App"
-sig = "ad8f9625e97eeb8bb2163c73470d0ba3b49e9393153e3490c2afa143b5681818"
-body = "fdc287a0687d58789a597c232b3c4e6bbeb39abe0544fbd36d0c513000f9ed8e"
+sig = "47a4b4ab65dcf5164efa5dd58182b6d4a5642b55ad1b6154adecd490b924c8fe"
+body = "3be6e3728d35b1d06a2285228ec37aa84819441dca0a411963896bd73c5a21d6"
 doc = "62b81571054e38a7ce061a7c243a6b593f239160aa7de373e5f8d5acc894e6d7"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "8a2f554762f874834301b30c725e9a9e4fb384900822062f6d2b18adbbfd5362"
+contract = "873ba02c2e4c0b472ef4a42f48cefdcd568d2a0e85c465aa711f99be5bf92647"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T04:35:54.264742697Z"
+acked_at = "2026-11-10T05:15:47.903609819Z"
 
 [[symbol]]
 identity = "web/src/App.tsx::log"

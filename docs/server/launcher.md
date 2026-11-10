@@ -68,8 +68,11 @@ Real board: with none of `--sim`, `--synthetic-specimen` or `--ad3`, the launche
 board over serial (`sadi/server/device_open.py::open_real_device`, a `DeviceSource(kind="serial")`)
 on `--device-port`, else `SADI_PORT`, else `/dev/ttyUSB0` (auto-detect by FTDI id on Windows) and
 passes it as `AppSettings.device`, so `/api/stream` works. If the board cannot be opened the launcher
-prints a plain-language message (port, cause, "plug in the SADI board...") and exits 6 rather than
-serving with no device. Tests use a fake serial opener; none touch a real port.
+prints a plain-language WARNING (port, cause, "plug in the SADI board...") and still starts with no
+device (exit 0 on shutdown): `/api/device/status` reports `attached=false`, status `error`, no live
+acquisition exists so nothing is recorded, and closed sessions can be browsed and exported. No
+session is created or changed by this path; restart with the board attached to capture. A bad data
+folder or lock still exits. Tests use a fake serial opener; none touch a real port.
 The app never reads the environment itself. `python -m sadi` runs the same launcher.
 
 ## Live acquisition

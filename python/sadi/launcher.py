@@ -21,7 +21,7 @@ import webbrowser
 from collections.abc import Callable, Mapping, Sequence
 from importlib import metadata, resources
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 import uvicorn
 from fastapi import FastAPI
@@ -460,9 +460,12 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
         _log.info("opening the real SADI board on %s", dev_port)
         real = open_real_device(dev_port)
         if real.is_err:
-            _err(f"sadi: {real.danger_err}\n")
-            return EXIT_DEVICE
-        device = real.danger_ok
+            # frob:ticket 01M7242CRQGBYWTR080XEYNFS9
+            _log.warning("real board unavailable; starting with no device: %s", real.danger_err)
+            _err(f"sadi: WARNING: {real.danger_err}\n")
+            _err(NO_DEVICE_BANNER)
+        else:
+            device = real.danger_ok
 
     ad3: Ad3Guard | None = None
     if ad3_requested(args.ad3):
@@ -479,6 +482,14 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     finally:
         if ad3 is not None:
             ad3.close()
+
+
+#: Printed when real mode starts with no board: browse and export only, capture stays blocked.
+NO_DEVICE_BANNER: Final[str] = (
+    "sadi: no instrument attached: starting anyway so closed sessions can be browsed and "
+    "exported; status is disconnected and capture is blocked until a board is attached "
+    "(plug it in and restart sadi). No session is created or changed.\n"
+)
 
 
 def _serve_app(

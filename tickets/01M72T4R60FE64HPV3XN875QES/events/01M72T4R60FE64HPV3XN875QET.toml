@@ -1,0 +1,13 @@
+kind = "create"
+title = "Restyle: sentence-case readable long labels; white sans export theme"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 2
+labels = ["creates:none"]
+scope = ["web/src/styles.css", "web/src/plots/theme.ts", "web/src/screens/run/inputFields.ts"]
+acceptance = ["Labels over 3 words or instruction-bearing use sentence case at --text-sm; hanger clause moved to helper text; exportScene uses white background and sans font stack; snapshots updated"]
+body = "Audit6 L4,L5."
+at = "2026-11-10T13:25:15Z"
+actor = "lognd"
+rev = 1

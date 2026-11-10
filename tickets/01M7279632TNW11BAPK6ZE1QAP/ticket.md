@@ -6,8 +6,8 @@ category = "todo"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T07:55:37Z"
-updated = "2026-11-10T07:55:37Z"
-scope = ["python/sadi/server/settle_stream.py"]
+updated = "2026-11-10T07:55:45Z"
+scope = ["python/sadi/labs/lctt/settle_stream.py"]
 
 [[acceptance]]
 text = "settle verdict does not latch; a settle point opens automatically after each POINT in calibration/tare; tests"

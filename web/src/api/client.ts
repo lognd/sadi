@@ -95,3 +95,28 @@ export async function postReconnect(fetchImpl: typeof fetch = fetch): Promise<Re
   }
   return ok((await res.json()) as ReconnectView);
 }
+
+/** Body of a successful POST /api/acquisition/resume (mirrors the backend ResumeOut model). */
+export interface ResumeView {
+  readonly streaming: boolean;
+}
+
+// frob:ticket 01M727MMWZ8X2B29300XHTWZ46
+/** Restart live readings after an idle pause (POST /api/acquisition/resume); writes nothing to the session log. */
+export async function postResume(fetchImpl: typeof fetch = fetch): Promise<Result<ResumeView, ApiError>> {
+  const path = "/api/acquisition/resume";
+  log.info("resume requested", { path });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    log.warn("http error", { path, status: res.status });
+    return err({ kind: "http", status: res.status, body: await res.text() });
+  }
+  return ok((await res.json()) as ResumeView);
+}

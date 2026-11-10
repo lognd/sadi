@@ -1,6 +1,6 @@
 // frob:ticket 01M7274EH583A30335TGGT6ZZ1
 import { useState } from "react";
-import { postReconnect } from "../../api/client";
+import { postReconnect, postResume } from "../../api/client";
 import { getLogger } from "../../api/log";
 import type { BackendFacts } from "./useBackendFacts";
 
@@ -10,7 +10,7 @@ type Device = BackendFacts["device"];
 
 /** Plain-language next step per stop reason; recorded data is always safe. */
 const STEPS: Readonly<Record<string, string>> = {
-  idle: "Live readings paused because nothing happened for a while. Your recorded data is safe. Press Mark load change to resume for now.",
+  idle: "Live readings paused because nothing happened for a while. Your recorded data is safe. Press Resume live readings to start again; Mark load change is not needed to restart.",
   finished: "This run has finished recording. Your data is saved. To record more, Close the session, then Resume it.",
   low_disk: "Recording stopped because the computer is almost out of disk space. Your data so far is saved. Free some disk space, then Close the session and Resume it.",
   closed: "This session is closed. Your data is saved. Resume the session to record more.",
@@ -30,7 +30,51 @@ export function stopMessage(d: Device): string | null {
 export function StopBanner({ device }: { readonly device: Device }): React.JSX.Element | null {
   const msg = stopMessage(device);
   if (msg === null) return null;
-  return <p className="ib-hint stop-banner" role="alert" data-testid="stop-banner" data-reason={device?.stopReason ?? "fault"}>{msg}</p>;
+  const idle = device?.stopReason === "idle" && (device.acquisitionFault === null || device.acquisitionFault === "");
+  return (
+    <div className="ib-hint stop-banner" role="alert" data-testid="stop-banner" data-reason={device?.stopReason ?? "fault"}>
+      <p>{msg}</p>
+      {idle && <ResumeButton />}
+    </div>
+  );
+}
+
+// frob:ticket 01M727MMWZ8X2B29300XHTWZ46
+/** Pull the operator hint out of a problem+json 409 body, falling back to a safe generic line. */
+export function resumeHint(body: string): string {
+  try {
+    const j = JSON.parse(body) as { hint?: unknown; detail?: unknown };
+    if (typeof j.hint === "string" && j.hint !== "") return j.hint;
+    if (typeof j.detail === "string" && j.detail !== "") return j.detail;
+  } catch {
+    log.warn("resume error body was not JSON");
+  }
+  return "Could not resume live readings. Your data is safe; try again.";
+}
+
+/** Resume button: POSTs /api/acquisition/resume, disabled while pending, shows the 409 hint on failure. */
+export function ResumeButton({ post = postResume }: { readonly post?: typeof postResume }): React.JSX.Element {
+  const [pending, setPending] = useState(false);
+  const [hint, setHint] = useState("");
+  const click = (): void => {
+    setPending(true);
+    setHint("");
+    void post().then((r) => {
+      setPending(false);
+      if (r.ok) {
+        log.info("resume done", { streaming: r.value.streaming });
+      } else {
+        log.warn("resume failed", { kind: r.error.kind });
+        setHint(r.error.kind === "http" ? resumeHint(r.error.body) : "Could not reach the instrument service. Your data is safe; try again.");
+      }
+    });
+  };
+  return (
+    <span className="ib-resume" data-testid="ib-resume">
+      <button type="button" onClick={click} disabled={pending} data-testid="ib-resume-btn">{pending ? "Resuming..." : "Resume live readings"}</button>
+      {hint !== "" && <span role="status" data-testid="ib-resume-hint"> {hint}</span>}
+    </span>
+  );
 }
 
 /** True when a Reconnect makes sense for this device status. */

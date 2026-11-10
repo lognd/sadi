@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx", "web/src/App.tsx"]
+new = ["web/src/components/status/StatusBar.tsx", "web/src/components/wizard/WizardShell.tsx", "web/src/App.tsx", "web/src/screens/run/RunScreen.tsx"]
+at = "2026-11-10T08:06:44Z"
+actor = "lognd"
+rev = 1

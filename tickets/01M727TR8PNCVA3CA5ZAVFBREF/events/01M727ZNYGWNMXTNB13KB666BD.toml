@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T08:07:53Z"
+digest = "f0ce04a3b2d80934a4d6abc43334b940ae36dc8a7a4f4f4e83aecf20caa8554e"
+exit_code = 0
+head = "a5bb57978aadbaf69507f8b7ec3f73beb44f2a57"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/debug/DebugStrip.test.tsx (3 tests) 12ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  03:07:53
+   Duration  938ms (transform 259ms, setup 0ms, collect 363ms, tests 12ms, environment 0ms, prepare 155ms)
+
+JSON report written to /tmp/frob-vitest-811953-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/debug/DebugStrip.test.tsx"
+size = 333
+status = "measured"
+test_count = 3
+tests_digest = "7f83640414518bb82737e2e723e0a1cf4869b0a5d9ba48458ffc5f3f645e763b"
+at = "2026-11-10T08:07:53Z"
+actor = "lognd"
+rev = 1

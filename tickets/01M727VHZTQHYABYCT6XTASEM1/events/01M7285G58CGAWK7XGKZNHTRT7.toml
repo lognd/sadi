@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T08:11:04Z"
+digest = "c9d5d809dee161fee4959778854494f536d68f5734bebd307f949d16adee253d"
+exit_code = 0
+head = "d2dc8f7b71cd38cc3a97cb70b41254f42122f182"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/status/saveView.test.ts (4 tests) 12ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  03:11:04
+   Duration  763ms (transform 100ms, setup 0ms, collect 138ms, tests 12ms, environment 0ms, prepare 160ms)
+
+JSON report written to /tmp/frob-vitest-819474-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/status/saveView.test.ts"
+size = 331
+status = "measured"
+test_count = 4
+tests_digest = "54803c28a76764496e43776379df54a2c892127bc9b711d2f2cc280666a120c1"
+at = "2026-11-10T08:11:04Z"
+actor = "lognd"
+rev = 1

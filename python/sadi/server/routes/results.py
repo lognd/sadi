@@ -361,9 +361,14 @@ def make_results_router(
         hint = getattr(fault, "hint", "") if fault is not None else ""
         if status == DISCONNECTED:
             hint = NO_BOARD_HINT
+        # frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
+        # A faulted or errored device is not "attached" in the healthy sense the UI reads.
+        attached = status not in (DISCONNECTED, "error") and fault is None
+        if not attached:
+            _log.info("device status %s fault=%s: reporting attached=false", status, fault is not None)
         return DeviceView(
             status=status,
-            attached=status != DISCONNECTED,
+            attached=attached,
             fault=None if fault is None else repr(fault)[:300],
             hint=hint,
             provenance=svc.provenance(),

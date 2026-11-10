@@ -288,6 +288,14 @@ unreachable or unrecognised backend answer reads `Save status unknown`. The UI n
 stamps its own "saved" time on a write, so it cannot claim durability the writer has
 not confirmed.
 
+The debug strip keeps the two seq spaces apart: `WS frame seq` is the
+hub-assigned WebSocket frame counter (gaps mean dropped frames), and
+`WAL seq (durable / queued)` is the raw WAL seq space (highest durable /
+highest enqueued). They are never shown as one number. A faulted device
+(`status` error, a device fault, or an acquisition fault) renders as
+`(!) fault: <reason>`, never `[ok]`; `GET /api/device/status` reports
+`attached=false` for it.
+
 ## 6. Error and warning style: say what to do
 
 Format: one line of what happened in plain words, one line of what to do,

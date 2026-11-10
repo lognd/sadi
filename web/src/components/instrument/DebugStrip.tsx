@@ -1,6 +1,7 @@
 // frob:ticket 01M727VHZTQHYABYCT6XTASEM1
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
+// frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { useLive } from "../../state/LiveContext";
@@ -21,18 +22,27 @@ export function frameAge(meta: FrameMeta | null | undefined, nowMs: number): { t
   return { text: `${String(Math.round(ms))} ms`, state: ms > STALE_FRAME_MS ? "stale" : "ok" };
 }
 
+/** Device row text: a fault (error status, device fault or acquisition fault) renders as "(!) fault: reason", never "[ok]". */
+export function deviceText(d: NonNullable<BackendFacts["device"]>): string {
+  const reason = d.fault ?? d.acquisitionFault;
+  if (d.status === "error" || reason !== null) return `(!) fault: ${reason ?? (d.hint || d.status)}`;
+  return `${d.attached || d.status === "simulated" ? "[ok]" : "(!)"} ${d.status}`;
+}
+
 /** Presentational debug strip: every field always visible; missing ones say why. */
 export function DebugStripView({ meta, nowMs, facts, backend }: { readonly meta: FrameMeta | null | undefined; readonly nowMs: number; readonly facts: BackendFacts; readonly backend: string }): React.JSX.Element {
   const age = frameAge(meta, nowMs);
   const rate = meta == null || meta.dtS <= 0 ? "--" : `${(1 / meta.dtS).toFixed(0)} Hz`;
   const sv = saveView(facts);
   const save = `${sv.state === "saved" ? "[ok]" : sv.state === "saving" ? "[..]" : "(!)"} ${sv.text}`;
-  const device = facts.device === null ? unavailable("device status not reachable") : `${facts.device.attached || facts.device.status === "simulated" ? "[ok]" : "(!)"} ${facts.device.status}`;
+  const device = facts.device === null ? unavailable("device status not reachable") : deviceText(facts.device);
   const rows: readonly (readonly [string, string, string?])[] = [
     ["Device", device],
     ["Firmware", unavailable("backend does not report firmware yet")],
     ["Sample rate", rate],
-    ["Seq / durable", meta == null ? "--" : `${String(meta.seq)} / ${String(meta.durableSeq)}`],
+    // Two different seq spaces, labelled apart: WS frame seq (hub-assigned) vs WAL raw seq (durable / queued).
+    ["WS frame seq", meta == null ? "--" : String(meta.seq)],
+    ["WAL seq (durable / queued)", meta == null ? "--" : `${String(meta.durableSeq)} / ${String(meta.enqueuedSeq)}`],
     ["Frame age", `${age.state === "stale" ? "(!) " : ""}${age.text}`, age.state],
     ["Backend", backend],
     ["Session", facts.session === null ? "none open" : facts.session.name],

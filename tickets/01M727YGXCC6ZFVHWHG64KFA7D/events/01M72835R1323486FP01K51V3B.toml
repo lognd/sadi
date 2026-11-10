@@ -1,0 +1,65 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T08:09:48Z"
+digest = "f13a834708094b0eb7f04f068369fd9b0c2001217d87b49a8fd8e60f91020ce0"
+exit_code = 0
+head = "e835dc1c42a133a7e9cb6f90fd0c9c027a173d5b"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > uses the Content-Disposition name from the server
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > uses the Content-Disposition name from the server
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > keeps a server SYNTHETIC- prefix without doubling it
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > keeps a server SYNTHETIC- prefix without doubling it
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > prefixes SYNTHETIC- when the provenance header says synthetic
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > prefixes SYNTHETIC- when the provenance header says synthetic
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > falls back to a default name when no header is sent
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport filename > falls back to a default name when no header is sent
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns an http error with user-facing text
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns a network error instead of throwing
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+ \u{2713} web/src/screens/run/exportTrace.test.ts (6 tests) 18ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  03:09:48
+   Duration  711ms (transform 163ms, setup 0ms, collect 174ms, tests 18ms, environment 0ms, prepare 178ms)
+
+JSON report written to /tmp/frob-vitest-817060-0.json
+stderr | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns an http error with user-facing text
+[screens.run.export] export http error { format: 'lctt-csv', status: 409 }
+
+stderr | web/src/screens/run/exportTrace.test.ts > fetchRunExport failures > returns a network error instead of throwing
+[screens.run.export] export network failure { format: 'lctt-csv', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/exportTrace.test.ts"
+size = 2675
+status = "measured"
+test_count = 6
+tests_digest = "2573cd54e11694116fe385e2553ed55797a7bf1743f10049883ee5f9e0b69ce1"
+at = "2026-11-10T08:09:48Z"
+actor = "lognd"
+rev = 1

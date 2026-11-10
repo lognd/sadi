@@ -7,7 +7,7 @@ priority = "high"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T06:52:46Z"
-updated = "2026-11-10T06:55:43Z"
+updated = "2026-11-10T06:57:16Z"
 labels = ["creates:python/tests/server/test_settings_record.py"]
 scope = ["python/sadi/server/live.py", "python/sadi/core/pipeline.py", "python/tests/server/test_settings_record.py", "docs/data-safety.md"]
 

@@ -4,10 +4,11 @@ title = "L1+L2: results/finish never called by UI and docs claim it; export file
 type = "bug"
 category = "todo"
 priority = "low"
+points = 2
 reporter = "lognd"
 created = "2026-11-10T08:07:17Z"
-updated = "2026-11-10T08:07:17Z"
-scope = ["web/src/lib/exportTrace.ts", "docs/server/results.md"]
+updated = "2026-11-10T08:07:19Z"
+scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx"]
 
 [[acceptance]]
 text = "Docs match actual UI behavior; F3 export uses server-provided filename; export failure shows a visible error"

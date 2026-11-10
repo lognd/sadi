@@ -2,7 +2,8 @@
 id = "01M72T4QZQQABVKR5PX78KV8YS"
 title = "Design selector: use recorded elastic/plastic phases, yield offset, single next-weight source, gauge wording"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

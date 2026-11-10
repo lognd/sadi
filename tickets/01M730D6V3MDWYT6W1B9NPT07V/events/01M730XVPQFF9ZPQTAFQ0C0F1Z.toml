@@ -1,0 +1,59 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T15:23:47Z"
+digest = "52d2fb910f6edcd712d0b46548a9f97f3ea885164e71973543075fb642ce2843"
+exit_code = 0
+head = "284551ef71b98ba513f75cd30c88b38d94f1ef6b"
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+stdout | src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] closing session { path: '/api/session/close' }
+
+stdout | src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] session closed {}
+
+stdout | src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] closing session { path: '/api/session/close' }
+
+ \u{2713} src/components/wizard/wizard.test.tsx (27 tests) 56ms
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  10:23:48
+   Duration  1.33s (transform 492ms, setup 0ms, collect 746ms, tests 56ms, environment 0ms, prepare 124ms)
+
+stderr | src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+stderr | src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] close refused { path: '/api/session/close', status: 409 }
+
+'''
+passed = true
+provider = "command"
+ref = "npx --prefix web vitest run --root web src/components/wizard/wizard.test.tsx"
+size = 2156
+status = "measured"
+at = "2026-11-10T15:23:47Z"
+actor = "lognd"
+rev = 1

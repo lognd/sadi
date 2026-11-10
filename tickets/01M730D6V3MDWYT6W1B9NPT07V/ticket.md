@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:14:44Z"
-updated = "2026-11-10T15:23:20Z"
+updated = "2026-11-10T15:23:47Z"
 scope = ["web/src/components/wizard/**", "docs/web/wizard.md"]
 
 [[links]]
@@ -16,7 +16,7 @@ target = "01M72XJMDHV60KRBV1ANWKHKC9"
 
 [[acceptance]]
 text = "Opening a past step from the step rail shows that step's data panels read-only (no capture controls)"
-bound = false
+bound = true
 +++
 
 Follow-up from ~89H28J1: the read-only view hides content behind a banner.

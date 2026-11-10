@@ -279,6 +279,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
         make_health_router(
             (lambda: _dev.status == "simulated") if _dev is not None else None,
             app.state.sessions.provenance(),
+            cfg.data_root,
         )
     )
     app.include_router(make_plugins_router(cfg.registry))

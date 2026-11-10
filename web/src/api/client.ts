@@ -15,6 +15,8 @@ export type ApiError =
 export interface Health {
   status: string;
   version: string;
+  /** Data folder the server resolved (cheap; replaces the doctor host lookup); absent on older backends. */
+  data_root?: string | null;
   /** Data provenance stamp; absent on older backends (treated as real). */
   provenance?: components["schemas"]["DataProvenance"];
 }

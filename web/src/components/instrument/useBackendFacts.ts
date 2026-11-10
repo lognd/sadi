@@ -3,7 +3,7 @@
 // frob:ticket 01M729FVNSJCVAHK4XBSG9NBYC
 /** Polls the light status endpoints that feed the debug strip. */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getDoctor, getJson } from "../../api/client";
+import { getHealth, getJson } from "../../api/client";
 import { getLogger } from "../../api/log";
 
 const log = getLogger("instrument.facts");
@@ -62,7 +62,7 @@ export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = f
   };
 }
 
-/** Poll the status endpoints (refresh() polls everything now, e.g. right after a session opens or closes); read host facts (data folder, version) from the doctor, retrying until known (audit #10). */
+/** Poll the status endpoints (refresh() polls everything now, e.g. right after a session opens or closes); read host facts (data folder, version) from the cheap /api/health (never the doctor), retrying until known (audit #10). */
 export function useBackendFacts(fetchImpl: typeof fetch = fetch): { readonly facts: BackendFacts; readonly refresh: () => void } {
   const [facts, setFacts] = useState<BackendFacts>(EMPTY);
   const latest = useRef<BackendFacts>(EMPTY);
@@ -80,11 +80,10 @@ export function useBackendFacts(fetchImpl: typeof fetch = fetch): { readonly fac
     const loadHost = (): void => {
       if (hostBusy || latest.current.dataRoot !== null) return;
       hostBusy = true;
-      void getDoctor(fetchImpl).then((r) => {
+      void getHealth(fetchImpl).then((r) => {
         hostBusy = false;
-        if (!r.ok) { log.warn("doctor host facts unavailable; will retry"); return; }
-        const host = (r.value as unknown as { host?: { data_root?: string; sadi_version?: string } }).host;
-        apply((p) => ({ ...p, dataRoot: host?.data_root ?? null, version: host?.sadi_version ?? null }));
+        if (!r.ok) { log.warn("health host facts unavailable; will retry"); return; }
+        apply((p) => ({ ...p, dataRoot: r.value.data_root ?? null, version: r.value.version ?? null }));
       });
     };
     const tick = (force = false): void => {

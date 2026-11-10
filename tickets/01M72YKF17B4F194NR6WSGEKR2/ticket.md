@@ -2,12 +2,12 @@
 id = "01M72YKF17B4F194NR6WSGEKR2"
 title = "Non-production start copies user-dir spill into its data root (audit8 L5)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:43:12Z"
+updated = "2026-11-10T14:51:42Z"
 scope = ["python/sadi/store/**", "python/sadi/server/**"]
 
 [[acceptance]]

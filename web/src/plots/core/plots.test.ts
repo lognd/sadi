@@ -3,7 +3,7 @@
 // frob:ticket 01M6W7R3D3KT3NM6JETDDAPA9P
 import { describe, expect, it } from "vitest";
 import {
-  buildDrawList, computeLayout, decimateIndices, exportFigure, formatTick, lightTheme, niceTicks,
+  buildDrawList, computeLayout, decimateIndices, exportFigure, withExportTheme, formatTick, lightTheme, niceTicks,
   paintScene, renderToCanvas, sceneToSvg,
 } from "./index";
 import type { Ctx2D, ExportCanvas, Scene } from "./index";
@@ -117,9 +117,16 @@ describe("exportFigure", () => {
     expect(strip(hi.log)).toEqual(strip(lo.log));
     expect(hi.log[1]).toBe("scale(3.125,3.125)");
   });
+  it("svg export uses white background and sans fonts", async () => {
+    const r = await exportFigure(scene(), { format: "svg" });
+    expect(r.ok && r.value.text).toContain("Helvetica");
+    expect(r.ok && r.value.text).toContain("#ffffff");
+    expect(r.ok && r.value.text).not.toContain("#f8f6ee");
+  });
+
   it("svg returns text and blob; bad dpi is an error", async () => {
     const r = await exportFigure(scene(), { format: "svg" });
-    expect(r.ok && r.value.text).toBe(sceneToSvg(scene()));
+    expect(r.ok && r.value.text).toBe(sceneToSvg(withExportTheme(scene())));
     const bad = await exportFigure(scene(), { format: "png", dpi: -1 }, { createCanvas: factory({ log: [], size: [] }) });
     expect(bad.ok).toBe(false);
   });

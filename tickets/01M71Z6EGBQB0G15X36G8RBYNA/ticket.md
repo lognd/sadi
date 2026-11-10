@@ -7,10 +7,10 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:34:19Z"
-updated = "2026-11-10T05:58:13Z"
+updated = "2026-11-10T05:58:40Z"
 scope = ["python/sadi/synthetic/**", "python/tests/synthetic/**", "docs/synthetic.md"]
 
 [[acceptance]]
 text = "Driver checks /api/results from the server, fault scenarios pass, early return fixed, driver stdout logging quiet; tests added"
-bound = false
+bound = true
 +++

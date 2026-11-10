@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:41:38Z"
-updated = "2026-11-10T15:06:13Z"
+updated = "2026-11-10T15:06:42Z"
 scope = ["python/sadi/store/**", "python/sadi/server/curve_source.py", "python/sadi/server/service.py", "python/tests/store/test_snapshot_notes.py", "python/tests/server/test_session_replay_cache.py"]
 
 [[acceptance]]

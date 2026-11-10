@@ -7,10 +7,10 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:29:43Z"
-updated = "2026-11-10T06:01:35Z"
+updated = "2026-11-10T06:02:04Z"
 scope = ["python/sadi/store/**", "python/sadi/server/service.py", "docs/data-safety.md", "python/tests/server/test_service_snapshots.py"]
 
 [[acceptance]]
 text = "Server writes periodic atomic snapshots of live sessions via snapshot.write_snapshot; recoverable after SIGKILL; docs/data-safety.md updated"
-bound = false
+bound = true
 +++

@@ -2,7 +2,8 @@
 id = "01M72Z8PFGR05PRFMM2SA28CY0"
 title = "Faulted device still reads Connected; backend simulated flag derives from status"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

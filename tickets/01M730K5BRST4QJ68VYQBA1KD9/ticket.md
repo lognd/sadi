@@ -2,7 +2,8 @@
 id = "01M730K5BRST4QJ68VYQBA1KD9"
 title = "Ship an example lab plugin (tracked, loadable via SADI_PLUGIN_PATH) as a worked demo"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

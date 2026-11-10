@@ -2,7 +2,8 @@
 id = "01M71KCTETKE1AE0GZ35MQ11EV"
 title = "GP weight selector: GpLoadSuggester wired into LCTT guidance"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 reporter = "lognd"

@@ -330,7 +330,12 @@ class WriterHandle:
             err = err.model_copy(
                 update={"durable_seq": stats.durable_seq, "enqueued_seq": stats.enqueued_seq}
             )
-        _log.error("wait_durable(%d) failed: %s", seq, err)
+        # frob:ticket 01M715VW4GNGBM7CM75ZFZ58XG
+        if isinstance(err, Stalled):
+            # A poll timeout is expected (slow disk); real stalls log ERROR in check_health.
+            _log.debug("wait_durable(%d) timed out after %.3fs: %s", seq, err.waited_s, err)
+        else:
+            _log.error("wait_durable(%d) failed: %s", seq, err)
         return Err(err)
 
     @property

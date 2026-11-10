@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import errno
+import logging
 import threading
 import time
 import uuid
@@ -12,6 +13,7 @@ from typing import Any
 
 import numpy as np
 import pytest
+from typani import Err
 
 from sadi.core.pipeline import (
     AcquisitionPipeline,
@@ -28,8 +30,8 @@ from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import SettleState, StreamConfig
 from sadi.store import durable, failpoints
 from sadi.store.records import RecordType, decode_raw_junk
-from sadi.store.wal import WalConfig, WalReader
-from sadi.store.writer_thread import Backpressure, WriterError, WriterHandle
+from sadi.store.wal import WalClosed, WalConfig, WalReader
+from sadi.store.writer_thread import Backpressure, Stalled, WriterError, WriterHandle
 
 SESSION = uuid.UUID(int=0x60FD)
 WAIT_S = 10.0
@@ -468,3 +470,25 @@ def test_writer_error_type_is_exposed(tmp_path: Path) -> None:
     res = pipe.ingest(_Block())
     assert isinstance(res.danger_err, WriterError)
     assert res.danger_err.hint
+
+
+# frob:ticket 01M715VW4GNGBM7CM75ZFZ58XG
+# frob:tests python/sadi/store/writer_thread.py::WriterHandle.wait_durable
+# frob:tests python/sadi/store/wal.py::WalWriter.wait_durable
+def test_wait_durable_poll_timeout_is_not_logged_at_error(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An expected wait_durable poll timeout logs below ERROR; closed-writer failures stay ERROR."""
+    h = _open(tmp_path)
+    with caplog.at_level("DEBUG", logger="sadi.store.writer_thread"):
+        res = h.wait_durable(10_000, 0.05)
+    assert res.is_err
+    assert isinstance(res.danger_err, Stalled)
+    assert not [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert any(r.levelno == logging.DEBUG for r in caplog.records)
+    caplog.clear()
+    monkeypatch.setattr(h._wal, "wait_durable", lambda *_a: Err(WalClosed()))
+    with caplog.at_level("DEBUG", logger="sadi.store.writer_thread"):
+        assert h.wait_durable(1, 0.05).is_err
+    assert [r for r in caplog.records if r.levelno >= logging.ERROR]
+    h.close()

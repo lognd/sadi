@@ -432,6 +432,7 @@ class WalWriter:
         if seq.is_err:
             return seq
         waited = self.wait_durable(seq.danger_ok, self._cfg.durable_timeout_s)
+        self._log_durable_timeout(seq.danger_ok, waited)
         waited.unwrap()
         return seq
 
@@ -445,8 +446,15 @@ class WalWriter:
                 return r
             last = r.danger_ok
         waited = self.wait_durable(last, self._cfg.durable_timeout_s)
+        self._log_durable_timeout(last, waited)
         waited.unwrap()
         return Ok(last)
+
+    def _log_durable_timeout(self, seq: Seq, res: Result[None, WalError]) -> None:
+        """Log ERROR when a blocking append's durability wait timed out (a real failure there)."""
+        # frob:ticket 01M715VW4GNGBM7CM75ZFZ58XG
+        if res.is_err and isinstance(res.danger_err, WalTimeout):
+            _log.error("append: seq %d not durable within %.1fs", seq, res.danger_err.waited_s)
 
     def wait_durable(self, seq: Seq, timeout_s: float | None) -> Result[None, WalError]:
         """Block until `durable_seq >= seq` (the display gate), the writer fails, or timeout."""
@@ -457,7 +465,9 @@ class WalWriter:
                     return Err(self._error)
                 left = None if deadline is None else deadline - time.monotonic()
                 if left is not None and left <= 0:
-                    _log.error("wait_durable(%d) timed out after %.1fs", seq, timeout_s or 0.0)
+                    # frob:ticket 01M715VW4GNGBM7CM75ZFZ58XG
+                    # Poll timeouts are expected (forward loop); blocking appends log ERROR.
+                    _log.debug("wait_durable(%d) timed out after %.1fs", seq, timeout_s or 0.0)
                     return Err(WalTimeout(what=f"durable seq {seq}", waited_s=timeout_s or 0.0))
                 self._cv.wait(left)
         return Ok(None)

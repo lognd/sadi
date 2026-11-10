@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:01:42Z"
-updated = "2026-11-10T15:07:11Z"
+updated = "2026-11-10T15:07:14Z"
 labels = ["creates:python/tests/server/test_live_sim.py"]
 scope = ["python/sadi/server/live.py", "python/tests/server/test_live_sim.py", "python/tests/server/test_live_load_change.py"]
 

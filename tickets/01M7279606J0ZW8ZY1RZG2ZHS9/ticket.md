@@ -2,7 +2,8 @@
 id = "01M7279606J0ZW8ZY1RZG2ZHS9"
 title = "M3+M7: resume endpoint after idle pause; keep raw blocks when stop/reconnect fails"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

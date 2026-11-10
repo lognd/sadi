@@ -33,19 +33,25 @@ const LIVE_V: InputField = { key: "volts", label: "Volts", unit: "V", required: 
 /** Plausible wire diameter in metres (0.05 mm to 10 mm); anything else is probably a unit slip. */
 const DIAMETER_RANGE_M: readonly [number, number] = [5e-5, 1e-2];
 
+/** Plausible LVDT gauge height in metres (mirrors MAX_HEIGHT_M / MIN_HEIGHT_M in point_inputs.py). */
+const HEIGHT_RANGE_M: readonly [number, number] = [0, 0.1];
+
+/** Plausible hanging mass in kilograms (mirrors MAX_MASS_KG in point_inputs.py). */
+const MASS_RANGE_KG: readonly [number, number] = [0, 20];
+
 /** Input fields per run phase; keys match parse_inputs (calibration, tare, load). */
 export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
-  calibrate: [LIVE_V, { key: "height", label: "Gauge height", unit: "m", required: true, min: 0 }],
+  calibrate: [LIVE_V, { key: "height", label: "Gauge height", unit: "m", required: true, min: 0, plausible: HEIGHT_RANGE_M }],
   tare: [
     { key: "mean", label: "Mean volts", unit: "V", required: false, live: true },
     { key: "n", label: "Sample count n", unit: "", required: false, integer: true, min: 1, derived: true },
     { key: "sd", label: "Volts sd", unit: "V", required: false, min: 0, derived: true },
-    { key: "diameter", label: "Specimen diameter", unit: "m", required: false, min: 0, specimen: true, plausible: DIAMETER_RANGE_M },
+    { key: "diameter", label: "Specimen diameter", unit: "m", required: true, min: 0, specimen: true, plausible: DIAMETER_RANGE_M },
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
-    { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true },
+    { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true, plausible: MASS_RANGE_KG },
   ],
-  elastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
-  plastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0 }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  elastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  plastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
 };
 
 /** Parse one raw field text; Err is a clear operator message. Blank optional gives null. */
@@ -72,9 +78,11 @@ export function plausibilityNote(f: InputField, raw: string): { readonly message
   const [lo, hi] = f.plausible;
   if (x >= lo && x <= hi) return null;
   const mm = x / 1000;
+  const small = f.unit === "kg" ? "grams" : "millimetres";
+  const smallAbbr = f.unit === "kg" ? "g" : "mm";
   const fix = x > hi && mm >= lo && mm <= hi;
   return {
-    message: `${f.label} ${raw.trim()} ${f.unit} looks implausible (expected ${String(lo)} to ${String(hi)} ${f.unit}).${fix ? ` Did you type millimetres? ${raw.trim()} mm is ${String(mm)} m.` : ""}`,
+    message: `${f.label} ${raw.trim()} ${f.unit} looks implausible (expected ${String(lo)} to ${String(hi)} ${f.unit}).${fix ? ` Did you type ${small}? ${raw.trim()} ${smallAbbr} is ${String(mm)} ${f.unit}.` : ""}`,
     suggest: fix ? String(mm) : null,
   };
 }

@@ -20,8 +20,8 @@ describe("collectInputs", () => {
     if (!r.ok) expect(r.error.join(" ")).toContain("not enough live readings");
   });
   it("tare takes mean, n and sd from the live statistics and hides n and sd", () => {
-    const r = collectInputs("tare", {}, 9, { mean: 0.5, sd: 0.01, n: 40 });
-    expect(r).toEqual({ ok: true, value: { mean: 0.5, n: 40, sd: 0.01 } });
+    const r = collectInputs("tare", { diameter: "0.0006" }, 9, { mean: 0.5, sd: 0.01, n: 40 });
+    expect(r).toEqual({ ok: true, value: { mean: 0.5, n: 40, sd: 0.01, diameter: 0.0006 } });
     expect(PHASE_FIELDS.tare.filter((f) => f.derived === true).map((f) => f.key)).toEqual(["n", "sd"]);
   });
   it("rejects non-numbers and negatives", () => {
@@ -80,5 +80,25 @@ describe("user-facing wording (audit1 #15 #32)", () => {
     expect(m).toBe("Captured.");
     expect(m).not.toMatch(/[0-9a-f]{8}-/);
     expect(capturedMessage("captured p1 123e4567-e89b-12d3-a456-426614174000")).toBe("Captured: captured p1");
+  });
+});
+
+// frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
+describe("unit-slip ranges and required diameter (audit2 H3/H4)", () => {
+  const field = (ph: "calibrate" | "elastic", k: string) => PHASE_FIELDS[ph].find((f) => f.key === k)!;
+  it("1 typed for a 1 mm block suggests millimetres", () => {
+    const n = plausibilityNote(field("calibrate", "height"), "1");
+    expect(n?.suggest).toBe("0.001");
+    expect(n?.message).toContain("millimetres");
+  });
+  it("500 typed for 500 g suggests grams as kg", () => {
+    const n = plausibilityNote(field("elastic", "mass_kg"), "500");
+    expect(n?.suggest).toBe("0.5");
+    expect(n?.message).toContain("grams");
+  });
+  it("blank diameter is an error on the tare step", () => {
+    const r = collectInputs("tare", { mean: "0.1" }, 1, { mean: 0, sd: 0, n: 5 });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error.join(" ")).toContain("Specimen diameter is required");
   });
 });

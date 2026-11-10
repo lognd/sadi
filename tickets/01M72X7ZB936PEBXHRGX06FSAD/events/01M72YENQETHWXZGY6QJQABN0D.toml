@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["GET/POST route returns the plan from the entered inventory; Setup has a panel to enter weights (mass, unit, duplicates, uncertainty) persisted via the existing inventory events (append only); the panel shows Hang #1, #2, ... with total mass, predicted volts, and plus/minus uncertainty with plain wording; Run screen shows the next planned hang and re-plans from actual points; OpenAPI and schema.ts regenerated; docs and changelog"]
+new = ["POST weight-plan route and Weight plan panel exist, plan from typed weights, and pass route and panel tests."]
+moved = [0]
+at = "2026-11-10T14:40:35Z"
+actor = "lognd"
+rev = 1

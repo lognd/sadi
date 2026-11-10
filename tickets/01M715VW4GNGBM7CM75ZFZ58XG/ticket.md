@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T22:11:38Z"
-updated = "2026-11-10T03:04:17Z"
+updated = "2026-11-10T03:05:20Z"
 scope = ["python/sadi/core/pipeline.py", "python/sadi/store/writer_thread.py", "python/sadi/store/wal.py", "python/tests/core/test_pipeline.py"]
 
 [[acceptance]]

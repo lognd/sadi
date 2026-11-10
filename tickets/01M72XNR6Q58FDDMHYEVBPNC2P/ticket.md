@@ -2,12 +2,12 @@
 id = "01M72XNR6Q58FDDMHYEVBPNC2P"
 title = "Restyle the web UI as a terminal: monospace font, dark-on-phosphor look, square plots kept"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:26:58Z"
-updated = "2026-11-10T14:27:07Z"
+updated = "2026-11-10T14:27:12Z"
 scope = ["web/index.html", "web/src/styles.css", "web/src/tokens.css", "web/src/theme.css", "web/src/plots/theme.ts"]
 
 [[acceptance]]

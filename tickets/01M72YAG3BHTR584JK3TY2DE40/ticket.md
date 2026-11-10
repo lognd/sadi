@@ -2,7 +2,8 @@
 id = "01M72YAG3BHTR584JK3TY2DE40"
 title = "Every page load runs the full doctor (~24 s) to learn the data folder (audit8 M1)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

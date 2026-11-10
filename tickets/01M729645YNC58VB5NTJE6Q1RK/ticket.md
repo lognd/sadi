@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T08:28:54Z"
-updated = "2026-11-10T08:35:06Z"
+updated = "2026-11-10T08:36:29Z"
 labels = ["audit4", "creates:python/sadi/server/security.py", "creates:python/tests/server/test_origin_guard.py"]
 scope = ["python/sadi/server/app.py", "python/sadi/server/security.py", "python/tests/server/test_origin_guard.py", "docs/data-safety.md"]
 

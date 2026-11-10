@@ -118,7 +118,7 @@ open session's events (read-only).
   calibration block (points, fit slope/intercept/se, t95, U95, r2, n) and no rows. A non-partial
   export still refuses an unready session (`NotReady`).
 - `lctt-calibration-csv`: standalone calibration file (`build_calibration_csv`), the equivalent of
-  LabVIEW `lctt_export_calibration.vi`: fit rows, a blank line, then `point,volts (V),height (m)`.
+  the LabVIEW calibration export: fit rows, a blank line, then `point,volts (V),height (m)`.
 - Nothing is overwritten: every download is also kept as a new numbered file in the session's
   `exports/<format id>/` folder (tmp + fsync + no-replace rename), and the download name carries the
   format id (`...-lctt-csv-partial.csv`), so a partial file is never confused with the final one.

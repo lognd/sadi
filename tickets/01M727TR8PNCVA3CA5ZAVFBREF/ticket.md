@@ -2,12 +2,12 @@
 id = "01M727TR8PNCVA3CA5ZAVFBREF"
 title = "L3+L5: debug strip shows faulted device as ok; SEQ/DURABLE mix WS and WAL seq"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:13Z"
-updated = "2026-11-10T08:05:17Z"
+updated = "2026-11-10T08:05:31Z"
 labels = ["creates:web/src/components/debug/DebugStrip.test.tsx"]
 scope = ["python/sadi/server/routes/results.py", "web/src/components/instrument/DebugStrip.tsx"]
 

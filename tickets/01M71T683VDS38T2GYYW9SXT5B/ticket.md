@@ -2,7 +2,8 @@
 id = "01M71T683VDS38T2GYYW9SXT5B"
 title = "Backend: expose firmware, sample rate, and active data root in a status endpoint"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

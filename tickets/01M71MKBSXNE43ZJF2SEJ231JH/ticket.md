@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T02:29:08Z"
-updated = "2026-11-10T02:40:43Z"
-scope = ["web/crunk.toml", "web/src/styles.css", "web/src/screens/run/RunView.tsx", "docs/web/wizard.md", ".github/workflows/ci.yml", "web/src/tokens.css", "web/package.json"]
+updated = "2026-11-10T02:46:20Z"
+scope = ["web/crunk.toml", "web/src/styles.css", "web/src/screens/run/RunView.tsx", "docs/web/wizard.md", ".github/workflows/ci.yml", "web/src/tokens.css", "web/package.json", "web/src/theme.css", "web/src/a11y/contrast.test.ts"]
 
 [[acceptance]]
 text = "Given web/, when crunk check runs with a committed crunk.toml whose tokens mirror styles.css, then it reports no errors"

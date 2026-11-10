@@ -1,0 +1,17 @@
+kind = "evidence"
+captured_at = "2026-11-10T11:02:46Z"
+digest = "3b340dd09982475c0012266b301c3efb2fc2d3542c939baceb9617f3aff5aef9"
+exit_code = 1
+failed_tests = ["python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args0]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args1]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args2]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args3]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args4]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args5]", "python/tests/core/test_wizard_edit_validation.py::test_override_input_rejects_bad_values[args6]", "python/tests/server/test_export_guard_names.py::test_cross_site_get_refused[/api/export/lctt-csv]", "python/tests/server/test_export_guard_names.py::test_cross_site_get_refused[/api/export/formats]", "python/tests/server/test_curve_source.py::test_refit_curve_uses_elastic_rows_only", "python/tests/server/test_routes_doctor.py::test_single_run_never_probes_device", "python/tests/labs/lctt/test_export_csv_phases.py::test_row_uncertainty_model_is_consistent"]
+head = "c1e86755547b495cbf09c91b329c32371c6d51e0"
+passed = false
+provider = "pytest"
+ref = "python/tests/core/test_wizard.py python/tests/core/test_wizard_edit_validation.py python/tests/server/test_export_guard_names.py python/tests/server/test_origin_guard.py python/tests/server/test_curve_source.py python/tests/server/test_routes_doctor.py python/tests/labs/lctt/test_export_csv_phases.py"
+size = 260888
+status = "measured"
+test_count = 58
+tests_digest = "8b4cfbd9ee1333aa68a8f432f4c457c8db78e187030275d444e55a4558a58082"
+uri = "dir:.git/frob/artifacts/3b340dd09982475c0012266b301c3efb2fc2d3542c939baceb9617f3aff5aef9"
+at = "2026-11-10T11:02:46Z"
+actor = "lognd"
+rev = 1

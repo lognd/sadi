@@ -2,7 +2,8 @@
 id = "01M72ZDQGAN0VQRKHM489H28J1"
 title = "Intermediate export at any step; step rail and panels must not be locked (user feedback)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

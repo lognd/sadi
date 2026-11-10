@@ -513,10 +513,27 @@ def test_app_logs_fragment_failed_skip_at_warning(
 
     crashed = tmp_path / "crashed.v001"
     skip = spill.FragmentFailedSkip(spill=tmp_path / "s.wal", crashed_dirs=(crashed,))
-    monkeypatch.setattr(app_mod, "import_all_spills", lambda _root: [(skip.spill, spill.Ok(skip))])
-    cfg = type("C", (), {"data_root": tmp_path})()
+    monkeypatch.setattr(app_mod, "import_all_spills", lambda _root, **_kw: [(skip.spill, spill.Ok(skip))])
+    cfg = type("C", (), {"data_root": tmp_path, "synthetic": False})()
     with caplog.at_level("INFO"):
         assert app_mod._import_spills(cfg) == 0  # type: ignore[arg-type]
     recs = [r for r in caplog.records if "NOT recovered" in r.getMessage()]
     assert recs and recs[0].levelname == "WARNING" and str(crashed) in recs[0].getMessage()
     assert not any("already imported" in r.getMessage() for r in caplog.records)
+
+
+# frob:ticket ~WSGEKR2
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_synthetic_root_skips_foreign_spill_and_keeps_it_intact(tmp_path: Path) -> None:
+    """A synthetic root adopts no orphan spill: no new version, no marker, file byte-identical."""
+    root, user, tmp = dirs(tmp_path)
+    data = make_spill(user / "spill" / "real.wal", 1, 2)
+    out = import_all_spills(root, user, tmp, synthetic=True)
+    assert len(out) == 1 and isinstance(out[0][1].danger_ok, spill.SyntheticSkip)
+    assert (user / "spill" / "real.wal").read_bytes() == data
+    assert sorted(p.name for p in (user / "spill").iterdir()) == ["real.wal"]
+    assert not (root / "sessions").exists() or not list((root / "sessions").iterdir())
+    again = import_all_spills(root, user, tmp)  # a real root still recovers it
+    assert again[0][1].danger_ok is not None and not isinstance(
+        again[0][1].danger_ok, spill.SyntheticSkip
+    )

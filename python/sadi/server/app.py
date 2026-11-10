@@ -58,7 +58,7 @@ from sadi.server.service import SessionService
 from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
-from sadi.store.spill import FragmentFailedSkip, import_all_spills
+from sadi.store.spill import FragmentFailedSkip, SyntheticSkip, import_all_spills
 from sadi.store.writer_thread import WriterHandle
 
 _log = get_logger(__name__)
@@ -141,12 +141,15 @@ def _take_lock(cfg: AppSettings) -> tuple[DataRootLock | None, RootLockFailed | 
 def _import_spills(cfg: AppSettings) -> int:
     """Import emergency spills (lock held); log each, never delete; return the failure count."""
     failures = 0
-    for spill, outcome in import_all_spills(cfg.data_root):
+    for spill, outcome in import_all_spills(cfg.data_root, synthetic=cfg.synthetic):
         if outcome.is_err:
             failures += 1
             _log.error("spill %s NOT imported (file kept intact): %s", spill, outcome.danger_err)
         elif outcome.danger_ok is None:
             _log.info("spill %s already imported", spill)
+        elif isinstance(outcome.danger_ok, SyntheticSkip):
+            # frob:ticket ~WSGEKR2
+            _log.info("spill %s left alone: synthetic data root does not adopt real spills", spill)
         elif isinstance(outcome.danger_ok, FragmentFailedSkip):
             # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
             _log.warning(

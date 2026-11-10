@@ -739,6 +739,23 @@ class FragmentFailedSkip(BaseModel):
     crashed_dirs: tuple[Path, ...]
 
 
+# frob:ticket ~WSGEKR2
+class SyntheticSkip(BaseModel):
+    """Outcome: spill left untouched because a synthetic root must not adopt foreign data."""
+
+    model_config = ConfigDict(frozen=True)
+    spill: Path
+
+
+# frob:ticket ~WSGEKR2
+def _foreign_to_synthetic_root(data_root: Path, scan: SpillScan) -> bool:
+    """True when the spill has no parent session in this root (a synthetic root adopts none)."""
+    parent = _find_parent(data_root, scan.header.session_uuid)
+    if parent is None:
+        return True
+    return not session_is_synthetic(data_root / SESSIONS_DIRNAME / parent.dir_name)
+
+
 # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
 def _crashed_copies(scan: SpillScan) -> tuple[Path, ...]:
     """Collect the crashed-copy dirs named by the failed-join and fragment-failed markers."""
@@ -757,13 +774,22 @@ def _crashed_copies(scan: SpillScan) -> tuple[Path, ...]:
 
 
 def import_all_spills(
-    data_root: Path, user_dir: Path | None = None, temp_dir: Path | None = None
-) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | None, SpillError]]]:
+    data_root: Path,
+    user_dir: Path | None = None,
+    temp_dir: Path | None = None,
+    *,
+    synthetic: bool = False,  # frob:ticket ~WSGEKR2
+) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]]:
     """Discover, verify and import every spill at start; Ok(None) means already imported.
+
+    With synthetic=True, spills without a synthetic parent in this root are left untouched
+    (Ok(SyntheticSkip)): real student data is never copied into a synthetic root.
 
     Ok(FragmentFailedSkip) means a failed fragment verify was recorded earlier (WARNING-worthy).
     """
-    outcomes: list[tuple[Path, Result[ImportReport | FragmentFailedSkip | None, SpillError]]] = []
+    outcomes: list[
+        tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]
+    ] = []
     seen_content: dict[str, Path] = {}  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
     for spill in discover_spills(data_root, user_dir, temp_dir):
         scanned = scan_spill(spill)
@@ -771,6 +797,10 @@ def import_all_spills(
             outcomes.append((spill, Err(scanned.danger_err)))
             continue
         scan = scanned.danger_ok
+        if synthetic and _foreign_to_synthetic_root(data_root, scan):  # frob:ticket ~WSGEKR2
+            _log.info("spill %s skipped: synthetic root, no synthetic parent session here", spill)
+            outcomes.append((spill, Ok(SyntheticSkip(spill=spill))))
+            continue
         if _already_imported(scan, data_root):
             _log.info("spill %s already imported, skipping", spill)
             outcomes.append((spill, Ok(None)))

@@ -2,12 +2,12 @@
 id = "01M7301MDWNXK9Z0D8TBDBNP4G"
 title = "Planner GUI/CLI: derive calibration from entered height/voltage points (no typed slope)"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:08:24Z"
-updated = "2026-11-10T15:08:24Z"
+updated = "2026-11-10T15:08:28Z"
 labels = ["creates:python/tests/design/test_cal_fit.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 

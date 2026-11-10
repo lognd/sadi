@@ -2,7 +2,8 @@
 id = "01M72854VNXD656XAJNYNKX6Y1"
 title = "L6: WS loop does sync session-locked work on the event loop"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "low"
 points = 2
 reporter = "lognd"

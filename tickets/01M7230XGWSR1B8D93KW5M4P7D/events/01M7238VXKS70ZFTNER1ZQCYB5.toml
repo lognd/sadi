@@ -1,0 +1,167 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T06:45:31Z"
+digest = "ec91686dfd9b95964e42198a52edf5d298a1355df4d76196d59ca7f5c0d6acc1"
+exit_code = 0
+head = "c9e682bae7ffea32af2424807ff6a33321a37dbd"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] request { path: '/api/export' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] response ok { path: '/api/export', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/session' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/session', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 597.44, y: 364, penalty: 0 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+[plots.export] svg exported { bytes: 4650, title: 'LVDT calibration, height versus voltage' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 50, series: 2 }
+[plots.export] svg exported { bytes: 4313, title: 'Stress-strain' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-calibration', kept: true }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-stress-strain', kept: true }
+[screens.export] figure exported { formatId: 'fig', format: 'svg', dpi: undefined, files: 2 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/nope' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[screens.export] no figure data to draw yet { formatId: 'fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > non-2xx returns an error that becomes a problem with detail and hint
+[screens.export.api] download requested { formatId: 'lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > success carries the saved-copy header and a message
+[screens.export.api] download requested { formatId: 'lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > success carries the saved-copy header and a message
+[screens.export.api] download fetched { formatId: 'lctt-csv', bytes: 4, saved: 'exports/lctt-csv/x.csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > network failure becomes a network error
+[screens.export.api] download requested { formatId: 'lctt-csv' }
+
+ \u{2713} web/src/screens/export/ExportScreen.test.tsx (13 tests) 69ms
+stdout | web/src/components/wizard/wizard.test.tsx > ErrorNotice > falls back to a transport message for non-problem bodies
+[wizard.api] error body is not a problem { status: 500 }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write { path: '/api/session/undo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > sends the step as a JSON body for wizard transitions
+[wizard.api] write { path: '/api/session/wizard/skip' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] write { path: '/api/session/redo' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] closing session { path: '/api/session/close' }
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession POSTs /api/session/close and reports success
+[wizard.api] session closed {}
+
+stdout | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] closing session { path: '/api/session/close' }
+
+ \u{2713} web/src/components/wizard/wizard.test.tsx (21 tests) 57ms
+
+ Test Files  2 passed (2)
+      Tests  34 passed (34)
+   Start at  01:45:31
+   Duration  1.14s (transform 542ms, setup 0ms, collect 898ms, tests 126ms, environment 0ms, prepare 302ms)
+
+JSON report written to /tmp/frob-vitest-654482-0.json
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > parses problem+json and shows the hint
+[screens.export.api] non-json error body { status: 500 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] http error { path: '/api/export/nope', status: 404 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure data has unexpected shape { formatId: 'fig' }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > download via fetch > non-2xx returns an error that becomes a problem with detail and hint
+[screens.export.api] download refused { formatId: 'lctt-csv', status: 422 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > download via fetch > network failure becomes a network error
+[screens.export.api] download network failure { formatId: 'lctt-csv', message: 'down' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > ErrorNotice > hints at a stale web build on a bare 422
+[wizard.api] 422 without a problem body: likely stale web/dist { body: '{"detail":[{"loc":["body","step"]}]}' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > returns the problem on a refused write
+[wizard.api] write refused { path: '/api/session/undo', status: 409 }
+
+stderr | web/src/components/wizard/wizard.test.tsx > postWizard > reports network failure
+[wizard.api] network failure { path: '/api/session/redo', message: 'down' }
+
+stderr | web/src/components/wizard/wizard.test.tsx > Close session > closeSession surfaces a problem on refusal
+[wizard.api] close refused { path: '/api/session/close', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/components/wizard/wizard.test.tsx src/screens/export/ExportScreen.test.tsx"
+size = 8153
+status = "measured"
+test_count = 34
+tests_digest = "54cc181a529f1da9465596772411c48940671590305a6c7f741e1a1e7a6ff070"
+at = "2026-11-10T06:45:31Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M7230XQFMBWVCNP4NASD05SE"
 title = "Audit2 H6: excluded calibration/tare/specimen points still used by CSV export and calibration plot"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

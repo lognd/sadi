@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:43:12Z"
-updated = "2026-11-10T14:56:49Z"
+updated = "2026-11-10T14:56:56Z"
 scope = ["python/sadi/uncertainty/measured.py", "web/src/screens/run/**", "python/tests/uncertainty/test_measured.py"]
 
 [[acceptance]]
 text = "Operator can enter repeated readings and see RSS uncertainty."
-bound = false
+bound = true
 +++
 
 See parity.md in scratchpad.

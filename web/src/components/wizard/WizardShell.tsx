@@ -76,7 +76,7 @@ export function WizardShell({ status, children, onKeyAction, nudgeActive = false
 
   return (
     <div>
-      <header><h1>SADI</h1></header>
+      <h1>Guided run</h1>
       {wizard ? <StepRail rail={wizard.rail} /> : <p>Loading steps...</p>}
       <main>
         {failure ? <ErrorNotice failure={failure} /> : null}

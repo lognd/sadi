@@ -16,7 +16,6 @@ export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Ele
             data-status={s.status}
             aria-current={s.status === "current" ? "step" : undefined}
             tabIndex={s.status === "current" ? 0 : undefined}
-            style={s.status === "current" ? { fontWeight: "bold", border: "1px solid" } : undefined}
           >
             <span aria-hidden="true">{GLYPH[s.status]}</span> {i + 1}. {s.title}{" "}
             <span className="sr-word">({WORD[s.status]})</span>

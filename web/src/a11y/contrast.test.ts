@@ -4,35 +4,56 @@ import { describe, expect, test } from "vitest";
 import { contrastRatio } from "./contrast";
 
 const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
-const vars: Record<string, string> = {};
-for (const m of css.matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6})/g)) vars[m[1] ?? ""] = m[2] ?? "";
-const v = (n: string): string => vars[n] ?? "#000000";
-const BUTTON_BG = /background:\s*(#[0-9a-fA-F]{6});/.exec(css.slice(css.indexOf(".btn, button")))?.[1] ?? "#000000";
+
+/** Parse `--name: #hex` tokens from one CSS block. */
+function tokens(block: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const m of block.matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6})/g)) out[m[1] ?? ""] = m[2] ?? "";
+  return out;
+}
+const lightBlock = css.slice(css.indexOf(":root,"), css.indexOf("@media (prefers-color-scheme: dark)"));
+const darkBlock = css.slice(css.indexOf(':root[data-theme="dark"] {'), css.indexOf("/* ---- Tokens: theme-independent"));
+const mediaBlock = css.slice(css.indexOf("@media (prefers-color-scheme: dark)"), css.indexOf(':root[data-theme="dark"] {'));
 
 describe("styles.css WCAG AA contrast", () => {
   test("known ratios", () => {
     expect(contrastRatio("#000000", "#ffffff")).toBeCloseTo(21, 5);
   });
 
-  const text: [string, string, string][] = [
-    ["body text", v("fg"), v("bg")],
-    ["muted text", v("muted"), v("bg")],
-    ["button text", v("fg"), BUTTON_BG],
-    ["secondary button text on page", v("muted"), v("bg")],
-    ["secondary button text on button bg", v("muted"), BUTTON_BG],
-    ["primary button text", v("accent-fg"), v("accent")],
-  ];
-  test.each(text)("%s >= 4.5:1", (_n, fg, bg) => {
-    expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(4.5);
+  test("OS-dark block matches the manual dark block", () => {
+    expect(tokens(mediaBlock)).toEqual(tokens(darkBlock));
   });
 
-  const ui: [string, string, string][] = [
-    ["control border on page", v("border"), v("bg")],
-    ["control border on button bg", v("border"), BUTTON_BG],
-    ["focus ring on page", v("focus"), v("bg")],
-    // outline-offset: 2px keeps the ring on the page background, not on the button.
-  ];
-  test.each(ui)("%s >= 3:1", (_n, fg, bg) => {
-    expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(3);
+  describe.each([["light", tokens(lightBlock)], ["dark", tokens(darkBlock)]] as const)("%s theme", (_name, vars) => {
+    const v = (n: string): string => vars[n] ?? "#000000";
+    const text: [string, string, string][] = [
+      ["body text", v("fg"), v("bg")],
+      ["body text on card", v("fg"), v("surface")],
+      ["muted text on page", v("muted"), v("bg")],
+      ["muted text on card", v("muted"), v("surface")],
+      ["muted text on inset", v("muted"), v("surface-2")],
+      ["button text", v("fg"), v("btn-bg")],
+      ["secondary button text on button bg", v("muted"), v("btn-bg")],
+      ["primary button text", v("accent-fg"), v("accent")],
+      ["accent on card", v("accent"), v("surface")],
+      ["ok on soft", v("ok"), v("ok-soft")],
+      ["warn on soft", v("warn"), v("warn-soft")],
+      ["bad on soft", v("bad"), v("bad-soft")],
+      ["fg on dominant row", v("fg"), v("accent-soft")],
+    ];
+    test.each(text)("%s >= 4.5:1", (_n, fg, bg) => {
+      expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(4.5);
+    });
+
+    const ui: [string, string, string][] = [
+      ["control border on page", v("border"), v("bg")],
+      ["control border on card", v("border"), v("surface")],
+      ["control border on button bg", v("border"), v("btn-bg")],
+      ["focus ring on page", v("focus"), v("bg")],
+      ["focus ring on card", v("focus"), v("surface")],
+    ];
+    test.each(ui)("%s >= 3:1", (_n, fg, bg) => {
+      expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(3);
+    });
   });
 });

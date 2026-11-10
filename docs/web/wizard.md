@@ -68,3 +68,18 @@ shown above the run screen through `ErrorNotice` with the server's hint. Tare is
 `web/src/styles.css` colors are checked by `web/src/a11y/contrast.test.ts` (helper:
 `a11y/contrast.ts`): text pairs need 4.5:1, control borders and the focus ring 3:1. Change a
 custom property there and the test fails if a pair drops below AA.
+
+## Design system and themes
+
+`web/src/styles.css` is the design system: custom-property tokens for color, space, radius,
+shadow and type scale; a system font stack (no CDN, no webfonts); cards for every panel
+section; and styles for buttons, inputs, tables, badges (the backend pill), the step rail
+(pills: done, skipped, current), the status bar and the Doctor list. Components use tokens only,
+never ad hoc colors.
+
+Themes: light by default, dark via `prefers-color-scheme`, and a header toggle that sets
+`html[data-theme]` and persists the choice in `localStorage` key `sadi.theme`
+(`components/shell/theme.ts`; a stored choice beats the OS). The `App` header holds the brand,
+Doctor link, the `backend: up|down|unknown` pill and the toggle. `prefers-reduced-motion`
+disables transitions. Plots keep their own light canvas in both themes (framed by a border).
+The contrast test checks both themes.

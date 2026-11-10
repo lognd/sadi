@@ -4,6 +4,7 @@ import { getLogger } from "./api/log";
 import { DoctorScreen } from "./doctor/DoctorScreen";
 import { openDoctorOnConnectionError, useDoctorRoute } from "./doctor/useDoctorRoute";
 import { WizardHost } from "./screens/WizardHost";
+import { useTheme } from "./components/shell/theme";
 import { useStore } from "./state/store";
 
 const log = getLogger("App");
@@ -18,6 +19,7 @@ export function App(): React.JSX.Element {
   const visible = useDoctorRoute((s) => s.visible);
   const openDoctor = useDoctorRoute((s) => s.open);
   const closeDoctor = useDoctorRoute((s) => s.close);
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     void getHealth().then((r) => {
@@ -29,17 +31,26 @@ export function App(): React.JSX.Element {
 
   return (
     <>
-      <nav aria-label="Tools">
-        <button type="button" onClick={() => { if (visible) closeDoctor(); else openDoctor("nav"); }}>
-          {visible ? "Close Doctor" : "Doctor"}
-        </button>
-      </nav>
-      {visible ? <DoctorScreen /> : (
-        <>
-          <p>SADI - backend: {connection}</p>
-          <WizardHost />
-        </>
-      )}
+      <header className="app-header">
+        <div className="app-header-inner">
+          <div className="brand">
+            <span className="brand-name">SADI</span>
+            <span className="brand-sub">Tensile test instrument</span>
+          </div>
+          <nav aria-label="Tools">
+            <button type="button" onClick={() => { if (visible) closeDoctor(); else openDoctor("nav"); }}>
+              {visible ? "Close Doctor" : "Doctor"}
+            </button>
+          </nav>
+          <span className="pill" data-state={connection}>backend: {connection}</span>
+          <button type="button" className="theme-toggle" aria-pressed={theme === "dark"} onClick={toggle}>
+            {theme === "dark" ? "Light theme" : "Dark theme"}
+          </button>
+        </div>
+      </header>
+      <div className="app-main">
+        {visible ? <DoctorScreen /> : <WizardHost />}
+      </div>
     </>
   );
 }

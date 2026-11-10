@@ -68,7 +68,7 @@ export function RunView(p: RunViewProps): React.JSX.Element {
       <fieldset aria-label="Capture inputs" aria-describedby="hotkey-hint">
         <legend>Capture inputs (SI units)</legend>
         {PHASE_FIELDS[p.phase].map((f) => (
-          <label key={f.key} style={{ display: "inline-block", marginRight: "1rem" }}>
+          <label key={f.key} className="field">
             {f.label}{f.unit ? ` (${f.unit})` : ""}{f.required ? " *" : ""}{" "}
             <input
               type="text" inputMode="decimal" name={f.key} value={p.fields[f.key] ?? ""}

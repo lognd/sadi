@@ -2,7 +2,8 @@
 id = "01M71Z6EJDG2FBYHAJFFM90XMX"
 title = "Audit1 #27 #36: results page layout at 800px, answer first, export provenance"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

@@ -4,9 +4,10 @@ title = "Wire LiveAcquisition.finish() into results/export and show stop_reason/
 type = "task"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:05:50Z"
-updated = "2026-11-10T07:05:50Z"
+updated = "2026-11-10T07:21:51Z"
 labels = ["creates:python/tests/server/test_finish_wiring.py"]
 scope = ["python/sadi/server/service.py", "python/sadi/server/routes/results.py", "python/tests/server/test_finish_wiring.py"]
 

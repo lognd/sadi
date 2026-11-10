@@ -90,6 +90,10 @@ class LoadSuggestion(BaseModel):
 
     load_kg: float
     text: str
+    expected_gain: float | None = None
+    expected_half_width: float | None = None
+    alternatives: tuple[float, ...] = ()
+    gp_state: str = ""
 
 
 class LoadSuggester(Protocol):
@@ -174,6 +178,11 @@ class GuidanceState(BaseModel):
     stop_reason: str = ""
     proposed_next_phase: Phase | None = None
     run_complete_proposed: bool = False
+    # frob:ticket 5MQ11EV
+    expected_gain: float | None = None
+    expected_half_width: float | None = None
+    alternatives: tuple[float, ...] = ()
+    gp_state: str = ""
 
 
 def _confidence(phase: Phase, results: ResultSet, target: float) -> Confidence:
@@ -199,16 +208,16 @@ def _next_action(  # noqa: PLR0913
     cfg: GuidanceConfig,
     suggester: LoadSuggester,
     exhausted: bool,
-) -> Result[tuple[str, float | None], GuidanceError]:
+) -> Result[tuple[str, float | None, LoadSuggestion | None], GuidanceError]:
     """Pick the next-action text (and safe suggested load) for the current hold state."""
     if inp.hold is HoldState.CREEPING:
-        return Ok(("Wait: creeping", None))
+        return Ok(("Wait: creeping", None, None))
     if inp.hold is HoldState.AWAITING_ACCEPT:
-        return Ok(("Press Space to accept", None))
+        return Ok(("Press Space to accept", None, None))
     if exhausted:
-        return Ok(("Point budget reached: accept the phase or finish", None))
+        return Ok(("Point budget reached: accept the phase or finish", None, None))
     if phase is Phase.CALIBRATE:
-        return Ok((f"Record calibration point {inp.n_cal_points + 1}", None))
+        return Ok((f"Record calibration point {inp.n_cal_points + 1}", None, None))
     got = suggester.suggest(phase, inp.results, cfg.load_range)
     if isinstance(got, Err):
         _log.warning("suggester failed in %s: %s", phase, got.danger_err)
@@ -217,7 +226,7 @@ def _next_action(  # noqa: PLR0913
     if not cfg.load_range.contains(sug.load_kg):
         _log.error("unsafe suggestion %r kg outside %s", sug.load_kg, cfg.load_range)
         return Err(GuidanceError.UnsafeLoad)
-    return Ok((sug.text, sug.load_kg))
+    return Ok((sug.text, sug.load_kg, sug))
 
 
 def guide(
@@ -243,10 +252,14 @@ def guide(
         reason = f"Point budget of {cap} reached before the target was met"
     elif enough:
         reason = f"{confidence.quantity} half-width is within the {conf.target:.1%} target"
-    act = _next_action(phase, inp, conf, suggester or EvenScheduleSuggester(), exhausted)
+    if suggester is None:
+        from sadi.labs.lctt.gp_suggester import GpLoadSuggester  # noqa: PLC0415 (import cycle)
+
+        suggester = GpLoadSuggester()
+    act = _next_action(phase, inp, conf, suggester, exhausted)
     if isinstance(act, Err):
         return Err(act.danger_err)
-    text, load = act.danger_ok
+    text, load, sug = act.danger_ok
     idx = _ORDER.index(phase)
     nxt = _ORDER[idx + 1] if idx + 1 < len(_ORDER) else None
     expected = inp.results.get(_TRACKED[phase])
@@ -263,6 +276,10 @@ def guide(
         stop_reason=reason if stop else "",
         proposed_next_phase=nxt if stop else None,
         run_complete_proposed=stop and nxt is None,
+        expected_gain=sug.expected_gain if sug else None,
+        expected_half_width=sug.expected_half_width if sug else None,
+        alternatives=sug.alternatives if sug else (),
+        gp_state="enough" if (stop and sug) else (sug.gp_state if sug else ""),
     )
     _log.debug("guide: %s taken=%d stop=%s action=%r", phase, taken, stop, text)
     return Ok(state)
@@ -276,8 +293,17 @@ class GuidedRun:
     ) -> None:
         """Start in the calibrate phase with the given settings and suggester."""
         self._cfg = cfg or GuidanceConfig()
-        self._suggester = suggester
+        if suggester is None:
+            from sadi.labs.lctt.gp_suggester import GpLoadSuggester  # noqa: PLC0415 (import cycle)
+
+            suggester = GpLoadSuggester()
+        self._suggester: LoadSuggester = suggester
         self._phase = Phase.CALIBRATE
+
+    @property
+    def suggester(self) -> LoadSuggester:
+        """The load suggester in use (a GpLoadSuggester unless one was injected)."""
+        return self._suggester
 
     @property
     def phase(self) -> Phase:

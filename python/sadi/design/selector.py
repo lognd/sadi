@@ -1,6 +1,7 @@
 """Sequential-design selector: Bayesian linear phases plus a Matern52 GP yield phase (advisory)."""
 
 # frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
 
 from __future__ import annotations
 
@@ -241,6 +242,24 @@ def _cold_pick(cands: Sequence[Candidate], n: int, lo: float, hi: float) -> Cand
     return min(cands, key=lambda c: (abs(c.x - want), c.candidate_id))
 
 
+def _cold_step_pick(cands: Sequence[Candidate], n: int, n_total: int) -> Candidate:
+    """Monotonic pick: evenly stepped loads from the smallest real mass up (never unloads)."""
+    lo, hi = cands[0].x, cands[-1].x
+    want = lo + (hi - lo) * min(n, n_total) / max(n_total, 1)
+    return min(cands, key=lambda c: (abs(c.x - want), c.candidate_id))
+
+
+def _loading_pool(cands: Sequence[Candidate], obs: Sequence[Obs]) -> list[Candidate]:
+    """Candidates at or above the current hang and above 0 once a point exists (sorted by x)."""
+    if not obs:
+        return list(cands)
+    floor = obs[-1].x
+    pool = [c for c in cands if c.x >= floor and c.x > 0.0]
+    if not pool:
+        pool = [cands[-1]]
+    return pool
+
+
 def _need(target: TargetSpec, value: float | None) -> float | None:
     if target.relative:
         return None if value is None else target.half_width * abs(value)
@@ -272,6 +291,8 @@ def select_next(  # noqa: PLR0913
         return Err(SelectorError.NonFinite)
     cands = sorted(candidates, key=lambda c: (c.x, c.candidate_id))
     lo, hi = cands[0].x, cands[-1].x
+    monotonic = phase in {DesignPhase.ELASTIC, DesignPhase.YIELD}
+    pool = _loading_pool(cands, obs) if monotonic else cands
     n = len(obs)
     n_min = cfg.n_min_yield if phase is DesignPhase.YIELD else cfg.n_min_linear
 
@@ -287,15 +308,19 @@ def select_next(  # noqa: PLR0913
         reasons.append(fit)
         state = GpState.UNRELIABLE if fit in {"cold_start", "singular"} else GpState.COLLECTING
         if fit == "cold_start":
-            pick = _cold_pick(cands, n, lo, hi)
-            gains = [(0.0, pick)] + [(0.0, c) for c in cands if c is not pick][:N_ALTERNATIVES]
+            if monotonic:
+                real = [c for c in pool if c.x > 0.0] or pool
+                pick = _cold_step_pick(real, n, n_min)
+            else:
+                pick = _cold_pick(cands, n, lo, hi)
+            gains = [(0.0, pick)] + [(0.0, c) for c in pool if c is not pick][:N_ALTERNATIVES]
         elif fit == "yield_not_reached":
             # explore upward: highest-load candidates first (nothing is known beyond the data)
-            above = [c for c in cands if c.x > max((o.x for o in obs), default=lo)] or cands
+            above = [c for c in pool if c.x > max((o.x for o in obs), default=lo)] or pool
             pick = above[len(above) // 2]
             gains = [(0.0, pick)] + [(0.0, c) for c in above if c is not pick][:N_ALTERNATIVES]
         else:
-            gains = [(0.0, c) for c in cands[: N_ALTERNATIVES + 1]]
+            gains = [(0.0, c) for c in pool[: N_ALTERNATIVES + 1]]
     else:
         cur = CurrentFit(half_width=fit.half, value=fit.value, dof=float(fit.dof))
         need = _need(target, fit.value)
@@ -314,7 +339,7 @@ def select_next(  # noqa: PLR0913
             else:
                 break
         gains = sorted(
-            ((fit.gain(c.x), c) for c in cands), key=lambda g: (-g[0], g[1].x, g[1].candidate_id)
+            ((fit.gain(c.x), c) for c in pool), key=lambda g: (-g[0], g[1].x, g[1].candidate_id)
         )
         best_gain = gains[0][0]
         if phase is not DesignPhase.YIELD and _departs(obs, lo, hi):

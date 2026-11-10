@@ -30,7 +30,7 @@ export const STEP_GUIDE: Readonly<Record<string, StepGuide>> = {
     next: "Next: elastic run.",
   },
   elastic: {
-    doThis: ["Add one weight to the hanger.", "Click I added a weight, then wait for Settle to say Settled.", "Type the Masses added (kg), then press Accept point (Space).", "Repeat for at least 3 weights, then press Finish."],
+    doThis: ["Hang the suggested weight shown below (the first is the smallest weight); add it gently.", "Click I added a weight, then wait for Settle to say Settled.", "Type the Added mass (kg), then press Accept point (Space).", "Repeat for at least 3 weights, then press Finish."],
     watch: "Watch SETTLE: press Accept point only when it says Settled.",
     next: "Next: plastic run.",
   },

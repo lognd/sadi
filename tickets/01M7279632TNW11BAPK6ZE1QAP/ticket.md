@@ -2,7 +2,8 @@
 id = "01M7279632TNW11BAPK6ZE1QAP"
 title = "M4: auto-open settle point after each captured point; align settle vocabulary"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

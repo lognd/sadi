@@ -4,9 +4,10 @@ title = "Audit1 #1 #28: real SADI serial device path in sadi serve, device-missi
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T04:55:10Z"
+updated = "2026-11-10T04:55:12Z"
 scope = ["python/sadi/launcher.py", "python/sadi/server/device*", "python/tests/server/**", "python/tests/cli/**"]
 
 [[acceptance]]

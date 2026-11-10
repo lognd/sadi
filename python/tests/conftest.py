@@ -32,3 +32,9 @@ def isolated_spill_dirs(
     monkeypatch.setenv("LOCALAPPDATA", str(home / "local"))
     monkeypatch.setattr("tempfile.tempdir", str(temp))
     return user_data_dir(), temp
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+@pytest.fixture(autouse=True)
+def _autouse_isolated_spill_dirs(isolated_spill_dirs: tuple[Path, Path]) -> None:
+    """Isolate the user-data and OS temp spill dirs for every test (audit7 M5)."""

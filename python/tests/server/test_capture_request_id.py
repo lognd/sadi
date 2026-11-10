@@ -78,13 +78,13 @@ def test_replay_after_reopen_finds_point_in_log(svc: SessionService) -> None:
     assert _count(svc) == 1
 
 
-def _body2(rid: str, volts: float) -> CaptureBody:
-    """A calibration capture body with `rid` and the given volts."""
+def _body2(rid: str, volts: float, height: float = 0.01, window: dict[str, int] = WINDOW) -> CaptureBody:
+    """A calibration capture body with `rid`, the given live volts, gauge height and window."""
     return CaptureBody.model_validate(
         {
             "phase": "calibration",
-            "inputs": {"volts": volts, "height": 0.01},
-            "window": WINDOW,
+            "inputs": {"volts": volts, "height": height},
+            "window": window,
             "request_id": rid,
         }
     )
@@ -95,10 +95,23 @@ def _body2(rid: str, volts: float) -> CaptureBody:
 def test_same_request_id_different_body_is_409_and_records_nothing(svc: SessionService) -> None:
     """A reused id with other inputs is refused; the first point stays, none is dropped."""
     assert svc.capture(_body2("x", 1.0)).is_ok
-    bad = svc.capture(_body2("x", 2.0))
+    bad = svc.capture(_body2("x", 1.0, height=0.02))
     assert bad.is_err
     assert bad.danger_err.status == 409
     assert "different point" in bad.danger_err.detail
+    assert _count(svc) == 1
+
+
+# frob:ticket 01M72VM5RSJM7EMREPXDYDN79W
+# frob:tests python/sadi/server/service.py::_capture_digest
+def test_retry_with_different_live_volts_and_window_is_already_saved(svc: SessionService) -> None:
+    """A real retry re-reads live volts and the window; it must replay, never save twice."""
+    first = svc.capture(_body2("r", 0.05012, window={"first_raw_seq": 1, "last_raw_seq": 5})).danger_ok
+    again = svc.capture(
+        _body2("r", 0.05009, window={"first_raw_seq": 11, "last_raw_seq": 15})
+    ).danger_ok
+    assert again.seq == first.seq
+    assert "Already saved" in again.summary
     assert _count(svc) == 1
 
 

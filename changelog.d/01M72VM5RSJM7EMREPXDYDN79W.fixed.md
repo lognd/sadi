@@ -1,0 +1,1 @@
+A capture retry no longer saves a point twice: the server matches a retried request id on the operator-chosen fields only, the Run screen resends the exact first body (and its specimen id), and refusals show the hint in plain text.

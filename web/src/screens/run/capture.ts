@@ -2,11 +2,10 @@
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
-import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import type { Result } from "../../api/result";
 import type { Committed } from "../review/types";
-import { postJson } from "../review/api";
+import { postJson, type PostError } from "../review/api";
 import type { LiveView } from "./live";
 import { PHASES, type RunPhase } from "./phases";
 
@@ -74,7 +73,7 @@ export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unkno
 }
 
 /** POST one capture; returns the committed state or the API error. */
-export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): Promise<Result<Committed, ApiError>> {
+export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): Promise<Result<Committed, PostError>> {
   log.info("capture", { phase: body.phase, forced: body.forced_early });
   const r = await postJson<Committed>("/api/session/points", body, f);
   if (!r.ok) log.warn("capture refused", { kind: r.error.kind });
@@ -82,12 +81,20 @@ export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): P
 }
 
 /** Build the `specimen` point body (geometry entered alongside a phase); same window/settle as the phase point. */
-export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView): CaptureBody {
+export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, requestId?: string): CaptureBody {
   return {
     phase: "specimen", inputs,
     window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
     settled: true, forced_early: false, drift_rate: view.driftVps,
+    ...(requestId === undefined ? {} : { request_id: requestId }),
   };
+}
+
+/** One accept attempt frozen for retry: the exact bodies (each with its own id) and whether the specimen POST already succeeded. */
+export interface FrozenAttempt {
+  readonly body: CaptureBody;
+  readonly specimen: CaptureBody | null;
+  specimenDone: boolean;
 }
 
 const UUID_RE = /\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;

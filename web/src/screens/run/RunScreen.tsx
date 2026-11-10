@@ -6,6 +6,7 @@
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M7274EKWS410XEGZGFD6HWHK
 // frob:ticket 01M72PGN2KAMZP8EPHDPV143B4
+// frob:ticket 01M72VM5RSJM7EMREPXDYDN79W
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -15,11 +16,11 @@ import type { KeyAction } from "../../keys/keymap";
 import type { WizardState } from "../../components/wizard/types";
 import { DEFAULT_RUN_EXPORT, exportErrorText, fetchRunExport } from "./exportTrace";
 import { postLoadChange } from "./loadChange";
-import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, WHY_SAME_LOAD, type Confirm } from "./capture";
+import { buildBody, buildSpecimenBody, capturedMessage, decide, newRequestId, postCapture, WHY_SAME_LOAD, type Confirm, type FrozenAttempt } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
 import { RunPlot, RunView, type PhasePlot } from "./RunView";
-import { getPoints } from "../review/api";
+import { getPoints, isRequestIdReused, problemText } from "../review/api";
 import { guidanceText } from "./guidance";
 import { SuggestedWeightPanel } from "./SuggestedWeightPanel";
 import { countPhasePoints, finishBlockedWhy } from "./pointCount";
@@ -64,10 +65,12 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const [pointCount, setPointCount] = useState<number | null>(null);
   const inFlight = useRef(false);
   // frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
-  const attemptId = useRef<string | null>(null); // reused on retry until the capture succeeds
+  const attempt = useRef<FrozenAttempt | null>(null); // exact bodies + ids resent on retry until success, edit, load change or phase change
   const loadRecorded = useRef(false); // true after a capture until the load change is marked
   const { view, side } = live;
-  const onField = useCallback((k: string, v: string): void => { attemptId.current = null; setFields((f) => ({ ...f, [k]: v })); }, []);
+  const onField = useCallback((k: string, v: string): void => { attempt.current = null; setFields((f) => ({ ...f, [k]: v })); }, []);
+  const inputsKey = JSON.stringify(p.inputs ?? {});
+  useEffect(() => { attempt.current = null; }, [p.phase, inputsKey]);
   // Count the saved points for this step from the server so Finish stays gated correctly after a reload.
   useEffect(() => {
     let alive = true;
@@ -82,24 +85,33 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const blockedWhy = preview.kind === "blocked" ? preview.why : null;
 
   const captureOnce = useCallback(async (early: boolean): Promise<void> => {
-    const typed = collectInputs(p.phase, fields, view.recent?.mean ?? view.volts, view.recent ?? null);
-    if (!typed.ok) { setConfirm("idle"); setMessage(typed.error.join(" ")); return; }
-    const { own, specimen } = splitSpecimen(p.phase, typed.value);
-    if (specimen !== null) {
-      const sp = await postCapture(buildSpecimenBody(specimen, side.rawSeq, view), p.fetchImpl);
+    if (attempt.current === null) {
+      const typed = collectInputs(p.phase, fields, view.recent?.mean ?? view.volts, view.recent ?? null);
+      if (!typed.ok) { setConfirm("idle"); setMessage(typed.error.join(" ")); return; }
+      const { own, specimen } = splitSpecimen(p.phase, typed.value);
+      attempt.current = {
+        body: buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early, newRequestId()),
+        specimen: specimen === null ? null : buildSpecimenBody(specimen, side.rawSeq, view, newRequestId()),
+        specimenDone: false,
+      };
+    }
+    const cur = attempt.current;
+    if (cur.specimen !== null && !cur.specimenDone) {
+      const sp = await postCapture(cur.specimen, p.fetchImpl);
       if (!sp.ok) {
         setConfirm("idle");
-        setMessage(sp.error.kind === "network" ? `Network error: ${sp.error.message}. Check the connection, then try again.` : `Specimen capture refused (HTTP ${String(sp.error.status)}). ${sp.error.body}`);
+        if (isRequestIdReused(sp.error)) attempt.current = null;
+        setMessage(problemText(sp.error, "Specimen capture"));
         return;
       }
+      cur.specimenDone = true;
     }
-    attemptId.current ??= newRequestId();
-    const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early, attemptId.current), p.fetchImpl);
+    const r = await postCapture(cur.body, p.fetchImpl);
     setConfirm("idle");
-    if (r.ok) { attemptId.current = null; loadRecorded.current = true; setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
+    if (r.ok) { attempt.current = null; loadRecorded.current = true; setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
     else {
-      if (r.error.kind !== "network" && r.error.status === 409) attemptId.current = null; // id used for a different point: next try gets a fresh id
-      setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
+      if (isRequestIdReused(r.error)) attempt.current = null; // id used for a different point: next try builds a fresh attempt
+      setMessage(problemText(r.error, "Capture"));
     }
   }, [p, side.rawSeq, view, fields]);
 
@@ -120,9 +132,9 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
 
   const markLoadChange = useCallback(async (): Promise<void> => {
     const r = await postLoadChange(p.fetchImpl);
-    if (r.ok) { loadRecorded.current = false; attemptId.current = null; }
+    if (r.ok) { loadRecorded.current = false; attempt.current = null; }
     if (r.ok) setMessage("Load change marked; wait for the reading to settle.");
-    else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Load change refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
+    else setMessage(problemText(r.error, "Load change"));
   }, [p.fetchImpl]);
 
   const doExport = useCallback(async (): Promise<void> => {

@@ -2,7 +2,8 @@
 id = "01M72YAG5JF05K4W68BCPGKVGP"
 title = "Load points carry voltage uncertainty U=2*sd (parity M1) and operator/description in CSV header (parity L1)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

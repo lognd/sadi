@@ -486,9 +486,10 @@ def _quantity(m: Measured, unit: str) -> Quantity:
     return Quantity(value=m.value, standard_uncertainty=m.std_unc, unit=unit)
 
 
-#: Relative allowance for creep / incomplete settling in the fitted E (synthetic copper creeps
-#: about 1-4 % of the elastic strain over the loading range, biasing E low; this keeps the
-#: stated interval honest until the creep term is modelled explicitly).
+#: Stated systematic allowance (3 % relative, added in quadrature to the fitted E uncertainty)
+#: for creep / incomplete settling. It is NOT a fitted creep correction: synthetic copper
+#: creeps about 1-4 % of the elastic strain over the loading range, biasing E low, and this
+#: widens the stated interval to cover that until the creep term is modelled explicitly.
 CREEP_REL_ALLOWANCE = 0.03
 
 
@@ -507,7 +508,10 @@ def _calibration_quantities(
             out["intercept"] = _quantity(f.intercept, "m")
     if ctx.tare_v is not None:
         tare = [i for i in inputs if isinstance(i, TareInputs)][-1]
-        out["tare"] = Quantity(value=tare.mean, standard_uncertainty=tare.sd, unit="V")
+        # frob:ticket 01M725CA43JK1ZDJKF8135RHT0
+        # The tare is a mean of n samples: its uncertainty is the standard error sd/sqrt(n).
+        se = tare.sd / math.sqrt(tare.n) if tare.n >= 1 else tare.sd
+        out["tare"] = Quantity(value=tare.mean, standard_uncertainty=se, unit="V")
     _log.debug("lctt calibration quantities: %s", sorted(out))
     return out
 

@@ -33,9 +33,14 @@ function parseProblem(body: string): ProblemParts | null {
   }
 }
 
+/** A 5xx on capture may have saved the point, so the wording says so and tells the student to retry safely. */
+const UNCERTAIN_CAPTURE = "Capture not confirmed yet. Press Accept again to check; it will not be saved twice.";
+
 /** Plain-text message for a failed POST: hint, else detail, else title; never raw JSON or an HTTP code (status stays in the log). */
 export function problemText(e: PostError, what: string): string {
   if (e.kind === "network") return `Network error: ${e.message}. Check the connection, then try again.`;
+  // frob:ticket 01M72YKEWHJJXEBBV7XDP5Z31J
+  if (e.status >= 500 && what === "Capture") return UNCERTAIN_CAPTURE;
   const p = e.problem;
   const text = p === null ? "" : p.hint !== "" ? p.hint : p.detail !== "" ? p.detail : p.title;
   return text === "" ? `${what} was refused. Try again.` : `${what} refused. ${plainNote(text)}`;

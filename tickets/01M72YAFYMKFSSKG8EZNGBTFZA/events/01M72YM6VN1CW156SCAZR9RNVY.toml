@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:43:33Z"
+digest = "1bb6e9ec3d2f2b1bcda516a825cc84985ac6cc727bb4e0d33472029a38affba6"
+exit_code = 0
+head = "223419bdba339b8889dc4848a3dc17ffd93f6f88"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/design/test_selector.py .                                   [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1229080-0.xml --------------
+============================== 1 passed in 1.94s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/design/test_selector.py::test_elastic_never_suggests_current_or_lower_load"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "06f5ecad9493e57b646b24b71c48cee207189ec446079f03b25118c34ca619e1"
+at = "2026-11-10T14:43:33Z"
+actor = "lognd"
+rev = 1

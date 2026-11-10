@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/ws.py"]
+new = ["python/sadi/server/ws.py", "docs/concurrency.md"]
+at = "2026-11-10T08:12:30Z"
+actor = "lognd"
+rev = 1

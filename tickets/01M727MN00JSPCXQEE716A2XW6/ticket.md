@@ -2,7 +2,8 @@
 id = "01M727MN00JSPCXQEE716A2XW6"
 title = "Fix test_point_roundtrip 409 NoOpenSession after open_session change (H3 regression)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

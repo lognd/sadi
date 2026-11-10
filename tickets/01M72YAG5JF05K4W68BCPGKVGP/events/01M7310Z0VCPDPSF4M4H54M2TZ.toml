@@ -1,0 +1,20 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T15:25:30Z"
+digest = "efc63e1bab15aafc77b831b0a439a0be80f57a2634995bf52e0bf8b8ac7ce0b2"
+exit_code = 4
+head = "9f971b700cca7214538b5da4a5c283883deeabeb"
+inline = """
+
+no tests ran in 0.15s
+ERROR: file or directory not found: tests/labs/lctt/test_load_unc_header.py
+
+"""
+passed = false
+provider = "command"
+ref = "pytest tests/labs/lctt/test_load_unc_header.py tests/labs/lctt/test_block_capture.py -q"
+size = 100
+status = "measured"
+at = "2026-11-10T15:25:30Z"
+actor = "lognd"
+rev = 1

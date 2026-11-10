@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:01:53Z"
-updated = "2026-11-10T08:04:17Z"
+updated = "2026-11-10T08:04:25Z"
 scope = ["python/tests/api/test_point_roundtrip.py"]
 
 [[acceptance]]

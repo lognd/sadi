@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:33:10Z"
-updated = "2026-11-10T15:32:13Z"
+updated = "2026-11-10T15:32:52Z"
 labels = ["creates:python/tests/labs/lctt/test_l0_input.py"]
 scope = ["python/sadi/labs/lctt/lab.py", "python/sadi/labs/lctt/loading.py", "python/sadi/labs/lctt/export_csv.py", "web/src/screens/run/inputFields.ts", "python/sadi/core/point_inputs.py", "docs/lctt/*.md", "python/sadi/labs/lctt/live.py", "python/tests/labs/lctt/test_l0_input.py"]
 

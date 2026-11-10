@@ -2,7 +2,8 @@
 id = "01M71MKBSXNE43ZJF2SEJ231JH"
 title = "Adopt crunk design spec for web: crunk.toml tokens matching styles.css, crunk check clean, drift check in CI"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

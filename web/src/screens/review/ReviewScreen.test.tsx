@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { renderToString } from "react-dom/server";
 import {
   HistoryList, PointEditor, PointList, ReviewScreen, SAFETY_NOTE, historyLabel, nudgeEdit,
-  parseCount, parseInputValue, pointFlags, rowActionAfterKey,
+  parseCount, parseInputValue, pointFlags, rowActionAfterKey, shortId,
 } from "./ReviewScreen";
 import { describeProblem, editPoint, redo, undo } from "./api";
 import { loadReview, runAction, type ReviewData } from "./session";
@@ -151,5 +151,16 @@ describe("actions", () => {
     const bad = await loadReview(() => Promise.reject(new Error("down")));
     expect(bad.data).toBeNull();
     expect(bad.error).toContain("down");
+  });
+
+  // frob:ticket 01M71Z6EJDG2FBYHAJFFM90XMX
+  it("leads with the results, scrolls the table, and shortens ids (Audit1 #27)", () => {
+    const h = renderToString(<ReviewScreen initial={data} />);
+    expect(h.indexOf('data-testid="results-panel"')).toBeGreaterThan(-1);
+    expect(h.indexOf('data-testid="results-panel"')).toBeLessThan(h.indexOf('aria-label="Captured points"'));
+    expect(h).toContain("overflow-x:auto");
+    const uuid = "123e4567-e89b-12d3-a456-426614174000";
+    expect(shortId(uuid)).toBe("123e4567");
+    expect(shortId("p1")).toBe("p1");
   });
 });

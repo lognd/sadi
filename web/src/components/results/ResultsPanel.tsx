@@ -9,6 +9,14 @@ const log = getLogger("components.results");
 /** Clipboard writer injected for testability. */
 export type CopyFn = (text: string) => Promise<void>;
 
+/** Round a number to 4 significant figures for display; exponent form when very large or small. */
+export function compactNumber(n: number): string {
+  if (!Number.isFinite(n)) return String(n);
+  if (n === 0) return "0";
+  const a = Math.abs(n);
+  return a >= 1e6 || a < 1e-3 ? n.toExponential(3) : String(Number(n.toPrecision(4)));
+}
+
 /** Format one result as a copyable line with units (display string is API-formatted). */
 export function copyLine(label: string, v: ResultValue): string {
   return `${label}: ${v.display} [95%: ${String(v.low95)} to ${String(v.high95)} ${v.unit}]`;
@@ -32,8 +40,8 @@ export function ResultRow({ label, v }: { label: string; v: ResultValue }) {
     <tr data-testid={`result-${v.name}`}>
       <th scope="row">{label}</th>
       <td className="display">{v.display}</td>
-      <td className="std-unc">{`u = ${String(v.std_unc)} ${v.unit}`}</td>
-      <td className="interval">{`[${String(v.low95)}, ${String(v.high95)}] ${v.unit}`}</td>
+      <td className="std-unc">{`uncertainty \u00b1${compactNumber(v.std_unc)} ${v.unit}`}</td>
+      <td className="interval">{`95 % range ${compactNumber(v.low95)} to ${compactNumber(v.high95)} ${v.unit}`}</td>
       <td className="confidence">{v.confidence}</td>
       <td className="mc" data-status={v.mc.status}>
         {disagrees ? "RSS and Monte Carlo disagree" : v.mc.status === "agrees" ? "MC agrees" : ""}
@@ -62,6 +70,7 @@ export function ResultsPanel(props: {
     <section aria-label="Results" data-testid="results-panel">
       <SyntheticBanner provenance={results.data_provenance} />
       <h2>{`Results (${String(results.n_points)} points)`}</h2>
+      <div className="table-scroll" style={{ overflowX: "auto", maxWidth: "100%" }}>
       <table>
         <tbody>
           {PANEL_ROWS.map((row) => {
@@ -76,6 +85,7 @@ export function ResultsPanel(props: {
           })}
         </tbody>
       </table>
+      </div>
       {settleSource ? <p className="settle">E computed from settle value: {settleSource}</p> : null}
       {results.notes.length > 0 ? (
         <ul className="notes">{results.notes.map((n) => <li key={n}>{plainNote(n)}</li>)}</ul>

@@ -23,3 +23,7 @@ Parent: [web layout](../web-layout.md), next to the [guidance panel](guidance.md
 - Figure JSON carries no theme; the light publication theme is applied before drawing.
 
 See also the [synthetic data banner](synthetic-banner.md) shown above the report and the download list.
+
+## Provenance (Audit1 #36)
+
+The report states the data source (real measurement or SYNTHETIC) in plain words. The provenance table shows a point count (ids in the tooltip), hides empty 0-to-0 sample spans, and uses readable quantity names.

@@ -81,7 +81,7 @@ export async function exportFigureFormat(
 export function ReportRow({ v }: { v: ResultValue }) {
   return (
     <tr data-testid={`result-${v.name}`}>
-      <th scope="row">{v.name}</th>
+      <th scope="row">{quantityLabel(v.name)}</th>
       <td>{v.display}</td>
       <td>{`${String(v.low95)} to ${String(v.high95)} ${v.unit}`}</td>
       <td>{v.confidence}</td>
@@ -90,9 +90,35 @@ export function ReportRow({ v }: { v: ResultValue }) {
   );
 }
 
-/** Sample span text for one quantity; a dash when the server has no span. */
+/** Plain-language names for reported quantities; unknown names pass through. */
+export const QUANTITY_LABELS: Readonly<Record<string, string>> = {
+  E: "Elastic modulus E", yield_stress: "Yield stress", slope: "Calibration slope",
+  intercept: "Calibration intercept", tare: "Tare", r2: "Calibration fit r^2",
+  stress: "Stress at last point", strain: "Strain at last point", secant_modulus: "Secant modulus at last point",
+};
+
+/** Human label for a quantity name. */
+export function quantityLabel(name: string): string {
+  return QUANTITY_LABELS[name] ?? name;
+}
+
+/** Sample span text for one quantity; a dash when the server has no span or the span is empty (0 to 0). */
 export function sampleSpan(p: QuantityProvenance): string {
-  return p.first_sample === null || p.last_sample === null ? "-" : `${String(p.first_sample)} to ${String(p.last_sample)}`;
+  if (p.first_sample === null || p.last_sample === null) return "-";
+  if (p.first_sample === 0 && p.last_sample === 0) return "-";
+  return `${String(p.first_sample)} to ${String(p.last_sample)}`;
+}
+
+/** Point ids cell: a count with the ids in a tooltip, since lists of UUIDs are unreadable. */
+export function pointCount(p: QuantityProvenance): string {
+  const n = p.point_ids.length;
+  return n === 0 ? "-" : `${String(n)} point${n === 1 ? "" : "s"}`;
+}
+
+/** Plain statement of where the data came from: real instrument or synthetic. */
+export function dataSourceText(p: DataProvenance | null | undefined): string {
+  if (p === undefined || p === null) return "Data source: not recorded by this server.";
+  return isSynthetic(p) ? "Data source: SYNTHETIC (simulated, not a real measurement)." : "Data source: real measurement from the instrument.";
 }
 
 /** Per-quantity provenance table: point ids, sample span and algorithm; nothing when empty. */
@@ -101,12 +127,12 @@ export function ProvenanceTable({ provenance }: { provenance: QuantityProvenance
   return (
     <table aria-label="Provenance" data-testid="provenance">
       <caption>Provenance</caption>
-      <thead><tr><th scope="col">Quantity</th><th scope="col">Point ids</th><th scope="col">Sample span</th><th scope="col">Algorithm</th></tr></thead>
+      <thead><tr><th scope="col">Quantity</th><th scope="col">Points used</th><th scope="col">Sample span</th><th scope="col">Algorithm</th></tr></thead>
       <tbody>
         {provenance.map((p) => (
           <tr key={p.name} data-testid={`provenance-${p.name}`}>
-            <th scope="row">{p.name}</th>
-            <td>{p.point_ids.length === 0 ? "-" : p.point_ids.join(", ")}</td>
+            <th scope="row">{quantityLabel(p.name)}</th>
+            <td title={p.point_ids.join(", ")}>{pointCount(p)}</td>
             <td>{sampleSpan(p)}</td>
             <td>{p.algorithm}</td>
           </tr>
@@ -123,13 +149,16 @@ export function ReportView({ results }: { results: ResultSet | null }) {
     <section aria-label="Report">
       <h2>Report</h2>
       <SyntheticBanner provenance={results.data_provenance} />
+      <p data-testid="data-source">{dataSourceText(results.data_provenance)}</p>
       <p>{`Based on ${String(results.n_points)} points.`}</p>
       {results.values.length === 0 ? <p>No values computable yet.</p> : (
+        <div className="table-scroll" style={{ overflowX: "auto", maxWidth: "100%" }}>
         <table>
           <caption>Final values</caption>
           <thead><tr><th scope="col">Quantity</th><th scope="col">Value</th><th scope="col">95 % interval</th><th scope="col">Confidence</th><th scope="col">MC check</th></tr></thead>
           <tbody>{results.values.map((v) => <ReportRow key={v.name} v={v} />)}</tbody>
         </table>
+        </div>
       )}
       {results.pending.length > 0 ? <p data-testid="pending">{`Pending: ${results.pending.join(", ")}`}</p> : null}
       <ProvenanceTable provenance={results.provenance} />

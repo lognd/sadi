@@ -8,7 +8,7 @@ Console script `sadi` (`sadi.launcher:main`).
   read-only, then starts uvicorn on `create_app(AppSettings(data_root=...))`.
   Options: `--host` (loopback only, default `127.0.0.1`), `--port` (default 8000),
   `--data-root` / `--data-dir`, `--web-dist` (`web/dist`), `--skip-preflight`,
-  `--no-browser`, `--sim`, `--selftest`, `--version`, `--allow-non-loopback` (UNSAFE).
+  `--no-browser`, `--sim`, `--selftest`, `--version`, `--allow-non-loopback` (UNSAFE), `--recover-stale`.
 - `sadi doctor ...`: passthrough to `sadi-doctor`.
 
 Preflight: a doctor exit code of 2 (blocker) prints the doctor's step-by-step report
@@ -17,6 +17,18 @@ warning and starts.
 
 Data-root lock: taken by the app lifespan; a refused lock (live or stale) is never
 stolen, and the launcher exits 3 printing the lock hint.
+
+Crash recovery: after a crash or power loss the lock file still names a dead pid. The
+refusal says so in plain words and names the exact command, `sadi serve --recover-stale`.
+The flag only takes over a lock whose OS lock is free (the holder is gone); a live holder is
+still refused. It never deletes or rewrites session data, and without it nothing changes.
+
+Port check: `_port_free` sets `SO_REUSEADDR` (POSIX, like uvicorn) so a port left in
+TIME_WAIT by a crashed server is not reported busy and the default port is kept.
+
+Unwritable data root: before anything else the launcher checks (read-only, creating nothing)
+that the data folder, or its nearest existing parent, is writable. If not it exits 3 with a
+"Permission denied" hint suggesting `--data-root <folder>`.
 
 Web: when `web/dist/index.html` exists, `mount_web` mounts it at `/` after the API routes
 (so `/api/*` wins). Without it the API is served alone with a warning that names the fix (`cd python && uv run python ../packaging/build_ui.py`). The checkout fallback is resolved from the package location (`sadi.webdist.CHECKOUT_WEB_DIST`, shared with the WEB-010 doctor probe), never the cwd. The mount lives in

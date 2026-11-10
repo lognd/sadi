@@ -1,0 +1,15 @@
+kind = "create"
+title = "Weight plan: persist inventory via append-only events and replan on Run screen"
+type = "story"
+category = "todo"
+priority = "medium"
+points = 5
+scope = ["python/sadi/server/routes/weight_plan.py", "web/src/screens/setup/**", "web/src/screens/run/**"]
+acceptance = ["Weights persist via inventory events.", "Run screen shows next planned hang and replans from captured points."]
+at = "2026-11-10T14:40:35Z"
+actor = "lognd"
+rev = 1
+
+[[links]]
+kind = "blocked-by"
+target = "01M72X7ZB936PEBXHRGX06FSAD"

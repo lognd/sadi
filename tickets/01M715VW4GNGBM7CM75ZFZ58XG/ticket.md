@@ -2,7 +2,8 @@
 id = "01M715VW4GNGBM7CM75ZFZ58XG"
 title = "pipeline forward loop logs expected 0.2 s wait_durable poll timeouts at ERROR (noisy on slow Windows disks)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

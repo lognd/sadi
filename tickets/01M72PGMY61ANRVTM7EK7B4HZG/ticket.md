@@ -2,7 +2,8 @@
 id = "01M72PGMY61ANRVTM7EK7B4HZG"
 title = "Live trace canvas distorted: keep scene aspect ratio when CSS scales width"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

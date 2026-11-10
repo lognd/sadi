@@ -88,7 +88,7 @@ def test_accept_without_point() -> None:
     ctl, _ = make(mode=CaptureMode.CONFIRM)
     ctl.push(*block(0, 60))
     assert not isinstance(ctl.accept(), Err)
-    assert ctl.accept() == Err(CaptureError.NoOpenPoint)
+    assert ctl.accept() == Err(CaptureError.NoRawRange)  # auto-opened point has no samples yet
 
 
 def test_auto_captures_on_settle() -> None:

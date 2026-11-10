@@ -2,12 +2,12 @@
 id = "01M72T4R60FE64HPV3XN875QES"
 title = "Restyle: sentence-case readable long labels; white sans export theme"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:25:15Z"
+updated = "2026-11-10T13:25:31Z"
 labels = ["creates:none"]
 scope = ["web/src/styles.css", "web/src/plots/theme.ts", "web/src/screens/run/inputFields.ts"]
 

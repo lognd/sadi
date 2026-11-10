@@ -7,7 +7,7 @@ priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:49Z"
-updated = "2026-11-10T02:12:41Z"
+updated = "2026-11-10T02:12:44Z"
 labels = ["model:sonnet"]
 scope = ["web/src/styles.css", "web/src/App.tsx", "web/src/components/**", "web/src/screens/**", "web/src/doctor/**", "web/index.html", "docs/web/**", "web/src/a11y/**"]
 
@@ -21,7 +21,7 @@ bound = true
 
 [[acceptance]]
 text = "Accessible: AA contrast in both themes, visible keyboard focus, reduced-motion respected; existing vitest suites and the e2e specs still pass; npm run build and typecheck clean"
-bound = false
+bound = true
 +++
 
 The user says the app looks like garbage; make it look polished and professional for a lab instrument UI. Standards: ASCII only, no emojis, NEVER a Co-Authored-By line; docs updated in the same change; frontend tests (vitest) where logic exists; no new heavy UI deps unless justified (self-hosted fonts only, no CDN).

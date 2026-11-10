@@ -1,0 +1,7 @@
+kind = "field"
+field = "acceptance"
+new = ["Given main at dddab29c, when the CI workflow completes, then its conclusion is success"]
+moved = []
+at = "2026-11-10T02:33:53Z"
+actor = "lognd"
+rev = 1

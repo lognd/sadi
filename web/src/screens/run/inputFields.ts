@@ -45,6 +45,9 @@ const DIAMETER_RANGE_M: readonly [number, number] = [5e-5, 1e-2];
 /** Plausible LVDT gauge height in metres (mirrors MAX_HEIGHT_M / MIN_HEIGHT_M in point_inputs.py). */
 const HEIGHT_RANGE_M: readonly [number, number] = [0, 0.1];
 
+/** Plausible gauge length in metres (mirrors MIN_L0_M / MAX_L0_M in point_inputs.py). */
+const L0_RANGE_M: readonly [number, number] = [1e-3, 2];
+
 /** Plausible hanging mass in kilograms (mirrors MAX_MASS_KG in point_inputs.py). */
 const MASS_RANGE_KG: readonly [number, number] = [0, 20];
 
@@ -58,6 +61,9 @@ export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
     { key: "diameter", label: "Specimen diameter", unit: "m", required: true, min: 0, specimen: true, plausible: DIAMETER_RANGE_M },
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
     { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true, plausible: MASS_RANGE_KG },
+    { key: "u_hanger_kg", label: "Hanger mass uncertainty", unit: "kg", required: false, min: 0, specimen: true },
+    { key: "l0_m", label: "Gauge length L0", help: "Leave blank for the default (0.5 m elastic, 0.08313 m plastic).", unit: "m", required: false, min: 0, specimen: true, plausible: L0_RANGE_M },
+    { key: "u_l0_m", label: "L0 uncertainty", unit: "m", required: false, min: 0, specimen: true },
   ],
   elastic: [LIVE_V, { key: "mass_kg", label: "Added mass", help: "Masses added to the hanger only; the hanger is added for you.", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
   plastic: [LIVE_V, { key: "mass_kg", label: "Added mass", help: "Masses added to the hanger only; the hanger is added for you.", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],

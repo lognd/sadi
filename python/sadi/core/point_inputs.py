@@ -63,6 +63,9 @@ class SpecimenInputs(_Inputs):
     u_diameter: float = 0.0
     hanger_kg: float = 0.0
     u_hanger_kg: float = 0.0
+    # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+    l0_m: float | None = None  # gauge length override in metres; None keeps the role default
+    u_l0_m: float = 0.0
 
 
 class LoadInputs(_Inputs):
@@ -131,6 +134,8 @@ def parse_inputs(phase: str, inputs: dict[str, Any]) -> Result[PointInputs, str]
                 u_diameter=_opt(inputs, "u_diameter"),
                 hanger_kg=_opt(inputs, "hanger_kg"),
                 u_hanger_kg=_opt(inputs, "u_hanger_kg"),
+                l0_m=_num(inputs, "l0_m"),
+                u_l0_m=_opt(inputs, "u_l0_m"),
             )
         )
     if phase == PHASE_SETUP:
@@ -163,6 +168,9 @@ MAX_HEIGHT_M = 0.1
 MIN_HEIGHT_M = -1e-3
 #: Hanging masses are a few kg at most; larger values are probably grams typed as kg.
 MAX_MASS_KG = 20.0
+#: Plausible gauge length override range in metres (1 mm to 2 m).
+MIN_L0_M = 1e-3
+MAX_L0_M = 2.0
 MAX_VOLTS = 100.0
 MAX_STRAIN_ZERO = 1.0
 MAX_TARE_N = 100_000_000
@@ -176,6 +184,15 @@ def _finite(items: dict[str, float]) -> str | None:
         if not math.isfinite(val):
             return f"{name} must be a finite number (got {val}); NaN and Infinity are not stored"
     return None
+
+
+def _l0_problem(inputs: SpecimenInputs) -> str | None:
+    """Return a message when the gauge length override or its uncertainty is implausible."""
+    if inputs.l0_m is None:
+        return _nonneg({"u_l0_m": inputs.u_l0_m}, "metres")
+    return _bounded("l0_m", inputs.l0_m, MIN_L0_M, MAX_L0_M, "metres") or _nonneg(
+        {"u_l0_m": inputs.u_l0_m}, "metres"
+    )
 
 
 def _bounded(name: str, val: float, lo: float, hi: float, unit: str) -> str | None:
@@ -226,6 +243,7 @@ def _check_phase(inputs: PointInputs) -> str | None:
             or _nonneg({"u_diameter": inputs.u_diameter}, "metres")
             or _bounded("hanger_kg", inputs.hanger_kg, 0.0, MAX_MASS_KG, "kilograms")
             or _nonneg({"u_hanger_kg": inputs.u_hanger_kg}, "kilograms")
+            or _l0_problem(inputs)
         )
     if isinstance(inputs, LoadInputs):
         return (

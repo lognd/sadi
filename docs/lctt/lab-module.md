@@ -75,3 +75,6 @@ Short-specimen `short-data.csv` is slip-affected and is not used to validate E. 
 The reported `tare` quantity carries the standard error of the tare mean, sd/sqrt(n), of the last
 tare block (not the per-sample sd). `CREEP_REL_ALLOWANCE` (3 %) is a stated systematic allowance
 added in quadrature to the fitted E uncertainty; it is not a fitted creep correction.
+
+The specimen input accepts an optional `l0_m` override and `u_l0_m`; `context_from_inputs` uses
+them (and `u_hanger_kg`) instead of the phase default L0 and a zero hanger uncertainty.

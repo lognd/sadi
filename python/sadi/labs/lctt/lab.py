@@ -299,6 +299,8 @@ def events_from_inputs(
                     u_diameter=item.u_diameter,
                     hanger_kg=item.hanger_kg,
                     u_hanger_kg=item.u_hanger_kg,
+                    l0_m=item.l0_m,  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+                    u_l0_m=item.u_l0_m,
                 )
             )
         elif isinstance(item, LoadInputs):
@@ -482,7 +484,10 @@ class LoadingContext(BaseModel):
     diameter_m: float = NOMINAL_DIAMETER_M
     u_diameter_m: float = ASSUMED_DIAMETER_REL_UNC * NOMINAL_DIAMETER_M
     hanger_kg: float = 0.0
+    u_hanger_kg: float = 0.0
     l0_m: float = SHORT_L0_M
+    l0_override_m: float | None = None
+    u_l0_m: float = 0.0
     slope_m_per_v: float | None = None
     tare_v: float | None = None
     u_tare_v: float = 0.0
@@ -510,7 +515,12 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
     for item in inputs:
         if isinstance(item, SpecimenInputs):
             ctx.update(
-                diameter_m=item.diameter, u_diameter_m=item.u_diameter, hanger_kg=item.hanger_kg
+                diameter_m=item.diameter,
+                u_diameter_m=item.u_diameter,
+                hanger_kg=item.hanger_kg,
+                u_hanger_kg=item.u_hanger_kg,  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+                l0_override_m=item.l0_m,
+                u_l0_m=item.u_l0_m,
             )
         elif isinstance(item, TareInputs):
             continue
@@ -519,6 +529,8 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
             cal_h.append(item.height)
         else:  # LoadInputs
             ctx["l0_m"] = LONG_L0_M if item.phase == SpecimenRole.ELASTIC.value else SHORT_L0_M
+    if ctx.get("l0_override_m") is not None:  # operator-typed L0 beats the phase default
+        ctx["l0_m"] = ctx["l0_override_m"]
     if len(cal_v) >= MIN_POINTS:
         fit = fit_calibration(cal_v, cal_h)
         if isinstance(fit, Ok):
@@ -665,7 +677,7 @@ class LcttLab:
         ctx, last = self.context, usable[-1]
         dia = _meas(ctx.diameter_m, ctx.u_diameter_m, "m")
         mass = _meas(last.load_kg or 0.0, 0.0, "kg")
-        hang = _meas(ctx.hanger_kg, 0.0, "kg")
+        hang = _meas(ctx.hanger_kg, ctx.u_hanger_kg, "kg")
         g = _meas(STANDARD_G, 0.0, "m/s^2")
         if dia is None or mass is None or hang is None or g is None:
             return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid load inputs"))
@@ -684,7 +696,7 @@ class LcttLab:
         slope = _meas(ctx.slope_m_per_v, 0.0, "m/V")
         volts = _meas(last.volts or 0.0, last.volts_sd or 0.0, "V")
         tare = _meas(ctx.tare_v, ctx.u_tare_v, "V")
-        l0 = _meas(ctx.l0_m, 0.0, "m")
+        l0 = _meas(ctx.l0_m, ctx.u_l0_m, "m")
         if slope is None or volts is None or tare is None or l0 is None:
             return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid strain inputs"))
         eps = strain(slope, volts, tare, l0)

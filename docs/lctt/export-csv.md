@@ -124,3 +124,10 @@ open session's events (read-only).
 
 The step rail offers a View button on every step, including upcoming ones: it shows that step's
 instructions read-only with a "Back to current step" button; viewing never advances the run.
+
+## Operator-typed L0 and hanger uncertainty
+
+The tare step accepts `l0_m` (gauge length, 1 mm to 2 m), `u_l0_m` and `u_hanger_kg`. A blank
+`l0_m` keeps the role defaults (0.5 m elastic, 0.08313 m plastic); a typed value applies to both
+groups. Strain, E and `u_strain` use it, `l0_m`/`u_l0_m` carry it on every row, and the hanger
+uncertainty feeds `u_hanger_kg`, `u_hanger_n` and the load uncertainty. No schema change.

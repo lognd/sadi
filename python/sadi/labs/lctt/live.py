@@ -69,6 +69,9 @@ class SpecimenSetup(_Ev):
     u_diameter: float = 0.0
     hanger_kg: float = 0.0
     u_hanger_kg: float = 0.0
+    # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+    l0_m: float | None = None  # gauge length override (m); None keeps the role default
+    u_l0_m: float = 0.0
 
 
 class LoadPoint(_Ev):
@@ -213,6 +216,13 @@ def _curve(  # noqa: PLR0913
     hang = _measured(spec.hanger_kg, spec.u_hanger_kg, "kg", "hanger")
     if isinstance(dia, Err) or isinstance(hang, Err):
         return Err(LiveError.BadInput)
+    l0 = None  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+    opts = cfg.loading
+    if spec.l0_m is not None:
+        l0_made = _measured(spec.l0_m, spec.u_l0_m, "m", "l0")
+        if isinstance(l0_made, Err):
+            return Err(LiveError.BadInput)
+        l0, opts = l0_made.danger_ok, opts.model_copy(update={"l0": spec.l0_m})
     out: list[CurvePoint] = []
     for pid, p in st.points.items():
         if pid in st.excluded:
@@ -220,7 +230,7 @@ def _curve(  # noqa: PLR0913
         key = (
             p.volts, p.u_volts, p.mass_kg, p.u_mass_kg, slope.value, slope.std_unc,
             tare.value, tare.std_unc, spec.diameter, spec.u_diameter, spec.hanger_kg,
-            spec.u_hanger_kg, cfg.loading.gauge_length,
+            spec.u_hanger_kg, spec.l0_m, spec.u_l0_m, cfg.loading.gauge_length,
         )  # fmt: skip
         res = cache.get(key)
         if res is None:
@@ -230,9 +240,9 @@ def _curve(  # noqa: PLR0913
                 return Err(LiveError.BadInput)
             inputs = LoadingInputs(
                 voltage=volt.danger_ok, tare=tare, slope=slope, masses=(mass.danger_ok,),
-                hanger=hang.danger_ok, diameter=dia.danger_ok,
+                hanger=hang.danger_ok, diameter=dia.danger_ok, l0=l0,
             )  # fmt: skip
-            loaded = compute_loading(inputs, cfg.loading)
+            loaded = compute_loading(inputs, opts)
             if isinstance(loaded, Err):
                 _log.warning("curve: loading failed for %s: %s", pid, loaded.danger_err)
                 return Err(LiveError.BadInput)

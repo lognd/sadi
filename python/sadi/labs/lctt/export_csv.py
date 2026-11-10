@@ -124,7 +124,7 @@ class PointRow(BaseModel):
     tare_v: float
     u_tare_v: float
     l0_m: float
-    u_l0_m: float  # gauge length is an exact configured constant: 0
+    u_l0_m: float  # operator-typed L0 standard uncertainty (0 when default)
     diameter_m: float
     u_diameter_m: float
     intercept_m: float  # calibration intercept, repeated per row (schema 4)
@@ -322,12 +322,16 @@ class _Group:
         return self.mod.danger_ok.modulus.value if isinstance(self.mod, Ok) else NAN
 
 
-def _group_options(cfg: LiveConfig, phase: str) -> Any:  # noqa: ANN401
-    """Loading options for `phase`: its specimen's kind and L0, else the config's (legacy)."""
+def _group_options(  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+    cfg: LiveConfig, phase: str, l0_override: float | None = None
+) -> Any:  # noqa: ANN401
+    """Loading options for `phase`: its specimen's kind and L0 (operator override wins)."""
     role = _ROLE_BY_PHASE.get(phase)
     if role is None:
-        return cfg.loading
-    spec = SpecimenSpec(role=role)
+        return cfg.loading if l0_override is None else cfg.loading.model_copy(
+            update={"l0": l0_override}
+        )
+    spec = SpecimenSpec(role=role, l0=l0_override)
     return cfg.loading.model_copy(update={"specimen": spec.kind, "l0": spec.l0_m})
 
 
@@ -425,9 +429,15 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
     )
     if isinstance(dia, Err) or isinstance(hang, Err):
         return Err(ExportCsvError.Compute)
+    l0_meas = None  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
+    if spec.l0_m is not None:
+        l0_made = _m(spec.l0_m, spec.u_l0_m, "m", "l0")
+        if isinstance(l0_made, Err):
+            return Err(ExportCsvError.Compute)
+        l0_meas = l0_made.danger_ok
     phase_of = {pid: (p.phase if p.phase in _ROLE_BY_PHASE else "") for pid, p in st.points.items()}
     groups = {
-        ph: _Group(ph, _group_options(cfg, ph),
+        ph: _Group(ph, _group_options(cfg, ph, spec.l0_m),
                    [pid for pid in st.points if phase_of[pid] == ph and pid not in st.excluded])
         for ph in dict.fromkeys(phase_of.values())
     }  # fmt: skip
@@ -439,7 +449,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         res = compute_loading(
             LoadingInputs(voltage=volt.danger_ok, tare=row_tare, slope=fit.slope,
                           masses=(mass.danger_ok,), hanger=hang.danger_ok,
-                          diameter=dia.danger_ok),
+                          diameter=dia.danger_ok, l0=l0_meas),
             groups[phase_of[pid]].loading,
         )  # fmt: skip
         if isinstance(res, Err):
@@ -493,7 +503,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
                 low_r2=gm is not None and gm.danger_ok.low_r2,
                 warnings=";".join(lr.warnings),
                 slope_m_per_v=fit.slope.value, tare_v=tare.value, u_tare_v=u_tare,
-                l0_m=g.loading.gauge_length, u_l0_m=0.0,
+                l0_m=g.loading.gauge_length, u_l0_m=spec.u_l0_m,
                 diameter_m=spec.diameter, u_diameter_m=spec.u_diameter,
                 intercept_m=fit.intercept.value, u_intercept_m=fit.intercept.std_unc,
                 hanger_n=spec.hanger_kg * STANDARD_G, u_hanger_n=spec.u_hanger_kg * STANDARD_G,

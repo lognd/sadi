@@ -2,12 +2,12 @@
 id = "01M72TJ0CQPCRKAW2EWSFP9Y8Z"
 title = "Provenance 'unknown' source for orphan spill imports (no SYNTHETIC label/filename)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:32:29Z"
-updated = "2026-11-10T13:32:29Z"
+updated = "2026-11-10T13:38:48Z"
 scope = ["python/sadi/synthetic/provenance.py", "python/sadi/store/spill.py", "web/src/api/schema.ts"]
 
 [[acceptance]]

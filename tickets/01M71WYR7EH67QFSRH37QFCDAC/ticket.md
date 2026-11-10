@@ -2,7 +2,8 @@
 id = "01M71WYR7EH67QFSRH37QFCDAC"
 title = "Audit1 #1 #28: real SADI serial device path in sadi serve, device-missing UX"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

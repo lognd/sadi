@@ -8,7 +8,7 @@ points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:54Z"
 updated = "2026-11-10T05:12:07Z"
-scope = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**", "python/sadi/server/schemas.py", "python/tests/server/**", "web/src/screens/setup/SessionSetup.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts"]
+scope = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**", "python/sadi/server/schemas.py", "python/tests/server/**", "web/src/screens/setup/SessionSetup.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts", "docs/data-safety.md"]
 
 [[acceptance]]
 text = "Fixes the audit1 findings named in the title; each has a regression test; see /tmp/claude-1000/-home-logan-projects-SADI/4f193782-dc1d-4c66-a170-89d2ce998f4d/scratchpad/audit1.md"

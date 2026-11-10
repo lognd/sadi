@@ -2,7 +2,8 @@
 id = "01M72Y6ZXN756YB93HK0H3ACB5"
 title = "Square live trace pushes Accept 3 screens down below 64rem (audit8 M4)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 2
 reporter = "lognd"

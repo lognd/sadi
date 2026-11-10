@@ -20,6 +20,7 @@ import { ExportNow } from "./ExportNow";
 import { FrontPanel } from "./FrontPanel";
 import { NextActionPanel } from "./NextActionPanel";
 import { ShortcutList } from "./ShortcutList";
+import { StepData } from "./StepData";
 import { StepRail } from "./StepRail";
 import type { WizardState } from "./types";
 import { getWizard, postWizard, type WizardFailure, type WizardWrite } from "./wizardApi";
@@ -82,8 +83,11 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
   }, [currentId]);
 
   const current = wizard?.rail.find((s) => s.status === "current") ?? null;
+  const viewed = wizard?.rail.find((s) => s.id === viewing) ?? null;
+  const readOnly = viewed !== null && viewed.id !== current?.id;
   const act = useCallback((a: KeyAction): void => {
     log.debug("action", { a });
+    if (readOnly) { log.info("action ignored: read-only step view", { a }); return; }
     if ((a === "primary" || a === "finish-phase") && finishBlockedWhy !== null) log.info("finish ignored: minimum points not met", { why: finishBlockedWhy });
     else if (a === "primary" || a === "finish-phase") void write("wizard/complete");
     else if (delegateUndo && (a === "undo" || a === "redo")) onKeyAction?.(a);
@@ -91,16 +95,14 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
     else if (a === "redo") void write("redo");
     else if (a === "help") setHelp((h) => !h);
     else onKeyAction?.(a);
-  }, [write, onKeyAction, delegateUndo, finishBlockedWhy]);
+  }, [write, onKeyAction, delegateUndo, finishBlockedWhy, readOnly]);
   useKeyCapture(act, nudgeActive);
 
   const index = wizard === null || current === null ? -1 : wizard.rail.indexOf(current);
   const title = wizard === null ? "Guided run" : current === null ? "All steps finished" : current.title;
   const subtitle = wizard === null || current === null ? null : `Step ${String(index + 1)} of ${String(wizard.rail.length)}`;
-  const viewed = wizard?.rail.find((s) => s.id === viewing) ?? null;
   const viewedIndex = wizard === null || viewed === null ? -1 : wizard.rail.indexOf(viewed);
   const guide = wizard === null || current === null ? null : <DoThisCard phase={(viewed ?? current).phase} index={viewed === null ? index : viewedIndex} total={wizard.rail.length} />;
-  const readOnly = viewed !== null && viewed.id !== current?.id;
 
   const closed = useCallback((): void => {
     if (onClosed !== undefined) onClosed(); else window.location.reload();
@@ -117,7 +119,7 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
       shortcuts={help ? <details className="shortcuts"><summary>Keyboard shortcuts</summary><ShortcutList /></details> : null}
       live={<LiveTrace />}
       status={<StatusBar source={view.source} motion={view.motion} signal={view.signal} save={saveView(facts)} />}
-      next={
+      next={readOnly ? null :
         <NextActionPanel
           step={current}
           busy={busy}
@@ -131,10 +133,13 @@ export function WizardShell({ children, onKeyAction, nudgeActive = false, onWiza
     >
       {failure ? <ErrorNotice failure={failure} /> : null}
       {readOnly ? (
-        <p role="status" className="read-only-view">
-          Viewing {viewed.title} read-only. Nothing here changes the run; the run is still on {current?.title ?? "its last step"}.{" "}
-          <button type="button" onClick={() => { setViewing(null); }}>Back to current step</button>
-        </p>
+        <>
+          <p role="status" className="read-only-view">
+            Viewing {viewed.title} read-only. Nothing here changes the run; the run is still on {current?.title ?? "its last step"}.{" "}
+            <button type="button" onClick={() => { setViewing(null); }}>Back to current step</button>
+          </p>
+          <StepData step={viewed} />
+        </>
       ) : children}
     </FrontPanel>
   );

@@ -104,3 +104,7 @@ Server notes such as `ComputeCode.TOO_FEW_POINTS` are rewritten by `plainNote` (
 into plain sentences with a next action; Results, wizard errors and review problems use it.
 The Setup page explains the test, labels each input with helper text and shows a numbered
 "what happens next" list.
+
+Read-only step view: opening a step from the rail shows a banner with "Back to current step" plus that step's captured points
+(`StepData.tsx`, from `GET /api/session/points`, filtered by phase), with no capture, edit, Finish or Skip controls; the
+next-action panel is hidden and keyboard actions are ignored while viewing a non-current step.

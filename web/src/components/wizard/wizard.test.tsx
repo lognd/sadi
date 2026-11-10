@@ -11,6 +11,8 @@ import { ShortcutList } from "./ShortcutList";
 import { StepRail } from "./StepRail";
 import { WizardShell } from "./WizardShell";
 import type { RailItem } from "./types";
+import type { PointView } from "../../screens/review/types";
+import { StepDataView } from "./StepData";
 import { fakeLive, withLive } from "../../state/testLive";
 import { closeSession, postWizard, toFailure } from "./wizardApi";
 import { CloseSessionView, CLOSE_CONFIRM_TEXT } from "./CloseSession";
@@ -221,5 +223,23 @@ describe("StepRail read-only view", () => {
     expect(html.match(/class="step-view"/g)?.length).toBe(rail.length);
     expect(html).toContain("View"); // locked step is viewable
     expect(html).toContain('data-viewing="true"');
+  });
+});
+
+// frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+describe("StepDataView read-only", () => {
+  const step: RailItem = { ...item("tare", "Tare", "done"), phase: "tare" };
+  const pt = (id: string, phase: string): PointView => ({ point_id: id, seq: 1, phase, excluded: false, inputs: { mass: 2 },
+    window: { first_raw_seq: 0, last_raw_seq: 1, first_sample: 0, last_sample: 9 }, history: [], settled: true });
+  it("shows only this step's points with no capture or advance controls", () => {
+    const html = renderToString(<StepDataView step={step} points={[pt("a1", "tare"), pt("b2", "elastic")]} />);
+    expect(html).toContain("a1");
+    expect(html).not.toContain("b2");
+    expect(html).not.toContain("<button");
+    expect(html).not.toContain("<input");
+  });
+  it("says so when nothing was captured and while loading", () => {
+    expect(renderToString(<StepDataView step={step} points={[]} />)).toContain("No data was captured");
+    expect(renderToString(<StepDataView step={step} points={null} />)).toContain("Loading");
   });
 });

@@ -101,3 +101,24 @@ E is fitted on the elastic group (the explicit window addresses it); yield is co
 plastic group using that group's own modulus. Metadata `E` comes from the elastic group and yield
 from the plastic group, so CSV values equal `/api/results`. Metadata `Specimen L0 (m)` is replaced by
 `Elastic L0 (m)` and `Plastic L0 (m)`.
+
+## Mid-run export (PARTIAL; ~89H28J1)
+
+LabVIEW writes its CSV only on Stop and loses everything on a crash; SADI can export at any
+time, from any wizard step, without finishing a phase or stopping the run. The shell shows
+"Export now (partial CSV)" and "Export calibration CSV" on every step; both are served from the
+open session's events (read-only).
+
+- `lctt-csv-partial`: the same 49-column document built with `build_document(..., partial=True)`.
+  The metadata block carries `Status,PARTIAL` (full exports have no `Status` row). Only
+  calibration points are required: with no tare, specimen or points the document holds the
+  calibration block (points, fit slope/intercept/se, t95, U95, r2, n) and no rows. A non-partial
+  export still refuses an unready session (`NotReady`).
+- `lctt-calibration-csv`: standalone calibration file (`build_calibration_csv`), the equivalent of
+  LabVIEW `lctt_export_calibration.vi`: fit rows, a blank line, then `point,volts (V),height (m)`.
+- Nothing is overwritten: every download is also kept as a new numbered file in the session's
+  `exports/<format id>/` folder (tmp + fsync + no-replace rename), and the download name carries the
+  format id (`...-lctt-csv-partial.csv`), so a partial file is never confused with the final one.
+
+The step rail offers a View button on every step, including upcoming ones: it shows that step's
+instructions read-only with a "Back to current step" button; viewing never advances the run.

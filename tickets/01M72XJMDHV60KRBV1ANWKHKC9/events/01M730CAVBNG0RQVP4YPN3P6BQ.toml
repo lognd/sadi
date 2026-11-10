@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "web/src/screens/run/live.ts", "web/src/screens/run/inputFields.ts"]
+new = ["python/sadi/labs/lctt/capture.py", "python/sadi/server/live.py", "web/src/screens/run/live.ts", "web/src/screens/run/inputFields.ts", "python/sadi/server/service.py", "python/sadi/server/app.py", "python/sadi/server/schemas.py"]
+at = "2026-11-10T15:14:15Z"
+actor = "lognd"
+rev = 1

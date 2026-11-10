@@ -2,12 +2,13 @@
 id = "01M72ZDQGAN0VQRKHM489H28J1"
 title = "Intermediate export at any step; step rail and panels must not be locked (user feedback)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:57:32Z"
-updated = "2026-11-10T15:13:13Z"
+updated = "2026-11-10T15:13:16Z"
 labels = ["ux"]
 scope = ["web/src/components/wizard/**", "web/src/screens/export/**", "python/sadi/server/routes/export.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/lab.py", "docs/lctt/export-csv.md", "python/tests/labs/lctt/test_lab_export.py", "python/tests/labs/lctt/test_partial_export.py", "web/src/components/wizard/ExportNow.test.tsx", "changelog.d/01M72ZDQGAN0VQRKHM489H28J1.added.md"]
 

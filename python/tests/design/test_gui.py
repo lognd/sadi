@@ -38,7 +38,7 @@ def test_plan_from_form_orders_hangs():
     assert {"weights", "total_kg", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(out["hangs"][0])
 
 
-@pytest.mark.parametrize("missing", ["cal_slope", "diameter", "length"])
+@pytest.mark.parametrize("missing", ["diameter", "length"])
 def test_required_fields_never_defaulted(missing):
     out = plan_from_form({**FORM, missing: ""})
     assert not out["ok"] and missing in out["error"]
@@ -55,9 +55,9 @@ def test_captured_points_accepted():
 
 
 def test_page_is_self_contained_and_advisory():
-    assert "Advisory only" in PAGE and "REQUIRED" in PAGE and "40 V/m" in PAGE
+    assert "Advisory only" in PAGE and "Add row" in PAGE and "OVERRIDE" in PAGE
     assert "http://" not in PAGE.replace("http://127", "") and "https://" not in PAGE
-    assert 'name="cal_slope" required' in PAGE and 'name="cal_slope" required value' not in PAGE
+    assert 'name="cal_slope" required' not in PAGE
 
 
 def test_server_binds_loopback_only():

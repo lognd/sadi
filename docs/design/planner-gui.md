@@ -19,15 +19,32 @@ network assets, no node, no tkinter). `POST /plan` takes the form as JSON and re
 `{"ok": true, phase, counts, hangs[]}` or `{"ok": false, "error": msg}`.
 
 Form: weights in kg (duplicates allowed, max 12), mass uncertainty, wire diameter and its uncertainty,
-L0 and its uncertainty, LVDT calibration slope (V/m) and offset (V), saturation limit, and already
-captured points as `kg:volts`. Output: the ordered hang table (weights, total kg, tension N, predicted V,
+L0 and its uncertainty, an editable table of LVDT calibration points (height m / volts, with Add row),
+saturation limit, and already captured points as `kg:volts`. The page joins the table into
+`cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (weights, total kg, tension N, predicted V,
 +/- V, reason) and the phase and dropped counts.
 
-The calibration slope, diameter and L0 are REQUIRED: a blank field is an error, never a silent default.
-The earlier 40 V/m slope was only a placeholder and is not used anywhere.
+## Calibration (derived, not typed)
+
+The planner fits volts = slope*height + intercept by least squares from the entered points, reusing
+`sadi.labs.lctt.calibration.fit_calibration` (x = height m, y = volts) via `sadi/design/cal_fit.py`
+(`resolve_calibration`, `parse_cal_points`, `Calibration`). The reply and CLI show slope, intercept,
+their standard errors, r2 and n. At least 3 points (the lctt fit needs dof >= 1) at 2 or more distinct
+heights are required; fewer is a clear error, never a default. The slope se, intercept se and their
+covariance propagate into each hang's predicted-volts uncertainty (`+/- V`), added in quadrature to the
+mass-uncertainty term.
+
+Each point may carry an optional height uncertainty (`h:v:u_h`, metres). When every point has one the fit
+is weighted (effective variance: u_h scaled by the slope, re-weighted until settled) and the slope and
+intercept se reflect it; otherwise it is unweighted OLS. (Height selection from an inventory is a
+separate follow-up.)
+
+An explicit slope override (GUI "Override (advanced)", CLI `--cal-slope` / `--cal-offset`) skips the fit,
+is labelled OVERRIDE in the output and carries no calibration uncertainty. Points plus an override is an
+error. Diameter and L0 are REQUIRED: a blank field is an error, never a silent default.
 
 ## CLI
 
-    python -m sadi.design.cli --weights 0.1,0.1,0.2,0.5 --length 0.083 --cal-slope 12 [--captured kg:V,...]
+    python -m sadi.design.cli --weights 0.1,0.1,0.2,0.5 --length 0.083 --cal-points 0.001:0.1,0.002:0.21,0.003:0.29 [--captured kg:V,...]
 
 Prints the same table to stdout; exit code 1 when no plan exists.

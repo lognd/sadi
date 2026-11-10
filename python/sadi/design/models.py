@@ -248,6 +248,11 @@ class PlanRequest(BaseModel):
     u_length_m: float = Field(default=0.0, ge=0)
     cal_slope_v_per_m: float
     cal_offset_v: float = 0.0
+    # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
+    #: Fit standard errors (V/m, V) and their covariance; 0 for a typed override.
+    u_cal_slope_v_per_m: float = Field(default=0.0, ge=0)
+    u_cal_offset_v: float = Field(default=0.0, ge=0)
+    cal_cov: float = 0.0
     saturation_v: float | None = Field(default=None, gt=0)
     captured: tuple[CapturedPoint, ...] = ()
     config: PlanConfig = PlanConfig()

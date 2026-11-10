@@ -18,9 +18,11 @@ from tests.labs.lctt.test_export_csv import _events
 def test_lab_declares_lctt_csv() -> None:
     """The lab lists exactly the CSV format with a text/csv media type."""
     fmts = LcttLab().export_formats
-    assert [f.id for f in fmts] == ["lctt-csv", "lctt-figure-json"]
+    assert [f.id for f in fmts] == (
+        ["lctt-csv", "lctt-csv-partial", "lctt-calibration-csv", "lctt-figure-json"]
+    )
     assert fmts[0].media_type == "text/csv"
-    assert fmts[1].media_type == "application/json"
+    assert fmts[-1].media_type == "application/json"
 
 
 # frob:ticket 01M6WYHZA2BAKB92CQENP7G7SD

@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-import pytest
 from typani import Err, Ok
 
+from sadi.design.cal_fit import Calibration
 from sadi.design.cli import build_request, main, parse_captured, parse_weights
 
 _ARGS = ["--weights", "0.1,0.1,0.2,0.5", "--length", "0.083", "--cal-slope", "12.0"]
@@ -34,7 +34,7 @@ def test_parse_captured_roundtrip_and_errors():
 def test_build_request_reports_invalid_geometry():
     res = build_request(
         weights="0.1", u_mass=0.0, diameter=-1.0, u_diameter=0.0, length=0.1, u_length=0.0,
-        cal_slope=1.0, cal_offset=0.0, saturation=None, captured="",
+        cal=Calibration(slope_v_per_m=1.0, offset_v=0.0, source="override"), saturation=None, captured="",
     )
     assert isinstance(res, Err)
 
@@ -50,6 +50,6 @@ def test_main_bad_weights_nonzero(capsys):
     assert "No plan" in capsys.readouterr().out
 
 
-def test_main_requires_cal_slope():
-    with pytest.raises(SystemExit):
-        main(["--weights", "0.1", "--length", "0.083"])
+def test_main_requires_some_calibration(capsys):
+    assert main(["--weights", "0.1", "--length", "0.083"]) == 1
+    assert "calibration points" in capsys.readouterr().out

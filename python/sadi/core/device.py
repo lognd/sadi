@@ -41,6 +41,8 @@ FTDI_VID: Final[int] = 0x0403
 #: Deep enough to ride out a slow CI runner or fsync stall.
 DEFAULT_QUEUE_BLOCKS: Final[int] = 4096  # frob:ticket 01M709DXGS91GPWZ3M06FWXJPY
 _JOIN_TIMEOUT_S: Final[float] = 5.0
+#: Device sample rate of the SADI board and simulator, Hz (the simulator is paced to this).
+DEVICE_RATE_HZ: Final[float] = 50_000.0  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
 
 
 class DeviceStatus(StrEnum):
@@ -324,6 +326,8 @@ class DeviceService:
 
     def _reader(self, streaming: Streaming) -> None:
         """Reader thread: read blocks into the bounded queue; stop loudly on error or overflow."""
+        paced = self._source.kind == "sim"  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        due = time.monotonic()
         while not self._stop_evt.is_set():
             try:
                 res = streaming.read_block()
@@ -336,6 +340,8 @@ class DeviceService:
                     self._set_fault(err)
                     return
                 case Ok(block):
+                    if paced:
+                        due = self._pace(due, int(block.n_samples))
                     try:
                         self._queue.put_nowait(block)
                     except queue.Full:
@@ -353,6 +359,20 @@ class DeviceService:
                         )
                         return
         _log.debug("reader thread exiting on stop request")
+
+    def _pace(self, due: float, n_samples: int) -> float:
+        """Sleep until `n_samples` of device time pass since `due`; return the next due time.
+
+        The simulator generates faster than real time; every block is still delivered (never
+        dropped), only the rate is held to DEVICE_RATE_HZ. A stop request wakes the sleep.
+        """  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        due += n_samples / DEVICE_RATE_HZ
+        now = time.monotonic()
+        if due > now:
+            self._stop_evt.wait(due - now)
+        elif now - due > 1.0:
+            return now  # fell far behind (consumer stall): do not burst to catch up
+        return due
 
     def _set_fault(self, fault: DeviceFault) -> None:
         """Record the first fault that ended the reader."""

@@ -50,6 +50,8 @@ CLIENT_FRAME_DEPTH = 8
 #: JSON messages a client may have queued (state/results are not dropped before this).
 CLIENT_JSON_DEPTH = 1024
 POLL_S = 0.01
+#: Highest rate at which `state` messages are sent (latest wins); raw data is unaffected.
+STATE_MAX_HZ = 30.0  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
 STATS_PERIOD_S = 1.0
 
 
@@ -183,6 +185,8 @@ class StreamHub:
         self._clients: list[_Client] = []
         self._seq = 0
         self._latest: dict[str, dict[str, Any]] = {}
+        self._pending_state: dict[str, Any] | None = None  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        self._last_state_sent = 0.0
 
     def next_seq(self) -> int:
         """Allocate the next hub-wide frame sequence number."""
@@ -236,6 +240,7 @@ class StreamHub:
         """Drain the bus subscription and distribute events to clients."""
         events = self._sub.drain()
         if not events:
+            self._flush_state()
             return
         changed = False
         with self._lock:
@@ -256,11 +261,29 @@ class StreamHub:
                     continue
                 if msg["kind"] == "state":
                     self._stamp_state(msg)
+                if msg["kind"] == "state":
+                    self._pending_state = msg  # coalesce: the latest state wins
+                    continue
                 self._latest[msg["kind"]] = msg
                 for c in self._clients:
                     c.offer_msg(msg)
+        self._flush_state()
         if changed:
             self.refresh_guidance()
+
+    def _flush_state(self) -> None:
+        """Send the pending (latest) `state` message if the STATE_MAX_HZ interval has passed."""
+        # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        with self._lock:
+            msg = self._pending_state
+            now = time.monotonic()
+            if msg is None or now - self._last_state_sent < 1.0 / STATE_MAX_HZ:
+                return
+            self._pending_state = None
+            self._last_state_sent = now
+            self._latest["state"] = msg
+            for c in self._clients:
+                c.offer_msg(msg)
 
     def refresh_guidance(self) -> bool:
         """Recompute guidance and publish it unless identical to the last one; True if sent."""

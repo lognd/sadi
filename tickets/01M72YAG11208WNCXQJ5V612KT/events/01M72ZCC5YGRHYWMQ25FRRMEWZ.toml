@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/**"]
+new = ["python/sadi/labs/lctt/**", "python/tests/labs/lctt/test_calibration.py"]
+at = "2026-11-10T14:56:48Z"
+actor = "lognd"
+rev = 1

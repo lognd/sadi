@@ -2,12 +2,12 @@
 id = "01M71WYRA3SN64B56Z6G13SHSE"
 title = "Audit1 #3 #6 #20 #19: validate capture inputs and windows, units/range checks, wizard needs valid fit and clamp pass"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T04:55:13Z"
+updated = "2026-11-10T04:55:21Z"
 scope = ["python/sadi/core/**", "python/sadi/server/service.py", "python/sadi/server/routes/clamp.py", "python/tests/core/**"]
 
 [[acceptance]]

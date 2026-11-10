@@ -48,6 +48,7 @@ from sadi.server.routes.results import (
     make_results_router,
 )
 from sadi.server.routes.sessions import make_sessions_router
+from sadi.server.routes.status import make_status_router
 from sadi.server.routes.weight_plan import make_weight_plan_router
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_health import make_health_router
@@ -253,6 +254,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
         live.set_phase_source(lambda: _recorded_phase(cast(SessionService, app.state.sessions)))
         app.state.sessions.set_acquisition(live.finish, lambda: _acq_state(live))
     app.include_router(make_sessions_router(app.state.sessions))
+    # frob:ticket 01M71T683VDS38T2GYYW9SXT5B
+    app.include_router(make_status_router(cfg.data_root, live))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
     app.include_router(make_design_router(app.state.sessions))

@@ -546,6 +546,16 @@ class LiveAcquisition:
                 if self._stop_run_locked(STOP_IDLE).is_err:
                     _log.error("idle stop ended with a fault: %s", self._fault)
 
+    @property
+    def firmware(self) -> str:
+        """Firmware string reported by the device, or "unknown" (frob:ticket 01M71T683VDS38T2GYYW9SXT5B)."""
+        return getattr(self._device, "firmware", None) or "unknown"
+
+    @property
+    def sample_rate_hz(self) -> float:
+        """Effective (decimated) sample rate of the streamed frames in Hz."""
+        return self._cfg.sample_rate_hz
+
     def _settings_records(self) -> list[SettingsV1]:
         """Settings needed to decode and rescale the raw packets later (docs/data-safety.md 2.2)."""
         if getattr(self._device, "is_synthetic", False):
@@ -560,7 +570,7 @@ class LiveAcquisition:
             ("acquisition", "decimation", DECIMATE),
             ("acquisition", "packet_len", PACKET_LEN),
             ("device", "kind", kind),
-            ("device", "firmware", getattr(self._device, "firmware", None) or "unknown"),
+            ("device", "firmware", self.firmware),
         ]
         return [SettingsV1(scope=a, key=b, value=c) for a, b, c in rows]
 

@@ -2,6 +2,7 @@
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 // frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
 // frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
+// frob:ticket 01M71T683VDS38T2GYYW9SXT5B
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { useLive } from "../../state/LiveContext";
@@ -32,13 +33,14 @@ export function deviceText(d: NonNullable<BackendFacts["device"]>): string {
 /** Presentational debug strip: every field always visible; missing ones say why. */
 export function DebugStripView({ meta, nowMs, facts, backend }: { readonly meta: FrameMeta | null | undefined; readonly nowMs: number; readonly facts: BackendFacts; readonly backend: string }): React.JSX.Element {
   const age = frameAge(meta, nowMs);
-  const rate = meta == null || meta.dtS <= 0 ? "--" : `${(1 / meta.dtS).toFixed(0)} Hz`;
+  const measured = meta == null || meta.dtS <= 0 ? "--" : `${(1 / meta.dtS).toFixed(0)} Hz`;
+  const rate = facts.sampleRateHz == null ? measured : `${measured} (nominal ${String(facts.sampleRateHz)} Hz)`;
   const sv = saveView(facts);
   const save = `${sv.state === "saved" ? "[ok]" : sv.state === "saving" ? "[..]" : "(!)"} ${sv.text}`;
   const device = facts.device === null ? unavailable("device status not reachable") : deviceText(facts.device);
   const rows: readonly (readonly [string, string, string?])[] = [
     ["Device", device],
-    ["Firmware", unavailable("backend does not report firmware yet")],
+    ["Firmware", facts.firmware == null ? unavailable("backend does not report firmware") : facts.firmware],
     ["Sample rate", rate],
     // Two different seq spaces, labelled apart: WS frame seq (hub-assigned) vs WAL raw seq (durable / queued).
     ["WS frame seq", meta == null ? "--" : String(meta.seq)],

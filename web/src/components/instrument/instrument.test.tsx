@@ -45,6 +45,11 @@ describe("DebugStripView", () => {
     expect(html).toContain("50 ms");
     expect(html).toContain("5");
   });
+  it("shows firmware and nominal rate from /api/status facts", () => {
+    const html = renderToString(<DebugStripView meta={null} nowMs={0} facts={{ ...EMPTY, firmware: "fw-1.2", sampleRateHz: 250 }} backend="[ok] up" />);
+    expect(html).toContain("fw-1.2");
+    expect(html).toContain("nominal 250 Hz");
+  });
   it("frameAge flags stale frames", () => {
     expect(frameAge(null, 0).state).toBe("none");
     expect(frameAge({ seq: 1, durableSeq: 0, enqueuedSeq: 1, dtS: 0, atMs: 0 }, 5000).state).toBe("stale");

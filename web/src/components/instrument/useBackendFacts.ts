@@ -23,6 +23,9 @@ export interface BackendFacts {
   readonly dataRoot: string | null;
   readonly version: string | null;
   readonly lastError: string | null;
+  /** From /api/status (frob:ticket 01M71T683VDS38T2GYYW9SXT5B); absent/null until known. */
+  readonly firmware?: string | null;
+  readonly sampleRateHz?: number | null;
 }
 
 const EMPTY: BackendFacts = { save: null, device: null, session: null, rootLockOk: null, dataRoot: null, version: null, lastError: null };
@@ -36,15 +39,17 @@ function acquisitionHint(d: DeviceWire): string {
   return d.stop_reason ? `Raw streaming stopped (${d.stop_reason}); recorded data is safe.` : "";
 }
 interface SessionWire { name?: string; lab?: string; durable_seq?: number | null }
+interface StatusWire { firmware?: string | null; sample_rate_hz?: number | null }
 interface LockWire { ok?: boolean; hint?: string }
 
 /** Fetch every status endpoint once and fold the answers into one BackendFacts (never throws); pollSession=false keeps prev.session and skips /api/session. */
 export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = fetch, pollSession = true): Promise<BackendFacts> {
-  const [save, dev, ses, lock] = await Promise.all([
+  const [save, dev, ses, lock, status] = await Promise.all([
     getJson<SaveWire>("/api/save-indicator", fetchImpl),
     getJson<DeviceWire>("/api/device/status", fetchImpl),
     pollSession ? getJson<SessionWire>("/api/session", fetchImpl) : Promise.resolve(null),
     getJson<LockWire>("/api/root-lock", fetchImpl),
+    getJson<StatusWire>("/api/status", fetchImpl),
   ]);
   const errs: string[] = [];
   if (!save.ok) errs.push("Save status unreachable");
@@ -58,6 +63,8 @@ export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = f
     device: d === null ? null : { status: d.status ?? "unknown", attached: d.attached ?? false, fault: d.fault ?? null, hint: d.hint || acquisitionHint(d), stopReason: d.stop_reason ?? null, acquisitionFault: d.acquisition_fault ?? null },
     session: ses === null ? prev.session : ses.ok ? { name: ses.value.name ?? "", lab: ses.value.lab ?? "", durableSeq: ses.value.durable_seq ?? null } : null,
     rootLockOk: lock.ok ? lock.value.ok !== false : null,
+    firmware: status.ok ? status.value.firmware ?? null : null,
+    sampleRateHz: status.ok ? status.value.sample_rate_hz ?? null : null,
     lastError: errs.length > 0 ? errs.join("; ") : null,
   };
 }

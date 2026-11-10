@@ -293,6 +293,6 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     source = cfg.curve_source or make_curve_source(
         _open_path, replays
     )  # frob:ticket 01M726PZNXA6BEXH97TQPK3176
-    app.include_router(make_stress_strain_router(source, app.state.sessions.provenance()))
+    app.include_router(make_stress_strain_router(source, app.state.sessions.provenance))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

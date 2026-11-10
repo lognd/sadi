@@ -227,16 +227,16 @@ def make_export_router(
         fmt, name, body = unwrap(render_export(svc, labs, format_id, replays))
         headers: dict[str, str] = {}
         prov = svc.provenance()
-        if prov.synthetic:
+        headers[PROVENANCE_HEADER] = prov.source  # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        if prov.source != "real":
             body = stamp_export(body, fmt.media_type, prov)
-            headers[PROVENANCE_HEADER] = "synthetic"
-        else:
-            headers[PROVENANCE_HEADER] = "real"
         if _is_download(fmt):
             ext = _EXT.get(fmt.media_type, "bin")
             fname = f"{name}-{fmt.id}.{ext}"
-            if prov.synthetic:
+            if prov.source == "synthetic":
                 fname = EXPORT_PREFIX + fname
+            elif prov.source == "unknown":
+                fname = UNKNOWN_PREFIX + fname
             headers["Content-Disposition"] = f'attachment; filename="{fname}"'
             saved = _save_copy(svc, fmt.id, f"{name}-{fmt.id}", ext, body)
             headers[SAVED_HEADER] = saved or "failed"

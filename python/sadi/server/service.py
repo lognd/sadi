@@ -222,8 +222,15 @@ class SessionService:
         self._acq_state: Callable[[], tuple[str | None, str | None]] | None = None
 
     def provenance(self) -> DataProvenance:
-        """The data provenance every payload of this service carries (real unless synthetic)."""
-        return SYNTHETIC if self._synthetic else REAL
+        """Provenance of the open session (synthetic, else unknown, else real); process default when none."""
+        # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        if self._synthetic:
+            return SYNTHETIC
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return REAL
+            return _session_provenance(cur.handle.path)
 
     def set_hooks(
         self,

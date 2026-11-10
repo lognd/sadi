@@ -110,9 +110,13 @@ def _status(error: ModulusError | RefitError) -> int:
 
 
 def make_stress_strain_router(
-    source: CurveSource | None = None, provenance: DataProvenance = REAL
+    source: CurveSource | None = None,
+    provenance: DataProvenance | Callable[[], DataProvenance] = REAL,
 ) -> APIRouter:
-    """Build the router; `source` supplies stored curve points (None -> 409 NoData)."""
+    """Build the router; `source` supplies stored curve points (None -> 409 NoData).
+
+    `provenance` may be a callable so the stamp follows the open session.
+    """
     router = APIRouter(prefix="/api/stress-strain", tags=["stress-strain"])
 
     def _fail(error: ModulusError | RefitError) -> JSONResponse:
@@ -132,6 +136,7 @@ def make_stress_strain_router(
         res = await run_in_threadpool(refit, loaded.value, req.first, req.last)
         if not isinstance(res, Ok):
             return _fail(res.unwrap_err())
-        return res.value.model_copy(update={"provenance": provenance})
+        stamp = provenance() if callable(provenance) else provenance  # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        return res.value.model_copy(update={"provenance": stamp})
 
     return router

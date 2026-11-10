@@ -198,3 +198,33 @@ def test_unknown_provenance_export_is_neither_real_nor_synthetic(
     listed = {s["name"]: s for s in client.get("/api/sessions").json()}
     assert listed[name]["provenance"]["source"] == "unknown"
     assert listed[name]["provenance"]["synthetic"] is False
+
+
+# frob:tests python/sadi/server/service.py::SessionService.provenance
+# frob:tests python/sadi/server/routes/export.py::make_export_router
+def test_open_session_resumed_from_unknown_reports_unknown(
+    client: TestClient, tmp_path: Path
+) -> None:
+    """Resuming an unknown session yields unknown in info, open export and WS hello, never real."""
+    # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+    import json
+
+    name = _closed(client)
+    mpath = tmp_path / "sessions" / name / "manifest.json"
+    doc = json.loads(mpath.read_text(encoding="utf-8"))
+    doc["provenance_unknown"] = True
+    mpath.write_text(json.dumps(doc), encoding="utf-8")
+    assert client.post("/api/sessions/resume", json={"name": name}).status_code == 201
+    info = client.get("/api/session").json()
+    assert info["provenance"]["source"] == "unknown"
+    assert info["provenance"]["synthetic"] is False
+    res = client.get("/api/export/points")
+    assert res.status_code == 200, res.text
+    assert res.headers["x-sadi-provenance"] == "unknown"
+    assert 'filename="UNKNOWN-' in res.headers["content-disposition"]
+    assert res.text.startswith("# PROVENANCE UNKNOWN")
+    assert client.post("/api/session/close").status_code == 204
+    # a fresh real session is still real
+    client.post("/api/sessions", json={"lab": "exp", "slug": "r"})
+    assert client.get("/api/session").json()["provenance"]["source"] == "real"
+    assert client.get("/api/export/points").headers["x-sadi-provenance"] == "real"

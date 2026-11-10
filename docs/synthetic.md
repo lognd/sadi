@@ -75,3 +75,7 @@ E 6 percent (`TOL_E`), yield 5 percent (`TOL_YIELD`), calibration slope
   exports get an `UNKNOWN-` filename prefix, `X-Sadi-Provenance: unknown`, and a stamp
   in the body. The setup list shows a "Provenance unknown" badge.
 - Children (resume, spill join) of an unknown session stay unknown.
+- An open session's provenance is derived per session (synthetic, else unknown, else
+  real) by `SessionService.provenance()`, so live WS (`hello`/`state`), session info,
+  results, stress-strain and open-session exports of a session resumed from an unknown
+  one report `unknown` (`UNKNOWN-` filename, `X-Sadi-Provenance: unknown`), never real.

@@ -225,6 +225,11 @@ class StreamHub:
         """True when the data source is the simulator."""
         return self._simulated is not None and self._simulated()
 
+    def _current_provenance(self) -> DataProvenance:
+        """Provenance of the open session when a service is attached, else the constructor default."""
+        # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        return self._sessions.provenance() if self._sessions is not None else self._provenance
+
     def _stamp_state(self, msg: dict[str, Any]) -> None:
         """Add the capture window (first/last raw seq of the open point) and `simulated`."""
         point = msg["status"].get("point_index")
@@ -234,7 +239,7 @@ class StreamHub:
             _log.info("capture window opened: point=%s first_raw_seq=%d", point, self._window_first)
         msg["window"] = {"first_raw_seq": self._window_first, "last_raw_seq": msg["raw_seq"]}
         msg["simulated"] = self.is_simulated()
-        msg["provenance"] = self._provenance.model_dump(
+        msg["provenance"] = self._current_provenance().model_dump(
             mode="json"
         )  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
@@ -323,7 +328,7 @@ class StreamHub:
             "session": session,
             "latest": latest,
             "simulated": self.is_simulated(),
-            "provenance": self._provenance.model_dump(mode="json"),
+            "provenance": self._current_provenance().model_dump(mode="json"),
             "bus_dropped": self._sub.dropped,
         }
 

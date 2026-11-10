@@ -26,7 +26,7 @@ from sadi.store.spill import (
     scan_spill,
     write_spill,
 )
-from sadi.store.wal import WalConfig, WalReader, WalWriter, encode_segment_header
+from sadi.store.wal import WalConfig, WalCorrupt, WalReader, WalWriter, encode_segment_header
 
 NOTE = int(RecordType.NOTE)
 
@@ -337,3 +337,48 @@ def test_failed_join_writes_marker_and_falls_back_once(
     assert len(list((root / "sessions").iterdir())) == 3  # parent, crashed partial, fragment
     states = sorted(read_manifest(d).danger_ok.state for d in (root / "sessions").iterdir())
     assert states == ["closed", "crashed", "incomplete"]
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_join_verify_failure_is_crashed_marked_and_fragment_imported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """M3: a joined import failing re-verification is crashed, marked, then imported as fragment."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real_scan = spill.WalReader.scan
+
+    def scan(d: Path) -> object:
+        """Fail the re-read of the joined version (v002) only."""
+        if "v002" in str(d):
+            return Err(WalCorrupt(segment=1, offset=64, reason="simulated bad sector"))
+        return real_scan(d)
+
+    monkeypatch.setattr(spill.WalReader, "scan", staticmethod(scan))
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    assert (sp.parent / "s.wal.join-failed.json").is_file()
+    by_name = {d.name: read_manifest(d).danger_ok for d in (root / "sessions").iterdir()}
+    states = sorted((m.state, m.spill_import) for m in by_name.values() if m.spill_import)
+    assert states == [("closed", "fragment"), ("crashed", "joined")]
+    again = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert again is None  # imported marker present: no further copies
+    assert len(list((root / "sessions").iterdir())) == 3
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_inprogress_sidecar_prevents_repeat_join(tmp_path: Path) -> None:
+    """M3: a join that died mid-copy (sidecar, no marker) goes straight to a fragment."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    scan = spill.scan_spill(sp).danger_ok
+    assert spill._begin_join(scan)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    kinds = [read_manifest(d).danger_ok.spill_import for d in (root / "sessions").iterdir()]
+    assert sorted(k for k in kinds if k) == ["fragment"]
+    assert not spill._begin_join(scan)  # exclusive: a second start cannot re-claim

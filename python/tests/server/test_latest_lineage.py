@@ -68,3 +68,12 @@ def test_fragment_or_crashed_spill_never_supersedes_incomplete_parent() -> None:
         assert out["f-v001"].latest is True
     out = {i.name: i for i in mark_latest([_s(1, None, "incomplete"), _spill_kid(2, 1, "joined")])}
     assert out["f-v001"].latest is False
+
+
+# frob:tests python/sadi/server/routes/sessions.py::mark_latest
+def test_resumed_fragment_does_not_supersede_complete_parent() -> None:
+    """M4: v001 (full data) stays latest when only a fragment and its resume descend from it."""
+    items = [_s(1, None, "incomplete"), _spill_kid(2, 1, "fragment"), _s(3, 2, "open")]
+    out = {i.name: i for i in mark_latest(items)}
+    assert out["f-v001"].latest is True
+    assert newer_than([_s(1, None), _spill_kid(2, 1, "fragment"), _s(3, 2)], "f-v001") == []

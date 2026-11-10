@@ -144,7 +144,9 @@ export function SessionSetup({ onOpened }: { onOpened: () => void }): React.JSX.
             <ul aria-label="Existing sessions" className="session-list">
               {sessions.map((s) => (
                 <li key={s.name}>
-                  <span>{s.name} {s.provenance.synthetic ? <strong className="synthetic-badge" role="note" data-testid={`synthetic-${s.name}`}>SYNTHETIC</strong> : null} <small>({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
+                  <span>{s.name} {s.spill_import != null && s.parent == null ? <strong role="note" data-testid={`unknown-${s.name}`}>Provenance unknown (recovered without its original session)</strong> : s.provenance.synthetic ? <strong className="synthetic-badge" role="note" data-testid={`synthetic-${s.name}`}>SYNTHETIC</strong> : null}{" "}
+                    {s.spill_import === "fragment" ? <small role="note" data-testid={`fragment-${s.name}`}>Recovered fragment (only the last few records; the full data is in {s.parent ?? "the original session"})</small> : null}
+                    {s.spill_import === "joined" ? <small role="note" data-testid={`joined-${s.name}`}>Recovered (complete)</small> : null}{" "}<small>({labName(s.lab)}, v{s.version}, {s.state})</small>{" "}
                     {s.latest ? null : <small role="note" data-testid={`newer-${s.name}`}>Newer work exists: {s.latest_name ?? "a later version"}. Resume that one unless you want this older copy.</small>}</span>
                   <button type="button" disabled={pending !== null} onClick={() => { resume(s); }}>
                     Resume {s.name}

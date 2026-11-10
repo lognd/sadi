@@ -834,6 +834,7 @@ class SessionService:
             state.covers_seq,
             prefix_hash_hex=running,
             lab_module=str(cur.lab.id),
+            notes=cur.replayer.notes_at(state.covers_seq),  # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
         )
         if wrote.is_err:
             _log.warning("snapshot at seq %d failed: %s", state.covers_seq, wrote.danger_err)

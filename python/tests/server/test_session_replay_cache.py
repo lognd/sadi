@@ -122,5 +122,25 @@ def test_periodic_reverify_detects_corruption(tmp_path: Path) -> None:
     now[0] = 5.0
     assert cache.events(sdir).is_ok
     now[0] = 11.0
-    assert cache.events(sdir).is_err
+    assert cache.events(sdir).is_ok  # stale: served warm, the verify runs off the request path
+    cache.wait_idle()
     assert sdir not in cache._cache  # noqa: SLF001
+    assert cache.events(sdir).is_err
+
+
+# frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+# frob:tests python/sadi/server/curve_source.py::SessionReplayCache._reverify
+def test_clean_reverify_swaps_in_fresh_replayer(tmp_path: Path) -> None:
+    """A passing background re-verify replaces the replayer and resets the interval."""
+    sdir, w = _session(tmp_path, 4)
+    assert w.close().is_ok
+    now = [0.0]
+    cache = SessionReplayCache(reverify_interval_s=10.0, clock=lambda: now[0])
+    assert cache.events(sdir).is_ok
+    old = cache._cache[sdir]  # noqa: SLF001
+    now[0] = 11.0
+    assert cache.events(sdir).danger_ok == session_events(sdir).danger_ok
+    cache.wait_idle()
+    assert cache._cache[sdir] is not old  # noqa: SLF001
+    assert cache._verified_at[sdir] == 11.0  # noqa: SLF001
+    assert cache.events(sdir).danger_ok == session_events(sdir).danger_ok

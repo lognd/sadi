@@ -190,8 +190,11 @@ class SessionReplayCache:
     """One IncrementalReplay per session dir, shared by curve, plots and export (thread-safe).
 
     Incremental tailing never re-reads bytes it already applied, so corruption there would go
-    unnoticed. Hence a cached entry older than `reverify_interval_s` is dropped and rebuilt by a
-    full CRC-verified replay, and `events(..., verify=True)` (used by export) always does so.
+    unnoticed. Hence a cached entry older than `reverify_interval_s` is re-verified by a full
+    CRC-verified replay run on a background thread (the request keeps being served from the warm
+    entry; on success the fresh replayer is swapped in, on failure the entry is dropped so the
+    next request replays synchronously and reports the error). `events(..., verify=True)` (used
+    by export) always verifies synchronously.
     """
 
     def __init__(
@@ -205,6 +208,7 @@ class SessionReplayCache:
         self._interval = reverify_interval_s
         self._clock = clock
         self._lock = threading.Lock()
+        self._pending: dict[Path, threading.Thread] = {}  # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
 
     def _evict(self) -> None:
         """Drop the oldest-inserted entries beyond the bound (caller holds the lock)."""
@@ -214,17 +218,58 @@ class SessionReplayCache:
             self._verified_at.pop(old, None)
 
     def _replayer(self, sdir: Path, verify: bool) -> IncrementalReplay:
-        """Return the replayer for `sdir`, fresh (so fully verified) if forced or stale."""
+        """Return the replayer for `sdir`; cold or forced gets a fresh one, stale re-verifies async."""
         now = self._clock()
         have = self._cache.get(sdir)
         stale = have is not None and now - self._verified_at.get(sdir, 0.0) >= self._interval
-        if have is None or verify or stale:
+        if have is None or verify:
             if have is not None:
                 _log.info("replay cache: full re-verify of %s (forced=%s)", sdir.name, verify)
             have = IncrementalReplay(sdir)  # first state() is a full CRC-verified replay
             self._cache[sdir] = have
             self._verified_at[sdir] = now
+        elif stale:
+            self._start_reverify(sdir)
         return have
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def _start_reverify(self, sdir: Path) -> None:
+        """Begin a background full verified replay of `sdir` unless one is already running."""
+        if sdir in self._pending:
+            return
+        thread = threading.Thread(
+            target=self._reverify, args=(sdir,), name=f"reverify-{sdir.name}", daemon=True
+        )
+        self._pending[sdir] = thread
+        _log.info("replay cache: background re-verify of %s started", sdir.name)
+        thread.start()
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def _reverify(self, sdir: Path) -> None:
+        """Verify `sdir` on a private replayer, then swap it in or drop the entry (off-request)."""
+        fresh = IncrementalReplay(sdir)
+        got = fresh.state()  # the full CRC-verified walk, without holding the cache lock
+        with self._lock:
+            self._pending.pop(sdir, None)
+            if sdir not in self._cache:
+                return
+            if got.is_err:
+                _log.error(
+                    "replay cache: re-verify of %s failed, dropping: %s", sdir.name, got.danger_err
+                )
+                self._cache.pop(sdir, None)
+                self._verified_at.pop(sdir, None)
+                return
+            self._cache[sdir] = fresh
+            self._verified_at[sdir] = self._clock()
+            _log.info("replay cache: re-verified %s", sdir.name)
+
+    def wait_idle(self, timeout: float = 10.0) -> None:
+        """Block until background re-verifies finish (for tests and orderly shutdown)."""
+        with self._lock:
+            threads = list(self._pending.values())
+        for thread in threads:
+            thread.join(timeout)
 
     # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
     def events(self, sdir: Path, *, verify: bool = False) -> Result[list[LiveEvent], str]:

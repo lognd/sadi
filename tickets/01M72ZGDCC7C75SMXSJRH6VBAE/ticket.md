@@ -2,12 +2,13 @@
 id = "01M72ZGDCC7C75SMXSJRH6VBAE"
 title = "Standalone weight-planner GUI (no sadi session; for use beside LabVIEW) plus cli.py tests/docs"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:59:00Z"
-updated = "2026-11-10T15:01:15Z"
+updated = "2026-11-10T15:03:30Z"
 labels = ["ux"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 

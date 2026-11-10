@@ -40,7 +40,7 @@ export const PHASES: Readonly<Record<RunPhase, PhaseMeta>> = {
   elastic: {
     title: "Elastic", apiPhase: "elastic", acceptLabel: "Accept point",
     markLabel: "I added a weight", markHint: "Click this after you add a weight to restart the settle timer; the first point needs it; click it again after every Accept once you change the load.", minPoints: 3,
-    instruction: "Add the next weight gently, click I added a weight (needed for the first point), wait for Settled, type the Masses added, then press Accept point (Space).", plot: "stress-strain",
+    instruction: "Hang the suggested weight gently, click I added a weight (needed for the first point), wait for Settled, type the Added mass, then press Accept point (Space).", plot: "stress-strain",
   },
   plastic: {
     title: "Plastic", apiPhase: "plastic", acceptLabel: "Accept point",

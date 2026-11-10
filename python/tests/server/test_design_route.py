@@ -96,6 +96,7 @@ def _skip(client: TestClient) -> None:
 
 
 # frob:ticket 01M72T4QZQQABVKR5PX78KV8YS
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
 # frob:tests python/sadi/server/routes/design.py::design_obs
 def test_elastic_points_via_post_reach_selector(client: TestClient) -> None:
     """Points captured as phase 'elastic' count toward the elastic advice."""
@@ -106,6 +107,7 @@ def test_elastic_points_via_post_reach_selector(client: TestClient) -> None:
 
 
 # frob:ticket 01M72T4QZQQABVKR5PX78KV8YS
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
 # frob:tests python/sadi/server/routes/design.py::offset_volts
 def test_yield_without_calibration_has_null_suggestion(client: TestClient) -> None:
     """Yield advice with no offset source returns a null suggestion and a reason."""
@@ -120,13 +122,14 @@ def test_yield_without_calibration_has_null_suggestion(client: TestClient) -> No
 
 
 # frob:ticket 01M72T4QZQQABVKR5PX78KV8YS
+# frob:ticket 01M72VM5TYFDN445BY0W9G68B1
 # frob:tests python/sadi/server/routes/design.py::offset_volts
-def test_yield_counts_elastic_and_plastic_points(client: TestClient) -> None:
-    """Yield advice sees elastic and plastic points and, given an offset, suggests a real load."""
+def test_yield_counts_plastic_points_only(client: TestClient) -> None:
+    """Yield advice counts only plastic points (a different specimen) and suggests a real load."""
     _skip(client)
     _post_points(client, "elastic", [0.5, 1.0, 1.5, 2.0])
     assert client.post("/api/session/wizard/complete", json={"step": "elastic"}).status_code == 200
     _post_points(client, "plastic", [2.5, 3.0])
     body = client.get("/api/design/next-weight?phase=yield&offset=0.01").json()
-    assert body["indicator"]["n"] == 6
+    assert body["indicator"]["n"] == 2
     assert body["suggestion"] is not None

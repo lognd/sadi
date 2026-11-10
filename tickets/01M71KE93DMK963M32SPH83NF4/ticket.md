@@ -2,12 +2,12 @@
 id = "01M71KE93DMK963M32SPH83NF4"
 title = "GP weight panel: recommended load, gain, alternatives, confidence, stop-early"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T02:08:53Z"
-updated = "2026-11-10T02:08:53Z"
+updated = "2026-11-10T02:36:55Z"
 labels = ["model:sonnet"]
 scope = ["web/src/components/guidance/**", "web/src/api/schema.ts"]
 

@@ -2,7 +2,8 @@
 id = "01M72YGM028WQQGWVSDX4GTJZ5"
 title = "WAL rebase leftovers: store NOTE payloads in snapshot, move reverify walks off request path (audit8 H1 d,e)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

@@ -45,6 +45,11 @@ def test_revert_reopens_latest_step_and_keeps_all_data(tmp_path: Path) -> None:
         {"phase": "calibration", "inputs": {"volts": 1.0, "height": 0.01}, "window": WINDOW}
     )
     assert svc.capture(body).is_ok
+    for volts, height in ((2.0, 0.02), (3.1, 0.03)):
+        extra = CaptureBody.model_validate(
+            {"phase": "calibration", "inputs": {"volts": volts, "height": height}, "window": WINDOW}
+        )
+        assert svc.capture(extra).is_ok
     done = svc.complete("calibrate")
     assert done.is_ok, done
     assert done.danger_ok.wizard.current != "calibrate"
@@ -58,8 +63,8 @@ def test_revert_reopens_latest_step_and_keeps_all_data(tmp_path: Path) -> None:
     assert rev.danger_ok.seq > before_seq
     assert rev.danger_ok.wizard.current == "calibrate"
     pts = svc.points()
-    assert pts.is_ok and len(pts.danger_ok) == 1
+    assert pts.is_ok and len(pts.danger_ok) == 3
 
     assert svc.close().is_ok
     state = recover_state(tmp_path / "sessions" / info.danger_ok.name).danger_ok
-    assert len(state.points) == 1
+    assert len(state.points) == 3

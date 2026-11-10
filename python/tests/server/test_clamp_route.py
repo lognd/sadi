@@ -73,7 +73,10 @@ def test_capture_then_status_and_complete(client: TestClient) -> None:
     assert [c["passed"] for c in body["cycles"]] == [True, True, False]
     assert body["passed"] is False
     assert client.get("/api/results").json()["n_points"] == 0
-    done = client.post("/api/session/wizard/complete", json={"step": "setup"})
+    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    blocked = client.post("/api/session/wizard/complete", json={"step": "setup"})
+    assert blocked.status_code == 422  # a failed clamp check cannot be completed
+    done = client.post("/api/session/wizard/skip", json={"step": "setup"})
     assert done.status_code == 200
     assert len(client.get("/api/session/points").json()) == 3
 

@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T05:44:51Z"
+updated = "2026-11-10T05:47:53Z"
 scope = ["python/sadi/core/**", "python/sadi/server/service.py", "python/sadi/server/routes/clamp.py", "python/tests/core/**", "python/sadi/labs/lctt/lab.py", "docs/server/api.md", "docs/lctt/clamp-check.md", "changelog.d/01M71WYRA3SN64B56Z6G13SHSE*", "python/sadi/synthetic/driver.py", "python/tests/server/**"]
 
 [[acceptance]]

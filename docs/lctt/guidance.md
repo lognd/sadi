@@ -49,3 +49,6 @@ guidance through all three phases with an unreachable target and ends at exactly
 When no suggester is passed, `guide()` and `GuidedRun` use `GpLoadSuggester` (see
 [GP selector](../labs/lctt-gp-selector.md)); `GuidanceState` gains the optional
 `expected_gain`, `expected_half_width`, `alternatives` and `gp_state` fields.
+
+Load suggestions say "Add X kg of masses to the hanger": X excludes the hanger, which
+`load_force` adds automatically (audit1 #15). The web input label is tracked separately.

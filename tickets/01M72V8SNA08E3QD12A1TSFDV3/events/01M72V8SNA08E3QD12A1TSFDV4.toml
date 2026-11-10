@@ -1,0 +1,11 @@
+kind = "create"
+title = "Live/open-session payloads and exports must report unknown provenance (resumed unknown session)"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 3
+scope = ["python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/tests/server/test_readonly_export.py"]
+acceptance = ["Open session resumed from an unknown-provenance session reports unknown in live payloads and open-session exports; never real"]
+at = "2026-11-10T13:44:56Z"
+actor = "lognd"
+rev = 1

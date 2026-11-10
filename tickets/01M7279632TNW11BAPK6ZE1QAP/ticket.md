@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:55:37Z"
-updated = "2026-11-10T08:04:21Z"
+updated = "2026-11-10T08:04:26Z"
 scope = ["python/sadi/labs/lctt/settle_stream.py", "python/tests/labs/lctt/test_capture.py", "python/tests/labs/lctt/test_settle_stream.py"]
 
 [[acceptance]]

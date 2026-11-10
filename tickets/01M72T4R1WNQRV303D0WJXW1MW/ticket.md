@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:32:21Z"
+updated = "2026-11-10T13:33:10Z"
 labels = ["creates:none"]
 scope = ["python/sadi/server/service.py", "python/tests/server/test_capture_request_id.py", "web/src/screens/run/RunScreen.tsx"]
 

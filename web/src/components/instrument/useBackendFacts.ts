@@ -1,7 +1,8 @@
 // frob:ticket 01M7274EH583A30335TGGT6ZZ1
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
+// frob:ticket 01M729FVNSJCVAHK4XBSG9NBYC
 /** Polls the light status endpoints that feed the debug strip. */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getDoctor, getJson } from "../../api/client";
 import { getLogger } from "../../api/log";
 
@@ -61,10 +62,12 @@ export async function fetchFacts(prev: BackendFacts, fetchImpl: typeof fetch = f
   };
 }
 
-/** Poll the status endpoints; read host facts (data folder, version) from the doctor, retrying until known (audit #10). */
-export function useBackendFacts(fetchImpl: typeof fetch = fetch): BackendFacts {
+/** Poll the status endpoints (refresh() polls everything now, e.g. right after a session opens or closes); read host facts (data folder, version) from the doctor, retrying until known (audit #10). */
+export function useBackendFacts(fetchImpl: typeof fetch = fetch): { readonly facts: BackendFacts; readonly refresh: () => void } {
   const [facts, setFacts] = useState<BackendFacts>(EMPTY);
   const latest = useRef<BackendFacts>(EMPTY);
+  const forceTick = useRef<() => void>(() => undefined);
+  const refresh = useCallback((): void => { forceTick.current(); }, []);
   useEffect(() => {
     let live = true;
     let n = 0;
@@ -84,15 +87,16 @@ export function useBackendFacts(fetchImpl: typeof fetch = fetch): BackendFacts {
         apply((p) => ({ ...p, dataRoot: host?.data_root ?? null, version: host?.sadi_version ?? null }));
       });
     };
-    const tick = (): void => {
-      const pollSession = latest.current.session !== null || n % NO_SESSION_POLL_EVERY === 0;
+    const tick = (force = false): void => {
+      const pollSession = force || latest.current.session !== null || n % NO_SESSION_POLL_EVERY === 0;
       n += 1;
       void fetchFacts(latest.current, fetchImpl, pollSession).then((f) => { apply((p) => ({ ...f, dataRoot: p.dataRoot, version: p.version })); });
       loadHost();
     };
+    forceTick.current = () => { log.info("facts refresh requested"); tick(true); };
     tick();
-    const id = setInterval(tick, FACTS_POLL_MS);
-    return () => { live = false; clearInterval(id); };
+    const id = setInterval(() => { tick(); }, FACTS_POLL_MS);
+    return () => { live = false; forceTick.current = () => undefined; clearInterval(id); };
   }, [fetchImpl]);
-  return facts;
+  return { facts, refresh };
 }

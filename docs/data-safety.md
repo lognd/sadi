@@ -1146,3 +1146,14 @@ Live-stream guard (audit2 H2b): `LiveAcquisition` additionally stops raw streami
 `LIVE_MIN_FREE_BYTES = 1 GiB` free (before the writer's own 512 MiB warn level) and after an idle
 timeout or session finish. Stopping drains all blocks already read into the WAL first and deletes
 nothing; see docs/server/app.md.
+
+## Cross-site request guard
+
+`sadi.server.security.OriginGuard` (installed first in `create_app`) protects the
+session from web pages the operator happens to have open. Every request must carry a
+local `Host` (`localhost`, `127.0.0.1`, `[::1]`), which defeats DNS rebinding. Unsafe
+methods (POST/PUT/PATCH/DELETE) and WebSocket handshakes are additionally refused with
+403 when `Sec-Fetch-Site: cross-site` is present or an `Origin` header is not a local
+origin on the served port. Requests without `Origin` (curl, tests) pass. A dev server
+origin can be trusted via `AppSettings.extra_origins`. Refusals are logged and never
+touch session data, so undo/close/export/resume cannot be triggered cross-site.

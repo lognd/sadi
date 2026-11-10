@@ -60,6 +60,15 @@ contract in [core/lab-modules.md](core/lab-modules.md).
   debug strip, banners), published by `watchStickyTop` (`web/src/hooks/useStickyOffset.ts`)
   via ResizeObserver, so banners appearing or a short viewport never leave
   sticky content overlapping. `11rem` in `styles.css` is only the fallback.
+  The variable is published only while `.app-top` is really `position: sticky`;
+  under the narrow-viewport media rule (static header) it is removed so the
+  stylesheet's `1rem` applies.
+- Session facts: the status bar polls `/api/session` slowly while no session is
+  open, so `SessionSetup` (after create/resume) and `CloseSession` call
+  `useRefreshFacts()` to poll at once; "No session" never lingers after either.
+- Setup list: sessions whose provenance is synthetic carry a bold SYNTHETIC badge.
+- Run hints: the first point of a phase needs the mark button; after each Accept
+  the next point opens by itself, and the button only restarts the settle timer.
 
 ### 2.1 Step rail states
 

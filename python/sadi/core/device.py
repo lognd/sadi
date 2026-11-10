@@ -237,7 +237,10 @@ class DeviceService:
         """Start the device and the reader thread (default ADC mode: DLL-compatible)."""
         with self._lock:
             if self._connected is None:
-                raise RuntimeError("start_streaming requires an open, non-streaming service")
+                _log.warning("start_streaming refused: no open connection")
+                return Err(
+                    DeviceError(code=DeviceCode.NOT_FOUND, detail="no instrument connection")
+                )
             conn = self._connected
             mode = default_adc_mode() if adc_mode is None else Ok(adc_mode)
             if isinstance(mode, Err):

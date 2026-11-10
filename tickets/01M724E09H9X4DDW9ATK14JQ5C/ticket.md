@@ -13,5 +13,5 @@ scope = ["python/sadi/server/service.py", "python/sadi/server/routes/results.py"
 
 [[acceptance]]
 text = "Reaching Results/Export (or closing the session) calls finish(); the health/status API exposes stop_reason and fault; test asserts no raw blocks after finish"
-bound = false
+bound = true
 +++

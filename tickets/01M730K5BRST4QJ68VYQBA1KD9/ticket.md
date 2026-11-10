@@ -2,12 +2,12 @@
 id = "01M730K5BRST4QJ68VYQBA1KD9"
 title = "Ship an example lab plugin (tracked, loadable via SADI_PLUGIN_PATH) as a worked demo"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:17:59Z"
-updated = "2026-11-10T15:18:02Z"
+updated = "2026-11-10T15:18:04Z"
 labels = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
 scope = ["examples/**", "python/tests/plugins/test_example_plugin.py", "docs/plugins.md"]
 

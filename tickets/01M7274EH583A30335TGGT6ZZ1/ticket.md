@@ -4,9 +4,10 @@ title = "M1+M2: show stop_reason banner and add Reconnect button in instrument b
 type = "bug"
 category = "todo"
 priority = "medium"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:53:02Z"
-updated = "2026-11-10T07:53:02Z"
+updated = "2026-11-10T07:53:05Z"
 labels = ["creates:web/src/components/instrument/StopBanner.tsx", "creates:web/src/components/instrument/StopBanner.test.tsx"]
 scope = ["web/src/components/instrument/", "web/src/api/"]
 

@@ -876,6 +876,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/weight-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Make Plan
+         * @description Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing.
+         */
+        post: operations["make_plan_api_weight_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weight-plan/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Defaults
+         * @description The calibration slope used when none is entered, and where it comes from.
+         */
+        get: operations["defaults_api_weight_plan_defaults_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -953,6 +993,21 @@ export interface components {
             unit: string;
             /** Value */
             value: number;
+        };
+        /**
+         * CalibrationDefaults
+         * @description The calibration slope the plan would use when none is entered, and where it came from.
+         */
+        CalibrationDefaults: {
+            /** Cal Slope V Per M */
+            cal_slope_v_per_m: number | null;
+            /** Explanation */
+            explanation: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "session" | "none";
         };
         /**
          * CalibrationFitView
@@ -1467,6 +1522,39 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * Hang
+         * @description One planned hang: which weights, their total, predicted volts and the gain it buys.
+         */
+        Hang: {
+            /** E Half Width Pa */
+            e_half_width_pa?: number | null;
+            /** Expected Gain */
+            expected_gain: number;
+            /** Order */
+            order: number;
+            /** Predicted Volts */
+            predicted_volts: number;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /** Slope Half Width V Per Kg */
+            slope_half_width_v_per_kg?: number | null;
+            /** Tension N */
+            tension_n: number;
+            /** Total Mass Kg */
+            total_mass_kg: number;
+            /** U Mass Kg */
+            u_mass_kg: number;
+            /** U Predicted Volts */
+            u_predicted_volts: number;
+            /** Weight Ids */
+            weight_ids: string[];
+            /** Yield Half Width Kg */
+            yield_half_width_kg?: number | null;
+        };
+        /**
          * HealthOut
          * @description Health payload consumed by web/src/api/client.ts getHealth.
          */
@@ -1797,6 +1885,23 @@ export interface components {
             kind: "exception" | "timeout" | "tool-missing";
         };
         /**
+         * PropagatedView
+         * @description Propagated uncertainty of the planned run: per-hang stress and strain, E and yield.
+         */
+        PropagatedView: {
+            modulus?: components["schemas"]["QuantityView"] | null;
+            /**
+             * Notes
+             * @default []
+             */
+            notes: string[];
+            /** Strain */
+            strain: components["schemas"]["QuantityView"][];
+            /** Stress */
+            stress: components["schemas"]["QuantityView"][];
+            yield_stress?: components["schemas"]["QuantityView"] | null;
+        };
+        /**
          * QuantityProvenance
          * @description Where one reported quantity came from: its inputs, sample span and algorithm.
          */
@@ -1811,6 +1916,24 @@ export interface components {
             name: string;
             /** Point Ids */
             point_ids: string[];
+        };
+        /**
+         * QuantityView
+         * @description A propagated value with standard uncertainty and its 95 % interval.
+         */
+        QuantityView: {
+            /** High95 */
+            high95: number;
+            /** Low95 */
+            low95: number;
+            /** Name */
+            name: string;
+            /** Std Unc */
+            std_unc: number;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
         };
         /**
          * RailItem
@@ -2332,6 +2455,116 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * WeightIn
+         * @description One entered weight: mass in kg, optional uncertainty, optional id (defaults to w1, w2...).
+         */
+        WeightIn: {
+            /** Mass Kg */
+            mass_kg: number;
+            /**
+             * U Mass Kg
+             * @default 0
+             */
+            u_mass_kg: number;
+            /** Weight Id */
+            weight_id?: string | null;
+        };
+        /**
+         * WeightPlan
+         * @description Ordered hangs for the remaining run; advisory only.
+         */
+        WeightPlan: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /**
+             * Dropped Capacity
+             * @default 0
+             */
+            dropped_capacity: number;
+            /**
+             * Dropped Saturation
+             * @default 0
+             */
+            dropped_saturation: number;
+            /** Hangs */
+            hangs: components["schemas"]["Hang"][];
+            /** N Achievable */
+            n_achievable: number;
+            /** N Inventory */
+            n_inventory: number;
+            /** N Usable */
+            n_usable: number;
+            phase: components["schemas"]["DesignPhase"];
+        };
+        /**
+         * WeightPlanBody
+         * @description Operator inputs: weights, wire geometry and (optionally) the LVDT calibration slope.
+         */
+        WeightPlanBody: {
+            /**
+             * Cal Offset V
+             * @default 0
+             */
+            cal_offset_v: number;
+            /**
+             * Cal Slope V Per M
+             * @description LVDT volts per metre; defaults from the current calibration
+             */
+            cal_slope_v_per_m?: number | null;
+            /**
+             * Diameter M
+             * @default 0.000202
+             */
+            diameter_m: number;
+            /**
+             * Length M
+             * @description gauge length L0
+             * @default 0.08313
+             */
+            length_m: number;
+            /**
+             * U Diameter M
+             * @default 0
+             */
+            u_diameter_m: number;
+            /**
+             * U Length M
+             * @default 0
+             */
+            u_length_m: number;
+            /**
+             * U Volts
+             * @default 0.001
+             */
+            u_volts: number;
+            /** Weights */
+            weights: components["schemas"]["WeightIn"][];
+        };
+        /**
+         * WeightPlanOut
+         * @description The plan, the slope that was used and the propagated uncertainty (when computable).
+         */
+        WeightPlanOut: {
+            /** Cal Slope V Per M */
+            cal_slope_v_per_m: number;
+            /**
+             * Cal Source
+             * @enum {string}
+             */
+            cal_source: "entered" | "session";
+            plan: components["schemas"]["WeightPlan"];
+            propagated?: components["schemas"]["PropagatedView"] | null;
+            /**
+             * Propagation Note
+             * @default
+             */
+            propagation_note: string;
         };
         /**
          * WizardState
@@ -3549,6 +3782,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    make_plan_api_weight_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeightPlanBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    defaults_api_weight_plan_defaults_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalibrationDefaults"];
                 };
             };
         };

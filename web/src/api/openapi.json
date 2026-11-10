@@ -147,6 +147,41 @@
         "title": "BudgetRow",
         "type": "object"
       },
+      "CalibrationDefaults": {
+        "description": "The calibration slope the plan would use when none is entered, and where it came from.",
+        "properties": {
+          "cal_slope_v_per_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cal Slope V Per M"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "session",
+              "none"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cal_slope_v_per_m",
+          "source",
+          "explanation"
+        ],
+        "title": "CalibrationDefaults",
+        "type": "object"
+      },
       "CalibrationFitView": {
         "description": "Fitted calibration line and its 95% confidence band over the sampled volts.",
         "properties": {
@@ -1291,6 +1326,96 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "Hang": {
+        "description": "One planned hang: which weights, their total, predicted volts and the gain it buys.",
+        "properties": {
+          "e_half_width_pa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "E Half Width Pa"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "predicted_volts": {
+            "title": "Predicted Volts",
+            "type": "number"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "slope_half_width_v_per_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slope Half Width V Per Kg"
+          },
+          "tension_n": {
+            "title": "Tension N",
+            "type": "number"
+          },
+          "total_mass_kg": {
+            "title": "Total Mass Kg",
+            "type": "number"
+          },
+          "u_mass_kg": {
+            "title": "U Mass Kg",
+            "type": "number"
+          },
+          "u_predicted_volts": {
+            "title": "U Predicted Volts",
+            "type": "number"
+          },
+          "weight_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weight Ids",
+            "type": "array"
+          },
+          "yield_half_width_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yield Half Width Kg"
+          }
+        },
+        "required": [
+          "order",
+          "weight_ids",
+          "total_mass_kg",
+          "u_mass_kg",
+          "tension_n",
+          "predicted_volts",
+          "u_predicted_volts",
+          "expected_gain"
+        ],
+        "title": "Hang",
+        "type": "object"
+      },
       "HealthOut": {
         "description": "Health payload consumed by web/src/api/client.ts getHealth.",
         "properties": {
@@ -1940,6 +2065,59 @@
         "title": "ProbeError",
         "type": "object"
       },
+      "PropagatedView": {
+        "description": "Propagated uncertainty of the planned run: per-hang stress and strain, E and yield.",
+        "properties": {
+          "modulus": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuantityView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "strain": {
+            "items": {
+              "$ref": "#/components/schemas/QuantityView"
+            },
+            "title": "Strain",
+            "type": "array"
+          },
+          "stress": {
+            "items": {
+              "$ref": "#/components/schemas/QuantityView"
+            },
+            "title": "Stress",
+            "type": "array"
+          },
+          "yield_stress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuantityView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "stress",
+          "strain"
+        ],
+        "title": "PropagatedView",
+        "type": "object"
+      },
       "QuantityProvenance": {
         "description": "Where one reported quantity came from: its inputs, sample span and algorithm.",
         "properties": {
@@ -1989,6 +2167,45 @@
           "algorithm"
         ],
         "title": "QuantityProvenance",
+        "type": "object"
+      },
+      "QuantityView": {
+        "description": "A propagated value with standard uncertainty and its 95 % interval.",
+        "properties": {
+          "high95": {
+            "title": "High95",
+            "type": "number"
+          },
+          "low95": {
+            "title": "Low95",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "std_unc": {
+            "title": "Std Unc",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "unit",
+          "value",
+          "std_unc",
+          "low95",
+          "high95"
+        ],
+        "title": "QuantityView",
         "type": "object"
       },
       "RailItem": {
@@ -3077,6 +3294,197 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "WeightIn": {
+        "description": "One entered weight: mass in kg, optional uncertainty, optional id (defaults to w1, w2...).",
+        "properties": {
+          "mass_kg": {
+            "exclusiveMinimum": 0.0,
+            "title": "Mass Kg",
+            "type": "number"
+          },
+          "u_mass_kg": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Mass Kg",
+            "type": "number"
+          },
+          "weight_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Id"
+          }
+        },
+        "required": [
+          "mass_kg"
+        ],
+        "title": "WeightIn",
+        "type": "object"
+      },
+      "WeightPlan": {
+        "description": "Ordered hangs for the remaining run; advisory only.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "dropped_capacity": {
+            "default": 0,
+            "title": "Dropped Capacity",
+            "type": "integer"
+          },
+          "dropped_saturation": {
+            "default": 0,
+            "title": "Dropped Saturation",
+            "type": "integer"
+          },
+          "hangs": {
+            "items": {
+              "$ref": "#/components/schemas/Hang"
+            },
+            "title": "Hangs",
+            "type": "array"
+          },
+          "n_achievable": {
+            "title": "N Achievable",
+            "type": "integer"
+          },
+          "n_inventory": {
+            "title": "N Inventory",
+            "type": "integer"
+          },
+          "n_usable": {
+            "title": "N Usable",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          }
+        },
+        "required": [
+          "phase",
+          "hangs",
+          "n_inventory",
+          "n_achievable",
+          "n_usable"
+        ],
+        "title": "WeightPlan",
+        "type": "object"
+      },
+      "WeightPlanBody": {
+        "description": "Operator inputs: weights, wire geometry and (optionally) the LVDT calibration slope.",
+        "properties": {
+          "cal_offset_v": {
+            "default": 0.0,
+            "title": "Cal Offset V",
+            "type": "number"
+          },
+          "cal_slope_v_per_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "LVDT volts per metre; defaults from the current calibration",
+            "title": "Cal Slope V Per M"
+          },
+          "diameter_m": {
+            "default": 0.000202,
+            "exclusiveMinimum": 0.0,
+            "title": "Diameter M",
+            "type": "number"
+          },
+          "length_m": {
+            "default": 0.08313,
+            "description": "gauge length L0",
+            "exclusiveMinimum": 0.0,
+            "title": "Length M",
+            "type": "number"
+          },
+          "u_diameter_m": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Diameter M",
+            "type": "number"
+          },
+          "u_length_m": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Length M",
+            "type": "number"
+          },
+          "u_volts": {
+            "default": 0.001,
+            "minimum": 0.0,
+            "title": "U Volts",
+            "type": "number"
+          },
+          "weights": {
+            "items": {
+              "$ref": "#/components/schemas/WeightIn"
+            },
+            "title": "Weights",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weights"
+        ],
+        "title": "WeightPlanBody",
+        "type": "object"
+      },
+      "WeightPlanOut": {
+        "description": "The plan, the slope that was used and the propagated uncertainty (when computable).",
+        "properties": {
+          "cal_slope_v_per_m": {
+            "title": "Cal Slope V Per M",
+            "type": "number"
+          },
+          "cal_source": {
+            "enum": [
+              "entered",
+              "session"
+            ],
+            "title": "Cal Source",
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/WeightPlan"
+          },
+          "propagated": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PropagatedView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "propagation_note": {
+            "default": "",
+            "title": "Propagation Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan",
+          "cal_slope_v_per_m",
+          "cal_source"
+        ],
+        "title": "WeightPlanOut",
         "type": "object"
       },
       "WizardState": {
@@ -4549,6 +4957,64 @@
         "tags": [
           "stress-strain"
         ]
+      }
+    },
+    "/api/weight-plan": {
+      "post": {
+        "description": "Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing.",
+        "operationId": "make_plan_api_weight_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightPlanBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightPlanOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Make Plan"
+      }
+    },
+    "/api/weight-plan/defaults": {
+      "get": {
+        "description": "The calibration slope used when none is entered, and where it comes from.",
+        "operationId": "defaults_api_weight_plan_defaults_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationDefaults"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Defaults"
       }
     }
   }

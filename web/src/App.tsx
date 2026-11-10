@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UseTraceOptions } from "./hooks/useTrace";
 import { getHealth } from "./api/client";
 import { getLogger } from "./api/log";
 import { DoctorScreen } from "./doctor/DoctorScreen";
 import { openDoctorOnConnectionError, useDoctorRoute } from "./doctor/useDoctorRoute";
 import { WizardHost } from "./screens/WizardHost";
+import { WeightPlanPanel } from "./screens/setup/WeightPlanPanel";
 import { useTheme } from "./components/shell/theme";
 import { DebugStrip } from "./components/instrument/DebugStrip";
 import { InstrumentBar } from "./components/instrument/InstrumentBar";
@@ -35,6 +36,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
   const openDoctor = useDoctorRoute((s) => s.open);
   const closeDoctor = useDoctorRoute((s) => s.close);
   const { theme, toggle } = useTheme();
+  const [planning, setPlanning] = useState(false);
   useProvenancePoll();
 
   const { facts, refresh: refreshFacts } = useBackendFacts();
@@ -70,6 +72,9 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
             <span className="brand-sub">Tensile test instrument</span>
           </div>
           <nav aria-label="Tools">
+            <button type="button" aria-pressed={planning} onClick={() => { setPlanning((v) => !v); }}>
+              {planning ? "Close weight plan" : "Weight plan"}
+            </button>{" "}
             <button type="button" onClick={() => { if (visible) closeDoctor(); else openDoctor("nav"); }}>
               {visible ? "Close Doctor" : "Doctor"}
             </button>
@@ -84,7 +89,7 @@ export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React
       </div>
       <DebugStrip facts={facts} backend={connection === "up" ? "[ok] up" : connection === "down" ? "(!) down" : "[..] checking"} />
       <div className="app-main">
-        {visible ? <DoctorScreen /> : <WizardHost />}
+        {visible ? <DoctorScreen /> : planning ? <WeightPlanPanel /> : <WizardHost />}
       </div>
     </LiveProvider>
     </RefreshFactsContext.Provider>

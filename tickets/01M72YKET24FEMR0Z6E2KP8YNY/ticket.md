@@ -2,12 +2,12 @@
 id = "01M72YKET24FEMR0Z6E2KP8YNY"
 title = "After a simulated fault the source shows ok Connected and the SIMULATED DATA strip disappears (audit8 L1)"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:43:11Z"
+updated = "2026-11-10T14:48:40Z"
 scope = ["web/src/screens/run/**"]
 
 [[acceptance]]

@@ -2,12 +2,12 @@
 id = "01M71KE5ENACTPQ56XAWW37VH5"
 title = "UI design system: modern themed app shell, wizard, panels, doctor"
 type = "task"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T02:08:49Z"
-updated = "2026-11-10T02:08:49Z"
+updated = "2026-11-10T02:09:00Z"
 labels = ["model:sonnet"]
 scope = ["web/src/styles.css", "web/src/App.tsx", "web/src/components/**", "web/src/screens/**", "web/src/doctor/**", "web/index.html"]
 

@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T13:25:15Z"
-updated = "2026-11-10T13:26:32Z"
+updated = "2026-11-10T13:27:18Z"
 labels = ["creates:none"]
 scope = ["web/src/styles.css", "web/src/plots/theme.ts", "web/src/screens/run/inputFields.ts", "web/src/plots/core/export.ts", "web/src/plots/core/index.ts", "web/src/plots/core/plots.test.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/inputFields.test.ts", "web/src/screens/run/RunScreen.test.tsx", "docs/web/design-system.md"]
 

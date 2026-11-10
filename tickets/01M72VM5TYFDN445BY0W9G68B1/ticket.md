@@ -2,7 +2,8 @@
 id = "01M72VM5TYFDN445BY0W9G68B1"
 title = "Design advice: yield uses plastic points only; monotonic non-zero elastic cold start; fix field label text"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

@@ -50,5 +50,5 @@ seeded synthetic data (final half-width, error, coverage). Run with BLAS limited
 
 ## Weight plan
 
-The ordered choice of which inventory weights to hang is described in `weight-plan.md`; it reuses
+The ordered choice of which inventory weights to hang is described in [weight-plan.md](weight-plan.md); it reuses
 `select_next` as its gain machinery.

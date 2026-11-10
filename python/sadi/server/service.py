@@ -106,6 +106,15 @@ def _capture_digest(body: CaptureBody) -> str:
     return hashlib.sha256(json.dumps(keyed, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def _reused() -> ApiProblem:
+    """The 409 for a `request_id` reused with a different body."""
+    return conflict(
+        "request_id_reused",
+        "request id already used for a different point",
+        "This point differs from the earlier try; press Accept again to save it.",
+    )
+
+
 @dataclass
 class _Open:
     """The one open session: its handle, writer, lab and wizard."""
@@ -584,13 +593,32 @@ class SessionService:
             forced_early=body.forced_early,
         )
         point = build_point(parsed_ok, body.window, meta).model_copy(
-            update={"request_id": body.request_id}
+            update={
+                "request_id": body.request_id,
+                "request_digest": digest if body.request_id else None,
+            }
         )
         return self._act(
             lambda cur, rp: cur.wizard.capture(rp, point),
             request_id=body.request_id,
             digest=digest,
         )
+
+    # frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+    @staticmethod
+    def _check_stored_digest(
+        request_id: str, stored: str | None, digest: str
+    ) -> Result[None, ApiProblem]:
+        """409 when a stored point's digest differs; a point without one (older log) matches."""
+        if stored is None:
+            _log.debug(
+                "capture request_id=%s: stored point has no digest, treated as match", request_id
+            )
+            return Ok(None)
+        if stored != digest:
+            _log.warning("capture request_id=%s reused for a different stored point", request_id)
+            return Err(_reused())
+        return Ok(None)
 
     # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
     @propagate
@@ -613,17 +641,17 @@ class SessionService:
             seq = None if known is None else known[0]
             if known is not None and known[1] != digest:
                 _log.warning("capture request_id=%s reused for a different point", request_id)
-                return Err(
-                    conflict(
-                        "request_id_reused",
-                        "request id already used for a different point",
-                        "This point differs from the earlier try; press Accept again to save it.",
-                    )
-                )
+                return Err(_reused())
             if seq is None:
-                seq = next(
-                    (p.seq for p in rp.view().points if p.point.request_id == request_id), None
+                stored = next(
+                    (p for p in rp.view().points if p.point.request_id == request_id), None
                 )
+                if stored is not None:
+                    # frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+                    self._check_stored_digest(
+                        request_id, stored.point.request_digest, digest
+                    ).unwrap()
+                    seq = stored.seq
             if seq is None:
                 return Ok(None)
             cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S).map_err(_from_store).unwrap()

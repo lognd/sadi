@@ -115,3 +115,5 @@ no-op while a healthy run is active, and a failed open returns a 409 problem wit
 logged and surfaced as `acquisition_fault` on `/api/device/status`; it is never raised and never discards WAL data.
 
 `GET /api/design/next-weight` (`routes/design.py`) is read-only: it builds observations from active settled points and returns the advisory next weight plus the enough-data indicator; see [design/gp-selector.md](../design/gp-selector.md).
+
+`POST /api/session/points` is idempotent per `request_id`. The POINT record stores a digest of the operator-chosen fields (`request_digest`), so after a reopen the replay fallback still compares it: the same id with a different body is a 409 `request_id_reused`, the same body returns "Already saved". Points written before the digest existed carry none and count as a match. The route declares 409 and 503 `ApiProblem` responses, and `DesignIndicator.reasons` is a closed enum (`ReasonCode`) in `openapi.json`.

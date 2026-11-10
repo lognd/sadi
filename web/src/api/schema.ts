@@ -905,6 +905,28 @@ export interface components {
             x: number;
         };
         /**
+         * ApiProblem
+         * @description RFC 7807 body: stable `type`, human `title`/`detail` and a 'what to do' `hint`.
+         */
+        ApiProblem: {
+            /**
+             * Detail
+             * @default
+             */
+            detail: string;
+            /**
+             * Hint
+             * @default
+             */
+            hint: string;
+            /** Status */
+            status: number;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /**
          * BudgetRow
          * @description One input's line in the budget: value, u, sensitivity and variance share.
          */
@@ -1160,7 +1182,7 @@ export interface components {
              * Reasons
              * @default []
              */
-            reasons: string[];
+            reasons: ("cold_start" | "singular" | "no_offset" | "yield_not_reached" | "departure_from_linear" | "diminishing_returns" | "no_elastic_fit" | "no_calibration")[];
             /**
              * Schema Version
              * @default 1
@@ -3104,6 +3126,15 @@ export interface operations {
                     "application/json": components["schemas"]["Committed"];
                 };
             };
+            /** @description request_id_reused, no_device or wizard conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiProblem"];
+                };
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -3111,6 +3142,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description durability wait timed out or backpressure */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiProblem"];
                 };
             };
         };

@@ -22,6 +22,7 @@ from sadi.design.models import (
     DesignPhase,
     GpState,
     Obs,
+    ReasonCode,
     SelectorConfig,
     TargetSpec,
 )
@@ -53,7 +54,7 @@ OFFSET_STRAIN = 0.002
 MIN_ELASTIC = 3
 
 
-def offset_volts(views: list[PointView]) -> tuple[float | None, str]:
+def offset_volts(views: list[PointView]) -> tuple[float, None] | tuple[None, ReasonCode]:
     """0.2 % offset in volts from the recorded calibration; (None, reason) when it is not derivable."""
     if len(design_obs(views, DesignPhase.ELASTIC)) < MIN_ELASTIC:
         return None, "no_elastic_fit"
@@ -64,16 +65,25 @@ def offset_volts(views: list[PointView]) -> tuple[float | None, str]:
     slope = float(np.polyfit(volts, [o.x for o in cal], 1)[0])
     if slope == 0.0 or not np.isfinite(slope):
         return None, "no_calibration"
-    return OFFSET_STRAIN * SHORT_L0_M / abs(slope), ""
+    return OFFSET_STRAIN * SHORT_L0_M / abs(slope), None
 
 
-def _unavailable(phase: DesignPhase, n: int, target: TargetSpec, reason: str) -> DesignAdvice:
+def _unavailable(
+    phase: DesignPhase, n: int, target: TargetSpec, reason: ReasonCode
+) -> DesignAdvice:
     """Advice with no suggestion and a collecting indicator that names why."""
     cfg = SelectorConfig()
     ind = ConfidenceIndicator(
-        phase=phase, job_version=n, n=n, target=target,
-        current=CurrentFit(half_width=None, value=None, dof=0.0), ratio=None,
-        state=GpState.COLLECTING, consecutive_ok=0, patience=cfg.patience, reasons=(reason,),
+        phase=phase,
+        job_version=n,
+        n=n,
+        target=target,
+        current=CurrentFit(half_width=None, value=None, dof=0.0),
+        ratio=None,
+        state=GpState.COLLECTING,
+        consecutive_ok=0,
+        patience=cfg.patience,
+        reasons=(reason,),
     )
     return DesignAdvice(suggestion=None, indicator=ind)
 

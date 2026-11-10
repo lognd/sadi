@@ -114,6 +114,19 @@ class SelectorConfig(BaseModel):
     offset_response: float | None = None
 
 
+#: Stable machine codes naming why an indicator has no usable fit (the UI keys on these).
+ReasonCode = Literal[
+    "cold_start",
+    "singular",
+    "no_offset",
+    "yield_not_reached",
+    "departure_from_linear",
+    "diminishing_returns",
+    "no_elastic_fit",
+    "no_calibration",
+]
+
+
 class ConfidenceIndicator(BaseModel):
     """The "confidence is enough" payload (advisory; the user always decides)."""
 
@@ -130,7 +143,7 @@ class ConfidenceIndicator(BaseModel):
     consecutive_ok: int
     patience: int
     advisory: Literal[True] = True
-    reasons: tuple[str, ...] = ()
+    reasons: tuple[ReasonCode, ...] = ()
 
 
 class AltCandidate(BaseModel):

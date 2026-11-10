@@ -78,7 +78,9 @@ def test_replay_after_reopen_finds_point_in_log(svc: SessionService) -> None:
     assert _count(svc) == 1
 
 
-def _body2(rid: str, volts: float, height: float = 0.01, window: dict[str, int] = WINDOW) -> CaptureBody:
+def _body2(
+    rid: str, volts: float, height: float = 0.01, window: dict[str, int] = WINDOW
+) -> CaptureBody:
     """A calibration capture body with `rid`, the given live volts, gauge height and window."""
     return CaptureBody.model_validate(
         {
@@ -106,7 +108,9 @@ def test_same_request_id_different_body_is_409_and_records_nothing(svc: SessionS
 # frob:tests python/sadi/server/service.py::_capture_digest
 def test_retry_with_different_live_volts_and_window_is_already_saved(svc: SessionService) -> None:
     """A real retry re-reads live volts and the window; it must replay, never save twice."""
-    first = svc.capture(_body2("r", 0.05012, window={"first_raw_seq": 1, "last_raw_seq": 5})).danger_ok
+    first = svc.capture(
+        _body2("r", 0.05012, window={"first_raw_seq": 1, "last_raw_seq": 5})
+    ).danger_ok
     again = svc.capture(
         _body2("r", 0.05009, window={"first_raw_seq": 11, "last_raw_seq": 15})
     ).danger_ok
@@ -128,3 +132,36 @@ def test_act_rechecks_request_id_under_lock(svc: SessionService) -> None:
     assert again.seq == first.seq
     assert "Already saved" in again.summary
     assert _count(svc) == 1
+
+
+# frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+# frob:tests python/sadi/server/service.py::SessionService._check_stored_digest
+def test_reopened_reuse_of_id_with_different_body_is_409(svc: SessionService) -> None:
+    """With the in-memory map gone, the stored digest still refuses a different point."""
+    assert svc.capture(_body("fb")).is_ok
+    cur = svc._open  # noqa: SLF001
+    assert cur is not None
+    cur.requests.clear()
+    other = CaptureBody.model_validate(
+        {
+            "phase": "calibration",
+            "inputs": {"volts": 1.0, "height": 0.02},
+            "window": WINDOW,
+            "request_id": "fb",
+        }
+    )
+    err = svc.capture(other).danger_err
+    assert err.status == 409
+    assert "request_id_reused" in err.type
+    assert _count(svc) == 1
+
+
+# frob:tests python/sadi/server/service.py::SessionService._check_stored_digest
+def test_stored_point_without_digest_is_a_match(svc: SessionService) -> None:
+    """An older stored point (no digest) replays instead of 409."""
+    first = svc.capture(_body("old")).danger_ok
+    cur = svc._open  # noqa: SLF001
+    assert cur is not None
+    cur.requests.clear()
+    assert SessionService._check_stored_digest("old", None, "x").is_ok  # noqa: SLF001
+    assert svc.capture(_body("old")).danger_ok.seq == first.seq

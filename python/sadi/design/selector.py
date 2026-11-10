@@ -23,6 +23,7 @@ from sadi.design.models import (
     GpState,
     NextSuggestion,
     Obs,
+    ReasonCode,
     SelectorConfig,
     SelectorError,
     TargetSpec,
@@ -130,7 +131,7 @@ def _matern52(a: np.ndarray, b: np.ndarray, sf: float, ell: float) -> np.ndarray
     return sf**2 * (1.0 + r + r**2 / 3.0) * np.exp(-r)
 
 
-def _fit_yield(obs: Sequence[Obs], lo: float, hi: float, cfg: SelectorConfig) -> _Fit | str:
+def _fit_yield(obs: Sequence[Obs], lo: float, hi: float, cfg: SelectorConfig) -> _Fit | ReasonCode:
     """GP on departure from the elastic line; target is the 0.2 % offset crossing x*.
 
     Returns a reason string when the crossing cannot be located.
@@ -211,7 +212,7 @@ def _fit_yield(obs: Sequence[Obs], lo: float, hi: float, cfg: SelectorConfig) ->
 # ---------------------------------------------------------------- driver
 def _fit(
     phase: DesignPhase, obs: Sequence[Obs], lo: float, hi: float, cfg: SelectorConfig
-) -> _Fit | str:
+) -> _Fit | ReasonCode:
     if phase is DesignPhase.YIELD:
         if len(obs) < cfg.n_min_yield:
             return "cold_start"
@@ -297,7 +298,7 @@ def select_next(  # noqa: PLR0913
     n_min = cfg.n_min_yield if phase is DesignPhase.YIELD else cfg.n_min_linear
 
     fit = _fit(phase, obs, lo, hi, cfg)
-    reasons: list[str] = []
+    reasons: list[ReasonCode] = []
     state = GpState.COLLECTING
     cur = CurrentFit(half_width=None, value=None, dof=float(max(n - 2, 0)))
     ratio: float | None = None
@@ -399,7 +400,7 @@ def select_next(  # noqa: PLR0913
     return Ok(DesignAdvice(suggestion=sug, indicator=ind))
 
 
-def _why(state: GpState, reasons: Sequence[str], gain: float) -> str:
+def _why(state: GpState, reasons: Sequence[ReasonCode], gain: float) -> str:
     """One plain sentence explaining the pick, for the student."""
     if "cold_start" in reasons:
         return "Too few points to model yet, so this spreads your points across the range."

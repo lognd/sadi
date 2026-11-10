@@ -49,6 +49,40 @@
         "title": "AltCandidate",
         "type": "object"
       },
+      "ApiProblem": {
+        "description": "RFC 7807 body: stable `type`, human `title`/`detail` and a 'what to do' `hint`.",
+        "properties": {
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "title": "ApiProblem",
+        "type": "object"
+      },
       "BudgetRow": {
         "description": "One input's line in the budget: value, u, sensitivity and variance share.",
         "properties": {
@@ -650,6 +684,16 @@
           "reasons": {
             "default": [],
             "items": {
+              "enum": [
+                "cold_start",
+                "singular",
+                "no_offset",
+                "yield_not_reached",
+                "departure_from_linear",
+                "diminishing_returns",
+                "no_elastic_fit",
+                "no_calibration"
+              ],
               "type": "string"
             },
             "title": "Reasons",
@@ -4005,6 +4049,16 @@
             },
             "description": "Successful Response"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            },
+            "description": "request_id_reused, no_device or wizard conflict"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -4014,6 +4068,16 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            },
+            "description": "durability wait timed out or backpressure"
           }
         },
         "summary": "Capture"

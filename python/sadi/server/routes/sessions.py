@@ -9,7 +9,7 @@ import logging
 from fastapi import APIRouter
 
 from sadi.core.wizard import History, WizardState
-from sadi.server.routes.problem import unwrap
+from sadi.server.routes.problem import ApiProblem, unwrap
 from sadi.server.schemas import (
     CaptureBody,
     Committed,
@@ -165,7 +165,17 @@ def make_sessions_router(svc: SessionService) -> APIRouter:
         """List captured points."""
         return unwrap(svc.points())
 
-    @r.post("/session/points", status_code=201)
+    @r.post(
+        "/session/points",
+        status_code=201,
+        responses={
+            409: {
+                "model": ApiProblem,
+                "description": "request_id_reused, no_device or wizard conflict",
+            },
+            503: {"model": ApiProblem, "description": "durability wait timed out or backpressure"},
+        },
+    )
     def capture(body: CaptureBody) -> Committed:
         """Capture a point."""
         return unwrap(svc.capture(body))

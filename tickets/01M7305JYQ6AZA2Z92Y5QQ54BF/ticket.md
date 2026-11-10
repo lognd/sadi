@@ -2,12 +2,12 @@
 id = "01M7305JYQ6AZA2Z92Y5QQ54BF"
 title = "Planner picks which gauge heights to use (height inventory like weights) with per-height uncertainty"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T15:10:34Z"
-updated = "2026-11-10T15:10:34Z"
+updated = "2026-11-10T15:20:58Z"
 labels = ["creates:python/tests/design/test_height_plan.py"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 

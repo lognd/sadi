@@ -4,9 +4,10 @@ title = "Audit1 #3 #6 #20 #19: validate capture inputs and windows, units/range 
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T04:55:10Z"
+updated = "2026-11-10T04:55:13Z"
 scope = ["python/sadi/core/**", "python/sadi/server/service.py", "python/sadi/server/routes/clamp.py", "python/tests/core/**"]
 
 [[acceptance]]

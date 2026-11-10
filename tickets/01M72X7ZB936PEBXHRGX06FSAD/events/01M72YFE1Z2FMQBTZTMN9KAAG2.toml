@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:40:53Z"
+digest = "27cf343e26a2aae1139c9c9b96eb6a923a574f74d8bd308c1890e2551014e81c"
+exit_code = 0
+head = "60452251296ffdea5fb2095828cc77c42bac1be4"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  09:40:59
+   Duration  357ms (transform 65%, import 25%, tests 7%, worker 3%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/setup/WeightPlanPanel.test.tsx"
+size = 170
+status = "measured"
+at = "2026-11-10T14:40:53Z"
+actor = "lognd"
+rev = 1

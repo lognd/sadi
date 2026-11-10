@@ -10,44 +10,44 @@ tokens_file = "tokens.css"
 root_font_size = 16
 
 [palette]
-bg = "#efebe0"
-surface = "#f8f6ee"
-surface-2 = "#e6e1d3"
-fg = "#1c1b17"
-muted = "#55514a"
-accent = "#0e5a61"
-accent-fg = "#f8f6ee"
-accent-soft = "#cfe3e0"
-border = "#6f6a5e"
-line = "#c9c2b0"
-focus = "#a64f00"
-btn-bg = "#ebe7da"
-ok = "#1b6236"
-ok-soft = "#d9e8d6"
-warn = "#6b4300"
-warn-soft = "#f3e2b0"
-bad = "#a02218"
-bad-soft = "#f2d9d3"
+bg = "#d6ebd0"
+surface = "#e6f5e1"
+surface-2 = "#c5dfbe"
+fg = "#06200c"
+muted = "#2b5636"
+accent = "#0a5a2a"
+accent-fg = "#e6f5e1"
+accent-soft = "#b9dcb1"
+border = "#3a6845"
+line = "#a6c79e"
+focus = "#8a4400"
+btn-bg = "#cbe4c4"
+ok = "#0a5a2a"
+ok-soft = "#c3e6bb"
+warn = "#5e3b00"
+warn-soft = "#efdfa6"
+bad = "#9a1a10"
+bad-soft = "#f2d4cd"
 
 [palette.modes.dark]
-bg = "#151515"
-surface = "#1d1d1c"
-surface-2 = "#272726"
-fg = "#e6e3da"
-muted = "#a8a499"
-accent = "#5fc4c8"
-accent-fg = "#0a1a1b"
-accent-soft = "#1b3638"
-border = "#8a867b"
-line = "#343432"
-focus = "#ffb454"
-btn-bg = "#262625"
-ok = "#7bd39a"
-ok-soft = "#17301e"
-warn = "#f0b45a"
-warn-soft = "#35290f"
-bad = "#ff9188"
-bad-soft = "#3a1c19"
+bg = "#070b07"
+surface = "#0c130c"
+surface-2 = "#132013"
+fg = "#7dff9a"
+muted = "#6cc784"
+accent = "#5dffa0"
+accent-fg = "#03100a"
+accent-soft = "#0f3a20"
+border = "#4fa468"
+line = "#1d3a25"
+focus = "#ffd24a"
+btn-bg = "#10200f"
+ok = "#7bffa0"
+ok-soft = "#0e3a1a"
+warn = "#ffcf5a"
+warn-soft = "#3a2d08"
+bad = "#ff8a80"
+bad-soft = "#3f1512"
 [palette.roles]
 body = ["fg", "bg"]
 card = ["fg", "surface"]
@@ -63,7 +63,7 @@ font_sizes = [12.48, 14, 16, 20, 25.6]
 radii = [0, 2, 3, 999]
 
 [typography]
-families = ["system-ui", "ui-monospace"]
+families = ["ui-monospace"]
 weights = [400, 450, 550, 600, 650, 700, 750]
 
 [org]
@@ -72,7 +72,7 @@ tokens_only_custom_props = false
 entry = ["styles.css", "theme.css"]
 
 [decisions]
-fonts = "System UI stack on purpose: a lab instrument UI should render natively and offline, with no webfont fetch."
+fonts = "System monospace stack on purpose: a terminal look that renders natively and offline, with no webfont fetch."
 
 [lint]
 # styles.css predates the spec and uses ad-hoc rem spacing/sizes; this crunk version has no

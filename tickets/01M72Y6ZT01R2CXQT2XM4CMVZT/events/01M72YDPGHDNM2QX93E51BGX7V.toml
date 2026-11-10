@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py"]
+new = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py", "python/tests/store/test_incremental_roll.py"]
+at = "2026-11-10T14:40:02Z"
+actor = "lognd"
+rev = 1

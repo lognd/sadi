@@ -150,29 +150,47 @@ def snapshot_dir(session_dir: Path) -> Path:
     return session_dir / SNAPSHOT_DIR
 
 
-def prefix_hashes_at(
+def prefix_hash_states_at(
     wal_dir: Path, covers: Iterable[int]
-) -> Result[tuple[dict[int, str], int | None], WalError]:
-    """Return {n: prefix_hash after all data records with seq <= n} and the last verified seq."""
+) -> Result[tuple[dict[int, Any], int | None], WalError]:
+    """Return {n: running hash object after data records <= n} and the last seq seen.
+
+    The scan stops at max(covers): records beyond the largest wanted seq cannot change any
+    requested hash, so walking them is pure redundant work.
+    """
     wanted = sorted(set(covers))
-    out: dict[int, str] = {}
+    out: dict[int, Any] = {}
     h = new_prefix_hash()
     idx = 0
     last: int | None = None
+    if not wanted:
+        return Ok((out, last))
     for item in WalReader(wal_dir).records():
         if item.is_err:
             _log.error("prefix hash scan of %s hit corruption: %s", wal_dir, item.danger_err)
             return Err(item.danger_err)
         rec: Record = item.danger_ok
         while idx < len(wanted) and wanted[idx] < rec.seq:
-            out[wanted[idx]] = h.hexdigest()
+            out[wanted[idx]] = h.copy()
             idx += 1
         prefix_hash_update(h, rec)
         last = rec.seq
+        if rec.seq >= wanted[-1]:
+            break
     while idx < len(wanted):
-        out[wanted[idx]] = h.hexdigest()
+        out[wanted[idx]] = h.copy()
         idx += 1
     return Ok((out, last))
+
+
+@propagate
+def prefix_hashes_at(
+    wal_dir: Path, covers: Iterable[int]
+) -> Result[tuple[dict[int, str], int | None], WalError]:
+    """Return {n: prefix_hash after all data records with seq <= n} and the last verified seq."""
+    scanned = prefix_hash_states_at(wal_dir, covers)
+    states, last = scanned.unwrap()
+    return Ok(({n: h.hexdigest() for n, h in states.items()}, last))
 
 
 @propagate
@@ -359,22 +377,31 @@ def list_snapshots(session_dir: Path) -> list[tuple[Path, SnapshotV1]]:
 
 
 @propagate
-def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, SnapshotError]:
-    """Return the newest snapshot whose prefix hash matches the WAL, or None to replay from 1."""
+def load_latest_snapshot_hashed(
+    session_dir: Path,
+) -> Result[tuple[SnapshotV1, Any] | None, SnapshotError]:
+    """Like `load_latest_snapshot` but also return the running prefix hash object at covers_seq."""
     candidates = list_snapshots(session_dir)
     if not candidates:
         _log.info("no usable snapshots in %s", session_dir)
         return Ok(None)
-    scanned = prefix_hashes_at(session_dir / "wal", (s.covers_seq for _, s in candidates))
-    hashes, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
+    scanned = prefix_hash_states_at(session_dir / "wal", (s.covers_seq for _, s in candidates))
+    states, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
     for path, snap in candidates:
         if last is None or snap.covers_seq > last:
             _log.warning(
                 "ignoring stale snapshot %s: covers %d > verified %s", path, snap.covers_seq, last
             )
-        elif hashes[snap.covers_seq] != snap.prefix_hash:
+        elif states[snap.covers_seq].hexdigest() != snap.prefix_hash:
             _log.warning("ignoring snapshot %s: prefix hash mismatch at %d", path, snap.covers_seq)
         else:
             _log.info("using snapshot %s covers_seq=%d", path, snap.covers_seq)
-            return Ok(snap)
+            return Ok((snap, states[snap.covers_seq]))
     return Ok(None)
+
+
+@propagate
+def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, SnapshotError]:
+    """Return the newest snapshot whose prefix hash matches the WAL, or None to replay from 1."""
+    got = load_latest_snapshot_hashed(session_dir).unwrap()
+    return Ok(None if got is None else got[0])

@@ -1,0 +1,1 @@
+A capture request id reused for a different point is now refused with a 409 instead of silently dropping the point; the duplicate check also runs under the same lock as the write, and the Run screen starts a fresh id after a load change, a field edit or a refusal.

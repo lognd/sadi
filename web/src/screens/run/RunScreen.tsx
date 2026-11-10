@@ -70,7 +70,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const attemptId = useRef<string | null>(null); // reused on retry until the capture succeeds
   const loadRecorded = useRef(false); // true after a capture until the load change is marked
   const { view, side } = live;
-  const onField = useCallback((k: string, v: string): void => { setFields((f) => ({ ...f, [k]: v })); }, []);
+  const onField = useCallback((k: string, v: string): void => { attemptId.current = null; setFields((f) => ({ ...f, [k]: v })); }, []);
   // Count the saved points for this step from the server so Finish stays gated correctly after a reload.
   useEffect(() => {
     let alive = true;
@@ -100,7 +100,10 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early, attemptId.current), p.fetchImpl);
     setConfirm("idle");
     if (r.ok) { attemptId.current = null; loadRecorded.current = true; setMessage(capturedMessage(r.value.summary)); setSavedTick((n) => n + 1); p.onCaptured?.(); }
-    else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
+    else {
+      if (r.error.kind !== "network" && r.error.status === 409) attemptId.current = null; // id used for a different point: next try gets a fresh id
+      setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
+    }
   }, [p, side.rawSeq, view, fields]);
 
   const capture = useCallback(async (early: boolean): Promise<void> => {
@@ -120,7 +123,7 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
 
   const markLoadChange = useCallback(async (): Promise<void> => {
     const r = await postLoadChange(p.fetchImpl);
-    if (r.ok) loadRecorded.current = false;
+    if (r.ok) { loadRecorded.current = false; attemptId.current = null; }
     if (r.ok) setMessage("Load change marked; wait for the reading to settle.");
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Load change refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
   }, [p.fetchImpl]);

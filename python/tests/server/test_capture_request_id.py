@@ -13,7 +13,7 @@ import pytest
 from sadi.core.registry import LabRegistry
 from sadi.labs.lctt.plugin import register
 from sadi.server.schemas import CaptureBody, SessionCreate
-from sadi.server.service import SessionService
+from sadi.server.service import SessionService, _capture_digest  # noqa: PLC2701
 
 WINDOW = {"first_raw_seq": 1, "last_raw_seq": 5}
 
@@ -75,4 +75,43 @@ def test_replay_after_reopen_finds_point_in_log(svc: SessionService) -> None:
     assert cur is not None
     cur.requests.clear()
     assert svc.capture(_body("zz")).danger_ok.seq == first.seq
+    assert _count(svc) == 1
+
+
+def _body2(rid: str, volts: float) -> CaptureBody:
+    """A calibration capture body with `rid` and the given volts."""
+    return CaptureBody.model_validate(
+        {
+            "phase": "calibration",
+            "inputs": {"volts": volts, "height": 0.01},
+            "window": WINDOW,
+            "request_id": rid,
+        }
+    )
+
+
+# frob:ticket 01M72T4R1WNQRV303D0WJXW1MW
+# frob:tests python/sadi/server/service.py::SessionService.capture
+def test_same_request_id_different_body_is_409_and_records_nothing(svc: SessionService) -> None:
+    """A reused id with other inputs is refused; the first point stays, none is dropped."""
+    assert svc.capture(_body2("x", 1.0)).is_ok
+    bad = svc.capture(_body2("x", 2.0))
+    assert bad.is_err
+    assert bad.danger_err.status == 409
+    assert "different point" in bad.danger_err.detail
+    assert _count(svc) == 1
+
+
+# frob:tests python/sadi/server/service.py::SessionService._act
+def test_act_rechecks_request_id_under_lock(svc: SessionService) -> None:
+    """Even if the pre-check is skipped, _act returns the existing commit instead of writing."""
+    body = _body2("y", 1.0)
+    first = svc.capture(body).danger_ok
+    again = svc._act(  # noqa: SLF001
+        lambda _c, _r: pytest.fail("must not run"),
+        request_id="y",
+        digest=_capture_digest(body),
+    ).danger_ok
+    assert again.seq == first.seq
+    assert "Already saved" in again.summary
     assert _count(svc) == 1

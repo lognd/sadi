@@ -10,6 +10,8 @@ redo are compensating edits, so nothing is ever deleted or overwritten.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import threading
 import uuid
 from collections.abc import Callable
@@ -91,6 +93,15 @@ class ClosedSession:
     torn_tail: str | None = None  # "segment/offset" when only the verified prefix was read
 
 
+def _capture_digest(body: CaptureBody) -> str:
+    """Stable digest of what makes a capture the same point (not its request id)."""
+    # frob:ticket 01M72T4R1WNQRV303D0WJXW1MW
+    keyed = body.model_dump(
+        mode="json", include={"phase", "inputs", "window", "settled", "forced_early"}
+    )
+    return hashlib.sha256(json.dumps(keyed, sort_keys=True).encode()).hexdigest()
+
+
 @dataclass
 class _Open:
     """The one open session: its handle, writer, lab and wizard."""
@@ -104,7 +115,11 @@ class _Open:
     # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
     cadence: SnapshotCadence = field(default_factory=SnapshotCadence)
     # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
-    requests: dict[str, int] = field(default_factory=dict)  # capture request_id -> submitted seq
+    requests: dict[str, tuple[int, str]] = (
+        field(  # capture request_id -> (submitted seq, body digest)
+            default_factory=dict
+        )
+    )
 
     def __post_init__(self) -> None:
         """Attach the incremental replay cache for this session's directory."""
@@ -511,12 +526,13 @@ class SessionService:
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
         """Validate typed inputs and window (nothing logged on rejection), then append a POINT.
 
-        A `request_id` makes the call idempotent: a replay returns the existing commit and
-        never records a second point.
+        A `request_id` makes the call idempotent: a replay of the same body returns the existing
+        commit and never records a second point; the same id with a different body is a 409.
         """
         # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        digest = _capture_digest(body)
         if body.request_id is not None:
-            existing = self._existing_capture(body.request_id).unwrap()
+            existing = self._existing_capture(body.request_id, digest).unwrap()
             if existing is not None:
                 return Ok(existing)
         # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
@@ -549,12 +565,20 @@ class SessionService:
         point = build_point(parsed_ok, body.window, meta).model_copy(
             update={"request_id": body.request_id}
         )
-        return self._act(lambda cur, rp: cur.wizard.capture(rp, point), request_id=body.request_id)
+        return self._act(
+            lambda cur, rp: cur.wizard.capture(rp, point),
+            request_id=body.request_id,
+            digest=digest,
+        )
 
     # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
     @propagate
-    def _existing_capture(self, request_id: str) -> Result[Committed | None, ApiProblem]:
+    def _existing_capture(
+        self, request_id: str, digest: str
+    ) -> Result[Committed | None, ApiProblem]:
         """The commit of an earlier capture with this `request_id`, else None (nothing written).
+
+        A known id carrying a different body digest is a 409: the point is never dropped.
 
         Covers both a point already in the replay and one submitted whose durability wait
         timed out: the latter is waited on again instead of being recorded twice.
@@ -564,7 +588,17 @@ class SessionService:
             if cur is None:
                 return Err(self._none_open())
             rp = self._replay(cur).unwrap()
-            seq = cur.requests.get(request_id)
+            known = cur.requests.get(request_id)
+            seq = None if known is None else known[0]
+            if known is not None and known[1] != digest:
+                _log.warning("capture request_id=%s reused for a different point", request_id)
+                return Err(
+                    conflict(
+                        "request_id_reused",
+                        "request id already used for a different point",
+                        "This point differs from the earlier try; press Accept again to save it.",
+                    )
+                )
             if seq is None:
                 seq = next(
                     (p.seq for p in rp.view().points if p.point.request_id == request_id), None
@@ -577,7 +611,7 @@ class SessionService:
             return Ok(
                 Committed(
                     seq=seq,
-                    summary="captured (replayed request)",
+                    summary="Already saved - the earlier try went through.",
                     wizard=cur.wizard.state(after),
                     history=cur.wizard.history(after),
                 )
@@ -773,6 +807,7 @@ class SessionService:
         self,
         fn: Callable[[_Open, ReplayState], Result[Command, WizardError]],
         request_id: str | None = None,
+        digest: str = "",
     ) -> Result[Committed, ApiProblem]:
         """Run a wizard command, append its records, wait for durability, return the new state.
 
@@ -783,6 +818,11 @@ class SessionService:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
+            if request_id is not None:
+                # frob:ticket 01M72T4R1WNQRV303D0WJXW1MW
+                again = self._existing_capture(request_id, digest).unwrap()
+                if again is not None:
+                    return Ok(again)
             rp = self._replay(cur)
             cmd = fn(cur, rp.unwrap())
             seq = 0
@@ -790,7 +830,7 @@ class SessionService:
                 sub = cur.writer.submit(rec)
                 seq = sub.map_err(_from_store).unwrap()
             if request_id is not None:
-                cur.requests[request_id] = seq
+                cur.requests[request_id] = (seq, digest)
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
             durable.map_err(_from_store).unwrap()
             after = self._replay(cur).unwrap()

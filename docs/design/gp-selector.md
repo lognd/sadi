@@ -47,3 +47,8 @@ mass, and the elastic run is capped at 60 % of the range, below the expected yie
 
 `sadi.design.benchmark.run_benchmark` compares the selector with random and binary-search policies on
 seeded synthetic data (final half-width, error, coverage). Run with BLAS limited to one thread.
+
+## Weight plan
+
+The ordered choice of which inventory weights to hang is described in [weight-plan.md](weight-plan.md); it reuses
+`select_next` as its gain machinery.

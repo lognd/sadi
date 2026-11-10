@@ -10,6 +10,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from sadi.labs.lctt.gp_suggester import GpState
+from sadi.synthetic.specimen import CopperSpec
 
 __all__ = [
     "AltCandidate",
@@ -20,7 +21,13 @@ __all__ = [
     "DesignAdvice",
     "DesignPhase",
     "GpState",
+    "CapturedPoint",
+    "Hang",
     "NextSuggestion",
+    "PlanConfig",
+    "PlanRequest",
+    "Weight",
+    "WeightPlan",
     "Obs",
     "SelectorConfig",
     "SelectorError",
@@ -185,4 +192,98 @@ class DesignAdvice(BaseModel):
 
     suggestion: NextSuggestion | None
     indicator: ConfidenceIndicator
+    advisory: Literal[True] = True
+
+
+# ---- weight plan (docs/design/weight-plan.md)
+# frob:ticket 01M72X7S8DA8X3Q95HRYNKT2ED
+
+
+class Weight(BaseModel):
+    """One physical inventory weight; duplicates are distinct ids with their own uncertainty."""
+
+    model_config = ConfigDict(frozen=True)
+
+    weight_id: str
+    mass_kg: float = Field(gt=0)
+    u_mass_kg: float = Field(default=0.0, ge=0)
+
+
+class CapturedPoint(BaseModel):
+    """An already-captured hang (total mass and settled LVDT volts) used when replanning."""
+
+    model_config = ConfigDict(frozen=True)
+
+    mass_kg: float = Field(ge=0)
+    volts: float
+    u_volts: float = Field(default=0.0, ge=0)
+
+
+class PlanConfig(BaseModel):
+    """Planner settings; the material prior is the shared synthetic CopperSpec."""
+
+    model_config = ConfigDict(frozen=True)
+
+    copper: CopperSpec = CopperSpec()
+    target: TargetSpec = TargetSpec(half_width=0.05)
+    selector: SelectorConfig = SelectorConfig()
+    #: Largest allowed tension as a fraction of the wire's ultimate load.
+    capacity_fraction: float = Field(default=0.95, gt=0, le=1)
+    #: Cap on the number of hangs reported; None means as many as there are usable loads.
+    max_hangs: int | None = Field(default=None, ge=1)
+    #: Mass keys are rounded to this many kg when deduplicating equal-mass multisets.
+    mass_resolution_kg: float = Field(default=1e-9, gt=0)
+
+
+class PlanRequest(BaseModel):
+    """Everything plan() needs: inventory, wire geometry, LVDT calibration and prior points."""
+
+    model_config = ConfigDict(frozen=True)
+
+    weights: tuple[Weight, ...]
+    diameter_m: float = Field(gt=0)
+    u_diameter_m: float = Field(default=0.0, ge=0)
+    length_m: float = Field(gt=0, description="gauge length L0")
+    u_length_m: float = Field(default=0.0, ge=0)
+    cal_slope_v_per_m: float
+    cal_offset_v: float = 0.0
+    saturation_v: float | None = Field(default=None, gt=0)
+    captured: tuple[CapturedPoint, ...] = ()
+    config: PlanConfig = PlanConfig()
+
+
+class Hang(BaseModel):
+    """One planned hang: which weights, their total, predicted volts and the gain it buys."""
+
+    model_config = ConfigDict(frozen=True)
+
+    order: int
+    weight_ids: tuple[str, ...]
+    total_mass_kg: float
+    u_mass_kg: float
+    tension_n: float
+    predicted_volts: float
+    u_predicted_volts: float
+    expected_gain: float
+    #: Slope half-width (V/kg) after this hang (elastic); None until a fit exists.
+    slope_half_width_v_per_kg: float | None = None
+    #: Modulus half-width (Pa) after this hang, geometry included (elastic).
+    e_half_width_pa: float | None = None
+    #: Yield-load half-width (kg) after this hang (yield phase).
+    yield_half_width_kg: float | None = None
+    reason: str = ""
+
+
+class WeightPlan(BaseModel):
+    """Ordered hangs for the remaining run; advisory only."""
+
+    model_config = ConfigDict(frozen=True)
+
+    phase: DesignPhase
+    hangs: tuple[Hang, ...]
+    n_inventory: int
+    n_achievable: int
+    n_usable: int
+    dropped_saturation: int = 0
+    dropped_capacity: int = 0
     advisory: Literal[True] = True

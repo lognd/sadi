@@ -6,7 +6,7 @@ category = "todo"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T15:32:01Z"
-updated = "2026-11-10T15:50:09Z"
+updated = "2026-11-10T15:50:13Z"
 
 [[acceptance]]
 text = "Given the tracked docs, when the course-material test runs, then no doc names a course VI"

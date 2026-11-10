@@ -12,9 +12,9 @@ import threading
 import time
 from collections.abc import Callable
 from enum import StrEnum
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, Ok, Result
 
 from sadi.core.devfacade import close_quietly, default_adc_mode, to_device_error
@@ -117,6 +117,13 @@ class Backoff(BaseModel):
 DeviceFault = DeviceError | ReaderOverflow
 
 
+# frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+class StopFailed(DeviceError):
+    """A device stop error that still carries the raw blocks already read (never dropped)."""
+
+    blocks: list[Any] = Field(default_factory=list, exclude=True, repr=False)
+
+
 class DeviceService:
     """Owns one device session; reader thread feeds a bounded queue consumed via next_block."""
 
@@ -144,6 +151,7 @@ class DeviceService:
         self._thread: threading.Thread | None = None
         self._errored = False
         self._held: sp.Block | None = None
+        self._salvaged: list[Any] = []
         self._sim_ctl: sp.sim.SimControl | None = None
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
@@ -266,8 +274,19 @@ class DeviceService:
                 return Err(fault)
             return Ok(None)
 
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+    def take_salvaged(self) -> list[Any]:
+        """Hand over (and forget) blocks a teardown kept instead of discarding; caller ingests."""
+        with self._lock:
+            kept, self._salvaged = self._salvaged, []
+        return kept
+
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
     def stop_streaming(self) -> Result[list[sp.Block], DeviceError]:
-        """Stop the reader and the device; returns blocks still queued plus the trailing block."""
+        """Stop the reader and the device; returns blocks still queued plus the trailing block.
+
+        When the stop command fails the Err is a `StopFailed` carrying the drained blocks.
+        """
         with self._lock:
             streaming = self._streaming
             if streaming is None:
@@ -285,7 +304,13 @@ class DeviceService:
             res = streaming.stop()
             if isinstance(res, Err):
                 self._errored = True
-                return Err(res.danger_err)
+                err = res.danger_err
+                _log.error(
+                    "device stop failed (%s); returning %d drained blocks to the caller",
+                    err.detail,
+                    len(pending),
+                )
+                return Err(StopFailed(code=err.code, detail=err.detail, blocks=pending))
             stopped, tail = res.danger_ok
             self._streaming = None
             pending.append(tail)
@@ -413,15 +438,23 @@ class DeviceService:
                 _log.error("reader thread did not exit within %.1fs", _JOIN_TIMEOUT_S)
             self._thread = None
 
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
     def _teardown(self) -> None:
         """Stop the reader and close whichever phase object is live."""
         self._join_reader()
+        kept = 0
         while True:
             try:
-                self._queue.get_nowait()
+                self._salvaged.append(self._queue.get_nowait())
+                kept += 1
             except queue.Empty:
                 break
-        self._held = None
+        if self._held is not None:
+            self._salvaged.append(self._held)
+            kept += 1
+            self._held = None
+        if kept:
+            _log.warning("teardown kept %d unsaved blocks for the caller to ingest", kept)
         if self._streaming is not None:
             streaming = self._streaming
             self._streaming = None

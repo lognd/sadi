@@ -3,8 +3,9 @@
 // frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { WizardShell } from "../../components/wizard/WizardShell";
 import { useLive } from "../../state/LiveContext";
@@ -15,7 +16,9 @@ import { postLoadChange } from "./loadChange";
 import { buildBody, buildSpecimenBody, capturedMessage, decide, postCapture, type Confirm } from "./capture";
 import type { RunPhase } from "./phases";
 import { collectInputs, splitSpecimen } from "./inputFields";
-import { RunView, type PhasePlot } from "./RunView";
+import { RunPlot, RunView, type PhasePlot } from "./RunView";
+import { getPoints } from "../review/api";
+import { countPhasePoints, finishBlockedWhy } from "./pointCount";
 
 const log = getLogger("screens.run");
 
@@ -31,7 +34,7 @@ function saveBlob(blob: Blob, name: string): void {
 
 /** Replace a meaningless "Hang a total of 0.000 kg" suggestion (no load computed yet) with plain advice. */
 export function guidanceText(next: string): string {
-  return /hang a total of 0(\.0+)? kg/i.test(next) ? "Add a weight to the hanger, press Mark load change, then wait for Settled." : next;
+  return /hang a total of 0(\.0+)? kg/i.test(next) ? "Add a weight to the hanger, click I added a weight, then wait for Settled." : next;
 }
 
 /** Props of the run screen. */
@@ -59,9 +62,20 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const [message, setMessage] = useState<string | null>(null);
   const [fields, setFields] = useState<Readonly<Record<string, string>>>({});
   const [savedTick, setSavedTick] = useState(0);
+  const [pointCount, setPointCount] = useState<number | null>(null);
   const inFlight = useRef(false);
   const { view, side } = live;
   const onField = useCallback((k: string, v: string): void => { setFields((f) => ({ ...f, [k]: v })); }, []);
+  // Count the saved points for this step from the server so Finish stays gated correctly after a reload.
+  useEffect(() => {
+    let alive = true;
+    void getPoints(p.fetchImpl).then((r) => {
+      if (!alive) return;
+      if (r.ok) setPointCount(countPhasePoints(r.value, p.phase));
+      else log.warn("point count unavailable; Finish not gated");
+    });
+    return () => { alive = false; };
+  }, [p.phase, p.fetchImpl, savedTick]);
   const preview = decide(view, false, "idle");
   const blockedWhy = preview.kind === "blocked" ? preview.why : null;
 
@@ -119,14 +133,14 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [accept, doExport]);
 
   return (
-    <WizardShell onKeyAction={onKey} onWizard={p.onWizard} savedTick={savedTick}>
+    <WizardShell onKeyAction={onKey} onWizard={p.onWizard} savedTick={savedTick} finishBlockedWhy={finishBlockedWhy(p.phase, pointCount)} after={<RunPlot plot={p.plot ?? null} />}>
       {side.guidance != null && (
         <p data-testid="guidance-note">
           {guidanceText(side.guidance.nextAction)}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
         </p>
       )}
       <RunView
-        phase={p.phase} view={view} plot={p.plot ?? null}
+        phase={p.phase} view={view} pointCount={pointCount}
         fields={fields} onField={onField}
         blockedWhy={blockedWhy} confirming={confirm === "asking"} message={message ?? live.notice}
         onAccept={() => { accept(false); }} onLoadChange={() => { void markLoadChange(); }} onConfirmEarly={() => { accept(true); }}

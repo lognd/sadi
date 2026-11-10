@@ -2,7 +2,8 @@
 id = "01M72VM5ZCW15RQ2CH8RS7XR3X"
 title = "Spill import marker must be per data root; join failure cleanup; distinct fragment-failed log"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

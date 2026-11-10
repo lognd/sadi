@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:14:44Z"
-updated = "2026-11-10T15:23:47Z"
+updated = "2026-11-10T15:23:52Z"
 scope = ["web/src/components/wizard/**", "docs/web/wizard.md"]
 
 [[links]]

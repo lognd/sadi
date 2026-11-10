@@ -31,11 +31,12 @@ export interface GuidanceNote {
   readonly stopReason: string;
 }
 
-/** Fold one message into the side state (pure; unrelated kinds return the same object). */
+/** Fold one message into the side state (pure; unrelated kinds return the same object); `simulated` is sticky once seen. */
+// frob:ticket 01M72YKET24FEMR0Z6E2KP8YNY
 export function foldSide(s: SideState, m: ServerMessage): SideState {
-  if (m.kind === "hello") return { ...s, simulated: m.simulated };
+  if (m.kind === "hello") return { ...s, simulated: s.simulated || m.simulated };
   if (m.kind === "state") {
-    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: m.simulated ?? false, guidance: s.guidance ?? null };
+    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: s.simulated || (m.simulated ?? false), guidance: s.guidance ?? null };
   }
   if (m.kind === "guidance") {
     return { ...s, guidance: { phase: m.phase, nextAction: m.nextAction, stopEarly: m.stopEarly, stopReason: m.stopReason } };

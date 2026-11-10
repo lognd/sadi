@@ -7,7 +7,7 @@ priority = "medium"
 points = 1
 reporter = "lognd"
 created = "2026-11-09T13:58:26Z"
-updated = "2026-11-10T02:44:12Z"
+updated = "2026-11-10T02:44:16Z"
 scope = ["docs/core/device.md"]
 
 [[acceptance]]

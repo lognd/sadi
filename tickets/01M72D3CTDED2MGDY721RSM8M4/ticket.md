@@ -7,7 +7,7 @@ priority = "medium"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T09:37:19Z"
-updated = "2026-11-10T11:04:15Z"
+updated = "2026-11-10T11:04:18Z"
 labels = ["creates:python/tests/server/test_export_guard_names.py", "creates:python/tests/core/test_wizard_edit_validation.py"]
 scope = ["python/sadi/core/wizard.py", "python/sadi/server/routes_doctor.py", "python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/figure_data.py", "python/sadi/server/curve_source.py", "python/sadi/server/security.py", "python/sadi/server/routes/export.py", "python/tests/core/test_wizard.py", "web/src/screens/export/**", "web/src/state/provenance.ts", "docs/lctt/export-csv.md", "docs/server/**", "web/src/api/openapi.json", "web/src/api/schema.ts", "changelog.d/**", "python/tests/labs/lctt/test_export_csv.py", "python/tests/labs/lctt/test_export_csv_phases.py", "python/tests/labs/lctt/test_lab_export.py", "python/tests/server/test_curve_source.py", "python/tests/server/test_export_routes.py", "python/tests/server/test_origin_guard.py", "python/tests/server/test_routes_doctor.py", "python/tests/server/test_openapi_export.py", "python/tests/server/test_export_guard_names.py", "python/tests/core/test_wizard_edit_validation.py", "python/sadi/server/routes/problem.py"]
 
@@ -25,7 +25,7 @@ bound = true
 
 [[acceptance]]
 text = "StressStrainData has phase; figure splits elastic/plastic series; load_session_curve fits elastic rows only"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "Downloads use server Content-Disposition name when X-SADI-Provenance present (no double SYNTHETIC- prefix)"

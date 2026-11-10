@@ -7,7 +7,7 @@ priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:07:17Z"
-updated = "2026-11-10T08:09:48Z"
+updated = "2026-11-10T08:12:09Z"
 labels = ["creates:web/src/screens/run/exportTrace.test.ts"]
 scope = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx", "web/src/screens/run/exportTrace.test.ts"]
 

@@ -2,7 +2,8 @@
 id = "01M72YPB58KPZ9WR5BE2Q852YF"
 title = "Web: advice text and regenerated ReasonCode types for range_exhausted"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

@@ -2,7 +2,8 @@
 id = "01M7242CRQGBYWTR080XEYNFS9"
 title = "Audit2 H8a: start real mode without a board (status disconnected) instead of exit 6"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

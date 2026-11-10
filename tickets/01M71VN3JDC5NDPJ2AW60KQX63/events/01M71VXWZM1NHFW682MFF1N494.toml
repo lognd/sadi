@@ -1,0 +1,33 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-10T04:37:12Z"
+digest = "7018632746a7eecf84d294e78c994606d93cd8b47ebbe427ff799bc6e30954db"
+exit_code = 0
+head = "9e10003f88a0017ebc6389e189725784308f9df2"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/provenance/provenance.test.tsx (9 tests) 20ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  23:37:12
+   Duration  949ms (transform 325ms, setup 0ms, collect 470ms, tests 20ms, environment 0ms, prepare 152ms)
+
+JSON report written to /tmp/frob-vitest-134044-0.json
+stderr | web/src/components/provenance/provenance.test.tsx > export views > store feeds currentlySynthetic
+[state.provenance] provenance changed { source: 'synthetic' }
+[state.provenance] provenance changed { source: 'real' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/provenance/provenance.test.tsx"
+size = 565
+status = "measured"
+test_count = 9
+tests_digest = "740a66bc98a2319e0d044c265fdcc5c62ee4a355e61a0c6e94429897f053ecec"
+at = "2026-11-10T04:37:12Z"
+actor = "lognd"
+rev = 1

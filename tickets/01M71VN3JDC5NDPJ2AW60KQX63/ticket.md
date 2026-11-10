@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T04:32:25Z"
-updated = "2026-11-10T04:37:10Z"
+updated = "2026-11-10T04:37:12Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]
@@ -16,5 +16,5 @@ bound = true
 
 [[acceptance]]
 text = "Real data never shows the banner; exported filenames and download UI show the SYNTHETIC- prefix; vitest covers both states; docs/web updated"
-bound = false
+bound = true
 +++

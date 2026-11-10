@@ -7,10 +7,10 @@ priority = "high"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T15:28:52Z"
-updated = "2026-11-10T15:29:32Z"
+updated = "2026-11-10T15:29:43Z"
 scope = ["python/sadi/design/gui.py", "python/tests/design/test_gui.py", "docs/design/planner-gui.md"]
 
 [[acceptance]]
 text = "GUI shows LVDT slope and offset fields directly; design tests pass"
-bound = false
+bound = true
 +++

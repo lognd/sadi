@@ -22,9 +22,16 @@ from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
-from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
+from sadi.store.durable import (
+    DurableError,
+    DurableIo,
+    create_exclusive,
+    fsync_dir,
+    fsync_file,
+    rename_noreplace,
+)
 from sadi.store.manifest import Manifest, read_manifest
-from sadi.store.records import decode_frame
+from sadi.store.records import Record, decode_frame, encode_frame
 from sadi.store.session import (
     SESSIONS_DIRNAME,
     SessionError,
@@ -116,6 +123,13 @@ class SpillScan(BaseModel):
     first_seq: int | None
     last_seq: int | None
     tail: SpillTail | None
+
+
+class SpillWriteFailed(SpillError):
+    """Every spill location refused the records; they stay in memory and nothing was lost."""
+
+    attempts: tuple[str, ...]
+    hint: str = "Free disk space or reattach the drive, then retry Close session."
 
 
 class ImportReport(BaseModel):
@@ -393,3 +407,87 @@ def import_all_spills(
         else:
             outcomes.append((spill, Ok(imported.danger_ok)))
     return outcomes
+
+
+def _dense_runs(records: list[Record]) -> list[list[Record]]:
+    """Split records into runs of consecutive seqs (a spill segment must be dense)."""
+    runs: list[list[Record]] = []
+    for rec in records:
+        if runs and rec.seq == runs[-1][-1].seq + 1:
+            runs[-1].append(rec)
+        else:
+            runs.append([rec])
+    return runs
+
+
+# frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+def _publish_spill(directory: Path, name: str, blob: bytes) -> Result[Path, DurableError]:
+    """Write `blob` to a tmp file, fsync, publish under `name` without replace, fsync the dir."""
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=directory))
+    tmp = directory / f".{name}.{uuid.uuid4().hex[:8]}.tmp"
+    created = create_exclusive(tmp)
+    if created.is_err:
+        return Err(created.danger_err)
+    fd = created.danger_ok
+    try:
+        view = memoryview(blob)
+        while view:
+            view = view[os.write(fd, view) :]
+        synced = fsync_file(fd)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=tmp))
+    finally:
+        os.close(fd)
+    if synced.is_err:
+        return Err(synced.danger_err)
+    final = directory / name
+    moved = rename_noreplace(tmp, final)
+    if moved.is_err:
+        return Err(moved.danger_err)
+    return Ok(final)
+
+
+# frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+def write_spill(
+    records: list[Record],
+    session_uuid: uuid.UUID,
+    data_root: Path,
+    user_dir: Path | None = None,
+    temp_dir: Path | None = None,
+) -> Result[list[Path], SpillWriteFailed]:
+    """Spill undurable `records` atomically (never overwriting) to data-root, user dir, then temp.
+
+    One file per dense seq run; the first location that accepts a run wins. Any run that no
+    location accepts makes the whole call Err so the caller keeps the records in memory.
+    """
+    places = (
+        data_root / SPILL_DIRNAME,
+        (user_dir or user_data_dir()) / SPILL_DIRNAME,
+        temp_dir or Path(tempfile.gettempdir()),
+    )
+    paths: list[Path] = []
+    attempts: list[str] = []
+    for run in _dense_runs(records):
+        header = encode_segment_header(1, run[0].seq, session_uuid)
+        frames = b"".join(encode_frame(r.type, r.seq, r.wall_ns, r.flags, r.payload) for r in run)
+        name = f"sadi-spill-{session_uuid.hex[:8]}-{run[0].seq:010d}-{uuid.uuid4().hex[:6]}.wal"
+        for directory in places:
+            published = _publish_spill(directory, name, header + frames)
+            if published.is_ok:
+                _log.warning(
+                    "spilled %d undurable record(s) seq %d..%d to %s",
+                    len(run),
+                    run[0].seq,
+                    run[-1].seq,
+                    published.danger_ok,
+                )
+                paths.append(published.danger_ok)
+                break
+            attempts.append(f"{directory}: {published.danger_err}")
+            _log.error("spill to %s failed: %s", directory, published.danger_err)
+        else:
+            return Err(SpillWriteFailed(attempts=tuple(attempts)))
+    return Ok(paths)

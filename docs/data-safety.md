@@ -491,19 +491,24 @@ On any `OSError` from open, write, flush or rename in the writer:
    batch is not durable).
 2. Acquisition stops loudly (as in 6.4). All undurable records (the failed
    batch and the queue) are kept in memory in order.
-3. The UI offers: Retry (re-open the same version by rotating to a fresh
-   segment on the same path; the failed batch is re-encoded with the same
-   seqs so I1 holds), or Save elsewhere (resume as a new version under a
-   different data root; the parent link records the original path and the
-   failed batch's first seq).
-4. The process refuses to exit while undurable records exist. On a forced
-   quit request it first tries, in order, to spill the pending records as a
-   plain segment file (same framing) to: `<data-root>/spill/`, the user
-   data directory (`platformdirs`-style `~/.local/share/sadi/spill`,
+3. Retry and Save-elsewhere UI actions are NOT implemented yet; the only
+   shipped recovery is the spill in step 4 (Close session retries it).
+4. `SessionService.close` (and so `shutdown`, at process exit) handles a
+   writer whose `close()` fails: it takes `writer.undurable_records()` and
+   writes them with `sadi.store.spill.write_spill` as a plain segment file
+   (same framing, header carries the session uuid and the first seq; one file
+   per dense seq run). Each file is written to a hidden tmp name, fsynced,
+   published with a no-replace rename and the directory fsynced, so an
+   existing spill is never overwritten. Locations are tried in order:
+   `<data-root>/spill/`, the user data directory (`~/.local/share/sadi/spill`,
    `%LOCALAPPDATA%\sadi\spill`, `~/Library/Application Support/sadi/spill`),
-   then the OS temp dir; it logs every attempt and the final path. Spill
-   files are picked up at next start and offered for import as a new
-   version with a parent link.
+   then the OS temp dir (`sadi-spill-*.wal`); every attempt and the final path
+   are logged. Spill files are picked up at next start by `import_all_spills`
+   and become a new version with a parent link. If NO location accepts the
+   records, close returns HTTP 409 (`undurable_records`), the session and its
+   in-memory writer stay open, and the user can fix the disk and press Close
+   session again; records are never dropped silently. If the process is
+   forced to exit in that state the loss is logged at CRITICAL.
 
 ### 6.6 Latency budget (DS3 acceptance 3 measures these)
 
@@ -981,7 +986,7 @@ here (DS6 depends on the names):
 | F2 | Power loss after write, before flush | same as F1 after reboot | same | same | same |
 | F3 | Power loss between seal fsync and next segment create | 5.3 row 1 | none | none | resume |
 | F4 | Kill between snapshot rename and dir fsync (Linux) | snapshot may be absent after reboot | derived only | none | replay from WAL; older snapshot used |
-| F5 | Disk full | `ENOSPC` from write, or free-space poll | writer FAILED, acquisition stopped loudly, queue held in memory | none if the user frees space or saves elsewhere; the queue is spilled on forced exit | Retry or Save elsewhere (6.5) |
+| F5 | Disk full | `ENOSPC` from write, or free-space poll | writer FAILED, acquisition stopped loudly, queue held in memory | none if the user frees space or saves elsewhere; the undurable queue is spilled by close/shutdown | Close session retries the spill (6.5); Retry/Save elsewhere UI not built |
 | F6 | I/O error on fsync | `OSError` | FAILED, no ack, no retry on the fd | the failed batch is re-emitted on a new segment on Retry | 6.5 |
 | F7 | Store stalled (slow disk) | 5 s without durable progress | acquisition stopped loudly; display gate holds | none | resumes when the disk responds; queue drains |
 | F8 | Antivirus / indexer holds a derived file on Windows | `PermissionError` 5/32 | retry up to 5 s, then loud failure | derived only | user excludes the root from scanning |
@@ -999,7 +1004,7 @@ here (DS6 depends on the names):
 | F20 | Unknown record type from a newer SADI | type not in registry, CRC valid | passed through as `UnknownRecord`, logged once | none | upgrade SADI |
 | F21 | Older SADI opens newer `format_version` | header check | `WalError.UnsupportedFormat`, read refused | none | upgrade SADI |
 | F22 | Cross-volume tmp and dst for a derived file | parent dirs differ | `DurableError.CrossDevice` before any write | none | programmer bug; tmp is always created next to dst |
-| F23 | Process exit requested with undurable records | writer not CLOSED | exit refused; spill attempted (6.5 step 4) | none if a spill location is writable | spill imported as new version at next start |
+| F23 | Process exit requested with undurable records | writer not CLOSED | close/shutdown spills (6.5 step 4); 409 and writer kept if every location fails | none if a spill location is writable (else records stay in memory, close returns 409) | spill imported as new version at next start |
 
 ## 14. Schema versioning and compatibility policy
 

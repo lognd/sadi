@@ -1,0 +1,10 @@
+kind = "create"
+title = "M5+M6: latest-version by lineage; download torn-tail sessions"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/routes/sessions.py", "python/sadi/server/service.py", "web/src/screens/SessionSetup.tsx"]
+acceptance = ["latest computed by parent ancestry excluding incomplete; interrupted/incomplete sessions downloadable as verified prefix with X-SADI-Torn-Tail header; Download shown for them; tests"]
+at = "2026-11-10T07:55:38Z"
+actor = "lognd"
+rev = 1

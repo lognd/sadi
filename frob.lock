@@ -5991,12 +5991,12 @@ acked_at = "2026-11-10T13:28:51.184726039Z"
 identity = "web/src/screens/run/captureRetry.test.ts"
 symref = "web/src/screens/run/captureRetry.test.ts"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-body = "a0a468716fdfaa2e38e07ded98df09c6554a454a12e072664fe5dd52f65884a9"
+body = "509877c26ef73775039d69901d001d23b61704c0fc7399bd49293daa8e9317c8"
 doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T15:01:12.763762133Z"
+acked_at = "2026-11-10T15:42:16.301438053Z"
 
 [[symbol]]
 identity = "web/src/screens/run/captureRetry.test.ts::body"
@@ -6074,6 +6074,28 @@ attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
 contract = "2f3a915a30ed241d2582c71d8bd0283aedb71f9e8af39014ade944d29043ff30"
 acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-10T13:53:59.321200568Z"
+
+[[symbol]]
+identity = "web/src/screens/run/captureRetry.test.ts::suite$whySameLoad"
+symref = "web/src/screens/run/captureRetry.test.ts::suite$whySameLoad"
+sig = "bb0b1f451a64fc300c6c4efcd67fb8dc38c7687b86fb74928d370b52a76c1554"
+body = "4f06bd523b4aa74ba7a0ca4e7431e428faa1b9153f85661fa4126b55659e97d3"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "c7e93b899bc57f45f870d8b067a28473b9ffcda3ca48871f8d6c8a5d6b0a9451"
+contract = "44b95f0226ec85853ec46aee97e2cd90b49ed035c8d636d64c858299abe38669"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:42:16.301438053Z"
+
+[[symbol]]
+identity = "web/src/screens/run/captureRetry.test.ts::suite$whySameLoad.test$names_the_button_the_phase_actually_shows"
+symref = "web/src/screens/run/captureRetry.test.ts::suite$whySameLoad.test$names_the_button_the_phase_actually_shows"
+sig = "2bc70e39e71813fd53267527dc1bc05d967982b35dd51882f40fc2e11f9fc894"
+body = "04e265652d5bd66e67e70eb93f3467c9d39e4bf67cb0fdf168c4ea5126a321a5"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "0206d6a71bb18d80629f0c4557a7ca0fce49f8a126408459ac0adf85f691840d"
+contract = "f00d80af99e0f7c17e730eafd4e6fbef8c5babe2315d41474ff0a9798d36e56a"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T15:42:16.301438053Z"
 
 [[symbol]]
 identity = "web/src/screens/run/captureRetry.test.ts::suite$wroteNothing"

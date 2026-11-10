@@ -39,5 +39,5 @@ export interface GuidanceState {
   expected_gain?: number | null;
   expected_half_width?: number | null;
   alternatives?: number[];
-  gp_state?: GpState | string;
+  gp_state?: GpState;
 }

@@ -821,8 +821,38 @@
       "GuidanceState": {
         "description": "Everything the guidance panel shows for one phase after one point.",
         "properties": {
+          "alternatives": {
+            "default": [],
+            "items": {
+              "type": "number"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
           "confidence": {
             "$ref": "#/components/schemas/Confidence"
+          },
+          "expected_gain": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Gain"
+          },
+          "expected_half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Half Width"
           },
           "expected_value": {
             "anyOf": [
@@ -834,6 +864,11 @@
               }
             ],
             "title": "Expected Value"
+          },
+          "gp_state": {
+            "default": "",
+            "title": "Gp State",
+            "type": "string"
           },
           "max_points": {
             "title": "Max Points",

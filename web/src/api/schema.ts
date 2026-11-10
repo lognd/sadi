@@ -1121,8 +1121,11 @@ export interface components {
          * @description Everything the guidance panel shows for one phase after one point.
          */
         GuidanceState: {
-            /** Alternatives */
-            alternatives?: number[];
+            /**
+             * Alternatives
+             * @default []
+             */
+            alternatives: number[];
             confidence: components["schemas"]["Confidence"];
             /** Expected Gain */
             expected_gain?: number | null;

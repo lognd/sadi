@@ -1818,13 +1818,13 @@ acked_at = "2026-11-10T06:45:55.716119678Z"
 [[symbol]]
 identity = "web/src/components/wizard/WizardShell.tsx::WizardShell"
 symref = "web/src/components/wizard/WizardShell.tsx::WizardShell"
-sig = "8495e445ec913b8a5054696218e801828f34847400fd40c042285f9d8a7aefe1"
-body = "6f850a9d5427673d874257bbae11ad0177a5e62cd7db853d24879fd6598ddab2"
+sig = "26798170e1e93d2271424f533085b42959d29951e5770da017dc14d602e44ea9"
+body = "ea2d9a704789820c155abc00ca462236ca8dd59c81a396ee873f7dc5c9f8e3dc"
 doc = "fb0423af836c47010481351aac6cc87ac9a0bc996804e9857e4dac50ecb6b8e5"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "28f6e8db70e6eeb6af1b78dafcd8e629f70e27265cfa6fa12c7be0a0ba7c6e7b"
+contract = "b2265be8b64a496996f2827832d2fec2d25fa3b37cc67ef7b876ae9ec5728819"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T06:45:55.716119678Z"
+acked_at = "2026-11-10T07:57:05.103367468Z"
 
 [[symbol]]
 identity = "web/src/components/wizard/WizardShell.tsx::WizardShellProps"

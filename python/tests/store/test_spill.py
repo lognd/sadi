@@ -382,3 +382,29 @@ def test_inprogress_sidecar_prevents_repeat_join(tmp_path: Path) -> None:
     kinds = [read_manifest(d).danger_ok.spill_import for d in (root / "sessions").iterdir()]
     assert sorted(k for k in kinds if k) == ["fragment"]
     assert not spill._begin_join(scan)  # exclusive: a second start cannot re-claim
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_failed_fragment_verify_is_marked_and_not_recopied(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fragment whose verify fails is marked; later starts skip it and delete nothing."""
+    root, user, tmp = dirs(tmp_path)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 1, 2, uuid.uuid4())  # orphan: fragment import
+    real_scan = spill.WalReader.scan
+
+    def scan(d: Path) -> object:
+        """Fail the re-read of every imported version."""
+        if "sessions" in str(d):
+            return Err(WalCorrupt(segment=1, offset=64, reason="simulated bad sector"))
+        return real_scan(d)
+
+    monkeypatch.setattr(spill.WalReader, "scan", staticmethod(scan))
+    assert import_all_spills(root, user, tmp)[0][1].is_err
+    assert (sp.parent / "s.wal.fragment-failed.json").is_file()
+    before = sorted((root / "sessions").iterdir())
+    again = import_all_spills(root, user, tmp)[0][1]
+    assert again.is_ok and again.danger_ok is None
+    assert sorted((root / "sessions").iterdir()) == before
+    assert sp.is_file()

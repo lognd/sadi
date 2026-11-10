@@ -24,10 +24,12 @@ __all__ = ["DriveError", "DriveReport", "HttpClient", "analyse", "drive_lab"]
 class HttpClient(Protocol):
     """The slice of httpx / Starlette TestClient the driver needs."""
 
-    def get(self, url: str) -> Any:  # noqa: D102
+    def get(self, url: str) -> Any:
+        """GET a URL and return the response."""
         ...
 
-    def post(self, url: str, *, json: Any = None) -> Any:  # noqa: D102
+    def post(self, url: str, *, json: Any = None) -> Any:
+        """POST an optional JSON body and return the response."""
         ...
 
 

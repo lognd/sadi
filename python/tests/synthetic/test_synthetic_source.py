@@ -97,3 +97,27 @@ def test_enable_needs_flag_and_exact_phrase() -> None:
     assert check_enable(True, "yes").danger_err == EnableError.WrongPhrase
     assert check_enable(True, CONFIRM_PHRASE.lower()).is_err
     assert check_enable(False, CONFIRM_PHRASE).danger_err == EnableError.NoFlag
+
+
+# frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+# frob:tests python/sadi/synthetic/device.py::SyntheticDevice.fault
+# frob:tests python/sadi/synthetic/device.py::SyntheticDevice.mass_kg
+def test_device_reports_no_fault_and_tracks_mass() -> None:
+    """The synthetic device never faults and mass_kg sums the hung weights."""
+    dev = SyntheticDevice(seed=1, realtime=False)
+    assert dev.open().is_ok
+    assert dev.fault is None
+    dev.sim_add_weight(0.25)
+    dev.sim_add_weight(0.5)
+    assert dev.mass_kg == pytest.approx(0.75)
+    dev.close()
+
+
+# frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+# frob:tests python/sadi/synthetic/specimen.py::CopperSpec.area_m2
+# frob:tests python/sadi/synthetic/specimen.py::CopperSpec.force_n
+def test_spec_area_and_force_are_consistent() -> None:
+    """force_n(stress) equals stress times the circular cross-section area."""
+    spec = CopperSpec()
+    assert spec.area_m2 == pytest.approx(3.2e-8, rel=0.01)
+    assert spec.force_n(100e6) == pytest.approx(100e6 * spec.area_m2)

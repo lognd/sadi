@@ -1,4 +1,5 @@
 // frob:ticket 01M720QDN33FYFXX1SZ66Y1FQW
+// frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
@@ -95,6 +96,13 @@ export interface FrozenAttempt {
   readonly body: CaptureBody;
   readonly specimen: CaptureBody | null;
   specimenDone: boolean;
+}
+
+/** True when the server answered "not recorded" (any 4xx, or 503 Backpressure); network errors, 5xx and other 503s stay ambiguous so the frozen body is kept. */
+export function wroteNothing(e: PostError): boolean {
+  if (e.kind !== "http") return false;
+  if (e.status >= 400 && e.status < 500) return true;
+  return e.status === 503 && e.problem !== null && e.problem.type.endsWith("backpressure");
 }
 
 const UUID_RE = /\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;

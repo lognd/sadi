@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T02:29:08Z"
-updated = "2026-11-10T02:51:47Z"
+updated = "2026-11-10T02:52:35Z"
 scope = ["web/crunk.toml", "web/src/styles.css", "web/src/screens/run/RunView.tsx", "docs/web/wizard.md", ".github/workflows/ci.yml", "web/src/tokens.css", "web/package.json", "web/src/theme.css", "web/src/a11y/contrast.test.ts", "web/.gitignore", "frob.toml"]
 
 [[acceptance]]

@@ -27,7 +27,7 @@ def _two_runs() -> list:  # noqa: ANN202
     ]
 
 
-# frob:tests sadi.labs.lctt.lab.context_from_inputs
+# frob:tests python/sadi/labs/lctt/lab.py::context_from_inputs
 def test_last_point_uses_its_own_run_setup() -> None:
     """The plastic point gets the plastic specimen, tare and L0, not a mix."""
     ctx = context_from_inputs(_two_runs())
@@ -37,14 +37,14 @@ def test_last_point_uses_its_own_run_setup() -> None:
     assert ctx.l0_m == 0.07
 
 
-# frob:tests sadi.labs.lctt.lab.context_from_inputs
+# frob:tests python/sadi/labs/lctt/lab.py::context_from_inputs
 def test_elastic_context_ignores_later_plastic_run() -> None:
     """Truncated at the elastic point, the context is the elastic run's own."""
     ctx = context_from_inputs(_two_runs()[:3])
     assert (ctx.diameter_m, ctx.tare_v, ctx.l0_m) == (0.003, 0.5, LONG_L0_M)
 
 
-# frob:tests sadi.labs.lctt.lab.context_from_inputs
+# frob:tests python/sadi/labs/lctt/lab.py::context_from_inputs
 def test_tare_pools_only_within_run() -> None:
     """A tare after a load starts a fresh group; legacy order pools all blocks."""
     legacy = [
@@ -58,7 +58,7 @@ def test_tare_pools_only_within_run() -> None:
     assert SHORT_L0_M != LONG_L0_M
 
 
-# frob:tests sadi.labs.lctt.export_csv.to_live_events
+# frob:tests python/sadi/labs/lctt/export_csv.py::to_live_events
 def test_reload_keeps_hanger_unc_and_l0() -> None:
     """A CSV round-trip keeps u_hanger_kg, the L0 override and its uncertainty."""
     ev: list = [CalPoint(volts=v, height=0.08 + 0.002 * v) for v in range(1, 9)]

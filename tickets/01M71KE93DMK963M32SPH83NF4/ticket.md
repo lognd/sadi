@@ -7,9 +7,9 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T02:08:53Z"
-updated = "2026-11-10T02:36:55Z"
+updated = "2026-11-10T02:38:17Z"
 labels = ["model:sonnet"]
-scope = ["web/src/components/guidance/**", "web/src/api/schema.ts"]
+scope = ["web/src/components/guidance/**", "web/src/api/schema.ts", "docs/web/guidance.md"]
 
 [[links]]
 kind = "blocked-by"

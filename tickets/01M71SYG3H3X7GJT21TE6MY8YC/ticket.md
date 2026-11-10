@@ -7,7 +7,7 @@ priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T04:02:36Z"
-updated = "2026-11-10T04:31:12Z"
+updated = "2026-11-10T04:31:18Z"
 scope = ["python/sadi/**", "python/tests/**", "docs/synthetic.md", "docs/index.md", "web/src/api/**"]
 
 [[acceptance]]
@@ -20,7 +20,7 @@ bound = true
 
 [[acceptance]]
 text = "Tests prove provenance propagates to session store, export, and API, that fitted E and yield land in a plausible Cu range, and that the real-device path is unaffected"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/synthetic.md documents usage, physics model and safeguards"

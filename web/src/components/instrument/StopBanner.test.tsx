@@ -3,9 +3,9 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { fakeLive } from "../../state/testLive";
-import { postReconnect } from "../../api/client";
+import { postReconnect, postResume } from "../../api/client";
 import { InstrumentBarView } from "./InstrumentBar";
-import { StopBanner, canReconnect, stopMessage } from "./StopBanner";
+import { ResumeButton, StopBanner, canReconnect, resumeHint, stopMessage } from "./StopBanner";
 import type { BackendFacts } from "./useBackendFacts";
 
 type Dev = NonNullable<BackendFacts["device"]>;
@@ -13,7 +13,7 @@ const dev = (o: Partial<Dev>): Dev => ({ status: "simulated", attached: true, fa
 
 describe("StopBanner", () => {
   it("gives per-reason next steps even when simulated", () => {
-    expect(stopMessage(dev({ stopReason: "idle" }))).toContain("Mark load change");
+    expect(stopMessage(dev({ stopReason: "idle" }))).toContain("Resume live readings");
     expect(stopMessage(dev({ stopReason: "finished" }))).toContain("Close the session, then Resume");
     expect(stopMessage(dev({ stopReason: "low_disk" }))).toContain("Free some disk space");
     expect(stopMessage(dev({}))).toBeNull();
@@ -52,5 +52,26 @@ describe("postReconnect", () => {
     const f = vi.fn().mockRejectedValue(new Error("down"));
     const r = await postReconnect(f);
     expect(r.ok).toBe(false);
+  });
+});
+
+// frob:ticket 01M727MMWZ8X2B29300XHTWZ46
+describe("Resume live readings", () => {
+  it("shows the button only for the idle stop reason", () => {
+    expect(renderToString(<StopBanner device={dev({ stopReason: "idle" })} />)).toContain("ib-resume-btn");
+    expect(renderToString(<StopBanner device={dev({ stopReason: "finished" })} />)).not.toContain("ib-resume-btn");
+    expect(renderToString(<ResumeButton post={vi.fn()} />)).not.toContain("disabled");
+  });
+  it("extracts the 409 hint from a problem body", () => {
+    expect(resumeHint(JSON.stringify({ hint: "Free disk space." }))).toBe("Free disk space.");
+    expect(resumeHint("not json")).toContain("data is safe");
+  });
+  it("postResume POSTs the resume path and maps 409 to an http error", async () => {
+    const f = vi.fn().mockResolvedValue(new Response(JSON.stringify({ hint: "h" }), { status: 409 }));
+    const r = await postResume(f as unknown as typeof fetch);
+    expect(f).toHaveBeenCalledWith("/api/acquisition/resume", expect.objectContaining({ method: "POST" }));
+    expect(r).toMatchObject({ ok: false, error: { kind: "http", status: 409 } });
+    const g = vi.fn().mockResolvedValue(new Response(JSON.stringify({ streaming: true }), { status: 200 }));
+    expect(await postResume(g as unknown as typeof fetch)).toMatchObject({ ok: true, value: { streaming: true } });
   });
 });

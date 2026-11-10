@@ -2,8 +2,9 @@
 // frob:ticket 01M6WWN96C55R68VNZF2D1NB2V
 // frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
 import { WizardShell } from "../../components/wizard/WizardShell";
 import { useLive } from "../../state/LiveContext";
@@ -26,6 +27,11 @@ function saveBlob(blob: Blob, name: string): void {
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+/** Replace a meaningless "Hang a total of 0.000 kg" suggestion (no load computed yet) with plain advice. */
+export function guidanceText(next: string): string {
+  return /hang a total of 0(\.0+)? kg/i.test(next) ? "Add a weight to the hanger, press Mark load change, then wait for Settled." : next;
 }
 
 /** Props of the run screen. */
@@ -52,13 +58,15 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   const [confirm, setConfirm] = useState<Confirm>("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [fields, setFields] = useState<Readonly<Record<string, string>>>({});
+  const [savedTick, setSavedTick] = useState(0);
+  const inFlight = useRef(false);
   const { view, side } = live;
   const onField = useCallback((k: string, v: string): void => { setFields((f) => ({ ...f, [k]: v })); }, []);
   const preview = decide(view, false, "idle");
   const blockedWhy = preview.kind === "blocked" ? preview.why : null;
 
-  const capture = useCallback(async (early: boolean): Promise<void> => {
-    const typed = collectInputs(p.phase, fields, view.volts);
+  const captureOnce = useCallback(async (early: boolean): Promise<void> => {
+    const typed = collectInputs(p.phase, fields, view.recent?.mean ?? view.volts, view.recent ?? null);
     if (!typed.ok) { setConfirm("idle"); setMessage(typed.error.join(" ")); return; }
     const { own, specimen } = splitSpecimen(p.phase, typed.value);
     if (specimen !== null) {
@@ -71,9 +79,15 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
     }
     const r = await postCapture(buildBody(p.phase, { ...own, ...p.inputs }, side.rawSeq, view, early), p.fetchImpl);
     setConfirm("idle");
-    if (r.ok) { setMessage(`Captured: ${r.value.summary}`); p.onCaptured?.(); }
+    if (r.ok) { setMessage(`Captured: ${r.value.summary}`); setSavedTick((n) => n + 1); p.onCaptured?.(); }
     else setMessage(r.error.kind === "network" ? `Network error: ${r.error.message}. Check the connection, then try again.` : `Capture refused (HTTP ${String(r.error.status)}). ${r.error.body}`);
   }, [p, side.rawSeq, view, fields]);
+
+  const capture = useCallback(async (early: boolean): Promise<void> => {
+    if (inFlight.current) { log.warn("capture ignored: one already in flight"); return; }
+    inFlight.current = true;
+    try { await captureOnce(early); } finally { inFlight.current = false; }
+  }, [captureOnce]);
 
   const accept = useCallback((early: boolean): void => {
     const d = decide(view, early, confirm);
@@ -105,10 +119,10 @@ export function RunScreen(p: RunScreenProps): React.JSX.Element {
   }, [accept, doExport]);
 
   return (
-    <WizardShell onKeyAction={onKey} onWizard={p.onWizard}>
+    <WizardShell onKeyAction={onKey} onWizard={p.onWizard} savedTick={savedTick}>
       {side.guidance != null && (
         <p data-testid="guidance-note">
-          {side.guidance.nextAction}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
+          {guidanceText(side.guidance.nextAction)}{side.guidance.stopEarly ? ` (stop early: ${side.guidance.stopReason})` : ""}
         </p>
       )}
       <RunView

@@ -1,3 +1,4 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 import { getJson, type ApiError } from "../../api/client";
 import { err, ok, type Result } from "../../api/result";
@@ -23,10 +24,11 @@ export type CycleInputs = {
 
 /** Parse the form fields into cycle inputs; Err is a sentence saying what to fix. */
 export function parseCycle(f: CycleFields): Result<CycleInputs, string> {
-  const zb = f.zeroBefore.trim() === "" ? NaN : Number(f.zeroBefore);
-  const za = f.zeroAfter.trim() === "" ? NaN : Number(f.zeroAfter);
-  if (!Number.isFinite(zb)) return err("Enter the zero strain reading taken before loading (a number).");
-  if (!Number.isFinite(za)) return err("Enter the zero strain reading taken after unloading (a number).");
+  // Calibration comes after this step, so a strain reading may not exist yet: blank means 0.
+  const zb = f.zeroBefore.trim() === "" ? 0 : Number(f.zeroBefore);
+  const za = f.zeroAfter.trim() === "" ? 0 : Number(f.zeroAfter);
+  if (!Number.isFinite(zb)) return err("The reading before loading must be a number (or blank for 0).");
+  if (!Number.isFinite(za)) return err("The reading after unloading must be a number (or blank for 0).");
   const slips = f.slips.trim() === "" ? 0 : Number(f.slips);
   if (!Number.isInteger(slips) || slips < 0) return err("Slips seen must be a whole number, 0 or more.");
   return ok({ zero_before: zb, zero_after: za, slip_events: slips });

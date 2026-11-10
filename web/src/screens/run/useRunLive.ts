@@ -2,7 +2,7 @@
 // frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 /** Live feed for the run screens: wraps useTrace and taps the settle state and newest raw seq. */
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTrace, type TraceView, type UseTraceOptions } from "../../hooks/useTrace";
 import { openStream, type StreamHandle, type StreamHandlers, type StreamOptions } from "../../ws/client";
 import type { CaptureWindow, ServerMessage, SettleState } from "../../ws/messages";
@@ -58,9 +58,16 @@ export function useRunLive(o: UseTraceOptions & { readonly simulated?: boolean }
   const open = useCallback((so: StreamOptions, h: StreamHandlers): StreamHandle =>
     base.current(so, { ...h, onMessage: (m) => { setSide((s) => foldSide(s, m)); h.onMessage(m); } }), []);
   const trace = useTrace({ ...o, open });
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => { setNowMs(Date.now()); }, 1000);
+    return () => { clearInterval(id); };
+  }, []);
+  const atMs = trace.meta?.atMs ?? null;
+  const frameAgeMs = atMs === null ? null : Math.max(0, nowMs - atMs);
   const view = useMemo(
-    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? side.simulated, side.driftVps),
-    [trace.snapshot, trace.conn, side.settle, o.simulated, side.simulated, side.driftVps],
+    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? side.simulated, side.driftVps, frameAgeMs),
+    [trace.snapshot, trace.conn, side.settle, o.simulated, side.simulated, side.driftVps, frameAgeMs],
   );
   return { ...trace, view, side };
 }

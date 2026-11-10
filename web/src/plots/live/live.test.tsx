@@ -7,7 +7,7 @@ import { applyMessage } from "../../hooks/useTrace";
 import { decodeFrame, type TraceFrame } from "../../ws/frame";
 import { encodeTrace } from "../../ws/testframes";
 import { LivePlot } from "./LivePlot";
-import { buildLiveScene, connLine } from "./scene";
+import { buildLiveScene, connLine, liveYRange } from "./scene";
 import { TraceWindow } from "./window";
 
 function frame(seq: number, t0: number, n: number, amp = 1, dt = 0.001): TraceFrame {
@@ -67,7 +67,7 @@ describe("applyMessage", () => {
 describe("live scene", () => {
   it("is titled with unit axes, legend, limits at +-4.9 V and renders (acceptance 1, 3)", () => {
     const w = new TraceWindow(10, 0);
-    w.push(frame(0, 0, 256, 2));
+    w.push(frame(0, 0, 256, 4.5));
     w.mark({ t: 0.1, kind: "load", label: "load 0" });
     const scene = buildLiveScene(w.snapshot(300), { conn: { status: "reconnecting", attempt: 2, delayMs: 500 } });
     expect(validateScene(scene).ok).toBe(true);
@@ -115,5 +115,29 @@ describe("benchmark: 50 kS/s", () => {
     const p95 = times[Math.floor(times.length * 0.95)] as number;
     expect(p95).toBeLessThan(8);
     expect(times.reduce((a, b) => a + b, 0) / times.length).toBeLessThan(4);
+  });
+});
+
+// regression test for audit1#26 live trace auto-scales to the signal
+describe("liveYRange", () => {
+  it("auto-scales a millivolt signal and drops the saturation limits", () => {
+    const w = new TraceWindow(1, 0);
+    w.push(frame(1, 0, 64, 0.001));
+    const snap = w.snapshot(50);
+    const r = liveYRange(snap);
+    expect(r.rails).toBe(false);
+    expect(r.max - r.min).toBeLessThan(1);
+    const sc = buildLiveScene(snap);
+    expect(sc.yAxis.max).toBeLessThan(0.5);
+    expect(sc.fits).toHaveLength(0);
+    expect(sc.theme.fontSize.tick).toBeGreaterThanOrEqual(14);
+  });
+  it("keeps the rails view once the signal nears saturation", () => {
+    const w = new TraceWindow(1, 0);
+    w.push(frame(1, 0, 64, 4));
+    const r = liveYRange(w.snapshot(50));
+    expect(r.rails).toBe(true);
+    expect(r.max).toBe(5.5);
+    expect(buildLiveScene(w.snapshot(50)).fits).toHaveLength(2);
   });
 });

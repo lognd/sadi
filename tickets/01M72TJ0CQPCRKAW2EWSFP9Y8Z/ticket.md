@@ -2,7 +2,8 @@
 id = "01M72TJ0CQPCRKAW2EWSFP9Y8Z"
 title = "Provenance 'unknown' source for orphan spill imports (no SYNTHETIC label/filename)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

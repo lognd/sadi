@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py", "python/sadi/server/live.py"]
+new = ["python/sadi/server/routes/status.py", "python/tests/server/test_status_route.py", "docs/server/status.md", "python/sadi/server/app.py", "python/sadi/server/live.py", "web/src/components/instrument/DebugStrip.tsx"]
+at = "2026-11-10T15:34:55Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M71V64GMPG77XEX6MKYMTZJH"
 title = "lctt context_from_inputs uses one L0/specimen/tare for all points"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

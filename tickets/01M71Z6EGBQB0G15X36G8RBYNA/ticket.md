@@ -2,7 +2,8 @@
 id = "01M71Z6EGBQB0G15X36G8RBYNA"
 title = "Audit1 #8 #43: synthetic driver verifies server results, fault path, quiet logging"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [2]
+captured_at = "2026-11-10T15:49:11Z"
+digest = "0c0eb0e79f9053a239b120606a2a4de1d3d95a4e1426eee7229b65a25efc29bc"
+exit_code = 0
+head = "3737be321a2ec813a63c9005785d73514d9677ee"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  10:49:17
+   Duration  324ms (transform 55%, import 32%, tests 9%, worker 4%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run web/src/screens/run/NextHangPanel.test.tsx"
+size = 170
+status = "measured"
+at = "2026-11-10T15:49:11Z"
+actor = "lognd"
+rev = 1

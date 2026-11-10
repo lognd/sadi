@@ -2,7 +2,8 @@
 id = "01M7230X8BYK2RJAG749SST7TB"
 title = "Audit2 H1: pace --sim device to real time; cap ws state messages (server hangs)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:59:00Z"
-updated = "2026-11-10T15:01:15Z"
+updated = "2026-11-10T15:03:30Z"
 labels = ["ux"]
 scope = ["python/sadi/design/**", "python/tests/design/**", "docs/design/**"]
 

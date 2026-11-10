@@ -229,6 +229,10 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     floor = max((c.mass_kg for c in req.captured), default=0.0)
     usable, n_sat, n_cap = _usable(req, loads, phase, sat_v)
     usable = [ld for ld in usable if ld.mass > floor + cfg.mass_resolution_kg]
+    if cfg.min_mass_kg is not None:
+        usable = [ld for ld in usable if ld.mass >= cfg.min_mass_kg]
+    if cfg.max_mass_kg is not None:
+        usable = [ld for ld in usable if ld.mass <= cfg.max_mass_kg]
     _log.info(
         "plan phase=%s weights=%d loads=%d usable=%d sat=%d cap=%d",
         phase.value,
@@ -255,6 +259,16 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     else:
         if isinstance(_advisory(req, phase, usable, obs, sel, chosen), Err):
             return Err(PlanError.SelectorFailed)
+        adv = got.unwrap()
+        if chosen and cfg.max_hangs is None and adv.indicator.state is GpState.ENOUGH:
+            break
+        sug = adv.suggestion
+        assert sug is not None  # noqa: S101 - select_next always suggests when candidates exist
+        ld = by_id[sug.candidate_id]
+        v = _predict(req, ld.mass, phase)
+        obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
+        chosen.append((ld, sug.expected_gain, sug.why))
+        remaining = [r for r in remaining if r.mass > ld.mass + cfg.mass_resolution_kg]
 
     halves = _halves(req, phase, obs, n_cap_pts + 1)
     hangs = tuple(

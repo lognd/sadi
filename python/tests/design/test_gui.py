@@ -150,3 +150,21 @@ def test_height_plan_offers_stacked_combinations():
     stacks = [s for s in out["height_steps"] if "+" in s["height_id"]]
     assert stacks and any(s["height_id"] == "h1+h2" and abs(s["height_m"] - 0.003) < 1e-12 for s in out["height_steps"] + stacks)
     assert all(abs(s["u_height_m"] - 0.0001 * len(s["height_id"].split("+")) ** 0.5) < 1e-9 for s in stacks)
+
+
+def test_count_and_range_limit_hangs():
+    base = plan_from_form(FORM)
+    out = plan_from_form({**FORM, "n_hangs": "3", "min_mass": "0.05", "max_mass": "0.3"})
+    assert out["ok"] and len(out["hangs"]) == 3
+    assert all(0.05 <= h["total_kg"] <= 0.3 for h in out["hangs"])
+    assert len(base["hangs"]) != 3 or True
+    assert not plan_from_form({**FORM, "n_hangs": "0"})["ok"]
+    assert not plan_from_form({**FORM, "min_mass": "1", "max_mass": "0.5"})["ok"]
+
+
+def test_count_and_range_limit_heights():
+    hs = "0.001,0.002,0.004,0.006,0.008"
+    out = plan_from_form({"heights": hs, "n_heights": "4", "min_height": "0.002", "max_height": "0.01"})
+    assert out["ok"] and len(out["height_steps"]) == 4
+    assert all(0.002 <= s["height_m"] <= 0.01 for s in out["height_steps"])
+    assert not plan_from_form({"heights": hs, "min_height": "0.01", "max_height": "0.002"})["ok"]

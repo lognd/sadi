@@ -231,7 +231,10 @@ class PlanConfig(BaseModel):
     #: Largest allowed tension as a fraction of the wire's ultimate load.
     capacity_fraction: float = Field(default=0.95, gt=0, le=1)
     #: Cap on the number of hangs reported; None means as many as there are usable loads.
-    max_hangs: int | None = Field(default=None, ge=1, description="explicit hang count; None = advisory early stop")
+    max_hangs: int | None = Field(default=None, ge=1)
+    #: Only hangs with total mass inside [min_mass_kg, max_mass_kg] are considered.
+    min_mass_kg: float | None = Field(default=None, ge=0)
+    max_mass_kg: float | None = Field(default=None, gt=0)
     #: Mass keys are rounded to this many kg when deduplicating equal-mass multisets.
     mass_resolution_kg: float = Field(default=1e-9, gt=0)
 

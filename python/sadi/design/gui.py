@@ -21,6 +21,7 @@ from typani import Err, Ok, Result
 from sadi.design.cal_fit import resolve_calibration
 from sadi.design.cli import build_request
 from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, parse_heights, plan_heights
+from sadi.design.models import PlanConfig
 from sadi.design.plan import plan
 from sadi.logging_setup import get_logger
 
@@ -57,6 +58,8 @@ points you have already captured to replan.</p>
 <table id="hts"><thead><tr><th>Height, mm</th><th>Uncertainty, mm</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
 <label>Default height uncertainty, mm <input type="text" name="u_height_default" value="0.1"></label>
+<label>Number of heights wanted (blank = let the GP decide) <input type="text" name="n_heights" value=""></label>
+<label>Height range, mm: min <input type="text" name="min_height" value=""> max <input type="text" name="max_height" value=""></label>
 <small>Enter each height you have and its uncertainty, same as the weights; duplicates stay distinct. The LVDT slope below is optional here; without it heights are ranked by spread only.</small>
 </fieldset>
 <fieldset><legend>2. LVDT calibration (type it from your LabVIEW, or fit it from points)</legend>
@@ -72,7 +75,9 @@ points you have already captured to replan.</p>
 <fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
 <table id="wts"><thead><tr><th>Mass, g</th><th>Uncertainty, g</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
-<small>Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
+<label>Number of hangs wanted (blank = let the GP decide) <input type="text" name="n_hangs" value=""></label>
+<label>Total mass range, g: min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
+<small>Change a count or range and press Plan again to regenerate. Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
 <label>Default mass uncertainty, g <input type="text" name="u_mass" value="0.1"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
@@ -126,6 +131,8 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
   body.u_mass = scaleNum(body.u_mass, G_TO_KG);
   body.u_height_default = scaleNum(body.u_height_default, MM_TO_M);
+  for (const k of ["min_height", "max_height"]) body[k] = scaleNum(body[k], MM_TO_M);
+  for (const k of ["min_mass", "max_mass"]) body[k] = scaleNum(body[k], G_TO_KG);
   body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), G_TO_KG, false) : "";
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
@@ -208,12 +215,18 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
     du = _num(form, "u_height_default", required=False, default=DEFAULT_U_HEIGHT_M)
     if isinstance(du, Err):
         return {"ok": False, "error": du.error}
+    rng = _range(form, "min_height", "max_height")
+    if isinstance(rng, Err):
+        return {"ok": False, "error": rng.error}
+    cnt = _count(form, "n_heights")
+    if isinstance(cnt, Err):
+        return {"ok": False, "error": cnt.error}
     hs = parse_heights(str(form["heights"]), du.value if du.value is not None else DEFAULT_U_HEIGHT_M)
     if isinstance(hs, Err):
         return {"ok": False, "error": hs.error}
     res = plan_heights(
         hs.value, nominal_slope_v_per_m=slope.value, nominal_offset_v=off.value or 0.0,
-        saturation_v=sat.value,
+        saturation_v=sat.value, min_m=rng.value[0], max_m=rng.value[1], n_points=cnt.value,
     )
     if isinstance(res, Err):
         _log.info("no height plan: %s", res.error)
@@ -226,6 +239,28 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
         "n_inventory": p.n_inventory, "n_usable": p.n_usable, "dropped_saturation": p.dropped_saturation,
         "height_steps": [s.model_dump() for s in p.steps],
     }
+
+
+def _count(form: dict[str, Any], key: str) -> Result[int | None, str]:
+    """Optional positive whole-number field; blank means None (let the GP decide)."""
+    raw = str(form.get(key, "")).strip()
+    if not raw:
+        return Ok(None)
+    if not raw.isdigit() or int(raw) < 1:
+        return Err(f"{key} must be a whole number of at least 1, got {raw!r}")
+    return Ok(int(raw))
+
+
+def _range(form: dict[str, Any], lo: str, hi: str) -> Result[tuple[float | None, float | None], str]:
+    """Optional min/max pair (SI); blank means unbounded, min must be below max."""
+    a = _num(form, lo, required=False, default=None)
+    b = _num(form, hi, required=False, default=None)
+    for got in (a, b):
+        if isinstance(got, Err):
+            return Err(got.error)
+    if a.value is not None and b.value is not None and a.value >= b.value:
+        return Err(f"{lo} must be below {hi}")
+    return Ok((a.value, b.value))
 
 
 WEIGHTS_NEED_CAL = (
@@ -283,13 +318,18 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
             "se_slope": float(heights["se_slope_v_per_m"] or 0.0), "se_offset": float(heights["se_offset_v"] or 0.0),
         })
         _log.info("weight plan uses height-plan design uncertainty slope=%g offset=%g", cal_v.se_slope, cal_v.se_offset)
+    rng = _range(form, "min_mass", "max_mass")
+    cnt = _count(form, "n_hangs")
+    for got in (rng, cnt):
+        if isinstance(got, Err):
+            return {"ok": False, "error": got.error}
     built = build_request(
         weights=str(form.get("weights", "")), u_mass=nums["u_mass"] or 0.0,
         diameter=nums["diameter"] or 0.0, u_diameter=nums["u_diameter"] or 0.0,
         length=nums["length"] or 0.0, u_length=nums["u_length"] or 0.0,
         cal=cal_v,
         saturation=nums["saturation"], captured=str(form.get("captured", "")),
-        max_hangs=hangs,
+        config=PlanConfig(min_mass_kg=rng.value[0], max_mass_kg=rng.value[1], max_hangs=cnt.value),
     )
     if isinstance(built, Err):
         return {"ok": False, "error": built.error}

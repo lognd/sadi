@@ -16,7 +16,7 @@ from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import Calibration, resolve_calibration
 from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, HeightPlan, parse_heights, plan_heights
-from sadi.design.models import CapturedPoint, PlanRequest, Weight
+from sadi.design.models import CapturedPoint, PlanConfig, PlanRequest, Weight
 from sadi.design.plan import plan
 from sadi.labs.lctt.loading import STANDARD_G
 from sadi.logging_setup import get_logger
@@ -67,7 +67,7 @@ def build_request(
     cal: Calibration,
     saturation: float | None,
     captured: str,
-    max_hangs: int | None = None,
+    config: PlanConfig | None = None,
 ) -> Result[PlanRequest, str]:
     """Build a PlanRequest from text fields; shared by the CLI and the browser planner."""
     ws = parse_weights(weights, u_mass)
@@ -84,7 +84,7 @@ def build_request(
                 cal_slope_v_per_m=cal.slope_v_per_m, cal_offset_v=cal.offset_v,
                 u_cal_slope_v_per_m=cal.se_slope, u_cal_offset_v=cal.se_offset, cal_cov=cal.cov,
                 saturation_v=saturation, captured=tuple(cs.value),
-                config=PlanConfig(max_hangs=max_hangs),
+                **({} if config is None else {"config": config}),
             )
         )
     except ValidationError as exc:

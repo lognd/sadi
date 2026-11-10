@@ -142,6 +142,9 @@ def plan_heights(  # noqa: PLR0913
     nominal_slope_v_per_m: float | None = None,
     nominal_offset_v: float = 0.0,
     saturation_v: float | None = None,
+    min_m: float | None = None,
+    max_m: float | None = None,
+    n_points: int | None = None,
     target: TargetSpec = _TARGET,
     config: SelectorConfig = _CONFIG,
 ) -> Result[HeightPlan, HeightPlanError]:
@@ -165,7 +168,10 @@ def plan_heights(  # noqa: PLR0913
     def volts(h: Height) -> float:
         return nominal_offset_v + slope * h.height_m
 
-    stacks = stack_heights(heights)
+    stacks = [
+        h for h in stack_heights(heights)
+        if (min_m is None or h.height_m >= min_m) and (max_m is None or h.height_m <= max_m)
+    ]
     usable = [h for h in stacks if abs(volts(h)) <= sat] if known else stacks
     n_sat = len(stacks) - len(usable)
     if len({h.height_m for h in heights}) < 2 or len({h.height_m for h in usable}) < 2:
@@ -194,7 +200,9 @@ def plan_heights(  # noqa: PLR0913
             return Err(HeightPlanError.SelectorFailed)
         adv = got.unwrap()
         # Need two distinct heights before stopping so a slope exists.
-        if len({o.x for o in obs}) >= 2 and adv.indicator.state is GpState.ENOUGH:
+        if n_points is not None and len(chosen) >= n_points:
+            break
+        if n_points is None and len({o.x for o in obs}) >= 2 and adv.indicator.state is GpState.ENOUGH:
             break
         sug = adv.suggestion
         if sug is None:  # range exhausted: no remaining height is beyond the last one used

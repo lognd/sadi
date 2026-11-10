@@ -94,3 +94,11 @@ inventory heights (`stack_heights`, `MAX_STACK = 3`), not only single heights. A
 `h1+h2`, its height is the sum, and its uncertainty is the root-sum-square of the members'.
 Stacks with equal totals collapse to the one with the lowest ids; with a typed slope, stacks that
 would saturate are dropped. At least two distinct inventory heights are still required.
+
+### Counts and ranges
+
+Both inventories take an optional number of points (heights wanted, hangs wanted) and a min/max
+(height range in mm, total hang mass in g). Blank count: the GP decides when to stop. A count
+makes the plan return exactly that many (fewer only if fewer candidates fit the range). Change
+a value and press Plan to regenerate. Backed by `plan_heights(min_m, max_m, n_points)` and
+`PlanConfig(min_mass_kg, max_mass_kg, max_hangs)`.

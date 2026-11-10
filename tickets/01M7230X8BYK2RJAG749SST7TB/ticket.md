@@ -7,7 +7,8 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T06:41:12Z"
-updated = "2026-11-10T06:43:04Z"
+updated = "2026-11-10T06:43:20Z"
+labels = ["creates:python/tests/server/test_sim_pacing.py"]
 scope = ["python/sadi/server/live.py", "python/sadi/server/ws.py", "python/sadi/core/pipeline.py", "docs/server/api.md", "docs/server/app.md", "docs/server/export.md", "docs/server/inventory.md", "docs/server/launcher.md", "docs/server/plots.md", "docs/server/results-stream.md", "docs/server/results.md", "docs/server/websocket.md", "python/tests/server/test_sim_pacing.py", "python/sadi/core/device.py"]
 
 [[acceptance]]

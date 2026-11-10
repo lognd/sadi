@@ -2,12 +2,12 @@
 id = "01M72X7ZB936PEBXHRGX06FSAD"
 title = "Weight plan route and UI: enter the 8 weights, show ordered hangs with uncertainty on Setup and Run"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:19:26Z"
-updated = "2026-11-10T14:19:26Z"
+updated = "2026-11-10T14:29:40Z"
 labels = ["creates:python/sadi/server/routes/weight_plan.py", "creates:python/tests/server/test_weight_plan_route.py", "creates:web/src/screens/setup/WeightPlanPanel.tsx", "creates:web/src/screens/setup/WeightPlanPanel.test.tsx"]
 scope = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx"]
 

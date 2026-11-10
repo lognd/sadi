@@ -2,7 +2,8 @@
 id = "01M72X7ZB936PEBXHRGX06FSAD"
 title = "Weight plan route and UI: enter the 8 weights, show ordered hangs with uncertainty on Setup and Run"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

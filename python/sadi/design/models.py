@@ -131,6 +131,7 @@ ReasonCode = Literal[
     "diminishing_returns",
     "no_elastic_fit",
     "no_calibration",
+    "range_exhausted",
 ]
 
 

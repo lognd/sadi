@@ -246,19 +246,25 @@ def _cold_pick(cands: Sequence[Candidate], n: int, lo: float, hi: float) -> Cand
 def _cold_step_pick(cands: Sequence[Candidate], n: int, n_total: int) -> Candidate:
     """Monotonic pick: evenly stepped loads from the smallest real mass up (never unloads)."""
     lo, hi = cands[0].x, cands[-1].x
-    want = lo + (hi - lo) * min(n, n_total) / max(n_total, 1)
+    want = lo + (hi - lo) * min(n, n_total) / (max(n_total, 1) + 1)
     return min(cands, key=lambda c: (abs(c.x - want), c.candidate_id))
 
 
 def _loading_pool(cands: Sequence[Candidate], obs: Sequence[Obs]) -> list[Candidate]:
-    """Candidates at or above the current hang and above 0 once a point exists (sorted by x)."""
+    """Candidates strictly above the current hang and 0 (empty = range exhausted)."""
     if not obs:
         return list(cands)
     floor = obs[-1].x
-    pool = [c for c in cands if c.x >= floor and c.x > 0.0]
-    if not pool:
-        pool = [cands[-1]]
-    return pool
+    return [c for c in cands if c.x > floor and c.x > 0.0]
+
+
+def _halving_pool(pool: Sequence[Candidate], obs: Sequence[Obs], hi: float) -> list[Candidate]:
+    """Pool limited to the lower half of the remaining range so picks climb, not pile on the cap."""
+    if not obs:
+        return list(pool)
+    cut = obs[-1].x + (hi - obs[-1].x) / 2.0
+    near = [c for c in pool if c.x <= cut]
+    return near or list(pool)
 
 
 def _need(target: TargetSpec, value: float | None) -> float | None:
@@ -298,6 +304,27 @@ def select_next(  # noqa: PLR0913
     n_min = cfg.n_min_yield if phase is DesignPhase.YIELD else cfg.n_min_linear
 
     fit = _fit(phase, obs, lo, hi, cfg)
+    if monotonic and not pool:
+        # frob:ticket NGBTFZA
+        _log.info("design %s n=%d range exhausted at x=%.4g", phase.value, n, obs[-1].x)
+        cur0 = (
+            CurrentFit(half_width=None, value=None, dof=float(max(n - 2, 0)))
+            if isinstance(fit, str)
+            else CurrentFit(half_width=fit.half, value=fit.value, dof=float(fit.dof))
+        )
+        ind0 = ConfidenceIndicator(
+            phase=phase,
+            job_version=job_version,
+            n=n,
+            target=target,
+            current=cur0,
+            ratio=None,
+            state=GpState.COLLECTING,
+            consecutive_ok=0,
+            patience=cfg.patience,
+            reasons=("range_exhausted",),
+        )
+        return Ok(DesignAdvice(suggestion=None, indicator=ind0))
     reasons: list[ReasonCode] = []
     state = GpState.COLLECTING
     cur = CurrentFit(half_width=None, value=None, dof=float(max(n - 2, 0)))
@@ -339,8 +366,10 @@ def select_next(  # noqa: PLR0913
                 consecutive += 1
             else:
                 break
+        elastic = phase is DesignPhase.ELASTIC
+        gain_pool = _halving_pool(pool, obs, hi) if elastic else pool
         gains = sorted(
-            ((fit.gain(c.x), c) for c in pool), key=lambda g: (-g[0], g[1].x, g[1].candidate_id)
+            ((fit.gain(c.x), c) for c in gain_pool), key=lambda g: (-g[0], g[1].x, g[1].candidate_id)
         )
         best_gain = gains[0][0]
         if phase is not DesignPhase.YIELD and _departs(obs, lo, hi):

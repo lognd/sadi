@@ -4,6 +4,7 @@ title = "Audit1 #7 #9 #13 #15 #18 #32: LCTT analysis (E bias and CI, pending/not
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:53Z"
 updated = "2026-11-10T05:04:53Z"

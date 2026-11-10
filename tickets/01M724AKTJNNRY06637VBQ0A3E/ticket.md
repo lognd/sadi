@@ -4,9 +4,10 @@ title = "Audit2 H8b: read-only export of closed sessions with a Download button"
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:03:59Z"
-updated = "2026-11-10T07:03:59Z"
+updated = "2026-11-10T07:04:01Z"
 labels = ["creates:python/tests/server/test_readonly_export.py"]
 scope = ["python/sadi/server/routes/export.py", "python/sadi/server/routes/sessions.py", "web/src/screens/setup/SessionSetup.tsx", "web/src/screens/setup/sessionApi.ts", "python/tests/server/test_readonly_export.py"]
 

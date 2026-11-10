@@ -29,11 +29,14 @@ from the synthetic hazard stripe), no decorative icons, near-zero motion.
 System UI sans for prose. Monospace (`--mono`) with tabular numerals for ALL readouts, table
 cells, IDs, step state, pills, the status bar and plot tick labels. Panel titles (first heading
 of a framed section, fieldset legends, table heads, form labels, readout labels) are small
-uppercase letter-spaced micro-labels like silkscreen legends. Scale (`--text-xs..xl`):
+uppercase letter-spaced micro-labels like silkscreen legends, but labels longer than 3 words or
+carrying an instruction use sentence case at `--text-sm`, with the instruction in normal-case helper
+text under the field (`InputField.help`). Scale (`--text-xs..xl`):
 0.72, 0.8125, 0.9375, 1.125, 1.4 rem. Only font stacks are used; no web fonts.
 
 ## Panels and plots
 
 A framed section's first `h2`/`h3` is styled as a title strip (`--surface-2`, bottom hairline).
-Plots draw on a paper canvas (`#f8f6ee`) in both themes so exports match print; thin 1.25px
+On-screen plots draw on a paper canvas (`#f8f6ee`) in both themes; exports (`exportFigure`) swap in
+`exportTheme` (white background, `Helvetica, Arial, sans-serif`) so figures drop into reports; thin 1.25px
 traces, restrained grid, monospace ticks (`src/plots/theme.ts`).

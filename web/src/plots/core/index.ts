@@ -10,5 +10,5 @@ export * from "./drawlist";
 export * from "./canvas";
 export * from "./svg";
 export * from "./export";
-export { lightTheme } from "../theme";
+export { lightTheme, exportTheme } from "../theme";
 export type { Theme } from "../theme";

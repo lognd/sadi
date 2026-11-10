@@ -5,6 +5,7 @@ import type { Ctx2D } from "./canvas";
 import { validateDrawable, describePlotError } from "./figure";
 import type { Drawable } from "./figure";
 import { sceneToSvg } from "./svg";
+import { exportTheme } from "../theme";
 
 const log = getLogger("plots.export");
 
@@ -50,8 +51,14 @@ function defaultCanvas(w: number, h: number): ExportCanvas {
   return c;
 }
 
-/** Render the scene to PNG or SVG from the same layout the on-screen canvas uses. */
-export async function exportFigure(scene: Drawable, opts: ExportOptions, deps: ExportDeps = {}): Promise<ExportResult> {
+/** Re-theme a drawable with the white, sans-font export theme, keeping its own font sizes. */
+export function withExportTheme<T extends Drawable>(d: T): T {
+  return { ...d, theme: { ...exportTheme, fontSize: d.theme.fontSize } };
+}
+
+/** Render the scene to PNG or SVG with the export theme, using the same layout as the on-screen canvas. */
+export async function exportFigure(drawable: Drawable, opts: ExportOptions, deps: ExportDeps = {}): Promise<ExportResult> {
+  const scene = withExportTheme(drawable);
   const valid = validateDrawable(scene);
   if (!valid.ok) {
     log.warn("export rejected", { error: describePlotError(valid.error) });

@@ -10,6 +10,8 @@ export interface InputField {
   /** Key sent in the capture `inputs` (the backend's name). */
   readonly key: string;
   readonly label: string;
+  /** Instruction-bearing helper text shown in normal case under the field. */
+  readonly help?: string;
   /** SI unit shown beside the label ("" for a count). */
   readonly unit: string;
   /** Required fields must be filled; optional blanks are omitted (the backend defaults them). */
@@ -50,8 +52,8 @@ export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
     { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true, plausible: MASS_RANGE_KG },
   ],
-  elastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
-  plastic: [LIVE_V, { key: "mass_kg", label: "Masses added to the hanger (hanger is added for you)", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  elastic: [LIVE_V, { key: "mass_kg", label: "Added mass", help: "Masses added to the hanger only; the hanger is added for you.", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
+  plastic: [LIVE_V, { key: "mass_kg", label: "Added mass", help: "Masses added to the hanger only; the hanger is added for you.", unit: "kg", required: true, min: 0, plausible: MASS_RANGE_KG }, { key: "u_mass_kg", label: "Mass uncertainty", unit: "kg", required: false, min: 0 }],
 };
 
 /** Parse one raw field text; Err is a clear operator message. Blank optional gives null. */

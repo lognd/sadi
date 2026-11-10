@@ -1,5 +1,7 @@
 # Weight-plan error propagation
 
+Status: current
+
 `sadi.labs.lctt.propagate.propagate` turns one LCTT hang sequence into
 stress, strain, Young's modulus and yield stress, each with a standard
 uncertainty, a 95 percent interval and a per-input contribution

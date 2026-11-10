@@ -59,6 +59,16 @@ loop-lag test are tracked as follow-up tickets.
 MARKER (`load_applied`) through the live pipeline and returns `{marker_seq}`. 409
 `no_live_session` when no acquisition runs; 409 `acquisition_halted` when the pipeline refuses.
 
+## POST /api/acquisition/resume
+
+`LiveAcquisition.resume` restarts raw streaming after an idle pause (`stop_reason == "idle"`)
+without writing a load-change MARKER and without the simulator's extra load step. Response
+`{streaming: true}`; idempotent while streaming. 409 `no_live_session` for a finished, low-disk,
+no-device or absent run. The UI button ("Resume live readings") is a follow-up; the web client does
+not call it yet. If the device stop command fails (cable pulled), `AcquisitionDriver.stop` still
+ingests the blocks already drained (`StopFailed.blocks`) before reporting the fault, and a
+reconnect teardown keeps queued blocks (`DeviceService.take_salvaged`) and writes them to the WAL.
+
 ## Capture validation and completion gates
 
 `POST /session/points` is checked before anything reaches the WAL, and a rejection writes nothing.

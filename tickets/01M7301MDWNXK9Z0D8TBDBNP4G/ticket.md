@@ -2,7 +2,8 @@
 id = "01M7301MDWNXK9Z0D8TBDBNP4G"
 title = "Planner GUI/CLI: derive calibration from entered height/voltage points (no typed slope)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

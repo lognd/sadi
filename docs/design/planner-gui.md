@@ -26,11 +26,18 @@ With heights only, the reply is the height plan alone. The CLI does the same wit
 `--weights` together (heights printed first, then the recommended weights).
 
 Form: a weight inventory table (mass and its own uncertainty per row, same as the height table; duplicates allowed, max 12; CLI `--weights kg:u,...`), a default mass uncertainty for blank rows, wire diameter and its uncertainty,
-L0 and its uncertainty, an editable table of LVDT calibration points (height m / volts, with Add row),
-saturation limit, and already captured points as `N:volts`. The page joins the table into
-`cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (which weights, how many,
-total N, predicted V, +/- V, reason) and the phase and dropped counts. Newtons are converted to kg
-internally (`/ 9.80665`).
+L0 and its uncertainty, an editable table of LVDT calibration points (height mm / volts, with Add row),
+saturation limit, and already captured points as `grams:volts`. The page joins the table into
+`cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (weights, total g, tension N, predicted V,
++/- V, reason) and the phase and dropped counts.
+
+Units: the page takes mass in grams and height in millimetres (wire diameter, L0 and the LVDT slope stay in m and
+V per m, matching the LabVIEW calibration). It converts to SI (kg, m) before `POST /plan`, so the server and the
+CLI remain SI; hang totals and heights are shown back in g and mm.
+
+Regenerating: the planner is stateless, so press Plan again any time. Loads that would saturate are predicted and
+dropped before selection; if a real reading saturates anyway, lower the saturation limit, add the points you have
+hung to "Already captured" (grams:volts) and plan again to replan the remaining hangs.
 
 ## Calibration (derived, not typed)
 
@@ -71,5 +78,5 @@ the real fit of measured points is `cal_fit.py`).
 
     python -m sadi.design.cli --heights 0.001:1e-5,0.002:1e-5,0.003:2e-5 --cal-slope -100
 
-GUI: the "Gauge height inventory" table (height m / uncertainty m); when filled, `POST /plan` carries
+GUI: the "Gauge height inventory" table (height mm / uncertainty mm); when filled, `POST /plan` carries
 `heights` and the reply has `height_steps[]`, `se_slope_v_per_m` and `se_offset_v`.

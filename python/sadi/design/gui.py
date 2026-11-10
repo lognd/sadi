@@ -54,7 +54,7 @@ Nothing is saved or sent anywhere; it does not talk to the LVDT or to LabVIEW. R
 points you have already captured to replan.</p>
 <form id="f">
 <fieldset><legend>1. Height inventory (which heights you have)</legend>
-<table id="hts"><thead><tr><th>Height, m</th><th>Uncertainty, m</th></tr></thead><tbody></tbody></table>
+<table id="hts"><thead><tr><th>Height, mm</th><th>Uncertainty, mm</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
 <small>Enter each height you have and its uncertainty, same as the weights; duplicates stay distinct. Needs the LVDT slope below.</small>
 </fieldset>
@@ -63,16 +63,16 @@ points you have already captured to replan.</p>
 <input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
 <label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
 <small>A typed slope is used as given (no uncertainty) and is all the height plan needs. Or leave it blank and fit from points:</small>
-<table id="cal"><thead><tr><th>Height, m</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
+<table id="cal"><thead><tr><th>Height, mm</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addrow">Add row</button>
 <small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
-<table id="wts"><thead><tr><th>Mass, kg</th><th>Uncertainty, kg</th></tr></thead><tbody></tbody></table>
+<table id="wts"><thead><tr><th>Mass, g</th><th>Uncertainty, g</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
 <small>Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
-<label>Default mass uncertainty, kg <input type="text" name="u_mass" value="0.0001"></label>
+<label>Default mass uncertainty, g <input type="text" name="u_mass" value="0.1"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
 <label>Diameter, m <input type="text" name="diameter" value="0.0002019" required></label>
@@ -81,7 +81,7 @@ points you have already captured to replan.</p>
 <label>L0 uncertainty, m <input type="text" name="u_length" value="0"></label>
 </fieldset>
 <fieldset><legend>Already captured</legend>
-<label>Points as N:volts, comma separated (blank = none)<br>
+<label>Points as grams:volts, comma separated (blank = none)<br>
 <textarea name="captured"></textarea></label>
 </fieldset>
 <button type="submit">Plan</button>
@@ -101,7 +101,7 @@ function addWeight(m, u){
   const tr = wtsBody.insertRow();
   for (const val of [m, u]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
 }
-for (const m of ["0.02","0.05","0.05","0.1","0.1","0.2","0.01","0.03"]) addWeight(m, "");
+for (const m of ["20","50","50","100","100","200","10","30"]) addWeight(m, "");
 document.getElementById("addweight").addEventListener("click", () => addWeight("", ""));
 const htsBody = document.querySelector("#hts tbody");
 function addHeight(h, u){
@@ -110,19 +110,29 @@ function addHeight(h, u){
 }
 for (let k = 0; k < 4; k++) addHeight("", "");
 document.getElementById("addheight").addEventListener("click", () => addHeight("", ""));
+// Operators type grams and millimetres; the server works in SI (kg, m), so convert on the way in and out.
+const G_TO_KG = 1e-3, MM_TO_M = 1e-3;
+const fix = (x) => Number(Number(x).toPrecision(10));
+function scaleNum(t, k){ const x = Number(t); return Number.isFinite(x) && String(t).trim() !== "" ? String(fix(x * k)) : t; }
+// "a:b,c" -> scale the first field of each item (and the second too when both is set)
+function scaleList(text, k, both){
+  return text.split(",").map(it => { const f = it.split(":"); f[0] = scaleNum(f[0], k); if (both && f.length > 1) f[1] = scaleNum(f[1], k); return f.join(":"); }).join(",");
+}
 function cell(t, cls){const td=document.createElement("td"); if(cls) td.className=cls; td.textContent=t; return td;}
 document.getElementById("f").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
+  body.u_mass = scaleNum(body.u_mass, G_TO_KG);
+  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/\n/g, ","), G_TO_KG, false) : "";
   const pts = [];
-  for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(h + ":" + v); }
+  for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
   body.cal_points = pts.join(",");
   const wts = [];
-  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? m + ":" + u : m); }
+  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? scaleNum(m, G_TO_KG) + ":" + scaleNum(u, G_TO_KG) : scaleNum(m, G_TO_KG)); }
   body.weights = wts.join(",");
   const hts = [];
-  for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? h + ":" + u : h); }
+  for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? scaleNum(h, MM_TO_M) + ":" + scaleNum(u, MM_TO_M) : scaleNum(h, MM_TO_M)); }
   body.heights = hts.join(",");
   out.textContent = "Planning...";
   let data;
@@ -139,10 +149,10 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
     out.appendChild(c0);
     const t0 = document.createElement("table");
     const hr0 = t0.insertRow();
-    for (const h of ["#", "Id", "Height m", "u m", "Predicted V", "Slope se", "Offset se"]) { const th = document.createElement("th"); th.textContent = h; hr0.appendChild(th); }
+    for (const h of ["#", "Id", "Height mm", "u mm", "Predicted V", "Slope se", "Offset se"]) { const th = document.createElement("th"); th.textContent = h; hr0.appendChild(th); }
     for (const h of hp.height_steps) {
       const r = t0.insertRow();
-      for (const v of [h.order, h.height_id, h.height_m, h.u_height_m, h.predicted_volts, h.se_slope_v_per_m, h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
+      for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, h.se_slope_v_per_m, h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
     if (data.height_steps) return;
@@ -154,10 +164,10 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
   const t = document.createElement("table");
   const hr = t.insertRow();
-  for (const h of ["#", "Hang (which weights)", "How many", "Total N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
+  for (const h of ["#", "Hang (weights)", "Total g", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
   for (const h of data.hangs) {
     const r = t.insertRow();
-    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.n_weights));
+    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(fix(h.total_kg / G_TO_KG)));
     r.appendChild(cell(h.tension_n)); r.appendChild(cell(h.predicted_volts)); r.appendChild(cell(h.u_volts));
     r.appendChild(cell(h.reason, "l"));
   }

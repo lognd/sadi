@@ -109,3 +109,8 @@ def test_heights_only_still_gives_height_plan():
 
 def test_page_orders_heights_and_calibration_before_weights():
     assert PAGE.index("Height inventory") < PAGE.index("LVDT calibration") < PAGE.index("Weight inventory")
+
+
+def test_page_uses_grams_and_millimetres():
+    assert "Mass, g" in PAGE and "Height, mm" in PAGE and "Mass, kg" not in PAGE and "Height, m<" not in PAGE
+    assert "G_TO_KG" in PAGE and "MM_TO_M" in PAGE

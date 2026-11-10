@@ -37,7 +37,7 @@ from sadi.labs.lctt.guidance import (
     guide,
 )
 from sadi.logging_setup import get_logger
-from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
+from sadi.server.routes.problem import ApiProblem, conflict, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze
@@ -103,13 +103,36 @@ class DeviceProbe(Protocol):
 
     @property
     def status(self) -> str:
-        """Coarse state: connected, simulated or error."""
+        """Coarse state: connected, simulated, disconnected or error."""
         ...
 
     @property
     def fault(self) -> object | None:
         """The error that stopped the reader, if any."""
         ...
+
+
+#: Opens the board and attaches it to the open session; Err carries the operator hint text.
+Reconnector = Callable[[], Result[None, object]]
+
+#: Status string of a service that exists but has no board attached.
+DISCONNECTED = "disconnected"
+NO_BOARD_HINT = "No instrument attached; plug in the SADI board and press Reconnect."
+
+
+def reconnect_device(reconnect: Reconnector | None) -> Result[None, ApiProblem]:
+    """Run `reconnect` (None when no device is wired) and map a refusal to a 409 problem."""
+    if reconnect is None:
+        _log.warning("reconnect refused: server has no device service")
+        return Err(conflict("no_device", "no device service", "Restart sadi with a device source."))
+    res = reconnect()
+    if res.is_err:
+        err = res.danger_err
+        hint = getattr(err, "hint", "") or getattr(err, "description", "") or "Check the cable."
+        detail = getattr(err, "detail", "") or getattr(err, "description", "") or repr(err)[:200]
+        _log.error("reconnect failed: %s", detail)
+        return Err(conflict("reconnect_failed", detail, hint))
+    return Ok(None)
 
 
 class DeviceView(BaseModel):
@@ -284,6 +307,7 @@ def make_results_router(
     labs: LabRegistry,
     device: DeviceProbe | None = None,
     budgets: BudgetSource | None = None,
+    reconnect: Reconnector | None = None,
 ) -> APIRouter:
     """Build the results/guidance/device router over `svc`; handlers only delegate."""
     r = APIRouter(prefix="/api")
@@ -319,12 +343,23 @@ def make_results_router(
                 provenance=svc.provenance(),
             )
         fault = device.fault
+        status = str(device.status)
+        hint = getattr(fault, "hint", "") if fault is not None else ""
+        if status == DISCONNECTED:
+            hint = NO_BOARD_HINT
         return DeviceView(
-            status=device.status,
-            attached=True,
+            status=status,
+            attached=status != DISCONNECTED,
             fault=None if fault is None else repr(fault)[:300],
-            hint=getattr(fault, "hint", "") if fault is not None else "",
+            hint=hint,
             provenance=svc.provenance(),
         )
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    @r.post("/device/reconnect")
+    def device_reconnect() -> DeviceView:
+        """Open the board now (no restart); attaches to the open session, WAL untouched."""
+        unwrap(reconnect_device(reconnect))
+        return device_status()
 
     return r

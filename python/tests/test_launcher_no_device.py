@@ -23,7 +23,7 @@ def _argv(root: Path, *extra: str) -> list[str]:
 def test_no_board_serves_disconnected_and_writes_nothing(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """Unopenable port: exit 0, device None, status error/unattached, no live, no session."""
+    """Unopenable port: exit 0, unopened device + live, status disconnected, no session."""
     monkeypatch.setattr(device_open, "open_real_device", lambda _p: Err("board missing"))
     seen: list[dict[str, object]] = []
 
@@ -35,10 +35,10 @@ def test_no_board_serves_disconnected_and_writes_nothing(
 
     code = launcher.main(_argv(tmp_path, "--device-port", "/dev/ttyNOPE"), fake_serve)
     assert code == 0
-    assert seen[0]["device"] is None and seen[0]["live"] is None
+    assert seen[0]["device"] is not None and seen[0]["live"] is not None
     view = seen[0]["view"]
     assert isinstance(view, dict)
-    assert view["attached"] is False and view["status"] == "error"
+    assert view["attached"] is False and view["status"] == "disconnected"
     err_out = capsys.readouterr().err
     assert "WARNING" in err_out and "board missing" in err_out and "capture is blocked" in err_out
     assert not list(tmp_path.glob("**/*.wal")) and not list(tmp_path.glob("**/*.sadi"))

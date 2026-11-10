@@ -2724,6 +2724,25 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/device/reconnect": {
+      "post": {
+        "description": "Open the board now (no restart); attaches to the open session, WAL untouched.",
+        "operationId": "device_reconnect_api_device_reconnect_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Device Reconnect"
+      }
+    },
     "/api/device/status": {
       "get": {
         "description": "Device status; attached=false (status error) when no device service is configured.",

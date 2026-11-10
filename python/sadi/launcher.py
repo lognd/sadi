@@ -454,7 +454,11 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
     from sadi.bench.ad3.launch import ad3_requested, open_managed_ad3
 
     if device is None and not synthetic and not ad3_requested(args.ad3):
-        from sadi.server.device_open import open_real_device, resolve_device_port
+        from sadi.server.device_open import (
+            open_real_device,
+            resolve_device_port,
+            unopened_real_device,
+        )
 
         dev_port = resolve_device_port(args.device_port)
         _log.info("opening the real SADI board on %s", dev_port)
@@ -464,6 +468,8 @@ def _serve(args: argparse.Namespace, serve: Serve) -> int:
             _log.warning("real board unavailable; starting with no device: %s", real.danger_err)
             _err(f"sadi: WARNING: {real.danger_err}\n")
             _err(NO_DEVICE_BANNER)
+            # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+            device = unopened_real_device(dev_port)
         else:
             device = real.danger_ok
 

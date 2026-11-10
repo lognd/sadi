@@ -75,7 +75,7 @@ def test_missing_board_warns_and_serves_without_device(
     code = launcher.main(_argv(tmp_path, "--device-port", "/dev/ttyNOPE"),
                          lambda app, _h, _p: served.append(app.state.settings.device))
     assert code == 0
-    assert served == [None]
+    assert len(served) == 1 and isinstance(served[0], DeviceService)  # unopened, Reconnect-able
     out = capsys.readouterr().err
     assert "WARNING" in out and "/dev/ttyNOPE" in out and "Plug in the SADI board" in out
 

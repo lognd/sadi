@@ -10,7 +10,8 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
 | `GET /api/results` | `ResultSet` recomputed live from the open session via the lab's `recompute` |
 | `GET /api/results/budgets` | `ResultBudget[]` (shape of `web/src/components/budget/types.ts`) |
 | `GET /api/results/guidance?phase=&hold=&target=` | `GuidanceState` from `sadi.labs.lctt.guidance.guide` |
-| `GET /api/device/status` | `DeviceView` (`status`, `attached`, `fault`, `hint`) |
+| `GET /api/device/status` | `DeviceView` (`status`, `attached`, `fault`, `hint`); `disconnected` = no board attached |
+| `POST /api/device/reconnect` | Reopens the board and resumes recording into the open session; returns `DeviceView`, 409 on failure |
 
 - Results, budgets and guidance need an open session (409 `no_open_session` otherwise).
 - `phase` is `calibrate|elastic|plastic` (default `calibrate`); a bad `phase` or non-positive

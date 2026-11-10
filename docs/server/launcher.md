@@ -69,9 +69,12 @@ board over serial (`sadi/server/device_open.py::open_real_device`, a `DeviceSour
 on `--device-port`, else `SADI_PORT`, else `/dev/ttyUSB0` (auto-detect by FTDI id on Windows) and
 passes it as `AppSettings.device`, so `/api/stream` works. If the board cannot be opened the launcher
 prints a plain-language WARNING (port, cause, "plug in the SADI board...") and still starts with no
-device (exit 0 on shutdown): `/api/device/status` reports `attached=false`, status `error`, no live
-acquisition exists so nothing is recorded, and closed sessions can be browsed and exported. No
-session is created or changed by this path; restart with the board attached to capture. A bad data
+unopened serial device service (exit 0 on shutdown): `/api/device/status` reports status
+`disconnected` (`attached=false`) with a plug-in hint, sessions can still be opened (no error) but
+capture and load change are refused with 409 `no_device`. Plug the board in and press Reconnect
+(`POST /api/device/reconnect`): the device attaches without a restart and recording starts into the
+open session, appending a SETTINGS record and a fresh block sequence; existing WAL data is never
+overwritten or truncated. A bad data
 folder or lock still exits. Tests use a fake serial opener; none touch a real port.
 The app never reads the environment itself. `python -m sadi` runs the same launcher.
 

@@ -1126,3 +1126,8 @@ scope for them):
 Decisions deliberately left to CC1 ~DK06Q2F: exact queue hand-off between
 the Rust acquisition thread (R8) and `WriterHandle.submit`, lock ordering
 across the pipeline, and shutdown order of threads and the job pool.
+
+Live-stream guard (audit2 H2b): `LiveAcquisition` additionally stops raw streaming at
+`LIVE_MIN_FREE_BYTES = 1 GiB` free (before the writer's own 512 MiB warn level) and after an idle
+timeout or session finish. Stopping drains all blocks already read into the WAL first and deletes
+nothing; see docs/server/app.md.

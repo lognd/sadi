@@ -1,0 +1,17 @@
+kind = "evidence"
+accepts = [5]
+captured_at = "2026-11-10T09:40:08Z"
+digest = "439eb21336e60d699f3af1f4993458ad97c90e7e7da3dd282841bb616e9c0115"
+exit_code = 0
+head = "c3cf706ba3dc7cce52c7f15fa41bd8c808028b07"
+inline = """
+{"verb":"ticket.show","already":false,"ok":true,"data":{"children":[],"events":null,"evidence":[],"fields":{"acceptance":[{"bound":false,"text":"joined WAL keeps original seqs or manifest records an offset map"}],"aliases":[],"assignee":null,"body":"found while working PXPD3AB (audit5 L2): joined spill WAL drops SEALs and renumbers densely; POINT first_raw_seq/last_raw_seq and MARKER raw_seq keep parent numbering. Keeping original seqs needs multi-segment output with valid SEAL frames (walker treats SEAL as segment end) or a manifest seq offset map. Only affects parents that rotated.","capability":null,"category":"todo","class":"standard","created":"2026-11-10T09:39:35Z","due":null,"flavour":null,"id":"01M72D7HV896669TN0TZCAYZK3","idempotency_key":null,"implements":[],"labels":[],"links":[],"outcome":null,"outcome_text":null,"parent":null,"persona":null,"points":null,"priority":"low","reporter":"lognd","scope":["python/sadi/store/spill.py","python/tests/store/test_spill.py"],"title":"Spill join renumbers seqs after SEAL records (raw-seq refs shift)","type":"bug","updated":"2026-11-10T09:39:35Z"},"forecast":"forecast: P50 2026-12-16, P85 2027-02-17, P95 2027-04-14 (10000 trials; main risk: unsized work)","incoming":[],"outgoing":[],"summary":{"blocked":false,"category":"todo","class":"standard","crates":[],"created":"2026-11-10T09:39:35Z","due":null,"handle":"~ZCAYZK3","id":"01M72D7HV896669TN0TZCAYZK3","outcome":null,"parent":null,"points":null,"priority":"low","products":[],"title":"Spill join renumbers seqs after SEAL records (raw-seq refs shift)","type":"bug","updated":"2026-11-10T09:39:35Z"},"ticket":{"body":"found while working PXPD3AB (audit5 L2): joined spill WAL drops SEALs and renumbers densely; POINT first_raw_seq/last_raw_seq and MARKER raw_seq keep parent numbering. Keeping original seqs needs multi-segment output with valid SEAL frames (walker treats SEAL as segment end) or a manifest seq offset map. Only affects parents that rotated.","front":{"acceptance":[{"bound":false,"text":"joined WAL keeps original seqs or manifest records an offset map"}],"category":"todo","created":"2026-11-10T09:39:35Z","id":"01M72D7HV896669TN0TZCAYZK3","priority":"low","reporter":"lognd","scope":["python/sadi/store/spill.py","python/tests/store/test_spill.py"],"title":"Spill join renumbers seqs after SEAL records (raw-seq refs shift)","type":"bug","updated":"2026-11-10T09:39:35Z"}}},"findings":[],"warnings":["ticket ledger: reading and committing to refs/heads/main (ref_mode = trunk) while `ticket/PXPD3AB` is checked out; the working tree is not the ledger, so tickets and edits on `ticket/PXPD3AB` are invisible here until they reach refs/heads/main"],"error":null,"schema_version":1}
+"""
+passed = true
+provider = "command"
+ref = "frob ticket show ~ZCAYZK3"
+size = 2722
+status = "measured"
+at = "2026-11-10T09:40:08Z"
+actor = "lognd"
+rev = 1

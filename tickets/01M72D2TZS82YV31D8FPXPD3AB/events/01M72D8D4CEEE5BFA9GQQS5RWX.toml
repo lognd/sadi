@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T09:40:02Z"
+digest = "85f67c9094395974e39a173296d7e0d6e9ede0c1764ee29a5f2625a40acae89a"
+exit_code = 0
+head = "c3cf706ba3dc7cce52c7f15fa41bd8c808028b07"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/store/test_spill.py ..                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-924225-0.xml ---------------
+============================== 2 passed in 0.44s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_spill.py::test_fsync_failure_spill_overlapping_parent_still_joins python/tests/store/test_spill.py::test_overlap_with_different_bytes_stays_fragment"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "16e4727057a4ba7d80c58d386ed3811339f6c87ac84c744f52c7ada5afc89030"
+at = "2026-11-10T09:40:02Z"
+actor = "lognd"
+rev = 1

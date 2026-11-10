@@ -1,0 +1,145 @@
+kind = "evidence"
+accepts = [5]
+captured_at = "2026-11-10T11:04:20Z"
+digest = "b0bf07debc6caf7e0fd1cdb6e646020af0a9951435ae5a9423ca4a6314c5cfe5"
+exit_code = 0
+head = "c1e86755547b495cbf09c91b329c32371c6d51e0"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] request { path: '/api/export' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] response ok { path: '/api/export', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/session' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/session', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 597.44, y: 364, penalty: 0 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+[plots.export] svg exported { bytes: 4650, title: 'LVDT calibration, height versus voltage' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 50, series: 2 }
+[plots.export] svg exported { bytes: 4313, title: 'Stress-strain' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-calibration', kept: true }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-stress-strain', kept: true }
+[screens.export] figure exported { formatId: 'fig', format: 'svg', dpi: undefined, files: 2 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/nope' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[screens.export] no figure data to draw yet { formatId: 'fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > non-2xx returns an error that becomes a problem with detail and hint
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/export/lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > success carries the saved-copy header and a message
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/export/lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > success carries the saved-copy header and a message
+[screens.export.api] download fetched { formatId: 'lctt-csv', bytes: 4, saved: 'exports/lctt-csv/x.csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > keeps the server-provided filename when provenance is stamped
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/export/lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > keeps the server-provided filename when provenance is stamped
+[screens.export.api] download fetched { formatId: 'lctt-csv', bytes: 2, saved: '' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > keeps the server-provided filename when provenance is stamped
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/export/lctt-csv' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > keeps the server-provided filename when provenance is stamped
+[screens.export.api] download fetched { formatId: 'lctt-csv', bytes: 2, saved: '' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > download via fetch > network failure becomes a network error
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/export/lctt-csv' }
+
+ \u{2713} web/src/screens/export/ExportScreen.test.tsx (15 tests) 57ms
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  06:04:21
+   Duration  1.15s (transform 301ms, setup 0ms, collect 401ms, tests 57ms, environment 0ms, prepare 222ms)
+
+JSON report written to /tmp/frob-vitest-989251-0.json
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > parses problem+json and shows the hint
+[screens.export.api] non-json error body { status: 500 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] http error { path: '/api/export/nope', status: 404 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure data has unexpected shape { formatId: 'fig' }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > download via fetch > non-2xx returns an error that becomes a problem with detail and hint
+[screens.export.api] download refused { formatId: 'lctt-csv', status: 422 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > download via fetch > network failure becomes a network error
+[screens.export.api] download network failure { formatId: 'lctt-csv', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/export/ExportScreen.test.tsx"
+size = 7166
+status = "measured"
+test_count = 15
+tests_digest = "483ae939a10cd44928490c66d7a3f6a81ae78d431c6a285057f17b679a0e7a27"
+at = "2026-11-10T11:04:20Z"
+actor = "lognd"
+rev = 1

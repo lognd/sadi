@@ -7,26 +7,26 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T09:37:01Z"
-updated = "2026-11-10T09:37:04Z"
-scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/**/*spill*", "python/tests/**/*sessions*", "docs/store/spill.md"]
+updated = "2026-11-10T09:40:35Z"
+scope = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "python/tests/**/*spill*", "python/tests/**/*sessions*", "docs/store/spill.md", "python/sadi/store/manifest.py", "python/tests/server/test_latest_lineage.py"]
 
 [[acceptance]]
 text = "M1 overlap join verified by real WalWriter + wal.fsync.before test"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "M2 only joined closed import supersedes incomplete parent"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "M3 import inherits synthetic; orphan conservative"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "M4 free-space check + failed-import marker"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "L2 original seqs kept or followup ticket"
-bound = false
+bound = true
 +++

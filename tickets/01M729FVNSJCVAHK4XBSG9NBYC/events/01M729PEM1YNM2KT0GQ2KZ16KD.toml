@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/screens/run/phases.ts", "web/src/hooks/useStickyOffset.ts", "web/src/screens/setup/SessionSetup.tsx", "python/sadi/server/routes/export.py", "web/src/components/instrument/useBackendFacts.ts", "web/src/components/instrument/FactsContext.tsx", "web/src/components/wizard/CloseSession.tsx", "web/src/hooks/useStickyOffset.test.ts", "web/src/screens/setup/SessionSetup.test.tsx"]
+new = ["web/src/screens/run/phases.ts", "web/src/hooks/useStickyOffset.ts", "web/src/screens/setup/SessionSetup.tsx", "python/sadi/server/routes/export.py", "web/src/components/instrument/useBackendFacts.ts", "web/src/components/instrument/FactsContext.tsx", "web/src/components/wizard/CloseSession.tsx", "web/src/hooks/useStickyOffset.test.ts", "web/src/screens/setup/SessionSetup.test.tsx", "python/tests/server/test_readonly_export.py", "web/src/screens/run/RunScreen.test.tsx", "web/src/App.tsx", "web/src/styles.css", "docs/ux.md", "docs/synthetic.md"]
+at = "2026-11-10T08:37:49Z"
+actor = "lognd"
+rev = 1

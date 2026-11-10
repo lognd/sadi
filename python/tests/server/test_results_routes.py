@@ -187,6 +187,24 @@ def test_device_status_attached(tmp_path: Path) -> None:
         assert body == {"status": "simulated", "attached": True, "fault": None, "hint": ""}
 
 
+class _FaultedDevice:
+    """A device whose status is error with a fault object."""
+
+    status = "error"
+    fault = RuntimeError("fifo overrun")
+
+
+# frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
+# frob:tests python/sadi/server/routes/results.py::device_status
+def test_device_status_faulted_not_attached(tmp_path: Path) -> None:
+    """A faulted device reports attached=false with the fault text, never healthy."""
+    for c in _client(tmp_path, device=_FaultedDevice()):
+        body = c.get("/api/device/status").json()
+        assert body["status"] == "error"
+        assert body["attached"] is False
+        assert "fifo overrun" in body["fault"]
+
+
 # frob:tests python/sadi/server/routes/results.py::lab_budgets
 def test_budgets_from_lab_hook(client: TestClient) -> None:
     """With no injected source, the lctt lab's own budgets are served."""

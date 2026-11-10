@@ -37,3 +37,7 @@ Network errors and non-JSON bodies get a plain message.
 
 `api.ts` (injectable-fetch calls), `session.ts` (`loadReview`, `runAction`), `types.ts`
 (mirrors of `PointView`, including the server-sent `settled` and `forced_early` flags, `History`, `Committed`, problem body). No plot code was added.
+
+## Layout and provenance (Audit1 #27, #36)
+
+Results are shown first, above the point table. Tables sit in a horizontally scrolling wrapper so nothing clips at 800 px. Long point ids are shortened (full id in the tooltip). Numbers are rounded to 4 significant figures.

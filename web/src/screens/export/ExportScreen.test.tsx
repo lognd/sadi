@@ -3,7 +3,7 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
-import { FormatList, ProblemAlert, ReportView, exportFigureFormat, figureFileName } from "./ExportScreen";
+import { FormatList, ProblemAlert, ReportView, quantityLabel, sampleSpan, exportFigureFormat, figureFileName } from "./ExportScreen";
 import { exportUrl, getExportFormats, toProblem } from "./api";
 import type { ResultSet } from "./types";
 
@@ -29,7 +29,7 @@ describe("export screen", () => {
 
   it("renders provenance: point ids, sample span, algorithm", () => {
     const h = renderToString(<ReportView results={rs} />);
-    expect(h).toContain("p1, p2");
+    expect(h).toContain("2 points");
     expect(h).toContain("10 to 45");
     expect(h).toContain("lctt.recompute");
     const none = renderToString(<ReportView results={{ ...rs, provenance: [] }} />);
@@ -105,5 +105,16 @@ describe("export screen", () => {
     const p = await exportFigureFormat("fig", { format: "svg" }, () => json(empty), save);
     expect(p?.title).toBe("Nothing to plot yet");
     expect(save).not.toHaveBeenCalled();
+  });
+
+  // frob:ticket 01M71Z6EJDG2FBYHAJFFM90XMX
+  it("states the data source and hides empty 0-to-0 spans (Audit1 #36)", () => {
+    const real = renderToString(<ReportView results={{ ...rs, data_provenance: { source: "real", synthetic: false, label: "", warning: "" } }} />);
+    expect(real).toContain("real measurement");
+    const syn = renderToString(<ReportView results={{ ...rs, data_provenance: { source: "synthetic", synthetic: true, label: "SYNTHETIC", warning: "w" } }} />);
+    expect(syn).toContain("SYNTHETIC (simulated");
+    expect(sampleSpan({ name: "x", point_ids: [], first_sample: 0, last_sample: 0, algorithm: "a" })).toBe("-");
+    expect(quantityLabel("secant_modulus")).toBe("Secant modulus at last point");
+    expect(renderToString(<ReportView results={rs} />)).toContain("overflow-x:auto");
   });
 });

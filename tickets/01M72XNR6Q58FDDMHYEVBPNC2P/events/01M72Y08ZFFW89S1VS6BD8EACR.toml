@@ -1,0 +1,303 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:32:41Z"
+digest = "959d49150bcf437386be408ace018f1eb2b48cabd535d3f39452b1c6de0fb469"
+exit_code = 0
+head = "4f7713a5218f9149b82cf6c6736e144c220f0bd4"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/a11y/contrast.test.ts (40 tests) 19ms
+ \u{2713} web/src/plots/a11y-palette.test.ts (9 tests) 12ms
+stdout | web/src/plots/core/plots.test.ts > layout > is deterministic and keeps the plot inside the canvas
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+
+stdout | web/src/plots/core/plots.test.ts > decimation > bounds 100k points and keeps extremes
+[plots.place] box placed { id: 'annotation', score: 110 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 110 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 50, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > svg > matches the snapshot
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > svg > escapes text
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'a<b & c',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > canvas draw calls > records a stable golden call sequence
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 1, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 640, h: 400, dpi: 96, bytes: 3 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 3.125, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > png at 300 dpi uses identical layout, scaled
+[plots.export] png exported { w: 2000, h: 1250, dpi: 300, bytes: 3 }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > svg export uses white background and sans fonts
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.export] svg exported { bytes: 5379, title: 'Calibration' }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.export] svg exported { bytes: 5379, title: 'Calibration' }
+
+stdout | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+
+stdout | web/src/plots/core/plots.test.ts > renderToCanvas > sizes the backing store by the device pixel ratio
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 491.92, y: 288, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 61, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 61 }
+
+stdout | web/src/plots/core/plots.test.ts > error bars and auto annotation placement > draws capped error bars and widens the autoscaled domain
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 4,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 51, series: 1 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 4,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+
+stdout | web/src/plots/core/plots.test.ts > error bars and auto annotation placement > auto anchor avoids the corner holding data
+[plots.place] box placed { id: 'annotation', score: 2 }
+[plots.layout] annotation placed { id: 'annotation', x: 555.72, y: 288, penalty: 2 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 6,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 555.72, y: 64, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 6,
+  yTicks: 6,
+  title: 'Calibration',
+  xTitle: 'Displacement (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+
+ \u{2713} web/src/plots/core/plots.test.ts (12 tests) 127ms
+
+ Test Files  3 passed (3)
+      Tests  61 passed (61)
+   Start at  09:32:41
+   Duration  1.31s (transform 529ms, setup 0ms, collect 730ms, tests 158ms, environment 1ms, prepare 742ms)
+
+JSON report written to /tmp/frob-vitest-1216902-0.json
+stderr | web/src/plots/core/plots.test.ts > exportFigure > svg returns text and blob; bad dpi is an error
+[plots.export] rejected dpi { dpi: -1 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/a11y/contrast.test.ts src/plots/a11y-palette.test.ts src/plots/core/plots.test.ts"
+size = 8667
+status = "measured"
+test_count = 61
+tests_digest = "467886888f5f6caad635495e782171f25f5a8ed96f2e866fb349195ab044a447"
+at = "2026-11-10T14:32:41Z"
+actor = "lognd"
+rev = 1

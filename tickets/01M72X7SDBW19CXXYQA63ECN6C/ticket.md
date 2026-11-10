@@ -2,12 +2,13 @@
 id = "01M72X7SDBW19CXXYQA63ECN6C"
 title = "Automatic error propagation for the weight plan and results (mass, diameter, L0, volts to stress, strain, E, yield)"
 type = "story"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:19:20Z"
-updated = "2026-11-10T14:25:24Z"
+updated = "2026-11-10T14:28:47Z"
 labels = ["creates:python/sadi/labs/lctt/propagate.py", "creates:python/tests/labs/lctt/test_propagate.py", "creates:docs/uncertainty/weight-plan.md"]
 scope = ["python/sadi/labs/lctt/propagate.py", "python/tests/labs/lctt/test_propagate.py", "docs/uncertainty/weight-plan.md", "docs/uncertainty/budget.md", "changelog.d/01M72X7SDBW19CXXYQA63ECN6C.added.md"]
 

@@ -2,7 +2,8 @@
 id = "01M727TR8PNCVA3CA5ZAVFBREF"
 title = "L3+L5: debug strip shows faulted device as ok; SEQ/DURABLE mix WS and WAL seq"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

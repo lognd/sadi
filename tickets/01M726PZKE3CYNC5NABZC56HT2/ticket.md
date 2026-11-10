@@ -2,7 +2,8 @@
 id = "01M726PZKE3CYNC5NABZC56HT2"
 title = "H2: failed writer must spill undurable records on close/shutdown"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

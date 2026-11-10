@@ -1,0 +1,30 @@
+kind = "evidence"
+accepts = [1, 2, 3, 4]
+captured_at = "2026-11-10T15:01:15Z"
+digest = "f1c8fdbb5f36c6b76a6a50984dc0c47f651fc2fda35b438f93061f77cce95087"
+exit_code = 0
+head = "2ec4f6facc939cd5743bcf995bcbf1ae773e87ca"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 17 items
+
+python/tests/design/test_gui.py ..........                               [ 58%]
+python/tests/design/test_cli.py .......                                  [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1252049-0.xml --------------
+============================== 17 passed in 3.55s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/design/test_gui.py python/tests/design/test_cli.py"
+size = 602
+status = "measured"
+test_count = 17
+tests_digest = "603b92490f708c80444b42e30d9d1dbfe334b60c4078b022d16d4b32462a28c0"
+at = "2026-11-10T15:01:15Z"
+actor = "lognd"
+rev = 1

@@ -2,7 +2,8 @@
 id = "01M71Q480MJRE9N53DHGK19JT8"
 title = "JobManager reports DONE for a superseded job whose Done event races the kill (flaky on macOS)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 1
 reporter = "lognd"

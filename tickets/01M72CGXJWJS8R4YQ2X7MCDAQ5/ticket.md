@@ -7,8 +7,8 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T09:27:14Z"
-updated = "2026-11-10T09:29:01Z"
-scope = ["web/src/**/StopBanner.test.tsx", "web/src/**/exportTrace.test.ts", "web/src/**/inputFields.test.ts", "web/src/**/useStickyOffset.ts", "python/sadi/labs/lctt/curve_source.py", "docs/server/app.md"]
+updated = "2026-11-10T09:30:01Z"
+scope = ["web/src/**/StopBanner.test.tsx", "web/src/**/exportTrace.test.ts", "web/src/**/inputFields.test.ts", "web/src/**/useStickyOffset.ts", "python/sadi/labs/lctt/curve_source.py", "docs/server/app.md", "python/sadi/server/curve_source.py"]
 
 [[acceptance]]
 text = "eslint clean on listed files; ruff E501 at curve_source.py clean; app.md says newest directory and 409 NoData"

@@ -4,9 +4,10 @@ title = "Web: always-on instrument bar, debug strip, and newcomer-proof pages"
 type = "story"
 category = "todo"
 priority = "medium"
+points = 8
 reporter = "lognd"
 created = "2026-11-10T03:56:48Z"
-updated = "2026-11-10T03:56:48Z"
+updated = "2026-11-10T03:56:50Z"
 scope = ["web/src/**", "docs/web/**"]
 
 [[acceptance]]

@@ -1,0 +1,12 @@
+kind = "create"
+title = "WAL rebase leftovers: store NOTE payloads in snapshot, move reverify walks off request path (audit8 H1 d,e)"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 3
+scope = ["python/sadi/store/**", "python/sadi/server/curve_source.py"]
+acceptance = ["_scan_notes needs no whole-WAL walk after a snapshot rebase.", "SessionReplayCache reverify walks run off the request path."]
+body = "Remaining parts (d),(e) of audit8 H1; see scratchpad audit8.md."
+at = "2026-11-10T14:41:38Z"
+actor = "lognd"
+rev = 1

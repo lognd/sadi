@@ -32,7 +32,7 @@ export interface GuidanceNote {
 }
 
 /** Fold one message into the side state (pure; unrelated kinds return the same object); `simulated` is sticky once seen. */
-// frob:ticket 2KP8YNY
+// frob:ticket 01M72YKET24FEMR0Z6E2KP8YNY
 export function foldSide(s: SideState, m: ServerMessage): SideState {
   if (m.kind === "hello") return { ...s, simulated: s.simulated || m.simulated };
   if (m.kind === "state") {

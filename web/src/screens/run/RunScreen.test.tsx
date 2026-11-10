@@ -98,7 +98,6 @@ describe("live derivation from a mocked sim stream", () => {
     expect(deriveLive(w.snapshot(100), OPEN, s.settle, s.simulated, s.driftVps).driftVps).toBe(0.25);
   });
   it("foldSide keeps simulated sticky after a state message omits it (fault)", () => {
-    // frob:tests foldSide
     const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: true };
     const st = parseMessage('{"kind":"state","raw_seq":2,"simulated":false,"status":{"state":"settled"}}');
     expect((st.ok ? foldSide(s, st.value) : s).simulated).toBe(true);

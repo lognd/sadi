@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:51:09Z"
-updated = "2026-11-10T13:56:18Z"
+updated = "2026-11-10T13:56:28Z"
 scope = ["python/sadi/store/spill.py", "python/sadi/server/app.py", "python/tests/conftest.py", "python/tests/store/**", "python/sadi/store/manifest.py", "docs/store/spill.md", "changelog.d/01M72VM5ZCW15RQ2CH8RS7XR3X.changed.md"]
 
 [[acceptance]]

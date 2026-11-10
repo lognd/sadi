@@ -1,4 +1,5 @@
 // frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
+// frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
 // frob:ticket 01M6X241EV9Z0JS4TCJPQBZCCN
 /** Per-phase typed capture inputs (SI units) mirroring python/sadi/core/point_inputs.py parse_inputs. */
 import type { Result } from "../../api/result";
@@ -32,6 +33,12 @@ export interface InputField {
 
 const LIVE_V: InputField = { key: "volts", label: "Volts", unit: "V", required: false, live: true };
 
+/** Raw samples the server averages per tare/calibration capture (mirrors BLOCK_SAMPLES_DEFAULT in capture.py). */
+export const BLOCK_SAMPLES = 2500;
+
+/** Fewest raw samples a capture may rest on; the server refuses below this (MIN_BLOCK_N_DEFAULT). */
+export const MIN_BLOCK_N = 100;
+
 /** Plausible wire diameter in metres (0.05 mm to 10 mm); anything else is probably a unit slip. */
 const DIAMETER_RANGE_M: readonly [number, number] = [5e-5, 1e-2];
 
@@ -46,7 +53,7 @@ export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
   calibrate: [LIVE_V, { key: "height", label: "Gauge height", unit: "m", required: true, min: 0, plausible: HEIGHT_RANGE_M }],
   tare: [
     { key: "mean", label: "Mean volts", unit: "V", required: false, live: true },
-    { key: "n", label: "Sample count n", unit: "", required: false, integer: true, min: 1, derived: true },
+    { key: "n", label: "Sample count n", help: `Averaged on the server over the last ${String(BLOCK_SAMPLES)} raw samples; refused below ${String(MIN_BLOCK_N)}.`, unit: "", required: false, integer: true, min: 1, derived: true },
     { key: "sd", label: "Volts sd", unit: "V", required: false, min: 0, derived: true },
     { key: "diameter", label: "Specimen diameter", unit: "m", required: true, min: 0, specimen: true, plausible: DIAMETER_RANGE_M },
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
@@ -89,7 +96,7 @@ export function plausibilityNote(f: InputField, raw: string): { readonly message
   };
 }
 
-/** Validate all fields of a phase; Err lists every problem so none is hidden. Derived fields come from `recent`. */
+/** Validate all fields of a phase; Err lists every problem so none is hidden. Derived fields are placeholders; the server substitutes its raw-block stats. */
 export function collectInputs(
   phase: RunPhase, raw: Readonly<Record<string, string>>, liveVolts: number | null,
   recent: { readonly mean: number; readonly sd: number; readonly n: number } | null = null,
@@ -98,8 +105,8 @@ export function collectInputs(
   const errors: string[] = [];
   for (const f of PHASE_FIELDS[phase]) {
     if (f.derived === true) {
-      if (recent === null) errors.push(`${f.label}: not enough live readings yet; wait a moment and try again.`);
-      else out[f.key] = f.key === "n" ? recent.n : recent.sd;
+      // The server replaces these with its raw-block mean/sd/n; the browser value is only a placeholder.
+      out[f.key] = recent === null ? (f.key === "n" ? 1 : 0) : f.key === "n" ? recent.n : recent.sd;
       continue;
     }
     const r = parseField(f, raw[f.key] ?? "", f.key === "mean" && recent !== null ? recent.mean : liveVolts);

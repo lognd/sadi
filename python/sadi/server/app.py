@@ -248,6 +248,8 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
         )  # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
         # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
         # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        # frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
+        app.state.sessions.set_block_source(live.block_stats)
         live.set_phase_source(lambda: _recorded_phase(cast(SessionService, app.state.sessions)))
         app.state.sessions.set_acquisition(live.finish, lambda: _acq_state(live))
     app.include_router(make_sessions_router(app.state.sessions))

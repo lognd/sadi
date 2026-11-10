@@ -1,11 +1,14 @@
 """LCTT capture modes: human confirm, auto-capture with max wait, fixed dwell, forced-early."""
 
 # frob:ticket 01M6W7R06C7F7ZN0RC4CV3NWW5
+# frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
 
 from __future__ import annotations
 
 import math
-from collections.abc import Callable, Sequence
+import threading
+from collections import deque
+from collections.abc import Callable, Iterable, Sequence
 from enum import StrEnum
 
 from pydantic import BaseModel, Field, model_validator
@@ -43,6 +46,71 @@ class CaptureError(ErrorSet):
     NoOpenPoint = "No open point; start a point (load change) before capturing"
     ModeMismatch = "fixed_dwell capture needs a StreamConfig in fixed_dwell mode, and only then"
     NoRawRange = "No raw WAL seq range covers the averaging window; flush raw before capturing"
+
+
+BLOCK_SAMPLES_DEFAULT = 2500
+"""Raw samples averaged per tare/calibration capture (like the VI's 2500-sample block)."""
+
+MIN_BLOCK_N_DEFAULT = 100
+"""Smallest raw block accepted for a capture; fewer samples is refused."""
+
+
+class BlockError(ErrorSet):
+    """A raw block too small or absent to capture from; the description says what to do."""
+
+    TooFew = "Too few raw samples collected yet; wait for the block to fill and capture again"
+
+
+class BlockStats(BaseModel):
+    """Mean, sample standard deviation and count of one raw-sample block."""
+
+    model_config = {"frozen": True}
+
+    mean: float
+    sd: float = Field(ge=0)
+    n: int = Field(ge=1)
+
+    def u_mean(self, accuracy: float = 0.0) -> float:
+        """Standard uncertainty of the mean: sd/sqrt(n) combined in quadrature with accuracy."""
+        return math.hypot(self.sd / math.sqrt(self.n), accuracy)
+
+
+def block_stats(volts: Iterable[float], min_n: int = MIN_BLOCK_N_DEFAULT) -> Result[BlockStats, BlockError]:
+    """Mean, sample sd and n of `volts`; Err(TooFew) below `min_n` samples."""
+    ys = list(volts)
+    n = len(ys)
+    if n < max(min_n, 1):
+        _log.warning("raw block too small: n=%d < min %d", n, min_n)
+        return Err(BlockError.TooFew)
+    mean = math.fsum(ys) / n
+    sd = math.sqrt(math.fsum((y - mean) ** 2 for y in ys) / (n - 1)) if n > 1 else 0.0
+    _log.info("raw block stats n=%d mean=%g sd=%g", n, mean, sd)
+    return Ok(BlockStats(mean=mean, sd=sd, n=n))
+
+
+class RawBlockBuffer:
+    """Thread-safe ring of the newest raw (undecimated) samples; source of capture block stats."""
+
+    def __init__(self, size: int = BLOCK_SAMPLES_DEFAULT) -> None:
+        """Keep at most `size` samples."""
+        self._buf: deque[float] = deque(maxlen=size)
+        self._lock = threading.Lock()
+
+    def extend(self, volts: Iterable[float]) -> None:
+        """Append newly arrived raw samples, dropping the oldest beyond capacity."""
+        with self._lock:
+            self._buf.extend(float(v) for v in volts)
+
+    def clear(self) -> None:
+        """Forget all samples (new run or load change)."""
+        with self._lock:
+            self._buf.clear()
+
+    def stats(self, min_n: int = MIN_BLOCK_N_DEFAULT) -> Result[BlockStats, BlockError]:
+        """Stats of the buffered block; Err(TooFew) below `min_n`."""
+        with self._lock:
+            snap = list(self._buf)
+        return block_stats(snap, min_n)
 
 
 class CaptureMode(StrEnum):

@@ -3,7 +3,7 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
 import { capturedMessage } from "./capture";
-import { PHASE_FIELDS, collectInputs, plausibilityNote, splitSpecimen } from "./inputFields";
+import { BLOCK_SAMPLES, MIN_BLOCK_N, PHASE_FIELDS, collectInputs, plausibilityNote, splitSpecimen } from "./inputFields";
 
 /** Unwrap a fixture lookup; a miss is a test bug. */
 function required<T>(v: T | undefined): T {
@@ -20,10 +20,11 @@ describe("collectInputs", () => {
     expect(collectInputs("calibrate", { volts: "2", height: "0.01" }, 1.5)).toEqual({ ok: true, value: { volts: 2, height: 0.01 } });
   });
   // regression test for audit1#25 tare n and sd are derived, not typed
-  it("tare without live statistics reports the derived fields, none defaulted", () => {
-    const r = collectInputs("tare", {}, 1);
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error.join(" ")).toContain("not enough live readings");
+  it("tare without browser statistics still collects: the server supplies the raw-block mean, sd and n", () => {
+    const r = collectInputs("tare", { diameter: "0.0006" }, 1);
+    expect(r.ok).toBe(true);
+    expect(MIN_BLOCK_N).toBe(100);
+    expect(BLOCK_SAMPLES).toBe(2500);
   });
   it("tare takes mean, n and sd from the live statistics and hides n and sd", () => {
     const r = collectInputs("tare", { diameter: "0.0006" }, 9, { mean: 0.5, sd: 0.01, n: 40 });

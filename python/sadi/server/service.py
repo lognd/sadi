@@ -17,13 +17,16 @@ import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import LabId, LabModule, StepId
+from sadi.labs.lctt.capture import BlockError, BlockStats
 from sadi.core.point_inputs import (
+    PHASE_CALIBRATION,
+    PHASE_TARE,
     PointMeta,
     build_point,
     check_ranges,
@@ -229,6 +232,7 @@ class SessionService:
         self._before_close: Callable[[], None] | None = None
         # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
         self._capture_gate: Callable[[], str | None] | None = None
+        self._block_source: Callable[[], Result[BlockStats, BlockError]] | None = None
         # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
         self._finisher: Callable[[], Result[int, object]] | None = None
         self._acq_state: Callable[[], tuple[str | None, str | None]] | None = None
@@ -257,6 +261,29 @@ class SessionService:
     def set_capture_gate(self, gate: Callable[[], str | None]) -> None:
         """Register a gate returning a hint while capture is blocked (no device), else None."""
         self._capture_gate = gate
+
+    # frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
+    def set_block_source(self, source: Callable[[], Result[BlockStats, BlockError]]) -> None:
+        """Register the raw-block stats source tare/calibration captures average over."""
+        self._block_source = source
+
+    def _apply_block(self, body: CaptureBody) -> Result[dict[str, Any], ApiProblem]:
+        """Inputs with tare mean/sd/n or calibration volts replaced by the server raw block stats."""
+        inputs = dict(body.inputs)
+        if self._block_source is None or body.phase not in (PHASE_TARE, PHASE_CALIBRATION):
+            return Ok(inputs)
+        got = self._block_source()
+        if got.is_err:
+            why = str(got.danger_err.description)
+            _log.warning("capture refused: %s", why)
+            return Err(_unprocessable("too_few_samples", why, why))
+        st = got.danger_ok
+        if body.phase == PHASE_TARE:
+            inputs.update(mean=st.mean, sd=st.sd, n=st.n)
+        else:
+            inputs["volts"] = st.mean
+        _log.info("capture %s from raw block n=%d mean=%g sd=%g", body.phase, st.n, st.mean, st.sd)
+        return Ok(inputs)
 
     # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
     def set_acquisition(
@@ -570,7 +597,8 @@ class SessionService:
         if blocked is not None:
             _log.warning("capture refused: %s", blocked)
             return Err(conflict("no_device", blocked, blocked))
-        parsed = parse_inputs(body.phase, body.inputs)
+        inputs = self._apply_block(body).unwrap()
+        parsed = parse_inputs(body.phase, inputs)
         parsed_ok = parsed.map_err(
             lambda detail: _unprocessable(
                 "missing", detail, "Fill in the required field before continuing."

@@ -35,6 +35,13 @@ from sadi.core.pipeline import (
     ResultUpdate,
     SettleUpdate,
 )
+from sadi.labs.lctt.capture import (
+    BLOCK_SAMPLES_DEFAULT,
+    MIN_BLOCK_N_DEFAULT,
+    BlockError,
+    BlockStats,
+    RawBlockBuffer,
+)
 from sadi.labs.lctt.guidance import Phase
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import SettleState, StreamConfig
@@ -117,15 +124,22 @@ class _Decimated:
 class _DecimatingSource:
     """Block source adapter handing the driver decimated views of the device's blocks."""
 
-    def __init__(self, device: DeviceService, step: int) -> None:
-        """Adapt `device`, decimating by `step`."""
+    def __init__(self, device: DeviceService, step: int, block: RawBlockBuffer | None = None) -> None:
+        """Adapt `device`, decimating by `step`; undecimated volts also feed `block`."""
         self._device = device
         self._step = step
+        self._block = block
+
+    def _tap(self, b: Any) -> Any:
+        """Feed a block's full-rate volts to the raw buffer, then decimate it."""
+        if self._block is not None:
+            self._block.extend(np.asarray(b.volts))
+        return _Decimated(b, self._step)
 
     def next_block(self, timeout: float | None = 1.0) -> Result[Any, Any]:
         """Next decimated block (Ok(None) on timeout) or the device fault."""
         got = self._device.next_block(timeout)
-        return got.map(lambda b: None if b is None else _Decimated(b, self._step))
+        return got.map(lambda b: None if b is None else self._tap(b))
 
     def stop_streaming(self) -> Result[list[Any], Any]:
         """Stop the device; trailing blocks come back decimated."""
@@ -138,10 +152,10 @@ class _DecimatingSource:
                     StopFailed(
                         code=err.code,
                         detail=err.detail,
-                        blocks=[_Decimated(b, self._step) for b in kept],
+                        blocks=[self._tap(b) for b in kept],
                     )
                 )
-        return got.map(lambda blocks: [_Decimated(b, self._step) for b in blocks])
+        return got.map(lambda blocks: [self._tap(b) for b in blocks])
 
 
 class LiveAcquisition:
@@ -157,6 +171,8 @@ class LiveAcquisition:
         min_free_bytes: int = LIVE_MIN_FREE_BYTES,
         watch_poll_s: float = WATCH_POLL_S,
         clock: Callable[[], float] = time.monotonic,
+        block_samples: int = BLOCK_SAMPLES_DEFAULT,
+        min_block_n: int = MIN_BLOCK_N_DEFAULT,
     ) -> None:
         """Hold the opened `device` and the `bus` the WebSocket hub subscribes to."""
         self._device = device
@@ -167,6 +183,8 @@ class LiveAcquisition:
             packet_len=PACKET_LEN,
         )
         self._lock = threading.Lock()
+        self._block = RawBlockBuffer(block_samples)
+        self._min_block_n = min_block_n
         self._driver: AcquisitionDriver | None = None
         self._pipe: AcquisitionPipeline | None = None
         self._fault: DriverFault | None = None
@@ -203,6 +221,11 @@ class LiveAcquisition:
         """True while a run is active."""
         with self._lock:
             return self._driver is not None and self._driver.running
+
+    # frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
+    def block_stats(self) -> Result[BlockStats, BlockError]:
+        """Mean/sd/n of the newest raw block (default 2500 samples); Err below the minimum n."""
+        return self._block.stats(self._min_block_n)
 
     # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     @property
@@ -305,6 +328,7 @@ class LiveAcquisition:
                     return Err(refused)
             pipe = self._pipe
             self._last_activity = self._clock()
+            self._block.clear()  # samples from the previous load must not enter the next block
         if pipe is None:
             _log.warning("load change refused: no live run")
             return Err(LiveError.NoLiveSession)
@@ -414,7 +438,8 @@ class LiveAcquisition:
             _log.error("device start failed for %s: %s", path.name, started.danger_err)
             return
         self._fault = None
-        driver = AcquisitionDriver(_DecimatingSource(self._device, DECIMATE), pipe)
+        self._block.clear()
+        driver = AcquisitionDriver(_DecimatingSource(self._device, DECIMATE, self._block), pipe)
         began = driver.start()
         if began.is_err:
             _log.error("driver start failed: %s", began.danger_err)

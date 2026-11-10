@@ -45,6 +45,9 @@ The steps map to [domain](domain.md) section 6.
    hanger weight (the app also accepts a typed L0 override). See [loading](lctt/loading.md).
 4. **Tare.** With the hanger empty and the specimen still, record the tare blocks. Recording
    again replaces the previous tare. See [domain](domain.md) 3.2.
+   The server averages the newest 2500 raw (undecimated) samples for each tare and calibration
+   capture and stores their mean, sample sd and n; a capture with fewer than 100 samples is
+   refused. Uncertainty is sd/sqrt(n) combined with the instrument accuracy.
 5. **Hold and confirm, per weight.** Add the next weight and set the total load. The live trace
    shows whether the strain has settled ([settle detector](lctt/settle.md), [live
    trace](web/live-trace.md)). The guidance panel says `Wait: creeping` while the strain

@@ -2,12 +2,12 @@
 id = "01M72YAG5JF05K4W68BCPGKVGP"
 title = "Load points carry voltage uncertainty U=2*sd (parity M1) and operator/description in CSV header (parity L1)"
 type = "story"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:38:18Z"
-updated = "2026-11-10T14:38:18Z"
+updated = "2026-11-10T15:22:00Z"
 scope = ["web/src/screens/run/live.ts", "python/sadi/labs/lctt/lab.py"]
 
 [[acceptance]]

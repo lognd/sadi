@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/spill.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/tests/store", "python/sadi/store/manifest.py", "docs/data-safety.md"]
+new = ["python/sadi/store/spill.py", "python/sadi/server/service.py", "python/sadi/server/routes/sessions.py", "python/tests/store", "python/sadi/store/manifest.py", "docs/data-safety.md", "python/tests/server/test_latest_lineage.py"]
+at = "2026-11-10T08:40:55Z"
+actor = "lognd"
+rev = 1

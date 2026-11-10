@@ -7,12 +7,12 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T14:38:17Z"
-updated = "2026-11-10T15:00:10Z"
+updated = "2026-11-10T15:00:40Z"
 scope = ["python/sadi/server/capture.py", "web/src/screens/run/live.ts", "web/src/screens/run/capture.ts", "web/src/screens/run/RunScreen.tsx", "web/src/screens/run/captureRetry.test.ts"]
 
 [[acceptance]]
 text = "A refusal that wrote nothing clears the frozen retry body."
-bound = false
+bound = true
 +++
 
 See /tmp/claude-1000/-home-logan-projects-SADI/4f193782-dc1d-4c66-a170-89d2ce998f4d/scratchpad/audit8.md section M2.

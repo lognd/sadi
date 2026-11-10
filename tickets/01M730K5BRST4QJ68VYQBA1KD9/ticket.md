@@ -7,7 +7,7 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T15:17:59Z"
-updated = "2026-11-10T15:19:56Z"
+updated = "2026-11-10T15:19:59Z"
 labels = ["creates:python/tests/plugins/test_example_plugin.py", "creates:examples/**"]
 scope = ["examples/**", "python/tests/plugins/test_example_plugin.py", "docs/plugins.md"]
 
@@ -17,7 +17,7 @@ bound = true
 
 [[acceptance]]
 text = "A test loads it via LocalDirSource/SADI_PLUGIN_PATH and asserts it is discovered, enabled and its lab steps run"
-bound = false
+bound = true
 
 [[acceptance]]
 text = "docs/plugins.md section 11 points to the example; sadi plugins list shows it when SADI_PLUGIN_PATH is set"

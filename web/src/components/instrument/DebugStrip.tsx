@@ -1,9 +1,10 @@
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
+// frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { useEffect, useState } from "react";
 import { useLive } from "../../state/LiveContext";
 import type { FrameMeta } from "../../hooks/useTrace";
-import { useBackendFacts, type BackendFacts } from "./useBackendFacts";
+import type { BackendFacts } from "./useBackendFacts";
 
 /** Frame age (ms) above which the stream counts as stale. */
 export const STALE_FRAME_MS = 1500;
@@ -32,7 +33,7 @@ export function DebugStripView({ meta, nowMs, facts, backend }: { readonly meta:
     ["Frame age", `${age.state === "stale" ? "(!) " : ""}${age.text}`, age.state],
     ["Backend", backend],
     ["Session", facts.session === null ? "none open" : facts.session.name],
-    ["Data folder", facts.dataRoot !== null ? `${facts.dataRoot} (default; may differ if --data-root is set)` : unavailable("backend does not report the active folder")],
+    ["Data folder", facts.dataRoot !== null ? facts.dataRoot : unavailable("backend does not report the active folder")],
     ["Save / WAL", save],
     ["Last error", facts.lastError === null ? "none" : `(!) ${facts.lastError}`],
   ];
@@ -46,9 +47,8 @@ export function DebugStripView({ meta, nowMs, facts, backend }: { readonly meta:
 }
 
 /** Always-visible debug strip: ticks once a second so frame age stays current. */
-export function DebugStrip({ backend }: { readonly backend: string }): React.JSX.Element {
+export function DebugStrip({ backend, facts }: { readonly backend: string; readonly facts: BackendFacts }): React.JSX.Element {
   const { meta } = useLive();
-  const facts = useBackendFacts();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => { const id = setInterval(() => { setNow(Date.now()); }, 500); return () => { clearInterval(id); }; }, []);
   return <DebugStripView meta={meta} nowMs={now} facts={facts} backend={backend} />;

@@ -187,7 +187,7 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry(), replays))
     app.include_router(make_plots_router(app.state.sessions, replays))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
-    app.include_router(make_doctor_router())
+    app.include_router(make_doctor_router(cfg.data_root))
     # frob:ticket 01M6WZZEHBSPSCHA90KQG3RK1T
     _dev = cfg.device
     app.include_router(

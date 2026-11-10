@@ -7,7 +7,7 @@ import { getLogger } from "../../api/log";
 import { exportFigure, validateDrawable, type ExportOptions } from "../../plots/core";
 import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
 import { currentlySynthetic, EXPORT_PREFIX, type DataProvenance, exportFilename, isSynthetic, useProvenance } from "../../state/provenance";
-import { exportUrl, getExportFormats, getFigureData, getResults, toProblem } from "./api";
+import { exportUrl, getExportFormats, getFigureData, getResults, getSessionName, keepFigure, toProblem } from "./api";
 import { figureDataScenes, isFigureData } from "./figureScenes";
 import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
 
@@ -17,8 +17,9 @@ const log = getLogger("screens.export");
 export const DPI_CHOICES = [96, 192, 300, 600] as const;
 
 /** Download file name for a figure export (SYNTHETIC- prefixed when the data is synthetic). */
-export function figureFileName(formatId: string, fmt: ExportOptions["format"]): string {
-  return exportFilename(`${formatId}.${fmt}`, currentlySynthetic());
+export function figureFileName(formatId: string, fmt: ExportOptions["format"], sessionName = ""): string {
+  const base = sessionName === "" ? formatId : `${sessionName}-${formatId}`;
+  return exportFilename(`${base}.${fmt}`, currentlySynthetic());
 }
 
 /** Save a blob through a temporary link; browser only. */
@@ -52,7 +53,8 @@ export async function exportFigureFormat(
     log.info("no figure data to draw yet", { formatId });
     return { title: "Nothing to plot yet", detail: `format ${formatId}`, hint: "Capture some points, then export again.", status: null };
   }
-  const files: { blob: Blob; name: string }[] = [];
+  const sessionName = await getSessionName(fetchImpl);
+  const files: { blob: Blob; name: string; id: string }[] = [];
   for (const { suffix, scene } of figures) {
     const v = validateDrawable(scene);
     if (!v.ok) {
@@ -64,9 +66,13 @@ export async function exportFigureFormat(
       log.error("figure export failed", { formatId, suffix, error: x.error });
       return { title: "Figure export failed", detail: x.error, hint: "Try SVG, or a lower DPI.", status: null };
     }
-    files.push({ blob: x.value.blob, name: figureFileName(`${formatId}-${suffix}`, opts.format) });
+    files.push({ blob: x.value.blob, name: figureFileName(`${formatId}-${suffix}`, opts.format, sessionName), id: `${formatId}-${suffix}` });
   }
-  for (const f of files) save(f.blob, f.name);
+  for (const f of files) {
+    save(f.blob, f.name);
+    const kept = await keepFigure(f.id, f.blob, fetchImpl);
+    log.info("figure copy in session folder", { id: f.id, kept });
+  }
   log.info("figure exported", { formatId, format: opts.format, dpi: opts.dpi, files: files.length });
   return null;
 }

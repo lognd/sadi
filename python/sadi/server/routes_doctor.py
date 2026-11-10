@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from typani import Err, Ok
@@ -22,14 +24,15 @@ def _raise_http(err: DoctorError, what: str) -> HTTPException:
     return HTTPException(status_code=404, detail=err.description)
 
 
-def make_doctor_router() -> APIRouter:
-    """Build the doctor router; checks run in a threadpool and never mutate anything."""
+def make_doctor_router(data_root: Path | None = None) -> APIRouter:
+    """Build the doctor router for `data_root`; checks run in a threadpool, read-only."""
+    root = str(data_root) if data_root is not None else None
     router = APIRouter(prefix="/api/doctor", tags=["doctor"])
 
     @router.get("", response_model=DoctorReport)
     async def get_doctor() -> DoctorReport:
         """Run every check and return the full DoctorReport."""
-        res = await run_in_threadpool(run, RunOptions())
+        res = await run_in_threadpool(run, RunOptions(data_root=root, probe_device=False))
         if isinstance(res, Err):
             raise _raise_http(res.error, "GET")
         assert isinstance(res, Ok)
@@ -42,7 +45,7 @@ def make_doctor_router() -> APIRouter:
         if check_id not in {spec.id for spec, _ in all_checks()}:
             _log.info("doctor POST %r -> 404 (unknown check)", check_id)
             raise HTTPException(status_code=404, detail=DoctorError.UnknownCheck.description)
-        res = await run_in_threadpool(run, RunOptions(checks=(check_id,)))
+        res = await run_in_threadpool(run, RunOptions(checks=(check_id,), data_root=root))
         if isinstance(res, Err):
             raise _raise_http(res.error, "POST")
         assert isinstance(res, Ok)

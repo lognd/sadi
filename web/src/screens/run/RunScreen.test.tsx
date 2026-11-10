@@ -13,6 +13,7 @@ import { buildBody, decide, postCapture } from "./capture";
 import { postLoadChange } from "./loadChange";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
 import { RunView, settleText, type RunViewProps } from "./RunView";
+import { guidanceText } from "./RunScreen";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
 
@@ -203,5 +204,33 @@ describe("RunView hotkey hint (U-04)", () => {
     const out = html(<RunView {...props()} />);
     expect(out).toContain('data-testid="hotkey-hint"');
     expect(out).toContain('aria-describedby="hotkey-hint"');
+  });
+});
+
+// regression test for audit1#17 idle readout, audit1#31 guidance text, audit1#6 diameter warning
+describe("audit1 run-screen fixes", () => {
+  it("old frames make the readout idle: no stale volts, drift or saturation", () => {
+    const { w } = simStream(flat(40, 4.99), [state("creeping")]);
+    const v = deriveLive(w.snapshot(100), OPEN, "creeping", false, Number.NaN, 5000);
+    expect(v.idle).toBe(true);
+    expect(v.volts).toBeNull();
+    expect(v.driftVps).toBeNull();
+    expect(v.signal).toBe("ok");
+    expect(v.motion).toBe("unknown");
+    expect(decide(v, false, "idle").kind).toBe("blocked");
+  });
+  it("fresh frames are not idle and NaN drift becomes null", () => {
+    const { w } = simStream(flat(40, 1), [state("settled")]);
+    const v = deriveLive(w.snapshot(100), OPEN, "settled", false, Number.NaN, 100);
+    expect(v.idle).toBeFalsy();
+    expect(v.driftVps).toBeNull();
+  });
+  it("guidanceText replaces a zero-kg hang instruction", () => {
+    expect(guidanceText("Hang a total of 0.000 kg")).not.toMatch(/0\.000/);
+    expect(guidanceText("Hang a total of 0.250 kg")).toContain("0.250");
+  });
+  it("RunView warns on an implausible diameter and offers metres", () => {
+    const out = html(<RunView {...props({ phase: "tare", fields: { diameter: "0.2" } })} />);
+    expect(out).toContain('data-testid="plausible-diameter"');
   });
 });

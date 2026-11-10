@@ -1,3 +1,4 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -28,17 +29,21 @@ export interface WizardShellProps {
   onWizard?: (w: WizardState) => void;
   /** When true, undo and redo keys go to `onKeyAction` instead of the shell (the work area owns history). */
   delegateUndo?: boolean;
+  /** Host bumps this after each accepted point capture so the Saved indicator updates. */
+  savedTick?: number;
 }
 
 // frob:accept COV001 because="vitest tests exist (wizard.test.tsx, keymap.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Wizard shell: the front panel (step rail, step content, next action, live readout, live trace, status bar) plus keyboard capture. */
-export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false }: WizardShellProps): React.JSX.Element {
+export function WizardShell({ children, onKeyAction, nudgeActive = false, onWizard, delegateUndo = false, savedTick = 0 }: WizardShellProps): React.JSX.Element {
   const { view } = useLive();
   const [wizard, setWizard] = useState<WizardState | null>(null);
   const [failure, setFailure] = useState<WizardFailure | null>(null);
   const [busy, setBusy] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [help, setHelp] = useState(true);
+  // A point capture (not a wizard write) also persists data: stamp the Saved indicator when the host bumps this.
+  useEffect(() => { if (savedTick > 0) setSavedAt(new Date().toLocaleTimeString()); }, [savedTick]);
   const wizardCb = useRef(onWizard);
   wizardCb.current = onWizard;
 

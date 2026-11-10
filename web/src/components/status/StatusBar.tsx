@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
+// frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
 /** Where readings come from. */
 export type Source = "connected" | "simulated" | "disconnected";
 /** Settle detector verdict (a suggestion only). */
@@ -22,11 +23,12 @@ const GLYPH = (bad: boolean): string => (bad ? "(!)" : "(ok)");
 
 /** Always-visible status bar: source, motion, signal, save time; word plus glyph, never colour alone. */
 export function StatusBar({ source, motion, signal, savedAt }: StatusBarProps): React.JSX.Element {
+  const off = source === "disconnected";
   return (
     <div role="status" aria-label="Status">
       <span data-indicator="source">{GLYPH(source === "disconnected")} {SOURCE[source]}</span>{" "}
-      <span data-indicator="motion">{GLYPH(motion === "creeping")} {MOTION[motion]}</span>{" "}
-      <span data-indicator="signal">{GLYPH(signal !== "ok")} {SIGNAL[signal]}</span>{" "}
+      <span data-indicator="motion">{off ? "--" : GLYPH(motion === "creeping")} {off ? "No signal" : MOTION[motion]}</span>{" "}
+      <span data-indicator="signal">{off ? "--" : GLYPH(signal !== "ok")} {off ? "No signal" : SIGNAL[signal]}</span>{" "}
       <span data-indicator="saved">{savedAt === null ? "Not saved yet" : `Saved ${savedAt}`}</span>
     </div>
   );

@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 /** Pure derivation of what the run screen shows from the live snapshot, connection and settle state. */
 import { SATURATION_V } from "../../plots/live/scene";
 import type { Snapshot } from "../../plots/live/window";
@@ -10,6 +11,8 @@ import type { SettleState } from "../../ws/messages";
 export const NEAR_LIMIT_FRACTION = 0.9;
 /** Seconds of recent trace used for the saturation check and the drift estimate. */
 export const RECENT_S = 1;
+/** Milliseconds without a frame after which the readout counts as idle (not live). */
+export const IDLE_FRAME_MS = 2000;
 
 /** Everything the readouts and status bar need. */
 export interface LiveView {
@@ -22,6 +25,30 @@ export interface LiveView {
   readonly source: Source;
   /** True when the data on screen lags the instrument (disconnected or flagged stale). */
   readonly stale: boolean;
+  /** True when no frame arrived recently: readings are cleared rather than shown as live. */
+  readonly idle?: boolean;
+  /** Recent mean / sd / count used for tare values the operator should not have to type; null when idle or too little data. */
+  readonly recent?: RecentStats | null;
+}
+
+/** Mean, sample standard deviation and column count of the recent trace (basis of the tare). */
+export interface RecentStats {
+  readonly mean: number;
+  readonly sd: number;
+  readonly n: number;
+}
+
+/** Statistics of the mid line over the last RECENT_S seconds; null with fewer than 2 columns. */
+export function recentStats(s: Snapshot): RecentStats | null {
+  let n = 0, sum = 0, sumSq = 0;
+  for (let i = 0; i < s.x.length; i++) {
+    if ((s.x[i] as number) < s.t1 - RECENT_S) continue;
+    const v = s.mid[i] as number;
+    n++; sum += v; sumSq += v * v;
+  }
+  if (n < 2) return null;
+  const mean = sum / n;
+  return { mean, sd: Math.sqrt(Math.max(0, (sumSq - n * mean * mean) / (n - 1))), n };
 }
 
 /** Slope (V/s) of `mid` against `x` over columns at or after `from`; null with fewer than 3 columns. */
@@ -63,14 +90,19 @@ export function motionOf(st: SettleState | null): Motion {
 /** Combine the trace snapshot, connection and latest settle state into one view; server drift wins over the client estimate. */
 export function deriveLive(
   snap: Snapshot, conn: ConnState, settle: SettleState | null, simulated: boolean, serverDriftVps: number | null = null,
+  frameAgeMs: number | null = null,
 ): LiveView {
   const n = snap.x.length;
+  const idle = frameAgeMs !== null && frameAgeMs > IDLE_FRAME_MS;
+  const drift = idle ? null : (serverDriftVps ?? driftOver(snap.x, snap.mid, snap.t1 - RECENT_S));
   return {
-    volts: n === 0 ? null : (snap.mid[n - 1] as number),
-    driftVps: serverDriftVps ?? driftOver(snap.x, snap.mid, snap.t1 - RECENT_S),
-    signal: signalOf(snap),
-    motion: motionOf(settle),
+    volts: n === 0 || idle ? null : (snap.mid[n - 1] as number),
+    driftVps: drift !== null && Number.isFinite(drift) ? drift : null,
+    signal: idle ? "ok" : signalOf(snap),
+    motion: idle ? "unknown" : motionOf(settle),
     source: sourceOf(conn, simulated),
-    stale: conn.status !== "open" || snap.stale,
+    stale: idle || conn.status !== "open" || snap.stale,
+    idle,
+    recent: idle ? null : recentStats(snap),
   };
 }

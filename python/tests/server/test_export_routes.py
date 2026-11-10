@@ -131,17 +131,19 @@ def test_unknown_format_and_writer_failure(client: TestClient) -> None:
 
 # frob:tests python/sadi/server/routes/export.py::render_export
 def test_export_is_read_only(client: TestClient, tmp_path: Path) -> None:
-    """Exporting leaves every file under the data root byte-identical and adds none."""
+    """Exporting never changes an existing file; downloads only add files under exports/."""
     _open(client)
 
     def snap() -> dict[str, bytes]:
         return {str(p): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
 
     before = {k: v for k, v in snap().items() if not k.endswith(".lock")}
-    client.get("/api/export/points")
     client.get("/api/export/figure")
+    assert {k: v for k, v in snap().items() if not k.endswith(".lock")} == before
+    client.get("/api/export/points")
     after = {k: v for k, v in snap().items() if not k.endswith(".lock")}
-    assert after == before
+    assert all(after[k] == v for k, v in before.items())
+    assert all("/exports/points/" in k for k in after.keys() - before.keys())
 
 
 # frob:tests python/sadi/server/routes/export.py::render_export
@@ -157,3 +159,32 @@ def test_real_lctt_lab_lists_csv_and_refuses_empty_session(tmp_path: Path) -> No
         res = c.get("/api/export/lctt-csv")
         assert res.status_code >= 400
         assert res.headers["content-type"].startswith("application/problem+json")
+
+
+# frob:tests python/sadi/server/routes/export.py::_save_copy
+def test_download_is_also_kept_in_session_folder(client: TestClient, tmp_path: Path) -> None:
+    """Audit1 #22: a download is written atomically under exports/ with a sidecar; never overwritten."""
+    _open(client)
+    first = client.get("/api/export/points")
+    second = client.get("/api/export/points")
+    assert first.headers["x-sadi-saved"].startswith("exports/points/0001-")
+    assert second.headers["x-sadi-saved"].startswith("exports/points/0002-")
+    (sess,) = (tmp_path / "sessions").iterdir()
+    kept = sorted(p for p in (sess / "exports" / "points").iterdir() if not p.name.startswith("."))
+    assert len([p for p in kept if p.suffix == ".csv"]) == 2
+    assert len([p for p in kept if p.name.endswith(".prov.json")]) == 2
+    assert kept[0].read_bytes() == first.content
+    assert not list((sess / "exports" / "points").glob(".*.tmp-*"))
+    assert sess.name.split(".v")[0].endswith("-t")
+
+
+# frob:tests python/sadi/server/routes/export.py::make_export_router
+def test_figure_upload_is_kept_without_overwrite(client: TestClient, tmp_path: Path) -> None:
+    """Audit1 #22: a browser-rendered PNG is stored in exports/figure with the session name."""
+    _open(client)
+    png = b"\x89PNG\r\n\x1a\n" + b"x" * 32
+    a = client.post("/api/export/figure/points", content=png)
+    b = client.post("/api/export/figure/points", content=png)
+    assert a.status_code == 200 and a.json()["saved"] != b.json()["saved"]
+    assert a.json()["saved"].endswith("-points.png") and "-t.v001" in a.json()["saved"]
+    assert client.post("/api/export/figure/points", content=b"").status_code == 400

@@ -2036,6 +2036,11 @@
             ],
             "title": "Port"
           },
+          "probe_device": {
+            "default": true,
+            "title": "Probe Device",
+            "type": "boolean"
+          },
           "render_os": {
             "anyOf": [
               {
@@ -2217,6 +2222,14 @@
             "title": "Name",
             "type": "string"
           },
+          "newer_versions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Newer Versions",
+            "type": "array"
+          },
           "parent": {
             "anyOf": [
               {
@@ -2283,6 +2296,22 @@
           "lab": {
             "title": "Lab",
             "type": "string"
+          },
+          "latest": {
+            "default": true,
+            "title": "Latest",
+            "type": "boolean"
+          },
+          "latest_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Name"
           },
           "name": {
             "title": "Name",
@@ -2800,6 +2829,50 @@
           }
         },
         "summary": "List Formats"
+      }
+    },
+    "/api/export/figure/{figure_id}": {
+      "post": {
+        "description": "Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites).",
+        "operationId": "save_figure_api_export_figure__figure_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "figure_id",
+            "required": true,
+            "schema": {
+              "title": "Figure Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Save Figure Api Export Figure  Figure Id  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Figure"
       }
     },
     "/api/export/{format_id}": {

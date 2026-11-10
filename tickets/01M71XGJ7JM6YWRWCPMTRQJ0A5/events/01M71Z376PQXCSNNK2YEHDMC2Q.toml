@@ -1,0 +1,59 @@
+kind = "evidence"
+captured_at = "2026-11-10T05:31:56Z"
+digest = "1358307677d1a223e88cdd447d1cce2f26203db5985e40d44a20fef1ff1217bd"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/doctor/DoctorScreen.test.tsx > doctor ui > opens from a connection error
+[doctor.route] doctor opened { reason: 'connection-error' }
+[doctor.route] doctor closed {}
+
+stdout | src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] request { path: '/api/doctor/NET-001/run', method: 'POST' }
+
+stdout | src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] request { path: '/api/doctor' }
+
+ \u{2713} src/doctor/DoctorScreen.test.tsx (5 tests) 23ms
+stdout | src/components/instrument/audit1.test.tsx > audit1 shell fixes > #37 skips /api/session when asked and keeps the previous session
+[api.client] request { path: '/api/save-indicator' }
+[api.client] request { path: '/api/device/status' }
+[api.client] request { path: '/api/root-lock' }
+[api.client] response ok { path: '/api/save-indicator', status: 200 }
+[api.client] response ok { path: '/api/device/status', status: 200 }
+[api.client] response ok { path: '/api/root-lock', status: 200 }
+
+stdout | src/components/instrument/audit1.test.tsx > audit1 shell fixes > #37 skips /api/session when asked and keeps the previous session
+[api.client] request { path: '/api/save-indicator' }
+[api.client] request { path: '/api/device/status' }
+[api.client] request { path: '/api/session' }
+[api.client] request { path: '/api/root-lock' }
+[api.client] response ok { path: '/api/save-indicator', status: 200 }
+[api.client] response ok { path: '/api/device/status', status: 200 }
+[api.client] response ok { path: '/api/session', status: 200 }
+[api.client] response ok { path: '/api/root-lock', status: 200 }
+
+ \u{2713} src/components/instrument/audit1.test.tsx (8 tests) 24ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  00:32:32
+   Duration  1.45s (transform 679ms, setup 0ms, collect 1.11s, tests 48ms, environment 0ms, prepare 311ms)
+
+JSON report written to /tmp/frob-vitest-510494-1.json
+stderr | src/doctor/DoctorScreen.test.tsx > doctor ui > typed client calls the doctor endpoints
+[api.client] http error { path: '/api/doctor', status: 500 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/instrument/audit1.test.tsx web/src/doctor/DoctorScreen.test.tsx"
+size = 2146
+status = "measured"
+test_count = 13
+tests_digest = "8c36bf16ed8dcc978e69cf24b53ff4ab7addeb9a2d71b4a5a610eaae42a45d0e"
+at = "2026-11-10T05:31:56Z"
+actor = "lognd"
+rev = 1

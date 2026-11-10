@@ -37,7 +37,7 @@ from sadi.store.manifest import (
     read_manifest,
     write_manifest,
 )
-from sadi.store.names import sanitize_name
+from sadi.store.names import ascii_fold, sanitize_name
 from sadi.store.wal import ScanReport, WalError, WalReader
 
 _log = get_logger(__name__)
@@ -172,7 +172,7 @@ def _io(exc: OSError, path: Path) -> SessionIo:
 def _slug(raw: str) -> str:
     """Normalise a slug to <=32 portable chars (lowercase, no reserved names), default `session`."""
     # frob:ticket 01M6WC0KV4VWZ2E3A989J7TDEC
-    base = _SLUG_RE.sub("-", raw.lower()).strip("-")[:32] or "session"
+    base = _SLUG_RE.sub("-", ascii_fold(raw).lower()).strip("-")[:32] or "session"
     return sanitize_name(base, max_len=_SLUG_MAX_LEN)
 
 
@@ -293,12 +293,24 @@ class SessionHandle:
     _lock_fd: int | None = field(default=None, repr=False)
     _root_lock: DataRootLock | None = field(default=None, repr=False)
 
+    def _wal_last_seq(self) -> int | None:
+        """Last verified WAL seq for the closing manifest, or the old value if unreadable."""
+        scan = WalReader.scan(self.path / "wal") if (self.path / "wal").is_dir() else None
+        if scan is None or scan.is_err:
+            _log.warning("close of %s: WAL not scannable; last_seq left as %s", self.path.name,
+                         self.manifest.last_seq)
+            return self.manifest.last_seq
+        return scan.danger_ok.last_seq
+
     @propagate
     def close(self, state: str = "closed") -> Result[None, SessionError]:
         """Write the closed manifest atomically, then release both locks; idempotent."""
         if self._lock_fd is None:
             return Ok(None)
-        updated = self.manifest.model_copy(update={"state": state, "closed": datetime.now(UTC)})
+        # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+        updated = self.manifest.model_copy(
+            update={"state": state, "closed": datetime.now(UTC), "last_seq": self._wal_last_seq()}
+        )
         written = write_manifest(self.path, updated)
         _release_os_lock(self._lock_fd)
         self._lock_fd = None
@@ -345,6 +357,23 @@ def _take_version(
         return Ok((path, ver))
     _log.error("family %s exhausted all %d versions", family, MAX_VERSION)
     return Err(TooManyVersions(family=family))
+
+
+def _free_family(sessions: Path, base: str) -> str:
+    """Return `base`, or `base-2`, `base-3`... so a new session never joins another family."""
+    # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    def used(fam: str) -> bool:
+        """True if any version dir of `fam` exists (case-insensitive for portable roots)."""
+        prefix = f"{fam}.v".casefold()
+        return any(p.name.casefold().startswith(prefix) for p in sessions.iterdir())
+
+    fam, n = base, 1
+    while used(fam):
+        n += 1
+        fam = f"{base}-{n}"
+    if n > 1:
+        _log.warning("session family %s already exists; using %s", base, fam)
+    return fam
 
 
 @propagate
@@ -452,7 +481,7 @@ def _create_locked(
         sessions.mkdir(parents=True, exist_ok=True)
     except OSError as exc:
         return Err(_io(exc, sessions))
-    family = f"{when.strftime('%Y%m%dT%H%M%SZ')}-{_slug(meta.slug)}"
+    family = _free_family(sessions, f"{when.strftime('%Y%m%dT%H%M%SZ')}-{_slug(meta.slug)}")
     taken = _take_version(sessions, family, 1)
     path, ver = taken.unwrap()
     manifest = Manifest(

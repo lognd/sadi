@@ -21,7 +21,14 @@ including pre-session Setup. The bar shows big monospace LVDT volts, displacemen
 loud SIMULATED banner. The strip shows device, firmware, sample rate, seq / durable seq, frame age,
 backend, session id, data folder, save / WAL state and last error. A field the backend does not
 expose reads "unavailable (reason)". Facts come from `useBackendFacts` (polls REST) and
-`useTrace().meta` (per-frame seq, durable seq, arrival time).
+`useTrace().meta` (per-frame seq, durable seq, arrival time). `App` calls `useBackendFacts` once and
+passes the facts to both components. It retries the Doctor host facts (data folder) until known, and
+polls `/api/session` only every 5th tick while no session is open. When the instrument is
+disconnected the bar shows the device hint ("plug in the instrument") and "no signal" for Settle and
+Signal (never "ok"). `App` also polls `/api/health` every 3 s: the pill and strip follow the backend
+down and up; only the first failure opens the Doctor, and the wizard shows a backend-down notice
+and reloads itself when the connection returns. The Doctor screen leads with a verdict banner
+(verdict, counts, first action). The step rail follows the step content in DOM order (focus order).
 
 ## Shared live feed
 

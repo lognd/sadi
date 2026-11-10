@@ -1,13 +1,14 @@
 // frob:ticket 01M6X9NXTD91A49K5KE81EQRYA
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 import { CalibrationPlot } from "../../plots/calibration";
 import type { CalibrationData } from "../../plots/calibration";
 import { StressStrainScreen } from "../StressStrainScreen";
 import type { StressStrainData } from "../../plots/stressstrain";
 import type { LiveView } from "./live";
 export { settleText } from "../../components/live/settle";
-import { PHASE_FIELDS } from "./inputFields";
+import { PHASE_FIELDS, plausibilityNote } from "./inputFields";
 import { PHASES, type RunPhase } from "./phases";
 import { TEXT_FIELD_HOTKEY_HINT } from "../../keys/keymap";
 
@@ -56,16 +57,27 @@ export function RunView(p: RunViewProps): React.JSX.Element {
       )}
       <fieldset aria-label="Capture inputs" aria-describedby="hotkey-hint">
         <legend>Capture inputs (SI units)</legend>
-        {PHASE_FIELDS[p.phase].map((f) => (
-          <label key={f.key} className="field">
-            {f.label}{f.unit ? ` (${f.unit})` : ""}{f.required ? " *" : ""}{" "}
-            <input
-              type="text" inputMode="decimal" name={f.key} value={p.fields[f.key] ?? ""}
-              placeholder={f.live === true ? (v.volts === null ? "live" : `live ${v.volts.toFixed(4)}`) : ""}
-              onChange={(e) => { p.onField(f.key, e.target.value); }}
-            />
-          </label>
-        ))}
+        {PHASE_FIELDS[p.phase].filter((f) => f.derived !== true).map((f) => {
+          const note = plausibilityNote(f, p.fields[f.key] ?? "");
+          return (
+            <span key={f.key}>
+              <label className="field">
+                {f.label}{f.unit ? ` (${f.unit})` : ""}{f.required ? " *" : ""}{" "}
+                <input
+                  type="text" inputMode="decimal" name={f.key} value={p.fields[f.key] ?? ""}
+                  placeholder={f.live === true ? (v.volts === null ? "live" : `live ${v.volts.toFixed(4)}`) : ""}
+                  onChange={(e) => { p.onField(f.key, e.target.value); }}
+                />
+              </label>
+              {note !== null && (
+                <span role="alert" data-testid={`plausible-${f.key}`}>
+                  {" "}(!) {note.message}
+                  {note.suggest !== null && <>{" "}<button type="button" onClick={() => { p.onField(f.key, note.suggest ?? ""); }}>Use {note.suggest} {f.unit}</button></>}
+                </span>
+              )}
+            </span>
+          );
+        })}
       </fieldset>
       <small data-testid="hotkey-hint" id="hotkey-hint" role="note"> {TEXT_FIELD_HOTKEY_HINT}</small>
       {p.plot?.kind === "calibration" && <CalibrationPlot data={p.plot.data} />}

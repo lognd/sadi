@@ -1,0 +1,1 @@
+Doctor page load no longer probes the serial port and reports the real data root; the web shell notices a dead or recovered backend, shows a Doctor verdict banner and a plug-in hint (no false "ok") when the instrument is disconnected, and fixes step-rail focus order and glyph wrapping.

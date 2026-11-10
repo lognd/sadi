@@ -271,8 +271,8 @@ def test_sim_flag_injects_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     assert _FakeDevice.closed
 
 
-def test_no_sim_means_no_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Without --sim or SADI_SIM no device is injected."""
+def test_no_sim_opens_real_board(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Without --sim or SADI_SIM the real board (faked here) is injected, never None."""
     monkeypatch.delenv("SADI_SIM", raising=False)
     seen: list[object] = []
 
@@ -281,7 +281,7 @@ def test_no_sim_means_no_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
 
     argv = ["--skip-preflight", "--no-browser", "--port", "0", "--data-root", str(tmp_path)]
     assert launcher.main(argv, serve=fake_serve) == 0
-    assert seen == [None]
+    assert len(seen) == 1 and seen[0] is not None
 
 
 def test_sim_open_failure_exits_device(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

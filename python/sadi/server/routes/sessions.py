@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter
 
 from sadi.core.wizard import History, WizardState
@@ -25,6 +27,32 @@ from sadi.server.schemas import (
 )
 from sadi.server.service import SessionService
 
+_log = logging.getLogger(__name__)
+
+
+# frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+def mark_latest(items: list[SessionSummary]) -> list[SessionSummary]:
+    """Flag every version that has a newer sibling in its family as `latest=False` (audit1 #12)."""
+    newest: dict[str, SessionSummary] = {}
+    for item in items:
+        if item.family not in newest or item.version > newest[item.family].version:
+            newest[item.family] = item
+    return [
+        item
+        if item is newest[item.family]
+        else item.model_copy(update={"latest": False, "latest_name": newest[item.family].name})
+        for item in items
+    ]
+
+
+# frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+def newer_than(items: list[SessionSummary], name: str) -> list[str]:
+    """Names of versions in `name`'s family that are newer than it (empty if unknown or latest)."""
+    me = next((i for i in items if i.name == name), None)
+    if me is None:
+        return []
+    return [i.name for i in items if i.family == me.family and i.version > me.version]
+
 
 def make_sessions_router(svc: SessionService) -> APIRouter:
     """Build the /api router over `svc`; sync handlers run in the threadpool, off the loop."""
@@ -38,7 +66,7 @@ def make_sessions_router(svc: SessionService) -> APIRouter:
     @r.get("/sessions")
     def sessions() -> list[SessionSummary]:
         """List session versions on disk."""
-        return svc.list_sessions()
+        return mark_latest(svc.list_sessions())
 
     @r.post("/sessions", status_code=201)
     def create(body: SessionCreate) -> SessionInfo:
@@ -48,7 +76,11 @@ def make_sessions_router(svc: SessionService) -> APIRouter:
     @r.post("/sessions/resume", status_code=201)
     def resume(body: SessionResume) -> SessionInfo:
         """Resume a session as a new version."""
-        return unwrap(svc.resume(body.name))
+        newer = newer_than(svc.list_sessions(), body.name)
+        if newer:
+            _log.warning("resuming %s although newer versions exist: %s", body.name, newer)
+        info = unwrap(svc.resume(body.name))
+        return info.model_copy(update={"newer_versions": newer})
 
     @r.get("/session")
     def info() -> SessionInfo:

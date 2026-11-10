@@ -873,13 +873,13 @@ acked_at = "2026-11-10T04:35:50.926167346Z"
 [[symbol]]
 identity = "web/src/components/instrument/InstrumentBar.tsx::InstrumentBar"
 symref = "web/src/components/instrument/InstrumentBar.tsx::InstrumentBar"
-sig = "76deb200a1dcba19b5ea842f29ee7d70fe2960fbd4bb78172b3debd0eb3078e3"
-body = "8b33264ee456e4d4460d49f1b4f9311e18258858f420968ba3b2be235bd87124"
+sig = "d81c107c48bd691a5d2ba8f4a9c76067bdf15463ccd07643ad371b648ef5d17c"
+body = "187a891b962fba664a0c58c930aa14dba24e0f9366425b6a15f25d0aca2c2dec"
 doc = "d4bc7680ac5a4cd6cccbca32a289776373a19960afe55065ae85ead6d19b3974"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "924db936c6e14f4b3a6d8d1688757a09a75dfe239c17c76b870db6247c0dd556"
+contract = "90c9249420e6fe0f1fc9658bcdd88b836eb50f33fb1db81015d0704c17d6f6f3"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T04:06:53.946356897Z"
+acked_at = "2026-11-10T05:15:50.806097405Z"
 
 [[symbol]]
 identity = "web/src/components/instrument/InstrumentBar.tsx::InstrumentBarView"

@@ -60,6 +60,8 @@ TEMP_SPILL_GLOB = "sadi-spill-*.wal"
 MARKER_SUFFIX = ".imported.json"
 IMPORT_SLUG = "spill-import"
 FAILED_SUFFIX = ".join-failed.json"
+#: Sidecar recording that the fragment import of this content failed verification (kept, crashed).
+FRAGMENT_FAILED_SUFFIX = ".fragment-failed.json"
 #: Sidecar created before a join copy starts; present without an imported marker = it died.
 INPROGRESS_SUFFIX = ".join-inprogress.json"
 #: Free space kept in reserve beyond the copy itself before a join is attempted (M4).
@@ -422,6 +424,48 @@ def _write_failed_marker(scan: SpillScan, partial: Path | None, why: str) -> Non
         os.close(fd)
 
 
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _fragment_failed_path(spill: Path) -> Path:
+    """Return the sidecar path recording that the fragment import of `spill` failed verify."""
+    return spill.with_name(spill.name + FRAGMENT_FAILED_SUFFIX)
+
+
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _fragment_failed_before(scan: SpillScan) -> bool:
+    """Return True when a failed fragment import of this exact spill content is recorded."""
+    return _sidecar_names(_fragment_failed_path(scan.path), scan.sha256)
+
+
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _write_fragment_failed_marker(scan: SpillScan, err: SpillVerifyFailed) -> None:
+    """Exclusively write a durable marker so later starts skip this spill (nothing is deleted)."""
+    body = {
+        "sha256": scan.sha256,
+        "crashed_dir": str(err.version_dir),
+        "reason": f"verify failed: {err.error}",
+        "recorded": datetime.now(UTC).isoformat(),
+    }
+    created = create_exclusive(_fragment_failed_path(scan.path))
+    if created.is_err:
+        _log.warning(
+            "cannot write fragment-failed marker for %s: %s", scan.path, created.danger_err
+        )
+        return
+    fd = created.danger_ok
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("fragment-failed marker write for %s failed: %s", scan.path, exc)
+    finally:
+        os.close(fd)
+    _log.warning(
+        "fragment import of %s failed verify; crashed copy %s kept, spill skipped on later starts",
+        scan.path,
+        err.version_dir,
+    )
+
+
 def _wal_bytes(wal_dir: Path) -> int:
     """Total size of the WAL segment files in `wal_dir` (0 when unreadable)."""
     try:
@@ -540,7 +584,10 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
             _write_failed_marker(scan, err.path, str(err.error))
         else:
             _write_failed_marker(scan, err.version_dir, f"verify failed: {err.error}")
-        return _import_version(data_root, scan, data, parent, None, continuity_hint=False)
+        result = _import_version(data_root, scan, data, parent, None, continuity_hint=False)
+    if result.is_err and isinstance(result.danger_err, SpillVerifyFailed):
+        # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+        _write_fragment_failed_marker(scan, result.danger_err)
     return result
 
 
@@ -643,6 +690,10 @@ def import_all_spills(
         scan = scanned.danger_ok
         if _already_imported(scan):
             _log.info("spill %s already imported, skipping", spill)
+            outcomes.append((spill, Ok(None)))
+            continue
+        if _fragment_failed_before(scan):  # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+            _log.warning("spill %s failed fragment verify before; kept, not re-copied", spill)
             outcomes.append((spill, Ok(None)))
             continue
         twin = seen_content.get(scan.sha256)

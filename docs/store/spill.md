@@ -63,6 +63,10 @@ tail); it is a data-bearing version whose lineage is in its manifest.
   re-read marks it `crashed` (kept), writes the failed-join marker and imports the fragment.
   An exclusive `<name>.join-inprogress.json` is created before the join copy, so a join killed
   mid-copy is also never retried (fragment instead).
+- Failed fragment verify: if the fragment import itself fails re-verification, the crashed copy
+  is kept and an exclusive `<name>.fragment-failed.json` (content hash, crashed dir, reason) is
+  written (WARNING). Later starts see it and skip the spill (`Ok(None)`) instead of making
+  another crashed copy. Nothing is deleted or overwritten.
 - Lineage: `_descendants` does not walk through a non-superseding spill import, so resuming a
   fragment never marks the full parent as superseded. The setup list labels fragments
   ("Recovered fragment ...") and joined imports ("Recovered (complete)").

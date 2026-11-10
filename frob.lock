@@ -48,13 +48,13 @@ acked_at = "2026-11-10T08:12:26.927899509Z"
 [[symbol]]
 identity = "web/src/App.tsx::App"
 symref = "web/src/App.tsx::App"
-sig = "47a4b4ab65dcf5164efa5dd58182b6d4a5642b55ad1b6154adecd490b924c8fe"
-body = "1b4ad3bee242be7123f1fb68231c9ccf22a0503f4785d712ef93aa9c2183065a"
+sig = "2dd549c37f4655fb039f155820f73f7f5f49c584dc9c98127e39332c800e02b2"
+body = "211a4d63a966e64c8c6965475335905dcb3c8a83002ac96940ba2cde12c5d450"
 doc = "62b81571054e38a7ce061a7c243a6b593f239160aa7de373e5f8d5acc894e6d7"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "873ba02c2e4c0b472ef4a42f48cefdcd568d2a0e85c465aa711f99be5bf92647"
+contract = "2d1655cba15e62eeeef677a88916aead99dbfb1164e29862d75396791aaec2e9"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T08:12:26.927899509Z"
+acked_at = "2026-11-10T08:38:23.433577151Z"
 
 [[symbol]]
 identity = "web/src/App.tsx::HEALTH_POLL_MS"

@@ -7,8 +7,8 @@ priority = "medium"
 points = 8
 reporter = "lognd"
 created = "2026-11-10T04:02:36Z"
-updated = "2026-11-10T04:27:34Z"
-scope = ["python/sadi/**", "python/tests/**", "docs/synthetic.md", "docs/index.md"]
+updated = "2026-11-10T04:30:19Z"
+scope = ["python/sadi/**", "python/tests/**", "docs/synthetic.md", "docs/index.md", "web/src/api/**"]
 
 [[acceptance]]
 text = "Synthetic source generates 32 AWG Cu stress/strain-correlated LVDT and load volts with elastic region, yield, strain hardening, creep under hold, and seeded noise; deterministic for a seed"

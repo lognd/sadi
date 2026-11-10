@@ -21,3 +21,5 @@ Parent: [web layout](../web-layout.md), next to the [guidance panel](guidance.md
 - Errors are problem+json: `toProblem` reads `title`, `detail` and `hint`; `ProblemAlert`
   shows them with `role="alert"`.
 - Figure JSON carries no theme; the light publication theme is applied before drawing.
+
+See also the [synthetic data banner](synthetic-banner.md) shown above the report and the download list.

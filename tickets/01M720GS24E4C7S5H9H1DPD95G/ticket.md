@@ -2,7 +2,8 @@
 id = "01M720GS24E4C7S5H9H1DPD95G"
 title = "Server /api/results omits yield_stress for the lctt lab (analyze stub)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

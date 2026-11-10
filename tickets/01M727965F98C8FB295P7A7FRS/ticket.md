@@ -6,8 +6,8 @@ category = "todo"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T07:55:38Z"
-updated = "2026-11-10T07:55:38Z"
-scope = ["python/sadi/server/routes/sessions.py", "python/sadi/server/service.py", "web/src/screens/SessionSetup.tsx"]
+updated = "2026-11-10T07:55:45Z"
+scope = ["python/sadi/server/routes/sessions.py", "python/sadi/server/service.py", "web/src/screens/setup/SessionSetup.tsx"]
 
 [[acceptance]]
 text = "latest computed by parent ancestry excluding incomplete; interrupted/incomplete sessions downloadable as verified prefix with X-SADI-Torn-Tail header; Download shown for them; tests"

@@ -7,8 +7,8 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T13:32:29Z"
-updated = "2026-11-10T13:38:48Z"
-scope = ["python/sadi/synthetic/provenance.py", "python/sadi/store/spill.py", "web/src/api/schema.ts"]
+updated = "2026-11-10T13:42:01Z"
+scope = ["python/sadi/synthetic/provenance.py", "python/sadi/store/spill.py", "web/src/api/schema.ts", "python/sadi/**", "python/tests/**", "web/src/**", "docs/synthetic.md"]
 
 [[acceptance]]
 text = "Orphan import is neither real nor synthetic; export filename and UI say unknown; openapi and schema.ts regenerated"

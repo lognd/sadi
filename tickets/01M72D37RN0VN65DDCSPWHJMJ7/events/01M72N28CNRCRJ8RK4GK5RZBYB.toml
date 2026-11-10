@@ -1,0 +1,27 @@
+kind = "evidence"
+captured_at = "2026-11-10T11:27:28Z"
+digest = "1076313024d6695812870b8cdad8664e674a015e924f349fbbdcb3e10a88c4e7"
+exit_code = 0
+inline = '''
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+ Nextest run ID 8ad628d8-26ee-410c-9098-f68f06ed018c with nextest profile: default
+    Starting 5 tests across 10 binaries (130 tests skipped)
+        PASS [   0.008s] sadi-proto::sim_device close_and_purge_behave
+        PASS [   0.008s] sadi-py meta::tests::features_match_cfg
+        PASS [   0.009s] sadi-proto error::tests::timeout_message_mentions_duration
+        PASS [   0.009s] sadi-py acq::tests::gaps_and_timeouts_are_counted
+        PASS [   0.017s] sadi-proto::replay recording_counts_tx_and_rx_and_finishes
+\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}
+     Summary [   0.019s] 5 tests run: 5 passed, 130 skipped
+'''
+passed = true
+provider = "nextest"
+ref = "-p sadi-proto -p sadi-py -E '(package(=sadi-proto) & (test(=close_and_purge_behave) | test(=error::tests::timeout_message_mentions_duration) | test(=recording_counts_tx_and_rx_and_finishes))) | (package(=sadi-py) & (test(=acq::tests::gaps_and_timeouts_are_counted) | test(=meta::tests::features_match_cfg)))'"
+size = 849
+status = "measured"
+test_count = 5
+tests_digest = "fa145abeb732bdd1e732211f37030a69d631547db3f1c472b5ebf5fdecdbc1d1"
+at = "2026-11-10T11:27:28Z"
+actor = "lognd"
+rev = 1

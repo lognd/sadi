@@ -1,0 +1,101 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T12:22:39Z"
+digest = "b16d32cc013be5e78854962ab48d52d6d8eee8cd3b7c302c81fb247bec6d855f"
+exit_code = 0
+head = "6413cd97e1107ad076116f761a9c23ef115f55a9"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/keys/keymap.test.ts (13 tests) 6ms
+ \u{2713} web/src/components/guidance/GpLoadPanel.test.tsx (5 tests) 22ms
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.run.loadChange] load change marked { seq: 5 }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > audit1 run-screen fixes > old frames make the readout idle: no stale volts, drift or saturation
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | web/src/screens/run/RunScreen.test.tsx > audit1 run-screen fixes > fresh frames are not idle and NaN drift becomes null
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+ \u{2713} web/src/screens/run/RunScreen.test.tsx (30 tests) 84ms
+
+ Test Files  3 passed (3)
+      Tests  48 passed (48)
+   Start at  07:22:39
+   Duration  1.90s (transform 714ms, setup 0ms, collect 1.16s, tests 113ms, environment 1ms, prepare 561ms)
+
+JSON report written to /tmp/frob-vitest-1070048-0.json
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export http error { format: 'x', status: 404 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export network failure { format: 'x', message: 'down' }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] http error { path: '/api/session/load-change', status: 409 }
+
+stderr | web/src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.run.loadChange] load change refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/keys/keymap.test.ts web/src/screens/run/RunScreen.test.tsx web/src/components/guidance/GpLoadPanel.test.tsx"
+size = 4743
+status = "measured"
+test_count = 48
+tests_digest = "2d82d3a0065f363975bba7d4c71cd2b5e4e721be27d63db8ed938f9953b0a314"
+at = "2026-11-10T12:22:39Z"
+actor = "lognd"
+rev = 1

@@ -1,0 +1,11 @@
+kind = "create"
+title = "Restyle web UI: distinctive, less generic visual identity"
+type = "story"
+category = "todo"
+priority = "medium"
+labels = ["web"]
+scope = ["web/src/styles.css", "web/src/components/*"]
+acceptance = ["Coherent new visual system via tokens; WCAG AA contrast in both themes; layout and information architecture unchanged"]
+at = "2026-11-10T12:21:51Z"
+actor = "lognd"
+rev = 1

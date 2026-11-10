@@ -6,7 +6,7 @@ category = "todo"
 priority = "medium"
 reporter = "lognd"
 created = "2026-11-10T15:32:01Z"
-updated = "2026-11-10T15:32:01Z"
+updated = "2026-11-10T15:50:05Z"
 +++
 
 found while working HQEPVZH; line 120 names lctt_export_calibration.vi

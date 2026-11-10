@@ -2,7 +2,8 @@
 id = "01M72T4R1WNQRV303D0WJXW1MW"
 title = "Capture request_id reused for a different point is silently dropped; make replay body-aware"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 3
 reporter = "lognd"

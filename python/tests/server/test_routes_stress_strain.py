@@ -87,10 +87,11 @@ def test_missing_body_fields_rejected(tmp_path: Path) -> None:
 def test_no_data_is_409(tmp_path: Path) -> None:
     """With no source, or a source that fails, the endpoint answers a typed 409."""
     # frob:tests python/sadi/server/routes_stress_strain.py::make_stress_strain_router
-    for src in (None, lambda: Err(RefitError.NoData)):
+    cases = ((None, "NoOpenSession"), (lambda: Err(RefitError.NoData), "NoData"))
+    for src, code in cases:  # src None -> the app's own open-session source, nothing open
         res = _client(src, tmp_path).post("/api/stress-strain/fit", json={"first": 0, "last": 4})
         assert res.status_code == 409
-        assert res.json()["error"] == "NoData"
+        assert res.json()["error"] == code
 
 
 def test_fit_is_read_only(tmp_path: Path) -> None:

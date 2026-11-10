@@ -74,7 +74,7 @@ def test_curve_source_shares_the_cache(tmp_path: Path) -> None:
     cache = SessionReplayCache()
     assert cache.events(sdir).is_ok
     before = dict(cache._cache)  # noqa: SLF001
-    make_curve_source(tmp_path, cache)()
+    make_curve_source(lambda: sdir, cache)()
     assert cache._cache == before  # noqa: SLF001
 
 

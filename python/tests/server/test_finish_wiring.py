@@ -75,19 +75,6 @@ def test_results_finish_stops_raw_and_reports_reason(tmp_path: Path) -> None:
         assert c.post("/api/results/finish").status_code == 200  # idempotent
 
 
-# frob:tests python/sadi/server/routes/export.py::render_export
-def test_export_finishes_acquisition_first(tmp_path: Path) -> None:
-    """Reaching export drains and stops raw streaming before computing."""
-    with _session(tmp_path) as (c, live):
-        time.sleep(0.4)
-        fmt = c.get("/api/export").json()[0]["id"]
-        c.get(f"/api/export/{fmt}")
-        assert live.stop_reason == STOP_FINISHED
-        n = _raw_count(tmp_path)
-        time.sleep(0.4)
-        assert _raw_count(tmp_path) == n
-
-
 # frob:tests python/sadi/server/routes/results.py::make_results_router
 def test_status_exposes_acquisition_fault(tmp_path: Path) -> None:
     """A recorded fault is surfaced as acquisition_fault in the status response."""

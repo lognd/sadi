@@ -1,0 +1,10 @@
+kind = "create"
+title = "M8: calibration layout - capture card above Finish, one vocabulary"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["web/src/components/wizard/stepGuide.ts", "web/src/screens/run/phases.ts", "web/src/screens/run/RunView.tsx", "web/src/screens/run/inputFields.ts"]
+acceptance = ["Capture card (inputs + Accept point (Space) + Mark) directly under Do this and above Finish; Finish secondary and disabled until min points; one verb/noun per action across stepGuide/phases/RunView; phase-specific mark text; vitest passes"]
+at = "2026-11-10T07:53:02Z"
+actor = "lognd"
+rev = 1

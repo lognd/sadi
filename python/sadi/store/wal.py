@@ -346,6 +346,7 @@ class WalWriter:
         self._thread = threading.Thread(target=self._run, name="sadi-wal-writer", daemon=False)
 
     @staticmethod
+    @propagate
     def open(
         wal_dir: Path,
         session_uuid: uuid.UUID,
@@ -356,9 +357,7 @@ class WalWriter:
         cfg = config or WalConfig()
         path = wal_dir / segment_name(1)
         created = create_exclusive(path)
-        if created.is_err:
-            return Err(WalDurable(error=created.danger_err))
-        fd = created.danger_ok
+        fd = created.map_err(lambda e: WalDurable(error=e)).unwrap()
         header = encode_segment_header(1, first_seq, session_uuid)
         try:
             _write_all(fd, header)
@@ -426,16 +425,17 @@ class WalWriter:
             self._cv.notify_all()
         return Ok(seq)
 
+    @propagate
     def append(self, record: NewRecord) -> Result[Seq, WalError]:
         """Enqueue `record` and block until it is durable; return its seq."""
         seq = self.append_nowait(record)
         if seq.is_err:
             return seq
         waited = self.wait_durable(seq.danger_ok, self._cfg.durable_timeout_s)
-        if waited.is_err:
-            return Err(waited.danger_err)
+        waited.unwrap()
         return seq
 
+    @propagate
     def append_batch(self, records: Sequence[NewRecord]) -> Result[Seq, WalError]:
         """Enqueue every record in order, wait for the last to be durable, return its seq."""
         last: Seq = self._durable_seq
@@ -445,8 +445,7 @@ class WalWriter:
                 return r
             last = r.danger_ok
         waited = self.wait_durable(last, self._cfg.durable_timeout_s)
-        if waited.is_err:
-            return Err(waited.danger_err)
+        waited.unwrap()
         return Ok(last)
 
     def wait_durable(self, seq: Seq, timeout_s: float | None) -> Result[None, WalError]:
@@ -701,6 +700,7 @@ class WalWriter:
         _log.debug("durable_seq -> %d (%d records, %d bytes)", last, len(frames), len(buf))
         return _hit("wal.publish.after")
 
+    @propagate
     def _fsync(self) -> Result[None, WalError]:
         """Flush the active segment with failpoints and latency accounting."""
         before = _hit("wal.fsync.before")
@@ -709,8 +709,7 @@ class WalWriter:
         start = time.perf_counter()
         synced = durable.fsync_file(self._fd)
         ms = (time.perf_counter() - start) * 1000.0
-        if synced.is_err:
-            return Err(_durable_err(synced.danger_err))
+        synced.map_err(_durable_err).unwrap()
         with self._cv:
             self._last_fsync_ms = ms
             self._max_fsync_ms = max(self._max_fsync_ms, ms)

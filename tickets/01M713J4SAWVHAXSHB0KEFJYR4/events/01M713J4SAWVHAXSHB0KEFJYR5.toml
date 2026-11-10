@@ -1,0 +1,9 @@
+kind = "create"
+title = "ci: macos rust serial_loopback pty_round_trip hangs forever (no timeout), CI cancelled after 3h"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 3
+at = "2026-11-09T21:31:22Z"
+actor = "lognd"
+rev = 1

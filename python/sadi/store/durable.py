@@ -9,7 +9,7 @@ import sys
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result
@@ -244,13 +244,23 @@ def create_exclusive(path: Path) -> Result[int, DurableError]:
     return result
 
 
+def _kernel32() -> Any:
+    """Return kernel32 loaded with use_last_error so `ctypes.get_last_error` is meaningful."""
+    from ctypes import wintypes  # noqa: PLC0415 - Windows-only use
+
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)  # ty: ignore[unresolved-attribute]
+    k32.MoveFileExW.restype = wintypes.BOOL
+    k32.MoveFileExW.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.DWORD]
+    return k32
+
+
 def _replace_os(tmp: Path, dst: Path) -> None:
     """Atomic replace via os.replace, or MoveFileExW with WRITE_THROUGH on Windows."""
     failpoint("durable.rename")
     if not _IS_WIN:
         os.replace(tmp, dst)
         return
-    move = ctypes.windll.kernel32.MoveFileExW
+    move = _kernel32().MoveFileExW
     if not move(str(tmp), str(dst), _MOVEFILE_REPLACE_EXISTING | _MOVEFILE_WRITE_THROUGH):
         raise ctypes.WinError(ctypes.get_last_error())
 
@@ -312,7 +322,7 @@ def _rename_noreplace_os(src: Path, dst: Path) -> None:
     """Rename without replacing `dst`: renameat2, MoveFileExW (Windows), else link+unlink."""
     failpoint("durable.rename")
     if _IS_WIN:
-        move = ctypes.windll.kernel32.MoveFileExW
+        move = _kernel32().MoveFileExW
         if not move(str(src), str(dst), _MOVEFILE_WRITE_THROUGH):
             code = ctypes.get_last_error()
             if code in _WIN_EXISTS_ERRORS:

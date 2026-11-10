@@ -40,9 +40,12 @@ jobs:
         run: uv sync --frozen
       - name: build sadi_py (simulator backend)
         working-directory: python
-        run: uv run --with maturin maturin develop --manifest-path ../crates/sadi-py/Cargo.toml
+        run: |
+          uv pip install maturin
+          uv run --no-sync maturin develop --uv --manifest-path ../crates/sadi-py/Cargo.toml
+          uv run --no-sync python -c "import sadi_py; print(sadi_py.__file__)"
       - name: build UI into the wheel tree
-        run: uv run --project python python packaging/build_ui.py
+        run: uv run --no-sync --project python python packaging/build_ui.py
       - name: install playwright chromium
         working-directory: web
         run: npx playwright install --with-deps chromium

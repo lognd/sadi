@@ -80,10 +80,11 @@ def test_control_standin_spill_is_imported_without_isolation(
 ) -> None:
     """Negative control: pointing XDG/HOME at the stand-in makes the app import its spill."""
     xdg = tmp_path / "real-home" / "xdg"
-    planted = _plant_spill(xdg / "sadi" / SPILL_DIRNAME)
     monkeypatch.setenv("HOME", str(tmp_path / "real-home"))
     monkeypatch.setenv("XDG_DATA_HOME", str(xdg))
     monkeypatch.setenv("LOCALAPPDATA", str(xdg))
+    # The OS-specific user dir (XDG, Library/Application Support or LOCALAPPDATA).
+    planted = _plant_spill(user_data_dir() / SPILL_DIRNAME)
     assert planted in discover_spills(tmp_path / "root")
     _start(tmp_path / "root")
     assert _imported(planted)

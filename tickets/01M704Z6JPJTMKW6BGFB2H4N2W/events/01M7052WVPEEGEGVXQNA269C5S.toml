@@ -1,0 +1,78 @@
+kind = "evidence"
+captured_at = "2026-11-09T12:38:45Z"
+digest = "fbddc7a50dfa507d631059187d884139261a03d50043b4f2ce196ba6e85a5a79"
+exit_code = 1
+head = "f02ab3d5aa9862b46b5cdab7c7595b587c5295f6"
+inline = """
+error[import-not-found]: Cannot resolve imported module `sadi_py`
+  --> python/sadi/core/devfacade.py:29:12
+   |
+29 |     import sadi_py as sp  # noqa: F401 - re-exported for annotations
+   |            ^^^^^^^^^^^^^
+info: Searched in the following paths during module resolution:
+info:   1. <worktree>/python (first-party code)
+info:   2. <worktree> (first-party code)
+info:   3. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   4. <worktree>/python/.venv/lib/python3.12/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+error[import-not-found]: Cannot resolve imported module `sadi_py`
+  --> python/tests/e2e/harness.py:12:8
+   |
+12 | import sadi_py
+   |        ^^^^^^^
+info: Searched in the following paths during module resolution:
+info:   1. <worktree>/python (first-party code)
+info:   2. <worktree> (first-party code)
+info:   3. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   4. <worktree>/python/.venv/lib/python3.12/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+error[import-not-found]: Cannot resolve imported module `sadi_py`
+  --> python/tests/e2e/killee.py:17:8
+   |
+17 | import sadi_py
+   |        ^^^^^^^
+info: Searched in the following paths during module resolution:
+info:   1. <worktree>/python (first-party code)
+info:   2. <worktree> (first-party code)
+info:   3. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   4. <worktree>/python/.venv/lib/python3.12/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+warning[unused-ignore-comment]: Unused `ty: ignore` directive
+  --> python/tests/uncertainty/test_fallbacks.py:92:44
+   |
+92 |     r2 = gradient(lambda x: 1 / 0, [1.0])  # ty: ignore[division-by-zero]  # intentional failing function
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Remove the unused suppression comment
+   |
+91 |     assert isinstance(r, Err) and r.danger_err is NumericError.NumNonFinite
+   -     r2 = gradient(lambda x: 1 / 0, [1.0])  # ty: ignore[division-by-zero]  # intentional failing function
+92 +     r2 = gradient(lambda x: 1 / 0, [1.0])  # intentional failing function
+93 |     assert isinstance(r2, Err) and r2.danger_err is NumericError.NumEvalFailed
+   |
+
+warning[unused-ignore-comment]: Unused `ty: ignore` directive
+   --> python/tests/uncertainty/test_fallbacks.py:283:70
+    |
+283 |     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # ty: ignore[division-by-zero]  # intentional
+    |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Remove the unused suppression comment
+    |
+282 |     assert abs(branchy.mean - 10.0) <= K * branchy.se_mean
+    -     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # ty: ignore[division-by-zero]  # intentional
+283 +     raising = _sampler(lambda a: 1 / 0, [1.0], [[1.0]]).run_to(100)  # intentional
+284 |     assert isinstance(raising, Err) and raising.danger_err is MonteCarloError.McEvalFailed
+    |
+
+Found 5 diagnostics
+"""
+passed = false
+provider = "command"
+ref = "uv run --project python ty check python"
+size = 3303
+status = "measured"
+at = "2026-11-09T12:38:45Z"
+actor = "lognd"
+rev = 1

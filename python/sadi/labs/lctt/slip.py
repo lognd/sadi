@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from statistics import median
 
 from pydantic import BaseModel, Field
-from typani import Err, ErrorSet, Ok, Result
+from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 
@@ -53,14 +53,13 @@ def noise_floor_for_lsb(
     return Ok(floor)
 
 
+@propagate
 def slip_config_from_adc(
     full_scale_v: float, strain_per_volt: float, *, bits: int = 16, **overrides: float
 ) -> Result[SlipConfig, str]:
     """SlipConfig whose noise_floor is one ADC LSB in strain; callers must use this, not 1e-12."""
     floor = noise_floor_for_lsb(full_scale_v, strain_per_volt, bits=bits)
-    if floor.is_err:
-        return Err(floor.danger_err)
-    return Ok(SlipConfig(noise_floor=floor.danger_ok, **overrides))
+    return Ok(SlipConfig(noise_floor=floor.unwrap(), **overrides))
 
 
 class SlipEvent(BaseModel):

@@ -58,7 +58,11 @@ class Oracle:
 
     def __init__(self, path: Path) -> None:
         """Open `path` for append."""
-        self._fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND)
+        # frob:ticket 01M700BKTA0N0NYKWBDG24R9GM
+        # O_BINARY: no LF->CRLF translation on Windows (it corrupted the digests).
+        self._fd = os.open(
+            path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | getattr(os, "O_BINARY", 0)
+        )
         self._lock = threading.Lock()
 
     def line(self, text: str) -> None:

@@ -7,7 +7,7 @@ import json
 import re
 from typing import Any
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
 from sadi.doctor.schema import (
@@ -47,11 +47,10 @@ FEATURES_SCRIPT = "import json,sadi_py\nprint(json.dumps(list(sadi_py.serial_fea
 SELFTEST_SCRIPT = "import sadi_py\nsadi_py.selftest()"
 
 
+@propagate
 def child_json(ctx: Ctx, script: str, timeout: float = CHILD_TIMEOUT_S) -> Result[Any, ProbeError]:
     """Run `python -c script` and parse the last JSON line of its stdout (earlier log lines are ignored); any failure is a ProbeError."""
     res = ctx.probes.run((ctx.probes.python_exe(), "-c", script), timeout)
-    if res.is_err:
-        return Err(res.unwrap_err())
     run: CommandRun = res.unwrap()
     if run.exit_code != 0:
         return Err(ProbeError(kind="exception", detail=run.stderr_tail[-300:] or "non-zero exit"))
@@ -110,12 +109,22 @@ def ext_010(ctx: Ctx) -> Outcome:
     )
 
 
+_MATURIN_CONTEXT = "in crates/sadi-py (needs a Rust toolchain)"
+
+
+def _maturin_line(ctx: Ctx) -> str:
+    """Return the maturin build line, pointing VIRTUAL_ENV at python/.venv, for the OS shell."""
+    if ctx.os is Os.WINDOWS:
+        return r"$env:VIRTUAL_ENV = '..\..\python\.venv'; uvx maturin develop --release --uv"
+    return "VIRTUAL_ENV=../../python/.venv uvx maturin develop --release --uv"
+
+
 def _build_steps(ctx: Ctx) -> Step:
     """Return the rebuild step shared by the load failures."""
     return action(
         "Rebuild and install the extension for this Python.",
         "maturin finishes with 'Installed sadi_py'.",
-        cmd(ctx.os, "uv run maturin develop --release"),
+        cmd(ctx.os, _maturin_line(ctx), context=_MATURIN_CONTEXT),
         mutates=Mutates.INSTALL,
         changes="Compiles the Rust crate and installs it into python/.venv.",
         if_not="Install the Rust toolchain from rustup.rs, open a new terminal, and repeat.",
@@ -158,7 +167,7 @@ def _ext_010_timeout(ctx: Ctx, out: Outcome) -> Fix:
                 "Import it by hand and watch for a prompt, antivirus dialog or hang.",
                 "The command returns at once with no output.",
                 cmd(ctx.os, f"{py} -X importtime -c 'import sadi_py'"),
-                if_not="Rebuild with `uv run maturin develop --release` and repeat.",
+                if_not=f"Rebuild with `{_maturin_line(ctx)}` ({_MATURIN_CONTEXT}) and repeat.",
             ),
         ),
     )
@@ -392,7 +401,7 @@ def _ext_050_timeout(ctx: Ctx, out: Outcome) -> Fix:
                 "Run the self-test by hand while the machine is otherwise idle.",
                 "The command returns within a second with no output.",
                 cmd(ctx.os, f"{py} -c 'import sadi_py; sadi_py.selftest()'"),
-                if_not="Rebuild with `uv run maturin develop --release` and repeat.",
+                if_not=f"Rebuild with `{_maturin_line(ctx)}` ({_MATURIN_CONTEXT}) and repeat.",
             ),
         ),
     )

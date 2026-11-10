@@ -1,0 +1,35 @@
+kind = "evidence"
+captured_at = "2026-11-09T12:59:00Z"
+digest = "149cf0e614ee2eb78f0fff3b866140517f27975b98e454108dbb208e691b0103"
+exit_code = 0
+head = "6c0f0b0166b41c847b6bef5135206a83619efa18"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 8 items
+
+python/tests/bench/test_ad3_launch_signals.py .......                    [ 87%]
+python/tests/server/test_action_latency.py .                             [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-971737-0.xml ---------------
+======================== 8 passed, 1 warning in 12.52s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/bench/test_ad3_launch_signals.py python/tests/server/test_action_latency.py"
+size = 1083
+status = "measured"
+test_count = 8
+tests_digest = "026a853f475adb4661e2bf6bc39572f350f6a38f73899bab5e38eefa8a81a170"
+at = "2026-11-09T12:59:00Z"
+actor = "lognd"
+rev = 1

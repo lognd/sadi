@@ -44,8 +44,8 @@ def _web_010_missing(ctx: Ctx, out: Outcome) -> Fix:
                 "Vite prints 'built in' and python/sadi/_ui/index.html exists.",
                 cmd(
                     ctx.os,
-                    "python packaging/build_ui.py",
-                    context="in the repository root, using the SADI Python environment",
+                    "uv run python ../packaging/build_ui.py",
+                    context="in the python/ directory",
                     fixable=True,
                 ),
                 mutates=Mutates.INSTALL,

@@ -19,7 +19,7 @@ Data-root lock: taken by the app lifespan; a refused lock (live or stale) is nev
 stolen, and the launcher exits 3 printing the lock hint.
 
 Web: when `web/dist/index.html` exists, `mount_web` mounts it at `/` after the API routes
-(so `/api/*` wins). Without it the API is served alone with a warning. The mount lives in
+(so `/api/*` wins). Without it the API is served alone with a warning that names the fix (`cd python && uv run python ../packaging/build_ui.py`). The checkout fallback is resolved from the package location (`sadi.webdist.CHECKOUT_WEB_DIST`, shared with the WEB-010 doctor probe), never the cwd. The mount lives in
 `sadi.launcher`, not in `app.py`.
 
 Port: the default 8000 is tried first and an ephemeral free port is used when it is busy;

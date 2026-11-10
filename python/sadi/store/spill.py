@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
@@ -284,12 +284,11 @@ def _find_parent(data_root: Path, session_uuid: uuid.UUID) -> Manifest | None:
     return best
 
 
+@propagate
 def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, DurableError]:
     """Create seg-000001.wal exclusively, write header and verified frames, fsync file and dir."""
     created = create_exclusive(wal_dir / segment_name(1))
-    if created.is_err:
-        return Err(created.danger_err)
-    fd = created.danger_ok
+    fd = created.unwrap()
     try:
         os.write(fd, header)
         view = memoryview(frames)
@@ -305,6 +304,7 @@ def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, 
     return fsync_dir(wal_dir)
 
 
+@propagate
 def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, SpillError]:
     """Import the verified prefix of `scan` as a new version dir; the spill file is kept."""
     if scan.record_count == 0 or scan.first_seq is None or scan.last_seq is None:
@@ -321,9 +321,7 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
     else:
         family, start = f"{now.strftime('%Y%m%dT%H%M%SZ')}-{_slug(IMPORT_SLUG)}", 1
     taken = _take_version(sessions, family, start)
-    if taken.is_err:
-        return Err(SpillSession(error=taken.danger_err))
-    path, ver = taken.danger_ok
+    path, ver = taken.map_err(lambda e: SpillSession(error=e)).unwrap()
     new_uuid = uuid.uuid4()
     manifest = Manifest(
         session_uuid=str(new_uuid),
@@ -338,9 +336,7 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         last_seq=scan.last_seq,
     )
     inited = _init_dir(path, manifest)
-    if inited.is_err:
-        return Err(SpillSession(error=inited.danger_err))
-    handle = inited.danger_ok
+    handle = inited.map_err(lambda e: SpillSession(error=e)).unwrap()
     data = scan.path.read_bytes()
     header = encode_segment_header(1, scan.first_seq, new_uuid)
     written = _write_segment(path / "wal", header, data[SEGMENT_HEADER_LEN : scan.valid_bytes])

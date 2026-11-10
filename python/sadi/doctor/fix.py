@@ -9,7 +9,7 @@ import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.doctor import run
 from sadi.doctor.probes import Probes
@@ -74,6 +74,7 @@ def _exec(line: str) -> int:
     return subprocess.run(argv, check=False).returncode  # noqa: S603
 
 
+@propagate
 def fix(
     check_id: str,
     options: RunOptions,
@@ -90,8 +91,6 @@ def fix(
     """Show the remediation for CHECK-ID; with `apply`, run confirmed fixable commands; return the exit code."""
     opts = options.model_copy(update={"checks": (check_id,), "skip": ()})
     first = run(opts, probes)
-    if first.is_err:
-        return Err(first.unwrap_err())
     report = first.unwrap()
     result = report.results[0]
     out(f"{result.id} {result.status.value}: {result.headline}\n")
@@ -127,8 +126,6 @@ def fix(
             out(f"Command failed with exit code {code}; stopping.\n")
             return Ok(EXIT_STILL_BAD)
     again = run(opts, probes)
-    if again.is_err:
-        return Err(again.unwrap_err())
     after = again.unwrap().results[0]
     out(f"{after.id} {after.status.value}: {after.headline}\n")
     return Ok(EXIT_OK if after.status is Status.PASS else EXIT_STILL_BAD)

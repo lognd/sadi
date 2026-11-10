@@ -22,12 +22,16 @@ extension itself is built locally as below.
 
 ## Building sadi_py
 
-From a fresh checkout, with a Rust toolchain and maturin available:
+From a fresh checkout, with a Rust toolchain and uv available (maturin is not
+in the `python/` environment, so it runs through `uvx`; `VIRTUAL_ENV` points
+it at `python/.venv`, created by `uv sync` in `python/`):
 
 ```
 cd crates/sadi-py
-maturin develop
+VIRTUAL_ENV=../../python/.venv uvx maturin develop --release --uv
 ```
+
+On Windows PowerShell: `$env:VIRTUAL_ENV = '..\..\python\.venv'; uvx maturin develop --release --uv`.
 
 `maturin develop` builds the extension and installs it into the active
 virtual environment (for example the one created by `uv sync` in `python/`).
@@ -42,7 +46,7 @@ subprocess, but it has been exercised on Linux alone.
 One command, from a clean checkout (needs Node.js with npm on PATH):
 
 ```
-python packaging/build_ui.py
+cd python && uv run python ../packaging/build_ui.py
 ```
 
 It runs `npm ci` and `npm run build` (tsc + vite build) in `web/`, then

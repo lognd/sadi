@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store import snapshot
@@ -81,13 +81,14 @@ class IncrementalReplay:
         return self._rebase()
 
     # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
+    @propagate
     def notes(self) -> Result[tuple[str, ...], EventsError]:
         """Return every JSON NOTE payload in WAL order (equal to a full scan)."""
         got = self.state()
-        if got.is_err:
-            return Err(got.danger_err)
+        got.unwrap()
         return Ok(tuple(self._notes))
 
+    @propagate
     def _rebase(self) -> Result[ReplayState, EventsError]:
         """Full verified replay (snapshot + WAL); re-derive the tail position from its report."""
         self.rebases += 1
@@ -110,12 +111,8 @@ class IncrementalReplay:
         report = reader.report
         seals = report.seal_seqs if report else ()
         folded = replay(recs, base, seals)
-        if folded.is_err:
-            return Err(folded.danger_err)
-        state = folded.danger_ok
-        notes = self._scan_notes(recs, base)
-        if notes.is_err:
-            return Err(notes.danger_err)
+        state = folded.unwrap()
+        notes = self._scan_notes(recs, base).unwrap()
         if report is None or not report.segments:
             _log.info("no segment position for %s; incremental cache stays cold", self._wal)
             return Ok(state)
@@ -126,7 +123,7 @@ class IncrementalReplay:
         else:
             self._seg, self._pos = last.segment_no, last.verified_bytes
             self._expected = state.covers_seq + 1 if state.covers_seq else None
-        self._notes = notes.danger_ok
+        self._notes = notes
         self._acc = _Acc(state)
         self._frozen = state
         _log.info(
@@ -137,6 +134,7 @@ class IncrementalReplay:
         )
         return Ok(state)
 
+    @propagate
     def _scan_notes(
         self, recs: list[Record], base: ReplayState | None
     ) -> Result[list[str], EventsError]:
@@ -144,9 +142,7 @@ class IncrementalReplay:
         if base is not None:
             recs = []
             for item in WalReader(self._wal).records():
-                if item.is_err:
-                    return Err(EventsWal(error=item.danger_err))
-                recs.append(item.danger_ok)
+                recs.append(item.map_err(lambda e: EventsWal(error=e)).unwrap())
         return Ok([_note_text(r) for r in recs if _is_note(r)])
 
     def _advance(self) -> bool:

@@ -1,0 +1,9 @@
+kind = "create"
+title = "ci: windows test_second_process_gets_lockheld_with_pid compares venv shim pid"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 1
+at = "2026-11-09T13:25:38Z"
+actor = "lognd"
+rev = 1

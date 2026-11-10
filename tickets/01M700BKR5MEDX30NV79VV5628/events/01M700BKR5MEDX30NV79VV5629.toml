@@ -1,0 +1,8 @@
+kind = "create"
+title = "ci: e2e fails, sadi_py not importable in the sadi server subprocess (macOS/Windows)"
+type = "bug"
+category = "todo"
+priority = "medium"
+at = "2026-11-09T11:16:08Z"
+actor = "lognd"
+rev = 1

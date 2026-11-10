@@ -18,6 +18,7 @@ _log = get_logger(__name__)
 
 LOCK_FILENAME = ".sadi-data.lock"
 _IS_WIN = sys.platform == "win32"
+_STILL_ACTIVE = 259
 
 
 class LockError(BaseModel):
@@ -47,14 +48,32 @@ class LockIo(LockError):
     errno: int | None = None
 
 
-def _os_lock(fd: int) -> bool:
-    """Take the non-blocking exclusive OS lock on `fd`; False if held elsewhere."""
+# Windows byte-range locks deny reads/writes of the locked bytes from every other handle,
+# even in the same process. Locking a byte far beyond the data keeps the file readable by path.
+_WIN_LOCK_OFFSET = 1 << 30
+
+
+def _win_lock(fd: int, mode: int) -> None:
+    """Apply an msvcrt locking `mode` to the 1-byte region at `_WIN_LOCK_OFFSET`, then rewind."""
+    import msvcrt  # noqa: PLC0415 - platform-specific
+
+    os.lseek(fd, _WIN_LOCK_OFFSET, os.SEEK_SET)
+    try:
+        msvcrt.locking(fd, mode, 1)  # ty: ignore[unresolved-attribute]
+    finally:
+        os.lseek(fd, 0, os.SEEK_SET)
+
+
+def try_lock_fd(fd: int) -> bool:
+    """Take the non-blocking exclusive OS lock on `fd`; False if held elsewhere.
+
+    On Windows the locked byte lies far past the data so the file stays readable by path.
+    """
     try:
         if _IS_WIN:
             import msvcrt  # noqa: PLC0415 - platform-specific
 
-            os.lseek(fd, 0, os.SEEK_SET)
-            msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)  # type: ignore[attr-defined]
+            _win_lock(fd, msvcrt.LK_NBLCK)  # type: ignore[attr-defined]
         else:
             import fcntl  # noqa: PLC0415 - platform-specific
 
@@ -64,14 +83,13 @@ def _os_lock(fd: int) -> bool:
     return True
 
 
-def _os_unlock(fd: int) -> None:
+def unlock_fd(fd: int) -> None:
     """Release the OS lock on `fd` (errors are logged, never raised)."""
     try:
         if _IS_WIN:
             import msvcrt  # noqa: PLC0415
 
-            os.lseek(fd, 0, os.SEEK_SET)
-            msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)  # type: ignore[attr-defined]
+            _win_lock(fd, msvcrt.LK_UNLCK)  # type: ignore[attr-defined]
         else:
             import fcntl  # noqa: PLC0415
 
@@ -85,11 +103,18 @@ def pid_alive(pid: int) -> bool:
     if _IS_WIN:
         import ctypes  # noqa: PLC0415
 
-        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)  # type: ignore[attr-defined]
+        kernel32 = ctypes.WinDLL("kernel32")  # type: ignore[attr-defined]
+        kernel32.OpenProcess.restype = ctypes.c_void_p
+        kernel32.CloseHandle.argtypes = [ctypes.c_void_p]
+        handle = kernel32.OpenProcess(0x1000, False, pid)
         if not handle:
             return False
-        ctypes.windll.kernel32.CloseHandle(handle)  # type: ignore[attr-defined]
-        return True
+        # An exited process stays openable while any handle to it lives (e.g. Popen), so the
+        # exit code must be checked: STILL_ACTIVE (259) means running.
+        code = ctypes.c_ulong()
+        ok = kernel32.GetExitCodeProcess(ctypes.c_void_p(handle), ctypes.byref(code))
+        kernel32.CloseHandle(handle)
+        return bool(ok) and code.value == _STILL_ACTIVE
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -99,12 +124,8 @@ def pid_alive(pid: int) -> bool:
     return True
 
 
-def read_holder_pid(path: Path) -> int | None:
-    """Read the pid recorded in the lock file (read-only); None if absent or unparsable."""
-    try:
-        text = path.read_text(encoding="ascii", errors="replace")
-    except OSError:
-        return None
+def _parse_holder_pid(text: str) -> int | None:
+    """Extract the `pid=N` token from lock-file text; None if absent or unparsable."""
     for token in text.split():
         if token.startswith("pid="):
             try:
@@ -112,6 +133,32 @@ def read_holder_pid(path: Path) -> int | None:
             except ValueError:
                 return None
     return None
+
+
+def read_holder_pid(path: Path) -> int | None:
+    """Read the pid recorded in the lock file (read-only); None if absent or unparsable."""
+    try:
+        text = path.read_text(encoding="ascii", errors="replace")
+    except OSError:
+        return None
+    return _parse_holder_pid(text)
+
+
+# frob:ticket 01M701SFR4E1BKBXW1RCN14TK3
+def _read_holder_pid_fd(fd: int) -> int | None:
+    """Read the recorded pid through the already-locked `fd`.
+
+    On Windows a byte-range lock denies reads from any other handle, even in the same
+    process, so a path-based read of a file we just locked always fails and would hide a stale
+    holder. Reading through the locking handle is allowed on every platform.
+    """
+    try:
+        os.lseek(fd, 0, os.SEEK_SET)
+        text = os.read(fd, 4096).decode("ascii", errors="replace")
+    except OSError as exc:
+        _log.warning("cannot read holder pid through locked fd: %s", exc)
+        return None
+    return _parse_holder_pid(text)
 
 
 class DataRootLock:
@@ -136,7 +183,7 @@ class DataRootLock:
             os.ftruncate(fd, 0)
         except OSError as exc:
             _log.warning("clearing lock file %s failed: %s", self.path, exc)
-        _os_unlock(fd)
+        unlock_fd(fd)
         os.close(fd)
         _log.info("released data-root lock %s", self.path)
 
@@ -166,7 +213,7 @@ def acquire(root: Path, *, recover_stale: bool = False) -> Result[DataRootLock, 
     except OSError as exc:
         _log.error("cannot open lock file %s: %s", path, exc)
         return Err(LockIo(path=path, errno=exc.errno, hint=str(exc)))
-    if not _os_lock(fd):
+    if not try_lock_fd(fd):
         os.close(fd)
         pid = read_holder_pid(path)
         _log.warning("data root %s is locked by pid %s", root, pid)
@@ -177,9 +224,9 @@ def acquire(root: Path, *, recover_stale: bool = False) -> Result[DataRootLock, 
                 hint=f"Another sadi process (pid {pid}) is using this data folder.",
             )
         )
-    prior = read_holder_pid(path)
+    prior = _read_holder_pid_fd(fd)
     if prior is not None and not recover_stale:
-        _os_unlock(fd)
+        unlock_fd(fd)
         os.close(fd)
         _log.warning("data root %s has a stale lock from pid %s", root, prior)
         return Err(LockStale(path=path, pid=prior))
@@ -191,7 +238,7 @@ def acquire(root: Path, *, recover_stale: bool = False) -> Result[DataRootLock, 
         os.write(fd, f"pid={os.getpid()} host={socket.gethostname()}\n".encode("ascii", "replace"))
         os.fsync(fd)
     except OSError as exc:
-        _os_unlock(fd)
+        unlock_fd(fd)
         os.close(fd)
         _log.error("cannot record holder in %s: %s", path, exc)
         return Err(LockIo(path=path, errno=exc.errno, hint=str(exc)))

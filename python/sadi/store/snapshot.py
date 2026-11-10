@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, ValidationError
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store import durable
@@ -146,12 +146,11 @@ def prefix_hashes_at(
     return Ok((out, last))
 
 
+@propagate
 def prefix_hash(wal_dir: Path, covers_seq: int) -> Result[str, SnapshotError]:
     """Return the section 9.2 prefix hash of the verified WAL at `covers_seq`."""
     scanned = prefix_hashes_at(wal_dir, [covers_seq])
-    if scanned.is_err:
-        return Err(SnapshotWal(error=scanned.danger_err))
-    hashes, last = scanned.danger_ok
+    hashes, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
     if last is None or covers_seq > last:
         _log.error("snapshot covers_seq %d is beyond verified last_seq %s", covers_seq, last)
         return Err(SnapshotAhead(covers_seq=covers_seq, last_seq=last))
@@ -165,6 +164,7 @@ def _write_all(fd: int, data: bytes) -> None:
         view = view[os.write(fd, view) :]
 
 
+@propagate
 def _publish_noreplace(tmp: Path, dst: Path) -> Result[Path, SnapshotError]:
     """Give `tmp` its final name without ever replacing an existing file; returns final path."""
     for attempt in range(8):
@@ -185,8 +185,7 @@ def _publish_noreplace(tmp: Path, dst: Path) -> Result[Path, SnapshotError]:
             if target.exists():
                 continue
             replaced = durable.atomic_replace(tmp, target)
-            if replaced.is_err:
-                return Err(SnapshotIo(error=replaced.danger_err))
+            replaced.map_err(lambda e: SnapshotIo(error=e)).unwrap()
             return Ok(target)
         try:
             tmp.unlink()
@@ -197,6 +196,7 @@ def _publish_noreplace(tmp: Path, dst: Path) -> Result[Path, SnapshotError]:
     return Err(SnapshotIo(error=durable.DurableExists(path=dst)))
 
 
+@propagate
 def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     session: _HasPath,
     state: BaseModel,
@@ -212,9 +212,7 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     session_dir = session.path
     if prefix_hash_hex is None:
         computed = prefix_hash(session_dir / "wal", covers_seq)
-        if computed.is_err:
-            return Err(computed.danger_err)
-        prefix_hash_hex = computed.danger_ok
+        prefix_hash_hex = computed.unwrap()
     body = SnapshotV1(
         covers_seq=covers_seq,
         prefix_hash=prefix_hash_hex,
@@ -232,8 +230,7 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     final = snaps / f"snap-{covers_seq:012d}-{stamp}.snap"
     tmp = snaps / f".snap-{covers_seq}-{os.getpid()}-{secrets.token_hex(4)}.tmp"
     written = _write_tmp(tmp, frame)
-    if written.is_err:
-        return Err(written.danger_err)
+    written.unwrap()
     published = _publish_noreplace(tmp, final)
     if published.is_err:
         return published
@@ -244,19 +241,17 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
         _log.error("snapshot dir flush failpoint: %s", exc)
         return Err(SnapshotIo(error=durable.DurableIo(errno=exc.errno or errno.EIO, path=snaps)))
     flushed = durable.fsync_dir(snaps)
-    if flushed.is_err:
-        return Err(SnapshotIo(error=flushed.danger_err))
+    flushed.map_err(lambda e: SnapshotIo(error=e)).unwrap()
     _log.info("snapshot committed: %s covers_seq=%d", path, covers_seq)
     _emit_ref(ref_sink, path, body, session_dir, frame)
     return Ok(path)
 
 
+@propagate
 def _write_tmp(tmp: Path, frame: bytes) -> Result[None, SnapshotError]:
     """Create `tmp` exclusively, write the frame and fsync it (the file stays if this fails)."""
     created = durable.create_exclusive(tmp)
-    if created.is_err:
-        return Err(SnapshotIo(error=created.danger_err))
-    fd = created.danger_ok
+    fd = created.map_err(lambda e: SnapshotIo(error=e)).unwrap()
     try:
         failpoint("snapshot.write")
         _write_all(fd, frame)
@@ -267,8 +262,7 @@ def _write_tmp(tmp: Path, frame: bytes) -> Result[None, SnapshotError]:
         return Err(SnapshotIo(error=durable.DurableIo(errno=exc.errno or errno.EIO, path=tmp)))
     finally:
         os.close(fd)
-    if synced.is_err:
-        return Err(SnapshotIo(error=synced.danger_err))
+    synced.map_err(lambda e: SnapshotIo(error=e)).unwrap()
     return Ok(None)
 
 
@@ -335,6 +329,7 @@ def list_snapshots(session_dir: Path) -> list[tuple[Path, SnapshotV1]]:
     return found
 
 
+@propagate
 def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, SnapshotError]:
     """Return the newest snapshot whose prefix hash matches the WAL, or None to replay from 1."""
     candidates = list_snapshots(session_dir)
@@ -342,9 +337,7 @@ def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, Snapsho
         _log.info("no usable snapshots in %s", session_dir)
         return Ok(None)
     scanned = prefix_hashes_at(session_dir / "wal", (s.covers_seq for _, s in candidates))
-    if scanned.is_err:
-        return Err(SnapshotWal(error=scanned.danger_err))
-    hashes, last = scanned.danger_ok
+    hashes, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
     for path, snap in candidates:
         if last is None or snap.covers_seq > last:
             _log.warning(

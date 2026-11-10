@@ -406,7 +406,7 @@ asks the user to run it):
 Catalog status (~Z1GAYMZ): the three rows above are tagged `fixable` in the
 catalog (USB-050 udev install on Linux/WSL, USB-020 `usbipd.exe attach` on
 WSL only, BRW-010 `python3 -m webbrowser` as a `process` step). `usbipd bind`
-and every `data` step stay unfixable. Two create-only steps are also fixable: the `DATA-010 missing` mkdir (`data-dir`) and the `WEB-010 missing-bundle` UI build (`install`, `python packaging/build_ui.py`).
+and every `data` step stay unfixable. Two create-only steps are also fixable: the `DATA-010 missing` mkdir (`data-dir`) and the `WEB-010 missing-bundle` UI build (`install`, `uv run python ../packaging/build_ui.py`, run in `python/`).
 
 `--yes` answers yes to every prompt for scripted lab setup and is refused
 when stdin is not a terminal unless `--yes` is given together with

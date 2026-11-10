@@ -71,6 +71,8 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.ty.environment]
 python-version = "3.11"
+# Pin the platform so diagnostics (fcntl, grp, resource, SIGHUP, unused ignores) match on every OS.
+python-platform = "linux"
 # sadi_py is maturin-built; resolve it statically from its checked-in stubs.
 extra-paths = ["../crates/sadi-py/python"]
 

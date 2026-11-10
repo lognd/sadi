@@ -10,7 +10,7 @@ from typing import Any
 
 from crc32c import crc32c
 from pydantic import BaseModel, ConfigDict
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 
@@ -132,14 +132,13 @@ def parse_header(
     return Ok((int(rtype), int(flags), int(seq), int(wall_ns), int(length), int(crc)))
 
 
+@propagate
 def decode_payload_check(
     header: bytes, payload: bytes, offset: int
 ) -> Result[Record, FrameInvalid]:
     """Verify the CRC of a complete frame (header and payload) and build the Record."""
     parsed = parse_header(header, offset)
-    if parsed.is_err:
-        return Err(parsed.danger_err)
-    rtype, flags, seq, wall_ns, length, crc = parsed.danger_ok
+    rtype, flags, seq, wall_ns, length, crc = parsed.unwrap()
     if len(payload) != length:
         return Err(FrameInvalid(offset=offset, reason="payload shorter than declared length"))
     if frame_crc(header, payload) != crc:
@@ -147,22 +146,19 @@ def decode_payload_check(
     return Ok(Record(type=rtype, seq=seq, wall_ns=wall_ns, flags=flags, payload=payload, crc=crc))
 
 
+@propagate
 def decode_frame(buf: bytes | memoryview, pos: int = 0) -> Result[tuple[Record, int], FrameInvalid]:
     """Decode the frame at `buf[pos:]`; return the Record and the offset after it."""
     if len(buf) - pos < FRAME_HEADER_LEN:
         return Err(FrameInvalid(offset=pos, reason="partial header"))
     header = bytes(buf[pos : pos + FRAME_HEADER_LEN])
     parsed = parse_header(header, pos)
-    if parsed.is_err:
-        return Err(parsed.danger_err)
-    length = parsed.danger_ok[4]
+    length = parsed.unwrap()[4]
     end = pos + FRAME_HEADER_LEN + length
     if end > len(buf):
         return Err(FrameInvalid(offset=pos, reason="partial payload"))
     result = decode_payload_check(header, bytes(buf[pos + FRAME_HEADER_LEN : end]), pos)
-    if result.is_err:
-        return Err(result.danger_err)
-    return Ok((result.danger_ok, end))
+    return Ok((result.unwrap(), end))
 
 
 def prefix_hash_update(h: Any, record: Record) -> None:

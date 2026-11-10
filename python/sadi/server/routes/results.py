@@ -14,7 +14,7 @@ from typing import Protocol, runtime_checkable
 
 from fastapi import APIRouter
 from pydantic import BaseModel, ConfigDict
-from typani import Err, ErrorSet, Ok, Result
+from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.core.errors import ComputeCode
 from sadi.core.lab import BudgetedLab, LabId, LabModule
@@ -213,6 +213,7 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     )
 
 
+@propagate
 def compute_guidance(
     svc: SessionService,
     labs: LabRegistry,
@@ -221,16 +222,12 @@ def compute_guidance(
     target: float | None = None,
 ) -> Result[GuidanceState, ApiProblem]:
     """Guidance for `phase` from the open session's live results (shared by REST and WS)."""
-    live = live_results(svc, labs)
-    if live.is_err:
-        return Err(live.danger_err)
+    live = live_results(svc, labs).unwrap()
     pts = svc.points()
-    if pts.is_err:
-        return Err(pts.danger_err)
-    views = active_points(pts.danger_ok)
+    views = active_points(pts.unwrap())
     n_cal = sum(1 for p in views if p.phase == PHASE_CALIBRATION)
     cfg = GuidanceConfig() if target is None else GuidanceConfig(target=target)
-    got = guide(phase, GuidanceInput(results=live.danger_ok, n_cal_points=n_cal, hold=hold), cfg)
+    got = guide(phase, GuidanceInput(results=live, n_cal_points=n_cal, hold=hold), cfg)
     if got.is_err:
         problem = _guidance_problem(got.danger_err)
         _log.warning("guidance refused: %s", problem.type)

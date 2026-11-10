@@ -57,7 +57,8 @@ def test_fsync_file_error_is_result(monkeypatch: pytest.MonkeyPatch, tmp_path: P
     def boom(_fd: int) -> None:
         raise OSError(errno.EIO, "eio")
 
-    monkeypatch.setattr(durable.os, "fsync", boom)
+    # Patch the platform-neutral flush: macOS uses F_FULLFSYNC, not os.fsync.
+    monkeypatch.setattr(durable, "_flush_fd", boom)
     fd = os.open(tmp_path / "f", os.O_WRONLY | os.O_CREAT | getattr(os, "O_BINARY", 0))
     try:
         r = fsync_file(fd)
@@ -138,6 +139,9 @@ def test_rename_noreplace_moves_and_refuses_overwrite(tmp_path: Path) -> None:
 # frob:tests python/sadi/store/durable.py::rename_noreplace
 def test_rename_noreplace_link_fallback(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The link+unlink fallback (macOS path) moves, and refuses to overwrite."""
+    if sys.platform == "win32":
+        # A directory cannot be os.open()ed on Windows; the POSIX dir-fsync is not under test.
+        monkeypatch.setattr(durable, "fsync_dir", lambda _p: Ok(None))
     monkeypatch.setattr(durable, "_IS_WIN", False)
     monkeypatch.setattr(sys, "platform", "darwin")
     src, dst = tmp_path / "a", tmp_path / "b"
@@ -194,10 +198,7 @@ def test_rename_noreplace_windows_exists(
     fake = _FakeMove(ok=False)
     monkeypatch.setattr(durable, "_IS_WIN", True)
     monkeypatch.setattr(
-        durable.ctypes,
-        "windll",
-        type("W", (), {"kernel32": type("K", (), {"MoveFileExW": fake})}),
-        raising=False,
+        durable, "_kernel32", lambda: type("K", (), {"MoveFileExW": staticmethod(fake)})
     )
     monkeypatch.setattr(durable.ctypes, "get_last_error", lambda: code, raising=False)
     monkeypatch.setattr(durable, "fsync_dir", lambda _p: Ok(None))
@@ -215,10 +216,7 @@ def test_rename_noreplace_windows_success(monkeypatch: pytest.MonkeyPatch, tmp_p
     synced: list[Path] = []
     monkeypatch.setattr(durable, "_IS_WIN", True)
     monkeypatch.setattr(
-        durable.ctypes,
-        "windll",
-        type("W", (), {"kernel32": type("K", (), {"MoveFileExW": fake})}),
-        raising=False,
+        durable, "_kernel32", lambda: type("K", (), {"MoveFileExW": staticmethod(fake)})
     )
     monkeypatch.setattr(durable, "fsync_dir", lambda p: (synced.append(p), Ok(None))[1])
     assert rename_noreplace(tmp_path / "a", tmp_path / "b") == Ok(None)
@@ -263,7 +261,7 @@ def test_atomic_replace_fsync_failure_keeps_original(
     def boom(_fd: int) -> None:
         raise OSError(errno.EIO, "eio")
 
-    monkeypatch.setattr(durable.os, "fsync", boom)
+    monkeypatch.setattr(durable, "_flush_fd", boom)
     r = atomic_replace(tmp, dst)
     assert isinstance(r, Err)
     assert dst.read_bytes() == b"old"

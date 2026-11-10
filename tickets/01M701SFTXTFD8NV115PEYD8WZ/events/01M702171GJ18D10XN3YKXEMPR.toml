@@ -1,0 +1,6 @@
+kind = "comment"
+subtype = "decision"
+body = "land overrode a red base CI at 813abd85c1a2 (python (ubuntu-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507043/job/129134007492; python (macos-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507043/job/129134007350; python (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507043/job/129134007257; rust (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507043/job/129134007209; browser e2e (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507058/job/129134007155; web (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507043/job/129134006988; crash (windows-latest) (failure) https://github.com/lognd/sadi/actions/runs/42609507006/job/129134006718): landing the fixes for the red base CI"
+at = "2026-11-09T11:44:30Z"
+actor = "lognd"
+rev = 1

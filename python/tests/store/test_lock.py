@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from typani import Err, Ok
 
+from sadi.store import lock as lock_mod
 from sadi.store.lock import (
     LOCK_FILENAME,
     LockHeld,
@@ -20,8 +21,8 @@ from sadi.store.lock import (
 )
 
 _HOLDER = (
-    "import sys,time\nfrom pathlib import Path\nfrom sadi.store.lock import acquire\n"
-    "r=acquire(Path(sys.argv[1]))\nlk=r.unwrap()\nprint('READY',flush=True)\n"
+    "import os,sys,time\nfrom pathlib import Path\nfrom sadi.store.lock import acquire\n"
+    "r=acquire(Path(sys.argv[1]))\nlk=r.unwrap()\nprint('READY',os.getpid(),flush=True)\n"
     "sys.stdin.readline()\nlk.release()\n"
 )
 
@@ -59,10 +60,11 @@ def test_second_process_gets_lockheld_with_pid(tmp_path: Path) -> None:
     try:
         assert proc.stdout is not None
         lines = iter(proc.stdout.readline, "")
-        assert any(ln.strip() == "READY" for ln in lines)
+        ready = next(ln.split() for ln in lines if ln.startswith("READY"))
+        holder_pid = int(ready[1])  # real pid; Popen.pid may be a venv shim on Windows
         match acquire(tmp_path):
             case Err(LockHeld() as e):
-                assert e.pid == proc.pid
+                assert e.pid == holder_pid
             case other:
                 raise AssertionError(other)
     finally:
@@ -87,6 +89,21 @@ def test_stale_lock_reported_and_only_recovered_explicitly(tmp_path: Path) -> No
     assert str(dead.pid) in (tmp_path / LOCK_FILENAME).read_text()
     with acquire(tmp_path, recover_stale=True).unwrap() as lock:
         assert lock.held
+
+
+# frob:ticket 01M701SFR4E1BKBXW1RCN14TK3
+# frob:tests python/sadi/store/lock.py::acquire
+def test_stale_detection_reads_through_locked_fd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Windows denies path reads of a locked range; stale detection must not depend on them."""
+    (tmp_path / LOCK_FILENAME).write_text("pid=99999999 host=x\n")
+    monkeypatch.setattr(lock_mod, "read_holder_pid", lambda _p: None)
+    match acquire(tmp_path):
+        case Err(LockStale() as e):
+            assert e.pid == 99999999
+        case other:
+            raise AssertionError(other)
 
 
 # frob:tests python/sadi/store/lock.py::acquire

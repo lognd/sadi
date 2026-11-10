@@ -1,0 +1,17 @@
+kind = "evidence"
+captured_at = "2026-11-09T12:38:39Z"
+digest = "f51bc04c8b35cfafa7aed2d3a1233a60894ebbb59d1243453dd428171ccc3261"
+exit_code = 2
+head = "f02ab3d5aa9862b46b5cdab7c7595b587c5295f6"
+inline = """
+error: Failed to spawn: ty
+  cause: No such file or directory (os error 2)
+"""
+passed = false
+provider = "command"
+ref = "uv run ty check"
+size = 75
+status = "measured"
+at = "2026-11-09T12:38:39Z"
+actor = "lognd"
+rev = 1

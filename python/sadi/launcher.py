@@ -33,6 +33,7 @@ from sadi.doctor.cli import main as doctor_main
 from sadi.doctor.render_text import render
 from sadi.doctor.schema import DoctorReport, RunOptions
 from sadi.logging_setup import get_logger
+from sadi.webdist import BUILD_UI_HINT, CHECKOUT_WEB_DIST
 
 # Heavy modules (sadi.store via core/server/plugins) are imported lazily inside functions:
 # a spawn-context worker re-imports the entry script, and WRK-010 requires that child to
@@ -50,7 +51,7 @@ EXIT_PREFLIGHT = 2
 EXIT_LOCK = 3
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
-DEFAULT_WEB_DIST = Path("web") / "dist"
+DEFAULT_WEB_DIST = CHECKOUT_WEB_DIST
 EXIT_SELFTEST = 4
 EXIT_PORT = 5
 EXIT_DEVICE = 6
@@ -209,7 +210,7 @@ def package_version() -> str:
 
 
 def resolve_web_dist(explicit: Path | None = None) -> Path:
-    """Pick the UI dir: explicit path, else packaged `sadi/_ui`, else `web/dist`."""
+    """Pick the UI dir: explicit path, else packaged `sadi/_ui`, else the checkout's `web/dist`."""
     if explicit is not None:
         _log.info("using explicit web dist %s", explicit)
         return explicit
@@ -224,7 +225,7 @@ def resolve_web_dist(explicit: Path | None = None) -> Path:
 def mount_web(app: FastAPI, dist: Path) -> bool:
     """Mount the built web assets at `/` when `dist/index.html` exists; return whether mounted."""
     if not (dist / "index.html").is_file():
-        _log.warning("no built web assets at %s; serving the API only", dist)
+        _log.warning("no built web assets at %s; serving the API only (%s)", dist, BUILD_UI_HINT)
         return False
     app.mount("/", StaticFiles(directory=dist, html=True), name="web")
     _log.info("serving web assets from %s", dist)

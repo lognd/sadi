@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
-from typani import Err, Ok, Result
+from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableError, DurableIo, atomic_replace, create_exclusive, fsync_file
@@ -115,14 +115,13 @@ def read_manifest(session_dir: Path) -> Result[Manifest | None, ManifestInvalid]
         return Err(ManifestInvalid(path=path, reason=str(exc)))
 
 
+@propagate
 def write_manifest(session_dir: Path, manifest: Manifest) -> Result[None, DurableError]:
     """Atomically write manifest.json via an exclusive same-directory tmp file and replace."""
     dst = session_dir / MANIFEST_NAME
     tmp = session_dir / f"{MANIFEST_NAME}.tmp-{os.getpid()}-{secrets.token_hex(4)}"
     created = create_exclusive(tmp)
-    if created.is_err:
-        return Err(created.danger_err)
-    fd = created.danger_ok
+    fd = created.unwrap()
     data = manifest.model_dump_json(indent=2).encode("ascii") + b"\n"
     try:
         try:

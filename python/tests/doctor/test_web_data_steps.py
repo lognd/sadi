@@ -29,7 +29,7 @@ def test_web_010_points_at_build_script() -> None:
     p.web_bundle = lambda: (False, 0)  # type: ignore[method-assign]
     res = _result(p, "WEB-010")
     assert res.status.value == "fail"
-    assert "python packaging/build_ui.py" in _lines(res)
+    assert "uv run python ../packaging/build_ui.py" in _lines(res)
     assert res.remediation is not None
     text = " ".join(s.expect or "" for s in res.remediation.steps)
     assert "sadi/_ui/index.html" in text
@@ -54,7 +54,7 @@ def test_fix_plans_only_the_create_only_build_and_mkdir() -> None:
     p = healthy()
     p.web_bundle = lambda: (False, 0)  # type: ignore[method-assign]
     web = fixmod.plan(_result(p, "WEB-010"), None)
-    assert [a.command.line for a in web] == ["python packaging/build_ui.py"]
+    assert [a.command.line for a in web] == ["uv run python ../packaging/build_ui.py"]
     q = healthy()
     q.dirs.pop(q.data_dir)
     data = fixmod.plan(_result(q, "DATA-010"), q.data_dir)

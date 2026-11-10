@@ -1,0 +1,9 @@
+kind = "create"
+title = "fix: launcher web/dist fallback is cwd-relative; doctor maturin and build_ui commands wrong dir/env"
+type = "task"
+category = "todo"
+priority = "medium"
+points = 2
+at = "2026-11-09T13:41:58Z"
+actor = "lognd"
+rev = 1

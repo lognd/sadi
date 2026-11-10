@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:53:02Z"
-updated = "2026-11-10T07:55:39Z"
+updated = "2026-11-10T07:55:42Z"
 labels = ["creates:web/src/components/instrument/StopBanner.tsx", "creates:web/src/components/instrument/StopBanner.test.tsx"]
 scope = ["web/src/components/instrument/", "web/src/api/"]
 

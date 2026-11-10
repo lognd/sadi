@@ -2,7 +2,8 @@
 id = "01M72TJ0AF92J3Q77TY8RE9YCW"
 title = "Spill import: failed fragment verify is retried (new crashed copy) on every start"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 2
 reporter = "lognd"

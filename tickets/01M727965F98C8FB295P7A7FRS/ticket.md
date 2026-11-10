@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:55:38Z"
-updated = "2026-11-10T08:02:18Z"
+updated = "2026-11-10T08:02:31Z"
 labels = ["creates:python/tests/server/test_latest_lineage.py"]
 scope = ["python/sadi/server/routes/sessions.py", "python/sadi/server/service.py", "web/src/screens/setup/SessionSetup.tsx", "python/sadi/server/routes/export.py", "web/src/screens/setup/SessionSetup.test.tsx", "python/tests/server/test_readonly_export.py", "python/tests/server/test_latest_lineage.py"]
 

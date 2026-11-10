@@ -2,7 +2,8 @@
 id = "01M72BNYX112XQ7D2QJEAM66XT"
 title = "Regenerate committed OpenAPI spec and TS types (stale after origin guard / audit4 routes)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 1
 reporter = "lognd"

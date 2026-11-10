@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from collections.abc import Collection
 
 from pydantic import BaseModel, ConfigDict
@@ -59,6 +60,12 @@ def is_safe_name(name: str, max_len: int = DEFAULT_MAX_LEN) -> bool:
         and not name.endswith(".")
         and not _is_reserved(name)
     )
+
+
+def ascii_fold(raw: str) -> str:
+    """Fold accented letters to their ASCII base (u-umlaut -> u); unmappable characters stay."""
+    decomposed = unicodedata.normalize("NFKD", raw)
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch))
 
 
 def _digest(raw: str) -> str:

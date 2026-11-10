@@ -74,6 +74,7 @@ describe("export screen", () => {
     const r = await getExportFormats(() => json([]));
     expect(r).toEqual({ ok: true, value: [] });
     expect(figureFileName("fig", "svg")).toBe("fig.svg");
+    expect(figureFileName("fig", "svg", "lab-a")).toBe("lab-a-fig.svg");
   });
 
   it("exports figure data as one svg per figure and reports errors as problems", async () => {

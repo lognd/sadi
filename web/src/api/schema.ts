@@ -84,6 +84,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/export/figure/{figure_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Figure
+         * @description Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites).
+         */
+        post: operations["save_figure_api_export_figure__figure_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/export/{format_id}": {
         parameters: {
             query?: never;
@@ -1820,6 +1840,11 @@ export interface components {
             lab: string;
             /** Name */
             name: string;
+            /**
+             * Newer Versions
+             * @default []
+             */
+            newer_versions: string[];
             /** Parent */
             parent?: string | null;
             /** Parent Last Seq */
@@ -1851,6 +1876,13 @@ export interface components {
             family: string;
             /** Lab */
             lab: string;
+            /**
+             * Latest
+             * @default true
+             */
+            latest: boolean;
+            /** Latest Name */
+            latest_name?: string | null;
             /** Name */
             name: string;
             /** Parent */
@@ -2114,6 +2146,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExportFormatView"][];
+                };
+            };
+        };
+    };
+    save_figure_api_export_figure__figure_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                figure_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

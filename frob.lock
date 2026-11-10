@@ -1983,13 +1983,13 @@ acked_at = "2026-11-10T06:45:55.716119678Z"
 [[symbol]]
 identity = "web/src/components/wizard/CloseSession.tsx::CloseSession"
 symref = "web/src/components/wizard/CloseSession.tsx::CloseSession"
-sig = "14fd1b01c47b5d0e1d0115a665f8fb27fec681ee2f4d53d3c35d75e48ea74be0"
-body = "c0259a6670e3d5af971f247a9edb1ad04e74ea832f422e5bf7a6c32a1a73be40"
+sig = "3cb378ca2e206bbf6b0630a7f09809b5a966e30bf9494e749b686a6b535f3cbb"
+body = "f3b82ccc330b18682e7317304c74fd0fe477ba43e75ce65766247f12f1e47d55"
 doc = "d82f2a67b7f0ee3a89f41beb303b71abe2bd37583bb3a9d8e6074f5309cb24bf"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "8f20383d04d00c94051df24a782fdb9c58dd887d93112467acc8f45cb2b423fb"
+contract = "e2d4af161b57333179b5d9f608444f20105a0e84322b22542773fb4e0ac3013d"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T06:45:55.716119678Z"
+acked_at = "2026-11-10T08:38:24.575898159Z"
 
 [[symbol]]
 identity = "web/src/components/wizard/CloseSession.tsx::CloseSessionView"

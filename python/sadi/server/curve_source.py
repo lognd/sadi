@@ -131,6 +131,9 @@ def session_events(
     return Ok(events)
 
 
+_PLASTIC_PHASE = "plastic"  # rows of the short-specimen run; never part of the E fit curve
+
+
 def load_curve(
     data_root: Path, cache: dict[Path, IncrementalReplay] | None = None
 ) -> Result[Sequence[CurvePoint], RefitError]:
@@ -145,7 +148,7 @@ def load_curve(
 def load_session_curve(
     sdir: Path, cache: dict[Path, IncrementalReplay] | None = None
 ) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded) stress-strain curve from session dir `sdir`'s events.
+    """Build the active (non-excluded, elastic or unphased) stress-strain curve from `sdir`'s events.
 
     `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
     """
@@ -164,6 +167,10 @@ def load_session_curve(
     out: list[CurvePoint] = []
     for row in doc.danger_ok.rows:
         if row.excluded:
+            continue
+        if row.phase == _PLASTIC_PHASE:
+            # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+            # The plastic run is a different specimen (own L0): E is fitted on elastic rows only.
             continue
         stress = Measured.create(row.stress_pa, row.u_stress_pa, "Pa")
         strain = Measured.create(row.strain, row.u_strain, "")

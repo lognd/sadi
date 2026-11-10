@@ -68,6 +68,11 @@ class OriginGuard:
         host = headers.get("host", "")
         if not host_allowed(host):
             return f"non-local Host {host!r}"
+        # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+        # GET /api/export/* writes a saved copy, so a cross-site page must not trigger it.
+        path = str(scope.get("path", ""))
+        if headers.get("sec-fetch-site") == "cross-site" and path.startswith("/api/"):
+            return "Sec-Fetch-Site cross-site"
         guarded = scope["type"] == "websocket" or scope.get("method", "GET") not in _SAFE_METHODS
         if not guarded:
             return None

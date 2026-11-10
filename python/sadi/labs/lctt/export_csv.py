@@ -358,8 +358,8 @@ def tare_report(
 ) -> Result[Measured, LoadingError]:
     """Reported tare (V): pooled mean, standard error Sx/sqrt(N); one model for CSV and Results.
 
-    The loading engine still propagates the conservative pooled 2 Sx (domain 3.2); this is the
-    uncertainty OF THE TARE MEAN that every report (CSV column, Results `tare`) states.
+    This is the uncertainty OF THE TARE MEAN that every report (CSV rows incl. u_strain and
+    u_stress, Results `tare`) states; the pooled 2 Sx (domain 3.2) is not used for CSV rows.
     """
     pooled = pool_tare(means, sds, counts)
     if isinstance(pooled, Err):
@@ -405,6 +405,10 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         return Err(ExportCsvError.Compute)
     fit, tare, spec = cal.danger_ok, pooled.danger_ok, st.specimen
     u_tare = report.danger_ok.std_unc
+    # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+    # One uncertainty model per row: the loading engine gets the same Sx/sqrt(N) tare as
+    # u_delta_volts/u_displacement_m, so u_strain ~ u_displacement_m / l0_m (no 2 Sx in the CSV).
+    row_tare = report.danger_ok
     dia, hang = (
         _m(spec.diameter, spec.u_diameter, "m", "dia"),
         _m(spec.hanger_kg, spec.u_hanger_kg, "kg", "hanger"),
@@ -423,7 +427,7 @@ def build_document(  # noqa: PLR0912, PLR0915 - one linear derivation, split wou
         if isinstance(volt, Err) or isinstance(mass, Err):
             return Err(ExportCsvError.Compute)
         res = compute_loading(
-            LoadingInputs(voltage=volt.danger_ok, tare=tare, slope=fit.slope,
+            LoadingInputs(voltage=volt.danger_ok, tare=row_tare, slope=fit.slope,
                           masses=(mass.danger_ok,), hanger=hang.danger_ok,
                           diameter=dia.danger_ok),
             groups[phase_of[pid]].loading,
@@ -525,6 +529,7 @@ def _meta(  # noqa: PLR0913
         ("Operator", operator), ("Description", description),
         ("Tare mean (V)", f(tare.value)), ("Tare sd (V)", f(tare_sd)),
         ("Tare u (V)", f(tare.std_unc)), ("Tare n", str(tare_n)),
+        ("Row uncertainty model", "U_tare = Sx/sqrt(N) for u_strain, u_stress, u_displacement_m"),
         ("Cal slope (m/V)", f(fit.slope.value)), ("Cal intercept (m)", f(fit.intercept.value)),
         ("Cal se slope", f(fit.se_slope)), ("Cal se intercept", f(fit.se_intercept)),
         ("Cal r2", f(fit.r2)), ("Cal t95", f(fit.t95)), ("Cal n", str(fit.n)),

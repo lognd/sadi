@@ -2073,6 +2073,11 @@ export interface components {
         StressStrainPlot: {
             /** Excluded */
             excluded: boolean[];
+            /**
+             * Phase
+             * @default []
+             */
+            phase: string[];
             /** Point Ids */
             point_ids: string[];
             /**

@@ -41,3 +41,14 @@ incremental tail had already applied fails the export (replay error, nothing ren
 ## Read-only export of a closed session (~VBQ0A3E)
 
 `GET /api/sessions/{name}/export/{format_id}` renders a closed session without Resume: it takes no writer lock, creates no version, appends nothing to the WAL, writes no copy and needs no device. `SessionService.read_closed` refuses with 409 `session_open` (the open session, or a live writer holds it), 409 `session_corrupt` (torn or corrupt WAL, or recovery fails) and 404 for unknown names; every refusal carries a hint and nothing on disk is modified. Rendering shares `_render` with `render_export`.
+
+## Cross-site GET refusal and download names
+
+- `OriginGuard` refuses any `/api/*` GET carrying `Sec-Fetch-Site: cross-site`
+  (export GETs write a saved copy, so a foreign page must not trigger them).
+  Same-origin, same-site, user-initiated (`none`) and header-less clients pass.
+- When a response carries `X-SADI-Provenance`, the web client uses the server's
+  `Content-Disposition` name verbatim (`RECOVERED-`/`SYNTHETIC-` prefixes are
+  server-owned); the global provenance store is only a fallback for old replies.
+- The stress-strain figure data carries a per-row `phase`; the E refit curve
+  (`load_session_curve`) uses elastic rows only, never the plastic run.

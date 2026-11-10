@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
 import { FormatList, ProblemAlert, ReportView, quantityLabel, sampleSpan, exportFigureFormat, figureFileName } from "./ExportScreen";
 import { downloadExport, exportUrl, getExportFormats, savedMessage, toProblem } from "./api";
+import { exportFilename } from "../../state/provenance";
+import { figureDataScenes } from "./figureScenes";
 import type { ResultSet } from "./types";
 
 const rs: ResultSet = {
@@ -142,6 +144,26 @@ describe("download via fetch", () => {
     expect(savedMessage(r.value.saved)).toBe("Saved a copy in exports/lctt-csv/x.csv");
     expect(savedMessage("failed")).toContain("could not keep");
     expect(savedMessage("")).toBe("");
+  });
+
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  it("splits the stress-strain scene by phase", () => {
+    const d = { calibration: { volts: [], height_m: [], fit: null }, stress_strain: { point_ids: ["a", "b", "c"], strain: [0.001, 0.002, 0.003], stress_mpa: [70, 140, 90],
+      excluded: [false, false, false], phase: ["elastic", "elastic", "plastic"] } };
+    const scenes = figureDataScenes(d);
+    const ss = scenes.find((n) => n.suffix.includes("stress"));
+    expect(ss).toBeDefined();
+    expect(JSON.stringify(ss?.scene)).toContain("plastic");
+  });
+
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  it("keeps the server-provided filename when provenance is stamped", async () => {
+    const mk = (prov: string, name: string) => new Response("a\n", { status: 200, headers: { "X-SADI-Provenance": prov, "Content-Disposition": `attachment; filename="${name}"` } });
+    const real = await downloadExport("lctt-csv", (() => Promise.resolve(mk("real", "RECOVERED-x.csv"))));
+    expect(real.ok && real.value.filename).toBe("RECOVERED-x.csv");
+    const syn = await downloadExport("lctt-csv", (() => Promise.resolve(mk("synthetic", "RECOVERED-SYNTHETIC-x.csv"))));
+    expect(syn.ok && syn.value.filename).toBe("RECOVERED-SYNTHETIC-x.csv");
+    expect(exportFilename("RECOVERED-SYNTHETIC-x.csv", true)).toBe("RECOVERED-SYNTHETIC-x.csv");
   });
 
   it("network failure becomes a network error", async () => {

@@ -75,3 +75,16 @@ def test_phase_survives_render_read_roundtrip() -> None:
     assert [r.phase for r in back.rows] == [r.phase for r in d.rows]
     again = build_document(to_live_events(back), date=NOW).danger_ok
     assert math.isclose(again.get_float("E (Pa)"), d.get_float("E (Pa)"), rel_tol=1e-6)
+
+
+# frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+# frob:tests python/sadi/labs/lctt/export_csv.py::build_document
+def test_row_uncertainty_model_is_consistent() -> None:
+    """u_strain agrees with u_displacement_m / l0_m (same Sx/sqrt(N) tare), not 2 Sx."""
+    d = build_document(_events(_inputs()), date=NOW).danger_ok
+    assert "Sx/sqrt(N)" in d.get("Row uncertainty model")
+    for r in d.rows:
+        if r.strain == 0:
+            continue
+        # area/L0 contribute nothing to strain, so the two views must be the same number
+        assert r.u_strain == pytest.approx(r.u_displacement_m / r.l0_m, rel=0.35)

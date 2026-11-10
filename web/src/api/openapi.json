@@ -2557,6 +2557,14 @@
             "title": "Excluded",
             "type": "array"
           },
+          "phase": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Phase",
+            "type": "array"
+          },
           "point_ids": {
             "items": {
               "type": "string"

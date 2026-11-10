@@ -45,7 +45,10 @@ def make_doctor_router(data_root: Path | None = None) -> APIRouter:
         if check_id not in {spec.id for spec, _ in all_checks()}:
             _log.info("doctor POST %r -> 404 (unknown check)", check_id)
             raise HTTPException(status_code=404, detail=DoctorError.UnknownCheck.description)
-        res = await run_in_threadpool(run, RunOptions(checks=(check_id,), data_root=root))
+        # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+        # probe_device=False: a re-run must not open the port a live driver owns.
+        opts = RunOptions(checks=(check_id,), data_root=root, probe_device=False)
+        res = await run_in_threadpool(run, opts)
         if isinstance(res, Err):
             raise _raise_http(res.error, "POST")
         assert isinstance(res, Ok)

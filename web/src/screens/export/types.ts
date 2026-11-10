@@ -71,5 +71,5 @@ export interface FigureCalibrationFit {
 /** Wire shape of GET /api/export/lctt-figure-json (python/sadi/labs/lctt/figure_data.py). */
 export interface FigureData {
   calibration: { volts: number[]; height_m: number[]; fit: FigureCalibrationFit | null };
-  stress_strain: { point_ids: string[]; strain: number[]; stress_mpa: number[]; excluded: boolean[] };
+  stress_strain: { point_ids: string[]; strain: number[]; stress_mpa: number[]; excluded: boolean[]; phase?: string[] };
 }

@@ -32,7 +32,7 @@ as a separate ticket (decision below); reader, writer and tests follow its field
 is the per-sample standard deviation of the raw volts in the averaging window (`u_volts` is the
 standard error of the mean); both are `NaN` when unknown (older sessions, single-sample windows).
 Uncertainty columns (schema `3`) are the engines' propagated standard uncertainties, not new
-estimates: `u_tare_v` is the standard error of the pooled tare mean, Sx/sqrt(N) (the same model as the Results `tare`; the loading engine still propagates the conservative 2 Sx); `u_delta_volts = hypot(u_volts, u_tare_v)`;
+estimates: `u_tare_v` is the standard error of the pooled tare mean, Sx/sqrt(N) (the same model as the Results `tare`); every row uses this one model: `u_strain`, `u_stress`, `u_delta_volts` and `u_displacement_m` all take U_tare = Sx/sqrt(N), so `u_strain` is approximately `u_displacement_m / l0_m` (stated in the `Row uncertainty model` metadata line); `u_delta_volts = hypot(u_volts, u_tare_v)`;
 `u_displacement_m` propagates delta volts and the calibration slope; `u_hanger_kg` and `u_diameter_m`
 are the specimen inputs; `u_l0_m` is `0` (gauge length is an exact configured constant);
 `u_secant_modulus_pa` is quotient propagation of stress and strain (independent inputs), `NaN`

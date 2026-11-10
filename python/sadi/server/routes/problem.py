@@ -30,6 +30,7 @@ _WIZARD_STATUS: dict[WizardError, int] = {
     WizardError.UnknownPoint: 404,
     WizardError.BadEdit: 422,
     WizardError.BadWindow: 422,
+    WizardError.BadInput: 422,
     WizardError.PhaseMismatch: 422,
 }
 

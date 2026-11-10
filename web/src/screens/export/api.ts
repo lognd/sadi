@@ -103,7 +103,11 @@ export async function downloadFrom(url: string, formatId: string, fetchImpl: typ
   const name = dispositionName(res.headers.get("Content-Disposition"), `sadi-${formatId}.csv`);
   const saved = res.headers.get("X-SADI-Saved") ?? "";
   log.info("download fetched", { formatId, bytes: blob.size, saved });
-  return ok({ blob, filename: exportFilename(name, currentlySynthetic()), saved });
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  // The server stamps provenance and names the file (incl. RECOVERED-); trust it as is.
+  const prov = res.headers.get("X-SADI-Provenance");
+  const filename = prov !== null ? name : exportFilename(name, currentlySynthetic());
+  return ok({ blob, filename, saved });
 }
 
 /** Page message for the server's saved-copy header, or "" when it sent none. */

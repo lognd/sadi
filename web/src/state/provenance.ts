@@ -26,7 +26,8 @@ export function isSynthetic(p: DataProvenance | null | undefined): boolean {
 
 /** Prefix a download filename with SYNTHETIC- when the data is synthetic (idempotent). */
 export function exportFilename(name: string, synthetic: boolean): string {
-  return synthetic && !name.startsWith(EXPORT_PREFIX) ? `${EXPORT_PREFIX}${name}` : name;
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  return synthetic && !name.includes(EXPORT_PREFIX) ? `${EXPORT_PREFIX}${name}` : name;
 }
 
 /** Store slice holding the latest provenance seen on any payload. */

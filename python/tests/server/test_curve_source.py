@@ -83,3 +83,21 @@ def test_active_session_feeds_fit_read_only(tmp_path: Path) -> None:
     assert res.status_code == 200, res.text
     assert res.json()["modulusMpa"] > 0
     assert _tree_digest(sdir) == before
+
+
+# frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+def test_refit_curve_uses_elastic_rows_only(tmp_path: Path) -> None:
+    """The plastic run is another specimen: it never enters the curve the E refit sees."""
+    # frob:tests python/sadi/server/curve_source.py::load_session_curve
+    h = create_session(tmp_path, SessionMeta(slug="ph")).danger_ok
+    w = WriterHandle.open(h.path / "wal", uuid.uuid4(), 1).danger_ok
+    recs = [_pt("calibration", volts=float(v), height=0.08 + K * v) for v in range(5)]
+    recs += [_pt("tare", mean=0.0, sd=0.001, n=100)]
+    recs += [_pt("specimen", diameter=0.005, u_diameter=1e-6, hanger_kg=0.1)]
+    recs += [_pt("elastic", volts=0.01 * (i + 1), mass_kg=float(i + 1)) for i in range(5)]
+    recs += [_pt("plastic", volts=0.02 * (i + 1), mass_kg=float(i + 1)) for i in range(4)]
+    for r in recs:
+        assert w.submit(r).is_ok
+    assert w.close().is_ok
+    curve = load_curve(tmp_path).danger_ok
+    assert len(curve) == 5

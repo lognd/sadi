@@ -11,6 +11,7 @@ undoing a captured point appends an `exclude` edit so the point itself stays in 
 
 from __future__ import annotations
 
+import math
 from enum import StrEnum
 from typing import Any
 
@@ -19,7 +20,7 @@ from typani import Err, ErrorSet, Ok, Result, propagate
 
 from sadi.core.lab import CaptureKind, StepId, StepSpec, needs_device
 from sadi.core.models import Phase
-from sadi.core.point_inputs import PHASE_SPECIMEN
+from sadi.core.point_inputs import PHASE_SPECIMEN, check_ranges, parse_inputs
 from sadi.logging_setup import get_logger
 from sadi.store.events import (
     ANALYSIS_TARGET,
@@ -63,6 +64,7 @@ class WizardError(ErrorSet):
     UnknownPoint = "That point does not exist; pick a captured point"
     BadEdit = "That edit is not valid here; use exclude, include, set_window or override_input"
     BadWindow = "The averaging window is invalid; first/last sample or seq are inconsistent"
+    BadInput = "That input value is not valid: use a finite, in-range number for a known field"
     NothingToUndo = "Nothing to undo"
     NothingToRedo = "Nothing to redo (a new action clears the redo history)"
 
@@ -358,6 +360,10 @@ class Wizard:
                 return Err(WizardError.UnknownPoint)
             if op == "set_window" and not _window_ok(current.window, args):
                 return Err(WizardError.BadWindow)
+            # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+            phase, inputs = current.point.phase, current.inputs
+            if op == "override_input" and not _override_ok(phase, inputs, args):
+                return Err(WizardError.BadInput)
         edit = EditV1(target=target, op=op, args=args)
         _log.info("wizard: edit %s %s %s", edit.edit_id, op, target)
         return Ok(Command(records=(edit_record(edit),), summary=f"{op} {target}"))
@@ -392,6 +398,35 @@ class Wizard:
         edit = EditV1(target=target, op=op, supersedes=token)
         _log.info("wizard: redo %s %s via edit %s", action.kind, action.ref, edit.edit_id)
         return Ok(Command(records=(edit_record(edit),), summary=f"redo {action.label}"))
+
+
+def _override_ok(phase: str, current: dict[str, object], args: dict[str, object]) -> bool:
+    """Return True when `args` merged over `current` parses and passes the capture range checks.
+
+    Unknown keys, `phase`, strings, booleans and NaN/Infinity are refused (nothing is stored).
+    """
+    # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+    match parse_inputs(phase, dict(current)):
+        case Err(why):
+            _log.warning("wizard: override_input refused, current inputs unreadable: %s", why)
+            return False
+        case Ok(base):
+            allowed = set(type(base).model_fields) - {"phase"}
+    for key, val in args.items():
+        if key not in allowed or not _finite_number(val):
+            _log.warning("wizard: override_input refused for %s=%r", key, val)
+            return False
+    match parse_inputs(phase, {**current, **args}).and_then(check_ranges):
+        case Err(why):
+            _log.warning("wizard: override_input refused: %s", why)
+            return False
+        case Ok(_):
+            return True
+
+
+def _finite_number(val: object) -> bool:
+    """Return True for a real, finite int/float (booleans, strings, NaN and Infinity are not)."""
+    return isinstance(val, (int, float)) and not isinstance(val, bool) and math.isfinite(val)
 
 
 def _window_ok(window: PointWindow, args: dict[str, object]) -> bool:

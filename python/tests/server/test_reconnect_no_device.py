@@ -86,6 +86,7 @@ def test_session_opens_without_device_and_capture_is_blocked(tmp_path: Path) -> 
 
 
 # frob:tests python/sadi/server/live.py::LiveAcquisition.reconnect_device
+# frob:tests python/sadi/server/live.py::LiveAcquisition.device_attached
 # frob:tests python/sadi/server/routes/results.py::reconnect_device
 def test_reconnect_attaches_mid_session_without_touching_the_wal(tmp_path: Path) -> None:
     """Reconnect starts recording into the open session; prior records stay as they were."""

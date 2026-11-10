@@ -7,12 +7,12 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:54:47Z"
-updated = "2026-11-10T15:09:25Z"
+updated = "2026-11-10T15:11:00Z"
 scope = ["web/src/screens/run/**", "python/sadi/server/app.py", "web/src/components/status/StatusBar.tsx", "python/tests/server/test_app.py", "web/src/components/live/LiveReadout.tsx"]
 
 [[acceptance]]
 text = "A faulted device is shown as faulted, not Connected, and the simulated flag survives a fault on the backend."
-bound = false
+bound = true
 +++
 
 Leftover from ~2KP8YNY: app.py derives simulated from status == simulated; source word can read Simulated or Connected on a faulted device.

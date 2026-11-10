@@ -7,8 +7,8 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T08:28:54Z"
-updated = "2026-11-10T08:30:03Z"
-labels = ["audit4"]
+updated = "2026-11-10T08:33:16Z"
+labels = ["audit4", "creates:python/sadi/server/security.py", "creates:python/tests/server/test_origin_guard.py"]
 scope = ["python/sadi/server/app.py", "python/sadi/server/security.py", "python/tests/server/test_origin_guard.py"]
 
 [[acceptance]]

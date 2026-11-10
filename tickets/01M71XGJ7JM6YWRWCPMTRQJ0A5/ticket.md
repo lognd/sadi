@@ -7,7 +7,7 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T05:04:53Z"
-updated = "2026-11-10T05:33:04Z"
+updated = "2026-11-10T05:33:11Z"
 scope = ["python/sadi/server/routes_doctor.py", "python/sadi/doctor/**", "web/src/App.tsx", "web/src/doctor/**", "web/src/components/instrument/**", "web/src/components/status/**", "web/src/screens/WizardHost.tsx", "web/src/styles.css", "web/src/components/wizard/FrontPanel.tsx", "docs/doctor.md", "docs/web/front-panel.md", "python/sadi/server/app.py", "python/tests/doctor/**", "web/src/api/openapi.json", "web/src/api/schema.ts"]
 
 [[acceptance]]

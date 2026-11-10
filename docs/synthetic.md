@@ -28,7 +28,10 @@ it. Environment variables never enable the source. Combining it with
 
 - Flag plus typed phrase; never default, never env-only.
 - A `SYNTHETIC` marker file in the session directory, mirrored in the
-  manifest (`synthetic: true`).
+  manifest (`synthetic: true`). `session_is_synthetic` is true if EITHER says so, so
+  losing the marker (copy tools, sync) never relabels the data as real.
+- `sadi serve --sim` (built-in simulator device) is treated the same way: the launcher
+  serves in synthetic mode, so its sessions and exports are labelled SYNTHETIC.
 - Resuming a session with a mismatched provenance is refused (HTTP 409,
   `ProvenanceMismatch`); real and synthetic data are never mixed.
 - A `provenance` field on health, session, plot, results, modulus-fit

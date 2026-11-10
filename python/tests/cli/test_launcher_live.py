@@ -39,7 +39,7 @@ def test_sim_launcher_streams_frames_and_saves_raw(tmp_path: Path) -> None:
                     if msg.get("bytes"):
                         frames += 1
             assert frames > 0
-            live = app.state.sessions._on_open.__self__
+            live = app.state.settings.live
             assert live.running
             assert live.fault is None
             assert client.post("/api/session/close").status_code == 204

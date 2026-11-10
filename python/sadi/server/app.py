@@ -54,6 +54,7 @@ from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
 from sadi.store.spill import import_all_spills
+from sadi.store.writer_thread import WriterHandle
 
 _log = get_logger(__name__)
 
@@ -80,11 +81,29 @@ class AppSettings(BaseModel):
     synthetic: bool = False  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
-class _NoWriter:
-    """Seq source used when no writer is injected: nothing pending, so the header reads Saved."""
+class _SessionWriterSource:
+    """Seq source following the open session's real writer; idle (nothing pending) when none."""
 
-    durable_seq = 0
-    enqueued_seq = 0
+    def __init__(self) -> None:
+        """Start with no writer bound."""
+        self._writer: WriterHandle | None = None
+
+    def bind(self, writer: WriterHandle | None) -> None:
+        """Point at the current session's writer (None once it is closing or closed)."""
+        self._writer = writer
+        _log.info("save indicator %s a session writer", "bound to" if writer else "unbound from")
+
+    @property
+    def durable_seq(self) -> int:
+        """Highest durable seq of the bound writer (0 when none)."""
+        w = self._writer
+        return w.durable_seq if w is not None else 0
+
+    @property
+    def enqueued_seq(self) -> int:
+        """Highest assigned seq of the bound writer (0 when none)."""
+        w = self._writer
+        return w.enqueued_seq if w is not None else 0
 
 
 class RootLockStartupError(RuntimeError):
@@ -165,7 +184,9 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             return {"ok": app.state.root_lock is not None}
         return {"ok": False, "kind": type(failure.error).__name__, "hint": failure.hint}
 
-    indicator = SaveIndicator(cfg.writer if cfg.writer is not None else _NoWriter())
+    # frob:ticket 01M720QDHPFPD9CNEADS1CA9V6
+    session_src = _SessionWriterSource()
+    indicator = SaveIndicator(cfg.writer if cfg.writer is not None else session_src)
     if cfg.writer is not None:
         cfg.writer.on_failure(indicator.mark_failed)
     app.state.save_indicator = indicator
@@ -173,8 +194,22 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
     app.include_router(make_save_indicator_router(indicator))
     app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry(), cfg.synthetic)
     install_problem_handlers(app)
-    if cfg.live is not None:
-        app.state.sessions.set_hooks(cfg.live.on_session_open, cfg.live.on_session_close)
+    live = cfg.live
+
+    def _on_open(writer: WriterHandle, path: Path) -> None:
+        """Bind the save indicator to the new writer, then run the live-acquisition hook."""
+        if cfg.writer is None:
+            session_src.bind(writer)
+            writer.on_failure(indicator.mark_failed)
+        if live is not None:
+            live.on_session_open(writer, path)
+
+    def _before_close() -> None:
+        """Run the live-acquisition hook; the indicator keeps the writer until it is drained."""
+        if live is not None:
+            live.on_session_close()
+
+    app.state.sessions.set_hooks(_on_open, _before_close)
     app.include_router(make_sessions_router(app.state.sessions))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))

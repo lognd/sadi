@@ -495,6 +495,11 @@ def _serve_app(
     from sadi.server.live import LiveAcquisition
 
     plugins, labs = load_builtin_plugins()
+    # frob:ticket 01M720QDHPFPD9CNEADS1CA9V6
+    if not synthetic and device is not None and device.status == "simulated":
+        synthetic = True
+        _log.warning("simulator device: sessions and exports are labelled SYNTHETIC, not real")
+        _out("sadi: simulator in use: all data is SIMULATED and will be labelled SYNTHETIC\n")
     live = LiveAcquisition(device, Bus()) if device is not None else None
     app = create_app(
         AppSettings(

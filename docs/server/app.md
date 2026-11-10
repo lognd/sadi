@@ -34,7 +34,10 @@ exits non-zero. With `require_root_lock=False` the app starts degraded and
 (any `FailableSeqSource`); the app builds one `SaveIndicator` over it (kept on
 `app.state.save_indicator`) and registers `SaveIndicator.mark_failed` via
 `writer.on_failure`, so a writer failure latches NOT SAVED. With no writer the indicator
-reads Saved with nothing pending.
+follows the open session's real writer: `create_app` hooks session open/close
+(`SessionService.set_hooks`, chained with the live-acquisition hooks), binds the indicator's seq
+source to the new `WriterHandle` and registers `mark_failed` on it, so Saving (pending seqs) and
+NOT SAVED reflect the real WAL. With no session open nothing is pending and it reads Saved.
 
 ## Stress-strain refit
 

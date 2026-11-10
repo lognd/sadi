@@ -128,9 +128,19 @@ _SYNTHETIC_MARKER_TEXT = b"SYNTHETIC DATA: simulated copper specimen, not a phys
 
 
 def session_is_synthetic(session_dir: Path) -> bool:
-    """True when `session_dir` carries the SYNTHETIC marker (authoritative; manifest is derived)."""
+    """True when the SYNTHETIC marker OR the manifest says synthetic (losing one never relabels)."""
     # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
-    return (session_dir / SYNTHETIC_MARKER).is_file()
+    # frob:ticket 01M720QDHPFPD9CNEADS1CA9V6
+    if (session_dir / SYNTHETIC_MARKER).is_file():
+        return True
+    mf = read_manifest(session_dir)
+    if mf.is_err:
+        _log.warning("session %s: manifest unreadable while checking provenance", session_dir.name)
+        return False
+    if mf.danger_ok is not None and mf.danger_ok.synthetic:
+        _log.warning("session %s: SYNTHETIC marker missing but manifest says synthetic", session_dir.name)
+        return True
+    return False
 
 
 def _write_synthetic_marker(path: Path) -> Result[None, SessionError]:

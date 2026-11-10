@@ -2,7 +2,8 @@
 id = "01M72Y6ZT01R2CXQT2XM4CMVZT"
 title = "WAL segment roll forces full-WAL rebase under the service lock; all session routes hang (audit8 H1)"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 5
 reporter = "lognd"

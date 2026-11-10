@@ -6094,13 +6094,13 @@ acked_at = "2026-11-10T04:06:53.946356897Z"
 [[symbol]]
 identity = "web/src/screens/setup/SessionSetup.tsx::SessionSetup"
 symref = "web/src/screens/setup/SessionSetup.tsx::SessionSetup"
-sig = "3efc637fc1bd462c22292f5ec2116a62d7254e1ab007fdfab8b5d03f95550854"
-body = "1ae24a2b583aa259e176eb37d56ef35067e1b2c64352e14cb6806436a9a754c6"
+sig = "281ae5dec9f60359db8ae866310ce067c8b6ef7e9147ac9cf476011a1fbb7acc"
+body = "3c007d330ce5ec6ef778a83233ac464970ab542bd6dc72058065bd15e92908da"
 doc = "62d1ff1722353936cca31ba88a91e0bb47c744a9ade3625e63e229846b569019"
 attr = "124743c0fea29c88185bb838d63416294fe5371f04fb7d86db89c9773c82f500"
-contract = "fc6ae05ed6785c7bca869e5d1e95fc106a556befe02e37d64d4a381ed0340257"
+contract = "52e7c701704412db0d769225b897e9f25cd8d982467f91f0148e4ae634cdea78"
 acked_by = "lognd <logandapp@gmail.com>"
-acked_at = "2026-11-10T08:00:07.174415854Z"
+acked_at = "2026-11-10T08:38:25.444289405Z"
 
 [[symbol]]
 identity = "web/src/screens/setup/SessionSetup.tsx::isRecoverable"

@@ -1,9 +1,11 @@
 // frob:ticket 01M6XAASPRSYNWC5K5MH77E8KJ
+// frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { contrastRatio } from "./contrast";
 
-const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+const css = readFileSync(new URL("../theme.css", import.meta.url), "utf8");
+const crunkToml = readFileSync(new URL("../../crunk.toml", import.meta.url), "utf8");
 
 /** Parse `--name: #hex` tokens from one CSS block. */
 function tokens(block: string): Record<string, string> {
@@ -15,7 +17,7 @@ const lightBlock = css.slice(css.indexOf(":root,"), css.indexOf("@media (prefers
 const darkBlock = css.slice(css.indexOf(':root[data-theme="dark"] {'), css.indexOf("/* ---- Tokens: theme-independent"));
 const mediaBlock = css.slice(css.indexOf("@media (prefers-color-scheme: dark)"), css.indexOf(':root[data-theme="dark"] {'));
 
-describe("styles.css WCAG AA contrast", () => {
+describe("theme.css WCAG AA contrast", () => {
   test("known ratios", () => {
     expect(contrastRatio("#000000", "#ffffff")).toBeCloseTo(21, 5);
   });
@@ -55,5 +57,26 @@ describe("styles.css WCAG AA contrast", () => {
     test.each(ui)("%s >= 3:1", (_n, fg, bg) => {
       expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(3);
     });
+  });
+});
+
+/** Parse `name = "#hex"` lines of one `crunk.toml` table (from its header to the next header). */
+function tomlPalette(header: string): Record<string, string> {
+  const start = crunkToml.indexOf(`\n[${header}]`);
+  const rest = crunkToml.slice(start + 1);
+  const end = rest.indexOf("\n[", 1);
+  const out: Record<string, string> = {};
+  for (const m of rest.slice(0, end < 0 ? undefined : end).matchAll(/^([\w-]+)\s*=\s*"(#[0-9a-fA-F]{6})"/gm)) {
+    out[m[1] ?? ""] = m[2] ?? "";
+  }
+  return out;
+}
+
+describe("crunk.toml palette mirrors theme.css", () => {
+  test("light palette", () => {
+    expect(tomlPalette("palette")).toEqual(tokens(lightBlock));
+  });
+  test("dark mode", () => {
+    expect(tomlPalette("palette.modes.dark")).toEqual(tokens(darkBlock));
   });
 });

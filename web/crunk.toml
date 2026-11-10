@@ -1,0 +1,86 @@
+# frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH
+# crunk design spec for the SADI web UI. The palette, scales and type here mirror the tokens in
+# src/styles.css (light values in [palette], dark values in [palette.modes.dark]); the
+# generated src/tokens.css is committed and `crunk tokens --check` (CI) fails on drift.
+# crunk version pin: 0.532.0 (see docs/web/wizard.md).
+[project]
+css_root = "src"
+tokens_file = "tokens.css"
+root_font_size = 16
+
+[palette]
+bg = "#f3f5f8"
+surface = "#ffffff"
+surface-2 = "#eaeef3"
+fg = "#14181d"
+muted = "#475160"
+accent = "#0b57b0"
+accent-fg = "#ffffff"
+accent-soft = "#dbe9fb"
+border = "#66717f"
+line = "#d3d9e1"
+focus = "#a64f00"
+btn-bg = "#eef1f5"
+ok = "#17663a"
+ok-soft = "#dcf2e4"
+warn = "#7a4a00"
+warn-soft = "#fbecce"
+bad = "#a8201a"
+bad-soft = "#fbe0de"
+
+[palette.modes.dark]
+bg = "#0e1217"
+surface = "#171c23"
+surface-2 = "#212832"
+fg = "#e8ecf1"
+muted = "#a9b3c0"
+accent = "#7ab6ff"
+accent-fg = "#08111f"
+accent-soft = "#1b2e48"
+border = "#8792a1"
+line = "#2d3541"
+focus = "#ffb454"
+btn-bg = "#232b36"
+ok = "#6fd39a"
+ok-soft = "#14301f"
+warn = "#f0b45a"
+warn-soft = "#36280f"
+bad = "#ff8f87"
+bad-soft = "#3b1a18"
+[palette.roles]
+body = ["fg", "bg"]
+card = ["fg", "surface"]
+muted = ["muted", "surface"]
+primary = ["accent-fg", "accent"]
+success = ["ok", "ok-soft"]
+warning = ["warn", "warn-soft"]
+danger = ["bad", "bad-soft"]
+
+[scales]
+spacing = [0, 4, 8, 12, 16, 24, 32]
+font_sizes = [12.48, 14, 16, 20, 25.6]
+radii = [0, 6, 10, 999]
+
+[typography]
+families = ["system-ui", "ui-monospace"]
+weights = [400, 450, 550, 600, 650, 700, 750]
+
+[org]
+buckets = ["base"]
+tokens_only_custom_props = false
+entry = ["styles.css", "theme.css"]
+
+[decisions]
+fonts = "System UI stack on purpose: a lab instrument UI should render natively and offline, with no webfont fetch."
+
+[lint]
+# styles.css predates the spec and uses ad-hoc rem spacing/sizes; this crunk version has no
+# warn-only mode (warn == error), so the legacy scale rules are off until the CSS is migrated.
+# Type weights, roles, org layout and token drift stay enforced.
+# COLOR001 is off because it flags every hex literal in the hand-written token definitions of
+# theme.css (no per-file exclusion exists); src/a11y/contrast.test.ts checks theme.css against the
+# [palette] above instead.
+COLOR001 = "off"
+SPACE001 = "off"
+SIZE001 = "off"
+TYPE001 = "off"

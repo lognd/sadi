@@ -137,3 +137,27 @@ jobs:
         run: npm test
       - name: vite build
         run: npx vite build
+
+  # frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH
+  # crunk design-spec lint, pinned to the frob-v0.532.0 release asset.
+  # The release binary has no `tokens` subcommand, so token drift between
+  # crunk.toml and src/theme.css is checked by vitest (contrast.test.ts).
+  crunk:
+    name: crunk (design spec)
+    runs-on: ubuntu-latest
+    env:
+      CRUNK_VERSION: "0.532.0"
+    steps:
+      - uses: actions/checkout@v4
+      - name: install crunk (pinned, sha256 verified)
+        run: |
+          base="https://github.com/lognd/frob/releases/download/frob-v${CRUNK_VERSION}"
+          asset="crunk-x86_64-unknown-linux-gnu.tar.xz"
+          curl -fsSL -O "${base}/${asset}" -O "${base}/${asset}.sha256"
+          sha256sum -c "${asset}.sha256"
+          tar xJf "${asset}"
+          install -m 0755 crunk-x86_64-unknown-linux-gnu/crunk /usr/local/bin/crunk
+          crunk --version
+      - name: crunk check
+        working-directory: web
+        run: crunk check

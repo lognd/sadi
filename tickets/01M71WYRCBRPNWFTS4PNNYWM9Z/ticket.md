@@ -4,9 +4,10 @@ title = "Audit1 #14 #17 #24 #25 #26 #29 #31: run-screen UI fixes (double submit,
 type = "bug"
 category = "todo"
 priority = "high"
+points = 5
 reporter = "lognd"
 created = "2026-11-10T04:55:10Z"
-updated = "2026-11-10T04:55:10Z"
+updated = "2026-11-10T04:55:13Z"
 scope = ["web/src/screens/run/**", "web/src/screens/setup/**", "web/src/plots/live/**", "web/src/components/wizard/**"]
 
 [[acceptance]]

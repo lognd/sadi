@@ -2,7 +2,8 @@
 id = "01M724AKWJV8BRNRR3Q43553VR"
 title = "Audit2 H8c: working Reconnect and a disconnected status when no board at start"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

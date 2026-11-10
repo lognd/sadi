@@ -1,7 +1,8 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6X241EV9Z0JS4TCJPQBZCCN
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it } from "vitest";
-import { collectInputs, splitSpecimen } from "./inputFields";
+import { PHASE_FIELDS, collectInputs, plausibilityNote, splitSpecimen } from "./inputFields";
 
 describe("collectInputs", () => {
   it("calibration: live volts when blank, typed height in SI", () => {
@@ -11,15 +12,21 @@ describe("collectInputs", () => {
   it("typed volts override the live reading", () => {
     expect(collectInputs("calibrate", { volts: "2", height: "0.01" }, 1.5)).toEqual({ ok: true, value: { volts: 2, height: 0.01 } });
   });
-  it("missing required values are reported, none defaulted", () => {
+  // regression test for audit1#25 tare n and sd are derived, not typed
+  it("tare without live statistics reports the derived fields, none defaulted", () => {
     const r = collectInputs("tare", {}, 1);
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error.join(" ")).toContain("Sample count n is required");
+    if (!r.ok) expect(r.error.join(" ")).toContain("not enough live readings");
   });
-  it("rejects non-numbers, fractions for n and negatives", () => {
-    const r = collectInputs("tare", { n: "2.5", sd: "-1", mean: "abc" }, 1);
+  it("tare takes mean, n and sd from the live statistics and hides n and sd", () => {
+    const r = collectInputs("tare", {}, 9, { mean: 0.5, sd: 0.01, n: 40 });
+    expect(r).toEqual({ ok: true, value: { mean: 0.5, n: 40, sd: 0.01 } });
+    expect(PHASE_FIELDS.tare.filter((f) => f.derived === true).map((f) => f.key)).toEqual(["n", "sd"]);
+  });
+  it("rejects non-numbers and negatives", () => {
+    const r = collectInputs("tare", { diameter: "-1", mean: "abc" }, 1, { mean: 0, sd: 0, n: 5 });
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toHaveLength(3);
+    if (!r.ok) expect(r.error).toHaveLength(2);
   });
   it("load phases send mass_kg and omit blank optionals", () => {
     expect(collectInputs("elastic", { mass_kg: "0.2" }, 0.7)).toEqual({ ok: true, value: { volts: 0.7, mass_kg: 0.2 } });
@@ -38,5 +45,24 @@ describe("splitSpecimen", () => {
   });
   it("returns no specimen point without a diameter", () => {
     expect(splitSpecimen("tare", { n: 100 }).specimen).toBeNull();
+  });
+});
+
+// regression test for audit1#6 UI half: unit shown and implausible diameter warned with an mm suggestion
+describe("plausibilityNote", () => {
+  const dia = PHASE_FIELDS.tare.find((f) => f.key === "diameter");
+  it("is silent for a plausible wire diameter and blanks", () => {
+    expect(plausibilityNote(dia!, "0.0006")).toBeNull();
+    expect(plausibilityNote(dia!, "")).toBeNull();
+  });
+  it("offers millimetres converted to metres", () => {
+    const n = plausibilityNote(dia!, "0.6");
+    expect(n?.suggest).toBe("0.0006");
+    expect(n?.message).toContain("millimetres");
+  });
+  it("warns without a suggestion when no conversion fits", () => {
+    const n = plausibilityNote(dia!, "1e-9");
+    expect(n).not.toBeNull();
+    expect(n?.suggest).toBeNull();
   });
 });

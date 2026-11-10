@@ -1,3 +1,4 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
 import type { ApiError } from "../../api/client";
@@ -25,11 +26,13 @@ const WHY = {
   saturated: "The reading is at its limit (saturated). Lower the load, then try again.",
   creeping: "The reading is still moving. Wait for Settled, or press Shift+Space to accept early.",
   unknown: "Not enough data yet. Wait for the reading to appear.",
+  idle: "No live readings are arriving (idle). Start the run or reconnect the instrument; capture is paused.",
 } as const;
 
 /** Decide the outcome of an accept key; saturation and disconnect block even a forced capture. */
 export function decide(view: LiveView, early: boolean, confirm: Confirm): Decision {
   if (view.source === "disconnected") return { kind: "blocked", why: WHY.disconnected };
+  if (view.idle === true) return { kind: "blocked", why: WHY.idle };
   if (view.signal === "saturated") return { kind: "blocked", why: WHY.saturated };
   if (view.volts === null) return { kind: "blocked", why: WHY.unknown };
   if (!early) {

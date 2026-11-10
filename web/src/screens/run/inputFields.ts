@@ -1,3 +1,4 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6X241EV9Z0JS4TCJPQBZCCN
 /** Per-phase typed capture inputs (SI units) mirroring python/sadi/core/point_inputs.py parse_inputs. */
 import type { Result } from "../../api/result";
@@ -19,20 +20,27 @@ export interface InputField {
   readonly min?: number;
   /** Blank means "use the live block-mean reading" (shown as the placeholder). */
   readonly live?: boolean;
+  /** Not shown to the operator; filled from the live recent statistics (key mean, sd or n). */
+  readonly derived?: boolean;
+  /** Plausible range in the field's unit; values outside draw a warning (see plausibilityNote). */
+  readonly plausible?: readonly [number, number];
   /** Belongs to the separate `specimen` point (geometry), not to the phase's own point. */
   readonly specimen?: boolean;
 }
 
 const LIVE_V: InputField = { key: "volts", label: "Volts", unit: "V", required: false, live: true };
 
+/** Plausible wire diameter in metres (0.05 mm to 10 mm); anything else is probably a unit slip. */
+const DIAMETER_RANGE_M: readonly [number, number] = [5e-5, 1e-2];
+
 /** Input fields per run phase; keys match parse_inputs (calibration, tare, load). */
 export const PHASE_FIELDS: Readonly<Record<RunPhase, readonly InputField[]>> = {
   calibrate: [LIVE_V, { key: "height", label: "Gauge height", unit: "m", required: true, min: 0 }],
   tare: [
     { key: "mean", label: "Mean volts", unit: "V", required: false, live: true },
-    { key: "n", label: "Sample count n", unit: "", required: true, integer: true, min: 1 },
-    { key: "sd", label: "Volts sd", unit: "V", required: false, min: 0 },
-    { key: "diameter", label: "Specimen diameter", unit: "m", required: false, min: 0, specimen: true },
+    { key: "n", label: "Sample count n", unit: "", required: false, integer: true, min: 1, derived: true },
+    { key: "sd", label: "Volts sd", unit: "V", required: false, min: 0, derived: true },
+    { key: "diameter", label: "Specimen diameter", unit: "m", required: false, min: 0, specimen: true, plausible: DIAMETER_RANGE_M },
     { key: "u_diameter", label: "Diameter uncertainty", unit: "m", required: false, min: 0, specimen: true },
     { key: "hanger_kg", label: "Hanger mass", unit: "kg", required: false, min: 0, specimen: true },
   ],
@@ -56,14 +64,35 @@ function parseField(f: InputField, raw: string, liveVolts: number | null): Resul
   return ok(x);
 }
 
-/** Validate all fields of a phase; Err lists every problem so none is hidden. */
+/** Warning for a value outside the field's plausible range, with a corrected text to offer (mm read as m); null when fine. */
+export function plausibilityNote(f: InputField, raw: string): { readonly message: string; readonly suggest: string | null } | null {
+  if (f.plausible === undefined) return null;
+  const x = Number(raw.trim());
+  if (raw.trim() === "" || !Number.isFinite(x) || x <= 0) return null;
+  const [lo, hi] = f.plausible;
+  if (x >= lo && x <= hi) return null;
+  const mm = x / 1000;
+  const fix = x > hi && mm >= lo && mm <= hi;
+  return {
+    message: `${f.label} ${raw.trim()} ${f.unit} looks implausible (expected ${String(lo)} to ${String(hi)} ${f.unit}).${fix ? ` Did you type millimetres? ${raw.trim()} mm is ${String(mm)} m.` : ""}`,
+    suggest: fix ? String(mm) : null,
+  };
+}
+
+/** Validate all fields of a phase; Err lists every problem so none is hidden. Derived fields come from `recent`. */
 export function collectInputs(
   phase: RunPhase, raw: Readonly<Record<string, string>>, liveVolts: number | null,
+  recent: { readonly mean: number; readonly sd: number; readonly n: number } | null = null,
 ): Result<Record<string, number>, readonly string[]> {
   const out: Record<string, number> = {};
   const errors: string[] = [];
   for (const f of PHASE_FIELDS[phase]) {
-    const r = parseField(f, raw[f.key] ?? "", liveVolts);
+    if (f.derived === true) {
+      if (recent === null) errors.push(`${f.label}: not enough live readings yet; wait a moment and try again.`);
+      else out[f.key] = f.key === "n" ? recent.n : recent.sd;
+      continue;
+    }
+    const r = parseField(f, raw[f.key] ?? "", f.key === "mean" && recent !== null ? recent.mean : liveVolts);
     if (!r.ok) errors.push(r.error);
     else if (r.value !== null) out[f.key] = r.value;
   }

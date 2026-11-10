@@ -1,3 +1,4 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
 /** Short per-phase guidance: 2-4 imperative lines, one field to watch, and what comes next. */
 
@@ -14,7 +15,7 @@ export interface StepGuide {
 /** Guidance keyed by wizard phase id. */
 export const STEP_GUIDE: Readonly<Record<string, StepGuide>> = {
   setup: {
-    doThis: ["Tighten both clamps on the wire.", "Pull gently by hand; the wire must not slip.", "Press Finish when it holds."],
+    doThis: ["Tighten both clamps on the wire.", "Pull gently by hand; the wire must not slip.", "Record 3 load-and-release cycles below, then press Finish."],
     watch: "Watch LVDT: it must stay steady while you pull.",
     next: "Next: calibration.",
   },

@@ -1,6 +1,7 @@
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6XA21KQE5WEXAN39683H4S9
 // frob:accept COV001 because="covered by ClampCheckPanel.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import { captureCycle, getClampStatus, parseCycle, type ClampStatus } from "./clampApi";
@@ -22,6 +23,7 @@ export function ClampCheckView(p: {
   const [zb, setZb] = useState("");
   const [za, setZa] = useState("");
   const [slips, setSlips] = useState("0");
+  const reset = (): void => { setZb(""); setZa(""); setSlips("0"); };
   const s = p.status;
   const n = s?.cycles.length ?? 0;
   return (
@@ -38,9 +40,10 @@ export function ClampCheckView(p: {
         </ul>
       ) : null}
       {s?.passed != null ? <p role="status">{s.passed ? "Pass" : "Fail"}: {s.advice}</p> : null}
-      <form aria-label="Capture cycle" onSubmit={(e) => { e.preventDefault(); if (!p.busy) p.onCapture({ zeroBefore: zb, zeroAfter: za, slips }); }}>
-        <label>Zero before loading (strain){" "}<input value={zb} inputMode="decimal" onChange={(e) => { setZb(e.target.value); }} autoFocus /></label>{" "}
-        <label>Zero after unloading (strain){" "}<input value={za} inputMode="decimal" onChange={(e) => { setZa(e.target.value); }} /></label>{" "}
+      <form aria-label="Capture cycle" onSubmit={(e) => { e.preventDefault(); if (p.busy) return; const f = { zeroBefore: zb, zeroAfter: za, slips }; p.onCapture(f); if (parseCycle(f).ok) reset(); }}>
+        <p>Pull the wire gently by hand, hold, then release, and count any slips. Calibration comes later, so the two readings are optional: leave them blank (0) unless you already have a strain reading.</p>
+        <label>Reading before loading (optional){" "}<input value={zb} inputMode="decimal" onChange={(e) => { setZb(e.target.value); }} autoFocus /></label>{" "}
+        <label>Reading after unloading (optional){" "}<input value={za} inputMode="decimal" onChange={(e) => { setZa(e.target.value); }} /></label>{" "}
         <label>Slips seen during hold{" "}<input value={slips} inputMode="numeric" onChange={(e) => { setSlips(e.target.value); }} /></label>{" "}
         <button type="submit" disabled={p.busy}>Capture cycle</button>
       </form>
@@ -55,6 +58,7 @@ export function ClampCheckPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
   const [status, setStatus] = useState<ClampStatus | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
   const load = useCallback((): void => {
     void getClampStatus(fetchImpl).then((r) => {
       if (r.ok) setStatus(r.value);
@@ -66,8 +70,11 @@ export function ClampCheckPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
   const onCapture = useCallback((f: { zeroBefore: string; zeroAfter: string; slips: string }): void => {
     const parsed = parseCycle(f);
     if (!parsed.ok) { setMessage(parsed.error); return; }
+    if (inFlight.current) { log.warn("cycle capture ignored: one already in flight"); return; }
+    inFlight.current = true;
     setBusy(true);
     void captureCycle(parsed.value, fetchImpl).then((r) => {
+      inFlight.current = false;
       setBusy(false);
       if (r.ok) { log.info("cycle captured"); setMessage(`Captured: ${r.value.summary}`); load(); }
       else setMessage(apiErrorText(r.error));

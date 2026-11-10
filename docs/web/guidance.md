@@ -32,3 +32,13 @@ Parent: [web layout](../web-layout.md), next to the [budget panel](budget-panel.
   `{kind: "guidance"}`); a host should refetch via `getGuidance` when it arrives.
 
 See also the [Results/Export screen](export-screen.md).
+
+## Run-screen input fixes (audit1 #6, #14, #24, #25, #29, #31)
+
+- Tare no longer asks for n and sd: they are filled from the last seconds of live readings
+  (`recentStats`); blank mean also uses the live mean.
+- A diameter outside 0.05 mm to 10 mm shows a warning with a "Use <value> m" button (mm to m).
+- Capture and clamp-cycle submits ignore a second press while one is in flight; the clamp form
+  resets after a valid submit and its zero readings are optional (blank is 0).
+- The Saved indicator is set after each successful capture (`savedTick` on `WizardShell`).
+- Guidance text "Hang a total of 0.000 kg" is rewritten UI-side by `guidanceText`.

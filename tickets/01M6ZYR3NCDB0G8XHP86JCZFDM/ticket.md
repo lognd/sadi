@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-09T10:48:00Z"
-updated = "2026-11-09T10:50:55Z"
+updated = "2026-11-10T01:59:31Z"
 idempotency_key = "docs-organize-index"
 scope = ["docs/index.md", "docs/README.md"]
 

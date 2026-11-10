@@ -2,7 +2,8 @@
 id = "01M731731MR2BM32XDHMHGG9VB"
 title = "Planner GUI: typed LVDT slope/offset is a first-class field (not advanced override)"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 1
 reporter = "lognd"

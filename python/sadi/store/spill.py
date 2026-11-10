@@ -15,6 +15,7 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 import uuid
 from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
@@ -257,13 +258,49 @@ def _marker_path(spill: Path) -> Path:
     return spill.with_name(spill.name + MARKER_SUFFIX)
 
 
-def _already_imported(scan: SpillScan) -> bool:
-    """Return True when a marker next to the spill names this exact file content."""
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _already_imported(scan: SpillScan, data_root: Path) -> bool:
+    """Return True when the marker names this content and a version dir under `data_root` (M5)."""
     marker = _marker_path(scan.path)
     try:
-        return bool(json.loads(marker.read_text("utf-8")).get("sha256") == scan.sha256)
-    except (OSError, ValueError, AttributeError):
+        body = json.loads(marker.read_text("utf-8"))
+        if body.get("sha256") != scan.sha256:
+            return False
+        version_dir = Path(body["version_dir"])
+        valid = version_dir.is_dir() and version_dir.resolve().is_relative_to(data_root.resolve())
+    except (OSError, ValueError, AttributeError, KeyError, TypeError):
         return False
+    if not valid:
+        _log.warning("marker %s does not name a version under %s; ignored", marker, data_root)
+    return valid
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _set_aside(path: Path, label: str) -> None:
+    """Rename a bookkeeping sidecar to a unique `.<label>-<ns>` name (kept, never deleted)."""
+    target = path.with_name(f"{path.name}.{label}-{time.time_ns()}")
+    try:
+        path.rename(target)
+    except OSError as exc:
+        _log.warning("cannot set aside %s: %s", path, exc)
+        return
+    _log.warning("set aside %s as %s", path, target)
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _existing_import(data_root: Path, sha256: str) -> Path | None:
+    """Return a closed version dir under `data_root` that was imported from this spill content."""
+    try:
+        dirs = sorted(p for p in (data_root / SESSIONS_DIRNAME).iterdir() if p.is_dir())
+    except OSError:
+        return None
+    for d in dirs:
+        mf = read_manifest(d)
+        if mf.is_ok and mf.danger_ok is not None:
+            m = mf.danger_ok
+            if m.spill_sha256 == sha256 and m.state == "closed" and m.spill_import is not None:
+                return d
+    return None
 
 
 def _write_marker(scan: SpillScan, version_dir: Path) -> bool:
@@ -275,6 +312,8 @@ def _write_marker(scan: SpillScan, version_dir: Path) -> bool:
         "imported": datetime.now(UTC).isoformat(),
         "valid_bytes": scan.valid_bytes,
     }
+    if _marker_path(scan.path).exists():  # stale: another data root or a vanished version dir
+        _set_aside(_marker_path(scan.path), "stale")
     created = create_exclusive(_marker_path(scan.path))
     if created.is_err:
         _log.warning("cannot write import marker for %s: %s", scan.path, created.danger_err)
@@ -586,6 +625,15 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         else:
             _write_failed_marker(scan, err.version_dir, f"verify failed: {err.error}")
         result = _import_version(data_root, scan, data, parent, None, continuity_hint=False)
+    if join is not None and result.is_err and isinstance(result.danger_err, SpillSession):
+        # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+        # Failed before any segment byte was written: a later start may retry the full join.
+        _log.error(
+            "join of %s failed before writing (%s); will retry on next start",
+            scan.path,
+            result.danger_err,
+        )
+        _set_aside(_inprogress_path(scan.path), "aborted")
     if result.is_err and isinstance(result.danger_err, SpillVerifyFailed):
         # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
         _write_fragment_failed_marker(scan, result.danger_err)
@@ -638,6 +686,7 @@ def _import_version(
         synthetic=synthetic,
         provenance_unknown=unknown,
         spill_import="joined" if join is not None else "fragment",
+        spill_sha256=scan.sha256,  # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
     )
     handle = _init_dir(path, manifest).map_err(lambda e: SpillSession(error=e)).unwrap()
     if join is not None:
@@ -681,11 +730,40 @@ def _import_version(
     )
 
 
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+class FragmentFailedSkip(BaseModel):
+    """Outcome: spill skipped, its fragment import failed verify earlier (see crashed_dirs)."""
+
+    model_config = ConfigDict(frozen=True)
+    spill: Path
+    crashed_dirs: tuple[Path, ...]
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _crashed_copies(scan: SpillScan) -> tuple[Path, ...]:
+    """Collect the crashed-copy dirs named by the failed-join and fragment-failed markers."""
+    found: list[Path] = []
+    for marker, key in (
+        (_failed_marker_path(scan.path), "partial_dir"),
+        (_fragment_failed_path(scan.path), "crashed_dir"),
+    ):
+        try:
+            value = json.loads(marker.read_text("utf-8")).get(key)
+        except (OSError, ValueError, AttributeError):
+            continue
+        if isinstance(value, str):
+            found.append(Path(value))
+    return tuple(found)
+
+
 def import_all_spills(
     data_root: Path, user_dir: Path | None = None, temp_dir: Path | None = None
-) -> list[tuple[Path, Result[ImportReport | None, SpillError]]]:
-    """Discover, verify and import every spill at start; Ok(None) means already imported."""
-    outcomes: list[tuple[Path, Result[ImportReport | None, SpillError]]] = []
+) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | None, SpillError]]]:
+    """Discover, verify and import every spill at start; Ok(None) means already imported.
+
+    Ok(FragmentFailedSkip) means a failed fragment verify was recorded earlier (WARNING-worthy).
+    """
+    outcomes: list[tuple[Path, Result[ImportReport | FragmentFailedSkip | None, SpillError]]] = []
     seen_content: dict[str, Path] = {}  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
     for spill in discover_spills(data_root, user_dir, temp_dir):
         scanned = scan_spill(spill)
@@ -693,12 +771,20 @@ def import_all_spills(
             outcomes.append((spill, Err(scanned.danger_err)))
             continue
         scan = scanned.danger_ok
-        if _already_imported(scan):
+        if _already_imported(scan, data_root):
             _log.info("spill %s already imported, skipping", spill)
             outcomes.append((spill, Ok(None)))
             continue
         if _fragment_failed_before(scan):  # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
             _log.warning("spill %s failed fragment verify before; kept, not re-copied", spill)
+            skip = FragmentFailedSkip(spill=spill, crashed_dirs=_crashed_copies(scan))
+            outcomes.append((spill, Ok(skip)))
+            continue
+        done = _existing_import(data_root, scan.sha256)  # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+        if done is not None:
+            _log.warning("spill %s already imported as %s; writing the missing marker", spill, done)
+            _write_marker(scan, done)
+            seen_content[scan.sha256] = done
             outcomes.append((spill, Ok(None)))
             continue
         twin = seen_content.get(scan.sha256)

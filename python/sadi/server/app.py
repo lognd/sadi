@@ -57,7 +57,7 @@ from sadi.server.service import SessionService
 from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
-from sadi.store.spill import import_all_spills
+from sadi.store.spill import FragmentFailedSkip, import_all_spills
 from sadi.store.writer_thread import WriterHandle
 
 _log = get_logger(__name__)
@@ -146,6 +146,14 @@ def _import_spills(cfg: AppSettings) -> int:
             _log.error("spill %s NOT imported (file kept intact): %s", spill, outcome.danger_err)
         elif outcome.danger_ok is None:
             _log.info("spill %s already imported", spill)
+        elif isinstance(outcome.danger_ok, FragmentFailedSkip):
+            # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+            _log.warning(
+                "spill %s NOT recovered: earlier import failed verify; data is in the spill and "
+                "crashed copies %s",
+                spill,
+                [str(p) for p in outcome.danger_ok.crashed_dirs],
+            )
         else:
             rep = outcome.danger_ok
             _log.warning(

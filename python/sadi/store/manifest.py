@@ -97,6 +97,9 @@ class Manifest(BaseModel):
     # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
     # True when the data's origin was lost (orphan spill import): neither real nor synthetic.
     provenance_unknown: bool = False
+    # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+    # Spill import only: SHA-256 of the spill, so a lost marker is rewritten, not re-imported.
+    spill_sha256: str | None = None
 
 
 class ManifestInvalid(BaseModel):

@@ -2,7 +2,7 @@
 id = "01M726PZNXA6BEXH97TQPK3176"
 title = "H3: stress-strain refit must use the open session, not newest dir"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "high"
 points = 3
 reporter = "lognd"

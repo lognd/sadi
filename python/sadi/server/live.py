@@ -55,8 +55,13 @@ _log = get_logger(__name__)
 DECIMATE: Final[int] = 25
 #: Bytes in one device packet (the pipeline's alignment check).
 PACKET_LEN: Final[int] = 612
-#: Simulator only: mass hung on each load-change so successive points differ, kg.
-SIM_LOAD_STEP_KG: Final[float] = 0.1
+#: Simulator only: cumulative masses the panel instructs per load point, kg.
+SIM_LOAD_TARGETS_KG: Final[tuple[float, ...]] = (0.075, 1.05, 2.325)
+#: Simulator only: first (smallest) load step, kg; equals the first panel mass.
+SIM_LOAD_STEP_KG: Final[float] = SIM_LOAD_TARGETS_KG[0]
+#: Simulator only: SYNTHETIC mass hung per calibrate mark so the LVDT volts differ, kg.
+#: The sim has no gauge blocks; this stands in for moving the core and is not a real height.
+SIM_CAL_STEP_KG: Final[float] = 0.02
 #: Phases in which a load-change mark means "more mass hung" (simulator load step).
 _SIM_LOAD_PHASES: Final[frozenset[Phase | None]] = frozenset({Phase.ELASTIC, Phase.PLASTIC})
 #: Default settle detector parameters (UNVERIFIED on real hardware; tune per lab).
@@ -170,6 +175,7 @@ class LiveAcquisition:
         self._watch_poll_s = watch_poll_s
         self._clock = clock
         self._phase_source: Callable[[], Phase | None] | None = None
+        self._sim_load_marks = 0  # simulated load points hung so far (panel mass schedule)
         self._writer: WriterHandle | None = None
         self._path: Path | None = None
         self._stop_reason: str | None = None
@@ -327,15 +333,33 @@ class LiveAcquisition:
         self._start_run_locked(self._writer, self._path, record_settings=False)
         return None if self._pipe is not None else LiveError.NoLiveSession
 
+    # frob:ticket 01M72ZNB9TN1CWMCK5G1J1H0BX
+    def _next_sim_step(self) -> float:
+        """Mass to add for the next load point so cumulative mass follows the panel masses."""
+        targets = SIM_LOAD_TARGETS_KG
+        i = self._sim_load_marks
+        if i < len(targets):
+            step = targets[i] - (targets[i - 1] if i else 0.0)
+        else:
+            step = targets[-1] - targets[-2]
+        return round(step, 6)
+
     def _apply_sim_load(self) -> None:
         """On the simulator, hang one more step of mass so the next point has a new voltage.
 
-        With a phase source wired, only the elastic and plastic phases add load: the tare
-        ("I emptied the hanger") and calibrate ("new gauge block") marks must not.
-        """
+        With a phase source wired, only the elastic and plastic phases hang the panel masses;
+        a calibrate mark ("new gauge block") adds a small SYNTHETIC step so the LVDT volts
+        differ, and the tare mark adds nothing.
+        """  # frob:ticket 01M72ZNB9TN1CWMCK5G1J1H0BX
+        step_kg = self._next_sim_step()
+        is_cal = False
         if self._phase_source is not None:
             phase = self._phase_source()
-            if phase not in _SIM_LOAD_PHASES:
+            if phase is Phase.CALIBRATE:
+                is_cal = True
+                step_kg = SIM_CAL_STEP_KG
+                _log.info("calibrate mark: synthetic LVDT step %.3f kg", step_kg)
+            elif phase not in _SIM_LOAD_PHASES:
                 _log.info("load change in phase %s: no simulated load step", phase)
                 return
         if getattr(self._device, "is_synthetic", False):  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
@@ -345,9 +369,11 @@ class LiveAcquisition:
             return
         if not self._device.is_simulator:
             return
-        res = self._device.sim_add_weight(SIM_LOAD_STEP_KG)
+        res = self._device.sim_add_weight(step_kg)
         if res.is_err:
             _log.warning("simulated load step failed: %s", res.danger_err)
+        elif not is_cal:
+            self._sim_load_marks += 1
 
     def on_session_open(self, writer: WriterHandle, path: Path) -> None:
         """Start streaming into the new session WAL; failures are logged, not raised."""

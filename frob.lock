@@ -13,6 +13,28 @@ acked_by = "lognd <logandapp@gmail.com>"
 acked_at = "2026-11-08T00:15:02.391237649Z"
 
 [[symbol]]
+identity = "docs/web/export-screen.md"
+symref = "docs/web/export-screen.md"
+sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+body = "4731d45221076c0fdcd1194eb44b32bad9bd2225eaf0f9310d8ddfde1b91ffe0"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+contract = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T04:36:30.630049897Z"
+
+[[symbol]]
+identity = "docs/web/export-screen.md#resultsexport-screen"
+symref = "docs/web/export-screen.md#resultsexport-screen"
+sig = "cd6be83ad6dfb7b9eaa96541306f37bd5de4af03e8a79b7ed0e9b9f10dd03d53"
+body = "39f75e3cea6243fb1da703bedad807e39d85fa2a2af9c4fc4e5ad35a1ffe55a4"
+doc = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+attr = "865789a2aea99b0b3bbe8ee1b903a5e027e37d863f3b2f8e2fbd91677db0bf68"
+contract = "67dc6dfe94dcb157afeff29accb1e05bf38aa2b4b26b8aa5d97d4a6f9928039f"
+acked_by = "lognd <logandapp@gmail.com>"
+acked_at = "2026-11-10T04:36:30.630049897Z"
+
+[[symbol]]
 identity = "web/src/App.tsx"
 symref = "web/src/App.tsx"
 sig = "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"

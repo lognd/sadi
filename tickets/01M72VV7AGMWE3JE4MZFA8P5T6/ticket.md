@@ -2,7 +2,8 @@
 id = "01M72VV7AGMWE3JE4MZFA8P5T6"
 title = "Replay fallback must compare request digest; OpenAPI declares capture 409/503 and design reason enum"
 type = "bug"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "medium"
 points = 3
 reporter = "lognd"

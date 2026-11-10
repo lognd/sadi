@@ -2,7 +2,8 @@
 id = "01M71KE5ENACTPQ56XAWW37VH5"
 title = "UI design system: modern themed app shell, wizard, panels, doctor"
 type = "task"
-category = "in-progress"
+category = "done"
+outcome = "done"
 priority = "high"
 points = 8
 reporter = "lognd"

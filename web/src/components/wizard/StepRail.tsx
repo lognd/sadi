@@ -1,3 +1,4 @@
+// frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
@@ -17,8 +18,8 @@ export const STEP_BLURB: Readonly<Record<string, string>> = {
   export: "Save the run as a file or figure.",
 };
 
-/** Persistent vertical step rail: glyph plus word and a short description per step; only the current step is a tab stop (no jumping past gates), marked aria-current. */
-export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Element {
+/** Persistent vertical step rail: glyph plus word and a short description per step; the current step is the tab stop and every step can be viewed read-only with its View button (viewing never advances the run), marked aria-current. */
+export function StepRail({ rail, viewing = null, onView }: { rail: readonly RailItem[]; viewing?: string | null; onView?: (id: string | null) => void }): React.JSX.Element {
   return (
     <nav aria-label="Steps">
       <ol className="step-rail">
@@ -26,6 +27,7 @@ export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Ele
           <li
             key={s.id}
             data-status={s.status}
+            data-viewing={viewing === s.id ? "true" : undefined}
             aria-current={s.status === "current" ? "step" : undefined}
             tabIndex={s.status === "current" ? 0 : undefined}
           >
@@ -35,6 +37,11 @@ export function StepRail({ rail }: { rail: readonly RailItem[] }): React.JSX.Ele
               <span className="step-state">({WORD[s.status]})</span>
               <span className="step-blurb">{STEP_BLURB[s.phase] ?? s.hint}</span>
               {s.status === "skipped" && s.hint !== "" ? <em> {s.hint}</em> : null}
+              {onView === undefined ? null : (
+                <button type="button" className="step-view" aria-pressed={viewing === s.id} onClick={() => { onView(s.status === "current" || viewing === s.id ? null : s.id); }}>
+                  {s.status === "current" ? "Show" : viewing === s.id ? "Close view" : "View"} {s.title}
+                </button>
+              )}
             </span>
           </li>
         ))}

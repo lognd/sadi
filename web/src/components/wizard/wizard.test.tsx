@@ -213,3 +213,13 @@ describe("Finish gate and layout", () => {
     expect(text).toContain("Accept point (Space)");
   });
 });
+
+// frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+describe("StepRail read-only view", () => {
+  it("offers a View button on every step, including upcoming ones, when onView is given", () => {
+    const html = renderToString(<StepRail rail={rail} viewing="elastic" onView={() => undefined} />);
+    expect(html.match(/class="step-view"/g)?.length).toBe(rail.length);
+    expect(html).toContain("View"); // locked step is viewable
+    expect(html).toContain('data-viewing="true"');
+  });
+});

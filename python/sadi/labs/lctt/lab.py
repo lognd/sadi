@@ -44,7 +44,12 @@ from sadi.labs.lctt.clamp_check import (
     clamp_status,
     setup_subcheck,
 )
-from sadi.labs.lctt.export_csv import build_document, render_document, tare_report
+from sadi.labs.lctt.export_csv import (
+    build_calibration_csv,
+    build_document,
+    render_document,
+    tare_report,
+)
 from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
     CalPoint,
@@ -384,6 +389,31 @@ def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeEr
     return Ok(render_document(doc.danger_ok))
 
 
+def _live_events(run: RunState) -> list[Any]:
+    """The raw lctt live events carried on `run`."""
+    return [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
+
+
+# frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render a PARTIAL lctt CSV from whatever has been captured so far (calibration suffices)."""
+    doc = build_document(_live_events(run), date=datetime.now(UTC), partial=True)
+    if isinstance(doc, Err):
+        _log.warning("lctt partial csv export refused: %s", doc.danger_err)
+        return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(doc.danger_err)))
+    return Ok(render_document(doc.danger_ok))
+
+
+# frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+def _write_calibration_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render the standalone calibration CSV (points plus fit) from the session events."""
+    out = build_calibration_csv(_live_events(run), date=datetime.now(UTC))
+    if isinstance(out, Err):
+        _log.warning("lctt calibration csv export refused: %s", out.danger_err)
+        return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(out.danger_err)))
+    return Ok(out.danger_ok)
+
+
 _LIVE_EVENT_TYPES = (
     CalPoint, TareBlock, SpecimenSetup, LoadPoint, OverridePoint, ExcludePoint, SetWindow
 )  # fmt: skip
@@ -396,6 +426,23 @@ CSV_FORMAT = ExportFormat(
     title="LCTT CSV",
     media_type="text/csv",
     writer=_write_csv,
+)
+
+
+#: Mid-run CSV: labelled PARTIAL, available at any step; each download is a new numbered file.
+PARTIAL_CSV_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-csv-partial"),
+    title="LCTT CSV (PARTIAL, mid-run)",
+    media_type="text/csv",
+    writer=_write_csv_partial,
+)
+
+#: Standalone calibration CSV (points plus fit), like LabVIEW lctt_export_calibration.vi.
+CALIBRATION_CSV_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-calibration-csv"),
+    title="LCTT calibration CSV",
+    media_type="text/csv",
+    writer=_write_calibration_csv,
 )
 
 
@@ -583,7 +630,9 @@ class LcttLab:
     id = LabId("lctt")
     title = "Load-controlled creep/thermal test"
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
-    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT, FIGURE_FORMAT)
+    export_formats: tuple[ExportFormat, ...] = (
+        CSV_FORMAT, PARTIAL_CSV_FORMAT, CALIBRATION_CSV_FORMAT, FIGURE_FORMAT
+    )  # fmt: skip
 
     def __init__(self, context: LoadingContext | None = None) -> None:
         """Hold the loading context (nominal geometry, no calibration unless given)."""

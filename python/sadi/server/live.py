@@ -17,11 +17,13 @@ import numpy as np
 from typani import Err, ErrorSet, Result
 
 from sadi.api.acquisition import AcquisitionDriver, DriverFault
+from sadi.bench.lctt_source import BOARD_FULL_SCALE_V
 from sadi.core.device import DEVICE_RATE_HZ
 from sadi.core.pipeline import AcquisitionPipeline, Bus, PipelineConfig, PipelineError
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import StreamConfig
 from sadi.logging_setup import get_logger
+from sadi.store.records import SettingsV1
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -142,13 +144,19 @@ class LiveAcquisition:
             if self._driver is not None:
                 _log.error("live run already active; not starting for %s", path.name)
                 return
+            pipe = AcquisitionPipeline(writer, self._cfg, self.bus)
+            # frob:ticket 01M723P2Z9GC152RE82Y6JYAW5
+            recorded = pipe.record_settings(self._settings_records())
+            if recorded.is_err:
+                self._fault = DriverFault(origin="pipeline", detail=str(recorded.danger_err))
+                _log.error("settings not recorded for %s: %s", path.name, recorded.danger_err)
+                return
             started = self._device.start_streaming()
             if started.is_err:
                 self._fault = DriverFault(origin="device", detail=str(started.danger_err))
                 _log.error("device start failed for %s: %s", path.name, started.danger_err)
                 return
             self._fault = None
-            pipe = AcquisitionPipeline(writer, self._cfg, self.bus)
             driver = AcquisitionDriver(_DecimatingSource(self._device, DECIMATE), pipe)
             began = driver.start()
             if began.is_err:
@@ -158,6 +166,24 @@ class LiveAcquisition:
             self._driver = driver
             self._pipe = pipe
             _log.info("live acquisition started for session %s", path.name)
+
+    def _settings_records(self) -> list[SettingsV1]:
+        """Settings needed to decode and rescale the raw packets later (docs/data-safety.md 2.2)."""
+        if getattr(self._device, "is_synthetic", False):
+            kind = "synthetic"
+        else:
+            kind = "simulator" if self._device.is_simulator else "real"
+        rows: list[tuple[str, str, Any]] = [
+            ("device", "adc_mode", "DLL_COMPATIBLE"),
+            ("device", "adc_full_scale_v", BOARD_FULL_SCALE_V),
+            ("device", "adc_code_bits", 16),
+            ("device", "rate_hz", DEVICE_RATE_HZ),
+            ("acquisition", "decimation", DECIMATE),
+            ("acquisition", "packet_len", PACKET_LEN),
+            ("device", "kind", kind),
+            ("device", "firmware", getattr(self._device, "firmware", None)),
+        ]
+        return [SettingsV1(scope=a, key=b, value=c) for a, b, c in rows]
 
     def on_session_close(self) -> None:
         """Stop the run and drain its blocks into the WAL; must run before the writer closes."""

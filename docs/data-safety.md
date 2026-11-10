@@ -103,6 +103,14 @@ changed scaling constant must never cost a run. Settings needed to decode
 (ADC range codes, which the device never echoes) are recorded as a
 `SETTINGS` record before the first `RAW_BLOCK`.
 
+Implementation: `LiveAcquisition.on_session_open` calls
+`AcquisitionPipeline.record_settings` (scopes `device`: ADC mode, full-scale
+volts, code bits, rate, kind, firmware; `acquisition`: decimation, packet
+length) and waits for them to be durable before the device starts. Every
+version, including a resume, writes its own. Sessions recorded before this
+have none; they still open and replay, and Doctor WAL-040 keeps flagging them
+(their WAL is never rewritten).
+
 ### 2.3 Nothing is edited in place; recovery never writes to the old data
 
 Points, window edits, exclusions, settings changes, notes and markers are

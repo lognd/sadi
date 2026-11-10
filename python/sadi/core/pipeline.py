@@ -16,7 +16,7 @@ import math
 import threading
 import time
 from collections import deque
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, Protocol
 
 import numpy as np
@@ -32,11 +32,12 @@ from sadi.labs.lctt.settle_stream import (
     StreamStatus,
 )
 from sadi.logging_setup import get_logger
-from sadi.store.events import point_record
+from sadi.store.events import point_record, settings_record
 from sadi.store.records import (
     MarkerV1,
     NewRecord,
     RecordType,
+    SettingsV1,
     encode_raw_block,
     encode_raw_junk,
     json_record,
@@ -55,6 +56,8 @@ DEFAULT_MAX_FRAME_POINTS = 256
 #: Default bounded depth of each bus subscription, in events.
 DEFAULT_SUBSCRIBER_DEPTH = 1024
 _FORWARD_POLL_S = 0.2
+#: How long to wait for the SETTINGS records to become durable before the device starts.
+SETTINGS_DURABLE_TIMEOUT_S = 10.0
 
 
 class PipelineError(ErrorSet):
@@ -375,6 +378,32 @@ class AcquisitionPipeline:
             return Err(err)
         _log.info("point %s phase=%s seq=%d", point.point_id, point.phase, res.danger_ok)
         return Ok(res.danger_ok)
+
+    # frob:ticket 01M723P2Z9GC152RE82Y6JYAW5
+    def record_settings(
+        self, settings: Sequence[SettingsV1], timeout_s: float = SETTINGS_DURABLE_TIMEOUT_S
+    ) -> Result[Seq, WriterError | PipelineError]:
+        """Append SETTINGS records and wait until durable, so they precede any RAW_BLOCK."""
+        if self.halted:
+            return Err(PipelineError.Halted)
+        last: Seq = 0
+        with self._producer_lock:
+            for setting in settings:
+                res = self._wal.submit(settings_record(setting))
+                if res.is_err:
+                    err = res.danger_err
+                    _log.error("setting %s/%s refused by WAL: %s", setting.scope, setting.key, err)
+                    self._halt("store_" + type(err).__name__.lower(), err.hint)
+                    return Err(err)
+                last = res.danger_ok
+        waited = self._wal.wait_durable(last, timeout_s)
+        if waited.is_err:
+            err = waited.danger_err
+            _log.error("settings seq=%d not durable: %s", last, err)
+            self._halt("store_" + type(err).__name__.lower(), err.hint)
+            return Err(err)
+        _log.info("recorded %d settings records, durable through seq=%d", len(settings), last)
+        return Ok(last)
 
     def mark_load_change(self) -> Result[Seq, WriterError | PipelineError]:
         """Write a load-applied marker and open a new point at the current stream time."""

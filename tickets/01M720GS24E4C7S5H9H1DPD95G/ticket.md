@@ -8,7 +8,7 @@ points = 3
 reporter = "lognd"
 created = "2026-11-10T05:57:26Z"
 updated = "2026-11-10T06:05:12Z"
-scope = ["python/sadi/server/**,python/sadi/labs/lctt/**", "docs/server/results.md"]
+scope = ["python/sadi/server/**,python/sadi/labs/lctt/**", "docs/server/results.md", "python/tests/labs/lctt/test_lab_analyze_e2e.py"]
 
 [[acceptance]]
 text = "GET /api/results carries yield_stress or a pending/notes reason; found while working ~G8RBYNA"

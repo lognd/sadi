@@ -4,9 +4,10 @@ title = "H3: stress-strain refit must use the open session, not newest dir"
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:45:41Z"
-updated = "2026-11-10T07:45:41Z"
+updated = "2026-11-10T07:45:54Z"
 labels = ["creates:python/tests/server/test_curve_source_open_session.py"]
 scope = ["python/sadi/server/curve_source.py", "python/sadi/server/app.py", "python/tests/server/test_curve_source_open_session.py"]
 

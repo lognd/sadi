@@ -7,7 +7,7 @@ priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T08:28:55Z"
-updated = "2026-11-10T08:31:52Z"
+updated = "2026-11-10T08:32:41Z"
 labels = ["audit4"]
 scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_live_audit4.py", "docs/live-view.md"]
 

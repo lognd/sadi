@@ -1,4 +1,4 @@
-// frob:ticket ~60KQX63
+// frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63
 import { isSynthetic, SYNTHETIC_LABEL, useProvenance, type DataProvenance } from "../../state/provenance";
 
 /** The one loud banner for synthetic data: icon + text + pattern; renders nothing for real data. */

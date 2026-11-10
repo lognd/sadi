@@ -18,7 +18,7 @@ const log = getLogger("App");
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 // frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
-// frob:ticket ~60KQX63
+// frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63
 // frob:accept COV001 because="vitest tests exist (src/App.test.tsx, src/api/log.test.ts) but TypeScript test discovery needs grimble, not installed here"
 /** Root component: probes the backend, owns the one live stream subscription, shows the guided-run front panel and a persistent Doctor link. */
 export function App({ trace }: { readonly trace?: UseTraceOptions } = {}): React.JSX.Element {

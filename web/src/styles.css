@@ -350,7 +350,7 @@ canvas { max-width: 100%; background: #ffffff; border: 1px solid var(--line); bo
   .fp-live { position: static; }
 }
 
-/* frob:ticket ~60KQX63 */
+/* frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63 */
 /* ---- Synthetic data banner: loud, text + icon + hazard stripe so it never relies on color alone ---- */
 .synthetic-banner {
   display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;

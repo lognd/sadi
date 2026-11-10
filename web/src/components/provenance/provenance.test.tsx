@@ -1,4 +1,4 @@
-// frob:ticket ~60KQX63
+// frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63
 // frob:accept COV001 because="test file; TypeScript test discovery needs grimble, not installed here"
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it } from "vitest";

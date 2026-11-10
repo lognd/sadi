@@ -1,5 +1,5 @@
 // frob:ticket 01M71SKWW36NDBJK24QD7DHSW4
-// frob:ticket ~60KQX63
+// frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63
 // frob:accept COV001 because="covered by instrument.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 import { SyntheticBanner } from "../provenance/SyntheticBanner";
 import type { DataProvenance } from "../../state/provenance";

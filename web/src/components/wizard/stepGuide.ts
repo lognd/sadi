@@ -25,7 +25,7 @@ export const STEP_GUIDE: Readonly<Record<string, StepGuide>> = {
     next: "Next: tare.",
   },
   tare: {
-    doThis: ["Remove all weights; hang only the empty hanger.", "Click I emptied the hanger, then wait for Settle to say Settled.", "Type the Specimen diameter (m), then press Accept point (Space)."],
+    doThis: ["Tare records the zero offset left after you zero by hand; every reading is corrected by it.", "Remove all weights; hang only the empty hanger.", "Click I emptied the hanger, then wait for Settle to say Settled.", "Type the Specimen diameter (m), then press Accept point (Space)."],
     watch: "Watch DRIFT: press Accept point when it is near zero.",
     next: "Next: elastic run.",
   },

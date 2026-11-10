@@ -429,6 +429,7 @@ class LoadingContext(BaseModel):
     l0_m: float = SHORT_L0_M
     slope_m_per_v: float | None = None
     tare_v: float | None = None
+    u_tare_v: float = 0.0
 
 
 def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
@@ -442,13 +443,21 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
     ctx: dict[str, Any] = {}
     cal_v: list[float] = []
     cal_h: list[float] = []
+    tares = [i for i in inputs if isinstance(i, TareInputs)]
+    if tares:
+        # The tare is the hand-zeroing residual: one pooled zero offset, same model as the CSV.
+        rep = tare_report([t.mean for t in tares], [t.sd for t in tares], [t.n for t in tares])
+        if isinstance(rep, Ok):
+            ctx["tare_v"], ctx["u_tare_v"] = rep.danger_ok.value, rep.danger_ok.std_unc
+        else:
+            ctx["tare_v"] = tares[-1].mean
     for item in inputs:
         if isinstance(item, SpecimenInputs):
             ctx.update(
                 diameter_m=item.diameter, u_diameter_m=item.u_diameter, hanger_kg=item.hanger_kg
             )
         elif isinstance(item, TareInputs):
-            ctx["tare_v"] = item.mean
+            continue
         elif isinstance(item, CalibrationInputs):
             cal_v.append(item.volts)
             cal_h.append(item.height)
@@ -616,7 +625,7 @@ class LcttLab:
             return Ok(AnalysisResult(values=values))
         slope = _meas(ctx.slope_m_per_v, 0.0, "m/V")
         volts = _meas(last.volts or 0.0, last.volts_sd or 0.0, "V")
-        tare = _meas(ctx.tare_v, 0.0, "V")
+        tare = _meas(ctx.tare_v, ctx.u_tare_v, "V")
         l0 = _meas(ctx.l0_m, 0.0, "m")
         if slope is None or volts is None or tare is None or l0 is None:
             return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid strain inputs"))

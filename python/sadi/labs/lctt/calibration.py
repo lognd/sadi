@@ -43,7 +43,11 @@ class CalibrationError(ErrorSet):
     TooFewPoints = "Need at least 3 calibration points (LINEST needs dof >= 1); capture more"
     LengthMismatch = "volts and heights (and any uncertainty lists) must have equal length"
     NonFinite = "Calibration samples must be finite; remove NaN/inf points"
-    DegenerateX = "All calibration voltages are equal; capture heights at different positions"
+    DegenerateX = (
+        "All calibration voltages are equal, so no height-to-volts line can be fitted. "
+        "On hardware, move the LVDT core to a different gauge block before each capture. "
+        "The simulator does not move the LVDT: press Skip this step instead"
+    )  # frob:ticket ~5V612KT
     RankDeficient = "Fit matrix is rank deficient (too few distinct weighted points); recapture"
     BadUncertainty = "Uncertainties must be finite and positive; fix or drop the entries"
     MissingVoltUnc = "errors_in_both needs u_volts; pass voltage uncertainties or disable it"

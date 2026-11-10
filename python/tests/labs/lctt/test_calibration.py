@@ -262,3 +262,12 @@ def test_property_weighted_fit_recovers_slope(xs: list[float], seed: int, scale:
 def test_offset_is_the_intercept() -> None:
     f = _fit(CAL_V, CAL_L)
     assert f.offset is f.intercept
+
+
+# frob:ticket ~5V612KT
+# frob:tests python/sadi/labs/lctt/calibration.py::fit_calibration
+def test_degenerate_message_says_what_to_do() -> None:
+    """The degenerate-voltage message names the hardware action and the sim Skip."""
+    text = CalibrationError.DegenerateX.value
+    assert "gauge block" in text
+    assert "Skip" in text

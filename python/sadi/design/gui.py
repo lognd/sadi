@@ -157,6 +157,7 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
       for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, hp.slope_known ? h.se_slope_v_per_m : (h.rel_se_slope === null ? null : (h.rel_se_slope * 100).toPrecision(3) + " %"), h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
+    if (data.weights_note) { const n = document.createElement("p"); n.textContent = data.weights_note; out.appendChild(n); }
     if (data.height_steps) return;
   }
   const s = document.createElement("p");
@@ -227,6 +228,12 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+WEIGHTS_NEED_CAL = (
+    "Weights not planned yet: they need the LVDT calibration. Hang the heights above, record height/volts, "
+    "enter those points (or a typed slope) under LVDT calibration, then plan again."
+)
+
+
 def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}.
 
@@ -239,6 +246,9 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
             return heights
         if not str(form.get("weights", "")).strip():
             return heights
+        if not str(form.get("cal_points", "")).strip() and not str(form.get("cal_slope", "")).strip():
+            _log.info("weights pending: no LVDT calibration yet; returning the height plan only")
+            return {**heights, "weights_note": WEIGHTS_NEED_CAL}
     reply = _weights_reply(form, heights)
     if heights is not None and reply["ok"]:
         reply["heights_plan"] = heights

@@ -135,3 +135,8 @@ def test_height_default_uncertainty_is_overridable():
     out = plan_from_form({"heights": "0.001,0.002,0.004", "u_height_default": "0.0005"})
     assert all(s["u_height_m"] == 0.0005 for s in out["height_steps"])
     assert "Default height uncertainty" in PAGE
+
+
+def test_heights_and_weights_without_calibration_gives_height_plan_and_note():
+    out = plan_from_form({**FORM, "cal_slope": "", "heights": "0.001,0.002,0.004,0.006"})
+    assert out["ok"] and out["height_steps"] and "calibration" in out["weights_note"]

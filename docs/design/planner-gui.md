@@ -83,3 +83,6 @@ the real fit of measured points is `cal_fit.py`).
 
 GUI: the "Gauge height inventory" table (height mm / uncertainty mm); when filled, `POST /plan` carries
 `heights` and the reply has `height_steps[]`, `se_slope_v_per_m` and `se_offset_v`.
+
+With heights and weights both entered but no calibration (no points, no typed slope), the reply is the height plan plus
+`weights_note`: the weights need the calibration, which comes from hanging the planned heights. It is not an error.

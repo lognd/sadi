@@ -7,9 +7,9 @@ priority = "medium"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T08:05:13Z"
-updated = "2026-11-10T08:05:31Z"
+updated = "2026-11-10T08:06:23Z"
 labels = ["creates:web/src/components/debug/DebugStrip.test.tsx"]
-scope = ["python/sadi/server/routes/results.py", "web/src/components/instrument/DebugStrip.tsx"]
+scope = ["python/sadi/server/routes/results.py", "web/src/components/instrument/DebugStrip.tsx", "python/tests/server/test_results_routes.py", "docs/ux.md"]
 
 [[acceptance]]
 text = "Faulted device renders as fault, not [ok]; SEQ and DURABLE are labelled and sourced from one seq space"

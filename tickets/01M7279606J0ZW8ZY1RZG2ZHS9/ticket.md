@@ -4,6 +4,7 @@ title = "M3+M7: resume endpoint after idle pause; keep raw blocks when stop/reco
 type = "bug"
 category = "todo"
 priority = "high"
+points = 3
 reporter = "lognd"
 created = "2026-11-10T07:55:37Z"
 updated = "2026-11-10T07:55:45Z"

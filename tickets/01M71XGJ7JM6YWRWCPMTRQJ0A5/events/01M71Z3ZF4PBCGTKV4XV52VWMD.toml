@@ -1,0 +1,51 @@
+kind = "evidence"
+captured_at = "2026-11-10T05:32:36Z"
+digest = "94f5eb1dbd5c902d0b908a3678cc0af3e5c089a6ac51d66e6f71a14b09e99e2a"
+exit_code = 0
+head = "c39e290db15611c152f7153f115815859ee92fe6"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 290 items
+
+python/tests/doctor/test_ad3_checks.py ...............                   [  5%]
+python/tests/doctor/test_data_010_ancestor.py ..                         [  5%]
+python/tests/doctor/test_devprobe_facade.py ........                     [  8%]
+python/tests/doctor/test_entry_imports.py ..                             [  9%]
+python/tests/doctor/test_error_families.py ..                            [ 10%]
+python/tests/doctor/test_ext_040_port.py .....                           [ 11%]
+python/tests/doctor/test_fix_bundle.py .................                 [ 17%]
+python/tests/doctor/test_fixable_catalog.py ...                          [ 18%]
+python/tests/doctor/test_probe_device_flag.py .                          [ 18%]
+python/tests/doctor/test_routes_probe.py .                               [ 19%]
+python/tests/doctor/test_runner.py ...........                           [ 23%]
+python/tests/doctor/test_sadi_doctor.py ................................ [ 34%]
+........................................................................ [ 58%]
+........................................................................ [ 83%]
+....................................                                     [ 96%]
+python/tests/doctor/test_sess_names.py .                                 [ 96%]
+python/tests/doctor/test_sessions_survey.py .......                      [ 98%]
+python/tests/doctor/test_web_data_steps.py ...                           [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-527402-0.xml ---------------
+======================= 290 passed, 1 warning in 23.41s ========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/doctor"
+size = 2365
+status = "measured"
+test_count = 290
+tests_digest = "8bb9467bf217f352742fbb0aa88ab7a30a6ead7c6858d01bf62a3d09253ca3ae"
+at = "2026-11-10T05:32:36Z"
+actor = "lognd"
+rev = 1

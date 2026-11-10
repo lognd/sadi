@@ -7,7 +7,7 @@ priority = "high"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T06:52:46Z"
-updated = "2026-11-10T07:04:30Z"
+updated = "2026-11-10T07:04:36Z"
 labels = ["creates:python/tests/server/test_idle_raw.py"]
 scope = ["python/sadi/server/live.py", "python/sadi/core/device.py", "python/tests/server/test_idle_raw.py", "docs/data-safety.md", "docs/server/app.md", "changelog.d/01M723P32SR45XWMW7BE5QZE7H.fixed.md"]
 

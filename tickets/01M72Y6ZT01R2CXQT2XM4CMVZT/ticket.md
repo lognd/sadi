@@ -7,9 +7,9 @@ priority = "high"
 points = 5
 reporter = "lognd"
 created = "2026-11-10T14:36:23Z"
-updated = "2026-11-10T14:37:16Z"
+updated = "2026-11-10T14:40:02Z"
 labels = ["creates:python/tests/store/test_incremental_roll.py"]
-scope = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py"]
+scope = ["python/sadi/store/incremental.py", "python/sadi/store/snapshot.py", "python/sadi/server/service.py", "python/tests/store/test_incremental_roll.py"]
 
 [[acceptance]]
 text = "After a segment roll IncrementalReplay.state() does not rebase and equals a full replay; _snapshot after a roll does not call prefix_hash; prefix_hashes_at stops at max covers_seq."

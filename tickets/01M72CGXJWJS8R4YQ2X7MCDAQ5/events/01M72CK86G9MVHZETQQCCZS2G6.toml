@@ -1,0 +1,92 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T09:28:29Z"
+digest = "a8bd7e8f0a6cb5021b3b050697198128891b3cfc77fe631f0a84955a0611db22"
+exit_code = 1
+failed_tests = ["web/src/hooks/markClock.test.ts", "web/src/components/instrument/StopBanner.test.tsx", "web/src/screens/run/exportTrace.test.ts"]
+head = "ad973b04f915e64d2e1beffdd1ea7fbb995e168a"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/hooks/stopText.test.ts (3 tests) 3ms
+stdout | web/src/hooks/useStickyOffset.test.ts > trackStickyHeight > publishes the measured height and follows resizes
+[hooks.useStickyOffset] sticky offset { px: 256 }
+[hooks.useStickyOffset] sticky offset { px: 300 }
+
+stdout | web/src/hooks/useStickyOffset.test.ts > watchStickyTop > attaches on the frame the sticky element appears
+[hooks.useStickyOffset] sticky offset { px: 200 }
+
+stdout | web/src/hooks/useStickyOffset.test.ts > static element (narrow-viewport media rule) > does not publish --top-h and clears a stale value when the element is not sticky
+[hooks.useStickyOffset] sticky offset cleared; element is static {}
+[hooks.useStickyOffset] sticky offset { px: 120 }
+[hooks.useStickyOffset] sticky offset cleared; element is static {}
+
+ \u{2713} web/src/hooks/useStickyOffset.test.ts (5 tests) 8ms
+ \u{2713} web/src/screens/run/inputFields.test.ts (17 tests) 13ms
+
+ Test Files  3 failed | 3 passed (6)
+      Tests  25 passed (25)
+   Start at  04:28:29
+   Duration  821ms (transform 713ms, setup 0ms, collect 530ms, tests 25ms, environment 2ms, prepare 1.15s)
+
+JSON report written to /tmp/frob-vitest-916484-0.json
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af} Failed Suites 3 \u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}
+
+ FAIL  web/src/hooks/markClock.test.ts [ web/src/hooks/markClock.test.ts ]
+Error: Cannot find package 'react' imported from '<worktree>/web/src/hooks/useTrace.ts'
+ \u{276f} web/src/hooks/useTrace.ts:6:1
+      4| // frob:ticket 01M6WV6TFKP2396PW58G1WJD3B
+      5| import { stopText } from "./stopText";
+      6| import { useEffect, useMemo, useRef, useState } from "react";
+       | ^
+      7| import { getLogger } from "../api/log";
+      8| import { openStream, type ConnState, type StreamHandlers, type StreamH\u{2026}
+
+Caused by: Error: Failed to load url react (resolved id: react) in <worktree>/web/src/hooks/useTrace.ts. Does the file exist?
+ \u{276f} loadAndTransform ../../SADI/web/node_modules/vite/dist/node/chunks/config.js:22907:33
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}[1/3]\u{23af}
+
+ FAIL  web/src/components/instrument/StopBanner.test.tsx [ web/src/components/instrument/StopBanner.test.tsx ]
+Error: Cannot find package 'react/jsx-dev-runtime' imported from '<worktree>/web/src/components/instrument/StopBanner.test.tsx'
+ \u{276f} web/src/components/instrument/StopBanner.test.tsx:21:33
+     19|     expect(stopMessage(dev({}))).toBeNull();
+     20|     const l = fakeLive({ view: { source: "simulated" } });
+     21|     const html = renderToString(<InstrumentBarView view={l.view} conn=\u{2026}
+       |                                 ^
+     22|     expect(html).toContain("stop-banner");
+     23|   });
+
+Caused by: Error: Failed to load url react/jsx-dev-runtime (resolved id: react/jsx-dev-runtime) in <worktree>/web/src/components/instrument/StopBanner.test.tsx. Does the file exist?
+ \u{276f} loadAndTransform ../../SADI/web/node_modules/vite/dist/node/chunks/config.js:22907:33
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}[2/3]\u{23af}
+
+ FAIL  web/src/screens/run/exportTrace.test.ts [ web/src/screens/run/exportTrace.test.ts ]
+Error: Cannot find package 'react' imported from '<worktree>/web/src/state/provenance.ts'
+ \u{276f} web/src/state/provenance.ts:4:1
+      2| // frob:ticket 01M71VN3JDC5NDPJ2AW60KQX63
+      3| /** Data-provenance state: the single source of truth for "is the data\u{2026}
+      4| import { useEffect } from "react";
+       | ^
+      5| import { create } from "zustand";
+      6| import { getHealth } from "../api/client";
+
+Caused by: Error: Failed to load url react (resolved id: react) in <worktree>/web/src/hooks/useTrace.ts. Does the file exist?
+ \u{276f} loadAndTransform ../../SADI/web/node_modules/vite/dist/node/chunks/config.js:22907:33
+
+\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}\u{23af}[3/3]\u{23af}
+
+'''
+passed = false
+provider = "vitest"
+ref = "src/hooks src/screens/run/inputFields.test.ts src/screens/run/exportTrace.test.ts src/components/instrument/StopBanner.test.tsx"
+size = 4339
+status = "measured"
+test_count = 28
+tests_digest = "0987b3034a20b811c47b5c5e6f1284ef1e772f1b467a49d5276a6335d93bbb5f"
+at = "2026-11-10T09:28:29Z"
+actor = "lognd"
+rev = 1

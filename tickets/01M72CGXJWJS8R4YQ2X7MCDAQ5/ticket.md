@@ -7,7 +7,7 @@ priority = "low"
 points = 1
 reporter = "lognd"
 created = "2026-11-10T09:27:14Z"
-updated = "2026-11-10T09:27:23Z"
+updated = "2026-11-10T09:28:29Z"
 scope = ["web/src/**/StopBanner.test.tsx", "web/src/**/exportTrace.test.ts", "web/src/**/inputFields.test.ts", "web/src/**/useStickyOffset.ts", "python/sadi/labs/lctt/curve_source.py", "docs/server/app.md"]
 
 [[acceptance]]

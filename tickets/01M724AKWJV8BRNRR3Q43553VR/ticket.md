@@ -2,12 +2,12 @@
 id = "01M724AKWJV8BRNRR3Q43553VR"
 title = "Audit2 H8c: working Reconnect and a disconnected status when no board at start"
 type = "bug"
-category = "todo"
+category = "in-progress"
 priority = "medium"
 points = 3
 reporter = "lognd"
 created = "2026-11-10T07:03:59Z"
-updated = "2026-11-10T07:04:01Z"
+updated = "2026-11-10T07:05:46Z"
 labels = ["creates:python/tests/server/test_reconnect_no_device.py"]
 scope = ["python/sadi/core/device.py", "python/sadi/server/live.py", "python/sadi/server/service.py", "python/tests/server/test_reconnect_no_device.py"]
 

@@ -2,12 +2,12 @@
 id = "01M72YKEYW6QFR5YTFSV2YBKMJ"
 title = "Audit8 LOW wording/type fixes: L3 panel wording, L4 mark button hint, L6 DesignIndicator.reasons type, L7 health provenance"
 type = "chore"
-category = "todo"
+category = "in-progress"
 priority = "low"
 points = 2
 reporter = "lognd"
 created = "2026-11-10T14:43:11Z"
-updated = "2026-11-10T14:43:11Z"
+updated = "2026-11-10T15:40:14Z"
 scope = ["web/src/**", "python/sadi/server/**"]
 
 [[acceptance]]

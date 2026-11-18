@@ -163,6 +163,52 @@ def _halves(req: PlanRequest, phase: DesignPhase, obs: list[Obs], first: int) ->
     return out
 
 
+def _spread(usable: list[_Load], n: int) -> list[_Load]:
+    """Pick `n` loads evenly spaced in mass from the usable range (all of them if fewer)."""
+    if n >= len(usable):
+        return list(usable)
+    if n == 1:
+        return [usable[-1]]
+    lo, hi = usable[0].mass, usable[-1].mass
+    picked: dict[int, _Load] = {}
+    for k in range(n):
+        target = lo + (hi - lo) * k / (n - 1)
+        order = sorted(range(len(usable)), key=lambda i: (abs(usable[i].mass - target), i))
+        idx = next(i for i in order if i not in picked)
+        picked[idx] = usable[idx]
+    return [picked[i] for i in sorted(picked)]
+
+
+def _advisory(
+    req: PlanRequest,
+    phase: DesignPhase,
+    usable: list[_Load],
+    obs: list[Obs],
+    sel: SelectorConfig,
+    chosen: list[tuple[_Load, float, str]],
+) -> Result[None, PlanError]:
+    """No explicit count: follow the selector and stop once it reports enough."""
+    cfg = req.config
+    by_id = {"|".join(ld.ids): ld for ld in usable}
+    remaining = list(usable)
+    while remaining:
+        cands = [Candidate(candidate_id="|".join(ld.ids), x=ld.mass) for ld in remaining]
+        got = select_next(phase, obs, cands, cfg.target, sel, unit="kg")
+        if isinstance(got, Err):
+            _log.error("selector failed: %s", got.unwrap_err())
+            return Err(PlanError.SelectorFailed)
+        adv = got.unwrap()
+        sug = adv.suggestion
+        if sug is None or (chosen and adv.indicator.state is GpState.ENOUGH):
+            break
+        ld = by_id[sug.candidate_id]
+        v = _predict(req, ld.mass, phase)
+        obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
+        chosen.append((ld, sug.expected_gain, sug.why))
+        remaining = [r for r in remaining if r.mass > ld.mass + cfg.mass_resolution_kg]
+    return Ok(None)
+
+
 def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     """Choose an ordered sequence of hangs from the inventory (deterministic, advisory)."""
     ids = [w.weight_id for w in req.weights]
@@ -195,29 +241,20 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     if not usable:
         return Err(PlanError.NoUsableHang)
 
-    by_id = {"|".join(ld.ids): ld for ld in usable}
     obs = [Obs(x=c.mass_kg, y=c.volts, u=c.u_volts) for c in req.captured]
     n_cap_pts = len(obs)
     sel = _selector_cfg(req, phase)
     chosen: list[tuple[_Load, float, str]] = []
-    remaining = list(usable)
-    limit = cfg.max_hangs or len(usable)
-    while remaining and len(chosen) < limit:
-        cands = [Candidate(candidate_id="|".join(ld.ids), x=ld.mass) for ld in remaining]
-        got = select_next(phase, obs, cands, cfg.target, sel, unit="kg")
-        if isinstance(got, Err):
-            _log.error("selector failed: %s", got.unwrap_err())
+    if cfg.max_hangs:
+        # An explicit count is honoured: N loads spread over the usable range (or all of them).
+        for k, ld in enumerate(_spread(usable, cfg.max_hangs)):
+            v = _predict(req, ld.mass, phase)
+            obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
+            why = f"{len(ld.ids)} weight(s) give {ld.mass * STANDARD_G:.4g} N, spaced across the range."
+            chosen.append((ld, 0.0, why))
+    else:
+        if isinstance(_advisory(req, phase, usable, obs, sel, chosen), Err):
             return Err(PlanError.SelectorFailed)
-        adv = got.unwrap()
-        if chosen and adv.indicator.state is GpState.ENOUGH:
-            break
-        sug = adv.suggestion
-        assert sug is not None  # noqa: S101 - select_next always suggests when candidates exist
-        ld = by_id[sug.candidate_id]
-        v = _predict(req, ld.mass, phase)
-        obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
-        chosen.append((ld, sug.expected_gain, sug.why))
-        remaining = [r for r in remaining if r.mass > ld.mass + cfg.mass_resolution_kg]
 
     halves = _halves(req, phase, obs, n_cap_pts + 1)
     hangs = tuple(

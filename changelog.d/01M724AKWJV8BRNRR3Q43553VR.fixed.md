@@ -1,0 +1,1 @@
+Starting with no board now reports a disconnected device, lets sessions open without error (capture is refused with a hint), and a new Reconnect action (POST /api/device/reconnect) attaches the board without a restart; recording resumes by appending to the open session and existing data is never overwritten.

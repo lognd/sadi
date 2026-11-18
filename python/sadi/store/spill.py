@@ -12,9 +12,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
 import sys
 import tempfile
+import time
 import uuid
+from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -22,15 +25,24 @@ from pydantic import BaseModel, ConfigDict
 from typani import Err, Ok, Result, propagate
 
 from sadi.logging_setup import get_logger
-from sadi.store.durable import DurableError, DurableIo, create_exclusive, fsync_dir, fsync_file
+from sadi.store.durable import (
+    DurableError,
+    DurableIo,
+    create_exclusive,
+    fsync_dir,
+    fsync_file,
+    rename_noreplace,
+)
 from sadi.store.manifest import Manifest, read_manifest
-from sadi.store.records import decode_frame
+from sadi.store.records import Record, decode_frame, encode_frame
 from sadi.store.session import (
     SESSIONS_DIRNAME,
     SessionError,
     _init_dir,
     _slug,
     _take_version,
+    session_is_synthetic,
+    session_provenance_unknown,
 )
 from sadi.store.wal import (
     SEGMENT_HEADER_LEN,
@@ -49,6 +61,13 @@ SPILL_GLOB = "*.wal"
 TEMP_SPILL_GLOB = "sadi-spill-*.wal"
 MARKER_SUFFIX = ".imported.json"
 IMPORT_SLUG = "spill-import"
+FAILED_SUFFIX = ".join-failed.json"
+#: Sidecar recording that the fragment import of this content failed verification (kept, crashed).
+FRAGMENT_FAILED_SUFFIX = ".fragment-failed.json"
+#: Sidecar created before a join copy starts; present without an imported marker = it died.
+INPROGRESS_SUFFIX = ".join-inprogress.json"
+#: Free space kept in reserve beyond the copy itself before a join is attempted (M4).
+JOIN_MARGIN_BYTES = 64 * 1024 * 1024
 
 
 class SpillError(BaseModel):
@@ -116,6 +135,13 @@ class SpillScan(BaseModel):
     first_seq: int | None
     last_seq: int | None
     tail: SpillTail | None
+
+
+class SpillWriteFailed(SpillError):
+    """Every spill location refused the records; they stay in memory and nothing was lost."""
+
+    attempts: tuple[str, ...]
+    hint: str = "Free disk space or reattach the drive, then retry Close session."
 
 
 class ImportReport(BaseModel):
@@ -232,13 +258,49 @@ def _marker_path(spill: Path) -> Path:
     return spill.with_name(spill.name + MARKER_SUFFIX)
 
 
-def _already_imported(scan: SpillScan) -> bool:
-    """Return True when a marker next to the spill names this exact file content."""
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _already_imported(scan: SpillScan, data_root: Path) -> bool:
+    """Return True when the marker names this content and a version dir under `data_root` (M5)."""
     marker = _marker_path(scan.path)
     try:
-        return bool(json.loads(marker.read_text("utf-8")).get("sha256") == scan.sha256)
-    except (OSError, ValueError, AttributeError):
+        body = json.loads(marker.read_text("utf-8"))
+        if body.get("sha256") != scan.sha256:
+            return False
+        version_dir = Path(body["version_dir"])
+        valid = version_dir.is_dir() and version_dir.resolve().is_relative_to(data_root.resolve())
+    except (OSError, ValueError, AttributeError, KeyError, TypeError):
         return False
+    if not valid:
+        _log.warning("marker %s does not name a version under %s; ignored", marker, data_root)
+    return valid
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _set_aside(path: Path, label: str) -> None:
+    """Rename a bookkeeping sidecar to a unique `.<label>-<ns>` name (kept, never deleted)."""
+    target = path.with_name(f"{path.name}.{label}-{time.time_ns()}")
+    try:
+        path.rename(target)
+    except OSError as exc:
+        _log.warning("cannot set aside %s: %s", path, exc)
+        return
+    _log.warning("set aside %s as %s", path, target)
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _existing_import(data_root: Path, sha256: str) -> Path | None:
+    """Return a closed version dir under `data_root` that was imported from this spill content."""
+    try:
+        dirs = sorted(p for p in (data_root / SESSIONS_DIRNAME).iterdir() if p.is_dir())
+    except OSError:
+        return None
+    for d in dirs:
+        mf = read_manifest(d)
+        if mf.is_ok and mf.danger_ok is not None:
+            m = mf.danger_ok
+            if m.spill_sha256 == sha256 and m.state == "closed" and m.spill_import is not None:
+                return d
+    return None
 
 
 def _write_marker(scan: SpillScan, version_dir: Path) -> bool:
@@ -250,6 +312,8 @@ def _write_marker(scan: SpillScan, version_dir: Path) -> bool:
         "imported": datetime.now(UTC).isoformat(),
         "valid_bytes": scan.valid_bytes,
     }
+    if _marker_path(scan.path).exists():  # stale: another data root or a vanished version dir
+        _set_aside(_marker_path(scan.path), "stale")
     created = create_exclusive(_marker_path(scan.path))
     if created.is_err:
         _log.warning("cannot write import marker for %s: %s", scan.path, created.danger_err)
@@ -285,15 +349,17 @@ def _find_parent(data_root: Path, session_uuid: uuid.UUID) -> Manifest | None:
 
 
 @propagate
-def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, DurableError]:
+def _write_segment(
+    wal_dir: Path, header: bytes, frames: Iterable[bytes]
+) -> Result[None, DurableError]:
     """Create seg-000001.wal exclusively, write header and verified frames, fsync file and dir."""
     created = create_exclusive(wal_dir / segment_name(1))
     fd = created.unwrap()
     try:
-        os.write(fd, header)
-        view = memoryview(frames)
-        while view:
-            view = view[os.write(fd, view) :]
+        for chunk in (header, *frames):
+            view = memoryview(chunk)
+            while view:
+                view = view[os.write(fd, view) :]
         synced = fsync_file(fd)
     except OSError as exc:
         return Err(DurableIo(errno=exc.errno or 5, path=wal_dir))
@@ -304,9 +370,234 @@ def _write_segment(wal_dir: Path, header: bytes, frames: bytes) -> Result[None, 
     return fsync_dir(wal_dir)
 
 
-@propagate
+class _Join(BaseModel):
+    """A verified plan to join a spill onto its parent: the parent WAL plus the new tail."""
+
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
+    wal_dir: Path
+    parent_records: int
+    tail: tuple[Record, ...]
+
+
+def _spill_records(data: bytes, scan: SpillScan) -> list[Record]:
+    """Decode the verified frames of a spill (already CRC-checked by `scan_spill`)."""
+    out: list[Record] = []
+    pos = SEGMENT_HEADER_LEN
+    while pos < scan.valid_bytes:
+        rec, end = decode_frame(data, pos).danger_ok
+        out.append(rec)
+        pos = end
+    return out
+
+
+def _same_frame(a: Record, b: Record) -> bool:
+    """True when two records agree on every logical field (seq is compared by the caller)."""
+    return (a.type, a.wall_ns, a.flags, a.payload) == (b.type, b.wall_ns, b.flags, b.payload)
+
+
+def _failed_marker_path(spill: Path) -> Path:
+    """Return the sidecar path recording that a join of `spill` already failed once."""
+    return spill.with_name(spill.name + FAILED_SUFFIX)
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _inprogress_path(spill: Path) -> Path:
+    """Return the sidecar path recording that a join of `spill` was started."""
+    return spill.with_name(spill.name + INPROGRESS_SUFFIX)
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _sidecar_names(path: Path, sha256: str) -> bool:
+    """Return True when the JSON sidecar at `path` names the content hash `sha256`."""
+    try:
+        return bool(json.loads(path.read_text("utf-8")).get("sha256") == sha256)
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _join_failed_before(scan: SpillScan) -> bool:
+    """Return True when a failed or interrupted join of this exact spill content exists (M4)."""
+    return _sidecar_names(_failed_marker_path(scan.path), scan.sha256) or _sidecar_names(
+        _inprogress_path(scan.path), scan.sha256
+    )
+
+
+# frob:ticket 01M72T4R3X8833V8Z978SH4481
+def _begin_join(scan: SpillScan) -> bool:
+    """Exclusively create the in-progress sidecar; False means do not join (fragment instead)."""
+    created = create_exclusive(_inprogress_path(scan.path))
+    if created.is_err:
+        _log.warning("cannot record join start for %s: %s", scan.path, created.danger_err)
+        return False
+    fd = created.danger_ok
+    body = {"sha256": scan.sha256, "started": datetime.now(UTC).isoformat()}
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("in-progress marker write for %s failed: %s", scan.path, exc)
+    finally:
+        os.close(fd)
+    return True
+
+
+def _write_failed_marker(scan: SpillScan, partial: Path | None, why: str) -> None:
+    """Best-effort exclusive marker naming the partial join dir so restarts never retry the join."""
+    body = {
+        "sha256": scan.sha256,
+        "partial_dir": str(partial) if partial is not None else None,
+        "reason": why,
+        "recorded": datetime.now(UTC).isoformat(),
+    }
+    created = create_exclusive(_failed_marker_path(scan.path))
+    if created.is_err:
+        _log.warning("cannot write failed-join marker for %s: %s", scan.path, created.danger_err)
+        return
+    fd = created.danger_ok
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("failed-join marker write for %s failed: %s", scan.path, exc)
+    finally:
+        os.close(fd)
+
+
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _fragment_failed_path(spill: Path) -> Path:
+    """Return the sidecar path recording that the fragment import of `spill` failed verify."""
+    return spill.with_name(spill.name + FRAGMENT_FAILED_SUFFIX)
+
+
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _fragment_failed_before(scan: SpillScan) -> bool:
+    """Return True when a failed fragment import of this exact spill content is recorded."""
+    return _sidecar_names(_fragment_failed_path(scan.path), scan.sha256)
+
+
+# frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+def _write_fragment_failed_marker(scan: SpillScan, err: SpillVerifyFailed) -> None:
+    """Exclusively write a durable marker so later starts skip this spill (nothing is deleted)."""
+    body = {
+        "sha256": scan.sha256,
+        "crashed_dir": str(err.version_dir),
+        "reason": f"verify failed: {err.error}",
+        "recorded": datetime.now(UTC).isoformat(),
+    }
+    created = create_exclusive(_fragment_failed_path(scan.path))
+    if created.is_err:
+        _log.warning(
+            "cannot write fragment-failed marker for %s: %s", scan.path, created.danger_err
+        )
+        return
+    fd = created.danger_ok
+    try:
+        os.write(fd, json.dumps(body, indent=2).encode("ascii") + b"\n")
+        fsync_file(fd)
+    except OSError as exc:
+        _log.warning("fragment-failed marker write for %s failed: %s", scan.path, exc)
+    finally:
+        os.close(fd)
+    _log.warning(
+        "fragment import of %s failed verify; crashed copy %s kept, spill skipped on later starts",
+        scan.path,
+        err.version_dir,
+    )
+
+
+def _wal_bytes(wal_dir: Path) -> int:
+    """Total size of the WAL segment files in `wal_dir` (0 when unreadable)."""
+    try:
+        return sum(p.stat().st_size for p in wal_dir.glob("seg-*.wal"))
+    except OSError:
+        return 0
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _plan_join(
+    sessions: Path, parent: Manifest, scan: SpillScan, spill_recs: list[Record]
+) -> _Join | None:
+    """Return a join plan, or None (with a logged reason) when the spill must stay a fragment.
+
+    The spill may overlap the parent (a failed fsync leaves the batch written but not durable):
+    `parent.first_seq <= spill.first_seq <= parent.last_seq + 1`, every gap seq being a SEAL, and
+    the overlapping frames must be identical. Nothing is joined without enough free space.
+    """
+    wal_dir = sessions / parent.dir_name / "wal"
+    if _join_failed_before(scan):
+        _log.warning("join of %s failed earlier (marker present); kept as fragment", scan.path)
+        return None
+    report = WalReader.scan(wal_dir)
+    if report.is_err:
+        _log.warning("parent WAL %s does not verify (%s); fragment", wal_dir, report.danger_err)
+        return None
+    rep = report.danger_ok
+    first = scan.first_seq
+    if rep.last_seq is None or rep.first_seq is None or first is None:
+        return None
+    gap = set(range(rep.last_seq + 1, first))
+    if first < rep.first_seq or not gap <= set(rep.seal_seqs):
+        _log.warning(
+            "spill %s does not continue parent %s (parent seq %s..%s, spill first_seq=%s); "
+            "kept as fragment",
+            scan.path,
+            wal_dir,
+            rep.first_seq,
+            rep.last_seq,
+            first,
+        )
+        return None
+    by_seq = {r.seq: r for r in spill_recs}
+    for item in WalReader(wal_dir).records(from_seq=first):
+        rec = item.danger_ok  # the parent was verified by the scan above
+        theirs = by_seq.get(rec.seq)
+        if theirs is not None and not _same_frame(rec, theirs):
+            _log.warning(
+                "spill %s seq %d differs from parent %s; kept as fragment",
+                scan.path,
+                rec.seq,
+                wal_dir,
+            )
+            return None
+    need = _wal_bytes(wal_dir) + scan.size + JOIN_MARGIN_BYTES
+    try:
+        free = shutil.disk_usage(sessions).free
+    except OSError as exc:
+        _log.warning("cannot read free space for %s (%s); fragment", sessions, exc)
+        return None
+    if free < need:
+        _log.warning(
+            "join deferred for %s: not enough space (%d free, %d needed); kept as fragment",
+            scan.path,
+            free,
+            need,
+        )
+        return None
+    tail = tuple(r for r in spill_recs if r.seq > rep.last_seq)
+    return _Join(wal_dir=wal_dir, parent_records=rep.record_count, tail=tail)
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _combined_frames(join: _Join) -> Iterator[bytes]:
+    """Yield parent data frames then the new spill tail, renumbered densely (seals dropped)."""
+    seq = 0
+    for item in WalReader(join.wal_dir).records():
+        rec = item.danger_ok  # the prefix was verified by `_plan_join`
+        seq += 1
+        yield encode_frame(rec.type, seq, rec.wall_ns, rec.flags, rec.payload)
+    for rec in join.tail:
+        seq += 1
+        yield encode_frame(rec.type, seq, rec.wall_ns, rec.flags, rec.payload)
+
+
 def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, SpillError]:
-    """Import the verified prefix of `scan` as a new version dir; the spill file is kept."""
+    """Import `scan` as a new version dir; the spill file and the parent are never modified.
+
+    When the spill continues (or overlaps) a verified parent and there is room, the successor is
+    self-contained: the parent's records plus the spill tail. Otherwise, or if writing the join
+    fails, the spill alone is kept as a fragment (never dropped, never superseding its parent).
+    """
     if scan.record_count == 0 or scan.first_seq is None or scan.last_seq is None:
         return Err(SpillEmpty(path=scan.path))
     parent = _find_parent(data_root, scan.header.session_uuid)
@@ -315,6 +606,52 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         sessions.mkdir(parents=True, exist_ok=True)
     except OSError as exc:
         return Err(SpillIo(error=DurableIo(errno=exc.errno or 5, path=sessions), path=sessions))
+    data = scan.path.read_bytes()
+    join = (
+        None if parent is None else _plan_join(sessions, parent, scan, _spill_records(data, scan))
+    )
+    if join is not None and not _begin_join(scan):  # frob:ticket 01M72T4R3X8833V8Z978SH4481
+        join = None
+    result = _import_version(data_root, scan, data, parent, join)
+    if (
+        join is not None
+        and result.is_err
+        and isinstance(result.danger_err, SpillIo | SpillVerifyFailed)
+    ):
+        err = result.danger_err
+        _log.error("join of %s failed (%s); importing the fragment instead", scan.path, err)
+        if isinstance(err, SpillIo):
+            _write_failed_marker(scan, err.path, str(err.error))
+        else:
+            _write_failed_marker(scan, err.version_dir, f"verify failed: {err.error}")
+        result = _import_version(data_root, scan, data, parent, None, continuity_hint=False)
+    if join is not None and result.is_err and isinstance(result.danger_err, SpillSession):
+        # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+        # Failed before any segment byte was written: a later start may retry the full join.
+        _log.error(
+            "join of %s failed before writing (%s); will retry on next start",
+            scan.path,
+            result.danger_err,
+        )
+        _set_aside(_inprogress_path(scan.path), "aborted")
+    if result.is_err and isinstance(result.danger_err, SpillVerifyFailed):
+        # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+        _write_fragment_failed_marker(scan, result.danger_err)
+    return result
+
+
+@propagate
+def _import_version(
+    data_root: Path,
+    scan: SpillScan,
+    data: bytes,
+    parent: Manifest | None,
+    join: _Join | None,
+    continuity_hint: bool | None = None,
+) -> Result[ImportReport, SpillError]:
+    """Write one new version dir for `scan` (joined when `join` is set, else a fragment)."""
+    assert scan.first_seq is not None and scan.last_seq is not None
+    sessions = data_root / SESSIONS_DIRNAME
     now = datetime.now(UTC)
     if parent is not None:
         family, start = parent.family, parent.version + 1
@@ -323,6 +660,18 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
     taken = _take_version(sessions, family, start)
     path, ver = taken.map_err(lambda e: SpillSession(error=e)).unwrap()
     new_uuid = uuid.uuid4()
+    total = scan.last_seq if join is None else join.parent_records + len(join.tail)
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    # Provenance: inherit from the parent. An orphan has none, so it is flagged unknown: neither
+    # real nor synthetic (never labelled either way).
+    unknown = False
+    if parent is not None:
+        synthetic = session_is_synthetic(sessions / parent.dir_name)
+        unknown = session_provenance_unknown(sessions / parent.dir_name)
+    else:
+        synthetic = False
+        unknown = True
+        _log.warning("orphan spill %s has no parent; imported with unknown provenance", scan.path)
     manifest = Manifest(
         session_uuid=str(new_uuid),
         dir_name=path.name,
@@ -333,27 +682,36 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
         created=now,
         lab_module=parent.lab_module if parent is not None else "",
         specimen=parent.specimen if parent is not None else {},
-        last_seq=scan.last_seq,
+        last_seq=total,
+        synthetic=synthetic,
+        provenance_unknown=unknown,
+        spill_import="joined" if join is not None else "fragment",
+        spill_sha256=scan.sha256,  # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
     )
-    inited = _init_dir(path, manifest)
-    handle = inited.map_err(lambda e: SpillSession(error=e)).unwrap()
-    data = scan.path.read_bytes()
-    header = encode_segment_header(1, scan.first_seq, new_uuid)
-    written = _write_segment(path / "wal", header, data[SEGMENT_HEADER_LEN : scan.valid_bytes])
+    handle = _init_dir(path, manifest).map_err(lambda e: SpillSession(error=e)).unwrap()
+    if join is not None:
+        header = encode_segment_header(1, 1, new_uuid)
+        frames: Iterable[bytes] = _combined_frames(join)
+    else:
+        header = encode_segment_header(1, scan.first_seq, new_uuid)
+        frames = (data[SEGMENT_HEADER_LEN : scan.valid_bytes],)
+    written = _write_segment(path / "wal", header, frames)
     if written.is_err:
         handle.close("crashed")
         return Err(SpillIo(error=written.danger_err, path=path))
-    verified = WalReader.scan(path / "wal")
+    verified = WalReader.scan(path / "wal")  # frob:ticket 01M72T4R3X8833V8Z978SH4481
+    if verified.is_err:
+        _log.error("imported segment in %s failed re-verification; kept, marked crashed", path)
+        handle.close("crashed")
+        return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
     closed = handle.close("closed")
     if closed.is_err:
         _log.warning("closing imported session %s: %s", path, closed.danger_err)
-    if verified.is_err:
-        _log.error("imported segment in %s failed re-verification", path)
-        return Err(SpillVerifyFailed(version_dir=path, error=verified.danger_err))
     marked = _write_marker(scan, path)
-    continuity = (
-        None if parent is None or parent.last_seq is None else scan.first_seq == parent.last_seq + 1
-    )
+    if continuity_hint is not None:
+        continuity = continuity_hint
+    else:
+        continuity = None if parent is None or parent.last_seq is None else join is not None
     if continuity is False:
         _log.warning("spill %s seq does not continue parent %s", scan.path, parent)
     _log.info("imported %s as %s (%d records)", scan.path, path, scan.record_count)
@@ -372,24 +730,221 @@ def import_spill(data_root: Path, scan: SpillScan) -> Result[ImportReport, Spill
     )
 
 
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+class FragmentFailedSkip(BaseModel):
+    """Outcome: spill skipped, its fragment import failed verify earlier (see crashed_dirs)."""
+
+    model_config = ConfigDict(frozen=True)
+    spill: Path
+    crashed_dirs: tuple[Path, ...]
+
+
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+class SyntheticSkip(BaseModel):
+    """Outcome: spill left untouched because a synthetic root must not adopt foreign data."""
+
+    model_config = ConfigDict(frozen=True)
+    spill: Path
+
+
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+def _foreign_to_synthetic_root(data_root: Path, scan: SpillScan) -> bool:
+    """True when the spill has no parent session in this root (a synthetic root adopts none)."""
+    parent = _find_parent(data_root, scan.header.session_uuid)
+    if parent is None:
+        return True
+    return not session_is_synthetic(data_root / SESSIONS_DIRNAME / parent.dir_name)
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def _crashed_copies(scan: SpillScan) -> tuple[Path, ...]:
+    """Collect the crashed-copy dirs named by the failed-join and fragment-failed markers."""
+    found: list[Path] = []
+    for marker, key in (
+        (_failed_marker_path(scan.path), "partial_dir"),
+        (_fragment_failed_path(scan.path), "crashed_dir"),
+    ):
+        try:
+            value = json.loads(marker.read_text("utf-8")).get(key)
+        except (OSError, ValueError, AttributeError):
+            continue
+        if isinstance(value, str):
+            found.append(Path(value))
+    return tuple(found)
+
+
 def import_all_spills(
-    data_root: Path, user_dir: Path | None = None, temp_dir: Path | None = None
-) -> list[tuple[Path, Result[ImportReport | None, SpillError]]]:
-    """Discover, verify and import every spill at start; Ok(None) means already imported."""
-    outcomes: list[tuple[Path, Result[ImportReport | None, SpillError]]] = []
+    data_root: Path,
+    user_dir: Path | None = None,
+    temp_dir: Path | None = None,
+    *,
+    synthetic: bool = False,  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]]:
+    """Discover, verify and import every spill at start; Ok(None) means already imported.
+
+    With synthetic=True, spills without a synthetic parent in this root are left untouched
+    (Ok(SyntheticSkip)): real student data is never copied into a synthetic root.
+
+    Ok(FragmentFailedSkip) means a failed fragment verify was recorded earlier (WARNING-worthy).
+    """
+    outcomes: list[
+        tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]
+    ] = []
+    seen_content: dict[str, Path] = {}  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
     for spill in discover_spills(data_root, user_dir, temp_dir):
         scanned = scan_spill(spill)
         if scanned.is_err:
             outcomes.append((spill, Err(scanned.danger_err)))
             continue
         scan = scanned.danger_ok
-        if _already_imported(scan):
+        if synthetic and _foreign_to_synthetic_root(data_root, scan):  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+            _log.info("spill %s skipped: synthetic root, no synthetic parent session here", spill)
+            outcomes.append((spill, Ok(SyntheticSkip(spill=spill))))
+            continue
+        if _already_imported(scan, data_root):
             _log.info("spill %s already imported, skipping", spill)
+            outcomes.append((spill, Ok(None)))
+            continue
+        if _fragment_failed_before(scan):  # frob:ticket 01M72TJ0AF92J3Q77TY8RE9YCW
+            _log.warning("spill %s failed fragment verify before; kept, not re-copied", spill)
+            skip = FragmentFailedSkip(spill=spill, crashed_dirs=_crashed_copies(scan))
+            outcomes.append((spill, Ok(skip)))
+            continue
+        done = _existing_import(data_root, scan.sha256)  # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+        if done is not None:
+            _log.warning("spill %s already imported as %s; writing the missing marker", spill, done)
+            _write_marker(scan, done)
+            seen_content[scan.sha256] = done
+            outcomes.append((spill, Ok(None)))
+            continue
+        twin = seen_content.get(scan.sha256)
+        if twin is not None:
+            _log.info(
+                "spill %s is byte-identical to imported %s; marking, no new version", spill, twin
+            )
+            _write_marker(scan, twin)
             outcomes.append((spill, Ok(None)))
             continue
         imported = import_spill(data_root, scan)
         if imported.is_err:
             outcomes.append((spill, Err(imported.danger_err)))
         else:
+            seen_content[scan.sha256] = imported.danger_ok.version_dir
             outcomes.append((spill, Ok(imported.danger_ok)))
     return outcomes
+
+
+def _dense_runs(records: list[Record]) -> list[list[Record]]:
+    """Split records into runs of consecutive seqs (a spill segment must be dense)."""
+    runs: list[list[Record]] = []
+    for rec in records:
+        if runs and rec.seq == runs[-1][-1].seq + 1:
+            runs[-1].append(rec)
+        else:
+            runs.append([rec])
+    return runs
+
+
+# frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+def _publish_spill(directory: Path, name: str, blob: bytes) -> Result[Path, DurableError]:
+    """Write `blob` to a tmp file, fsync, publish under `name` without replace, fsync the dir."""
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=directory))
+    tmp = directory / f".{name}.{uuid.uuid4().hex[:8]}.tmp"
+    created = create_exclusive(tmp)
+    if created.is_err:
+        return Err(created.danger_err)
+    fd = created.danger_ok
+    try:
+        view = memoryview(blob)
+        while view:
+            view = view[os.write(fd, view) :]
+        synced = fsync_file(fd)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=tmp))
+    finally:
+        os.close(fd)
+    if synced.is_err:
+        return Err(synced.danger_err)
+    final = directory / name
+    moved = rename_noreplace(tmp, final)
+    if moved.is_err:
+        return Err(moved.danger_err)
+    return Ok(final)
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def spill_name(session_uuid: uuid.UUID, first_seq: int) -> str:
+    """Deterministic spill name for (session uuid, first seq): Close retries do not pile up."""
+    return f"sadi-spill-{session_uuid.hex}-{first_seq:010d}.wal"
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _publish_idempotent(directory: Path, name: str, blob: bytes) -> Result[Path, DurableError]:
+    """Publish `blob` as `name`; an identical existing file is reused, a different one is kept.
+
+    When `name` already holds different bytes (a retry that holds more or other records) the
+    new blob goes under a content-hash suffixed name instead: nothing is ever overwritten.
+    """
+    final = directory / name
+    try:
+        body = blob[SEGMENT_HEADER_LEN:]  # the header carries a timestamp; compare the frames
+        if final.is_file():
+            if final.read_bytes()[SEGMENT_HEADER_LEN:] == body:
+                _log.info("spill %s already present with identical content; reusing", final)
+                return Ok(final)
+            digest = hashlib.sha256(body).hexdigest()[:12]
+            name = f"{final.stem}-{digest}{final.suffix}"
+            _log.warning("spill %s exists with different content; writing %s", final, name)
+            alt = directory / name
+            if alt.is_file() and alt.read_bytes()[SEGMENT_HEADER_LEN:] == body:
+                return Ok(alt)
+    except OSError as exc:
+        return Err(DurableIo(errno=exc.errno or 5, path=final))
+    return _publish_spill(directory, name, blob)
+
+
+# frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+def write_spill(
+    records: list[Record],
+    session_uuid: uuid.UUID,
+    data_root: Path,
+    user_dir: Path | None = None,
+    temp_dir: Path | None = None,
+) -> Result[list[Path], SpillWriteFailed]:
+    """Spill undurable `records` atomically (never overwriting) to data-root, user dir, then temp.
+
+    One file per dense seq run; the first location that accepts a run wins. Any run that no
+    location accepts makes the whole call Err so the caller keeps the records in memory.
+    """
+    places = (
+        data_root / SPILL_DIRNAME,
+        (user_dir or user_data_dir()) / SPILL_DIRNAME,
+        temp_dir or Path(tempfile.gettempdir()),
+    )
+    paths: list[Path] = []
+    attempts: list[str] = []
+    for run in _dense_runs(records):
+        header = encode_segment_header(1, run[0].seq, session_uuid)
+        frames = b"".join(encode_frame(r.type, r.seq, r.wall_ns, r.flags, r.payload) for r in run)
+        blob = header + frames
+        name = spill_name(session_uuid, run[0].seq)
+        for directory in places:
+            published = _publish_idempotent(directory, name, blob)
+            if published.is_ok:
+                _log.warning(
+                    "spilled %d undurable record(s) seq %d..%d to %s",
+                    len(run),
+                    run[0].seq,
+                    run[-1].seq,
+                    published.danger_ok,
+                )
+                paths.append(published.danger_ok)
+                break
+            attempts.append(f"{directory}: {published.danger_err}")
+            _log.error("spill to %s failed: %s", directory, published.danger_err)
+        else:
+            return Err(SpillWriteFailed(attempts=tuple(attempts)))
+    return Ok(paths)

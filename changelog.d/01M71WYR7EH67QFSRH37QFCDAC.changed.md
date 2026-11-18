@@ -1,0 +1,1 @@
+`sadi serve` without `--sim`, `--synthetic-specimen` or `--ad3` now opens the real SADI board over serial (`--device-port`, `SADI_PORT`, default `/dev/ttyUSB0`) so `/api/stream` works; a missing board exits with a plain "plug it in" message instead of serving with no device.

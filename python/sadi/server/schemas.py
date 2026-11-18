@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sadi.core.wizard import History, WizardState
 from sadi.labs.lctt.guidance import Phase
 from sadi.store.events import CurrentPoint, EditOp, PointWindow
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 
 class _Body(BaseModel):
@@ -49,6 +50,11 @@ class SessionSummary(BaseModel):
     lab: str
     state: str
     parent: str | None = None
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    latest: bool = True  # True for the newest version of its family
+    latest_name: str | None = None  # directory of the newest version when this one is not it
+    spill_import: str | None = None  # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
 
 
 class SessionInfo(BaseModel):
@@ -59,6 +65,9 @@ class SessionInfo(BaseModel):
     parent: str | None = None
     parent_last_seq: int | None = None
     durable_seq: int
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
+    newer_versions: list[str] = []  # newer versions of the resumed family that exist on disk
 
 
 class StepRef(_Body):
@@ -83,6 +92,8 @@ class CaptureBody(_Body):
     drift_rate: float | None = None
     settled: bool = False
     forced_early: bool = False
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    request_id: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class EditBody(_Body):

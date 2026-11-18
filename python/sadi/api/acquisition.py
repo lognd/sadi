@@ -137,7 +137,7 @@ class AcquisitionDriver:
         return Ok(None)
 
     def stop(self) -> Result[int, AcquisitionError | DriverFault]:
-        """Stop the loops, ingest the device's trailing blocks, drain the pipeline.
+        """Stop the loops, ingest the device's trailing blocks (even if its stop failed), drain the pipeline.
 
         Returns the number of trailing blocks ingested; a device stop error is returned as a
         `DriverFault` (blocks already ingested stay saved).
@@ -150,18 +150,21 @@ class AcquisitionDriver:
             self._ticker.join(_JOIN_TIMEOUT_S)
         self._acq = self._ticker = None
         res = self._source.stop_streaming()
-        if res.is_err:
-            fault = DriverFault(origin="device", detail=str(res.danger_err))
-            self._record_fault(fault)
-            self._pipe.stop()
-            return Err(fault)
+        # A failed stop may still carry the blocks already read; they are saved before the fault.
+        blocks = list(getattr(res.danger_err, "blocks", ())) if res.is_err else res.danger_ok
         tail = 0
-        for block in res.danger_ok:
+        for block in blocks:
             if block is None or not int(block.n_samples):
                 continue
             if self._ingest(block) is not None:
                 break
             tail += 1
+        if res.is_err:
+            fault = DriverFault(origin="device", detail=str(res.danger_err))
+            self._record_fault(fault)
+            self._pipe.stop()
+            _log.error("device stop failed; %d drained blocks ingested first", tail)
+            return Err(fault)
         self._pipe.stop()
         _log.info("acquisition driver stopped; %d trailing blocks ingested", tail)
         return Ok(tail)

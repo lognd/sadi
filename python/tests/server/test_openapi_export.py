@@ -34,3 +34,15 @@ def test_main_writes_file(tmp_path: Path) -> None:
     dest = tmp_path / "o.json"
     assert main([str(dest)]) == 0
     assert dest.read_text(encoding="utf-8") == render_openapi()
+
+
+# frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+# frob:tests python/sadi/server/routes/sessions.py::make_sessions_router
+def test_capture_declares_409_503_and_reason_enum() -> None:
+    """The capture route documents its problem responses; reasons are an enum."""
+    spec = json.loads(render_openapi())
+    post = spec["paths"]["/api/session/points"]["post"]
+    assert {"201", "409", "503"} <= set(post["responses"])
+    reasons = spec["components"]["schemas"]["ConfidenceIndicator"]["properties"]["reasons"]
+    assert "enum" in json.dumps(reasons) or "$ref" in json.dumps(reasons)
+    assert "no_calibration" in json.dumps(spec["components"]["schemas"])

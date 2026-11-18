@@ -1,0 +1,10 @@
+kind = "create"
+title = "L7: fixed 11rem sticky offset collides at 800px height"
+type = "bug"
+category = "todo"
+priority = "low"
+scope = ["web/src/styles.css"]
+acceptance = ["Sticky offset derived from measured header height; no overlap at 800px"]
+at = "2026-11-10T08:10:55Z"
+actor = "lognd"
+rev = 1

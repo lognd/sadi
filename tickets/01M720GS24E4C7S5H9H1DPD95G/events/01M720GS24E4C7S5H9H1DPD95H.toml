@@ -1,0 +1,10 @@
+kind = "create"
+title = "Server /api/results omits yield_stress for the lctt lab (analyze stub)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/sadi/server/**,python/sadi/labs/lctt/**"]
+acceptance = ["GET /api/results carries yield_stress or a pending/notes reason; found while working ~G8RBYNA"]
+at = "2026-11-10T05:57:26Z"
+actor = "lognd"
+rev = 1

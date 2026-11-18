@@ -1,6 +1,8 @@
+/* frob:ticket 01M72PGN6FQEXXCFGXA3EMAPTS */
 /* frob:ticket 01M71KE5ENACTPQ56XAWW37VH5 */
 /* frob:ticket 01M71MKBSXNE43ZJF2SEJ231JH */
-/* SADI design tokens (color, space, radius, shadow, type) and the light/dark themes; imported by styles.css.
+/* Terminal look (frob:ticket 01M72XNR6Q58FDDMHYEVBPNC2P): monospace everywhere, phosphor-green on black (dark) or ink on pale phosphor (light), square corners.
+   SADI design tokens (color, space, radius, shadow, type) and the light/dark themes; imported by styles.css.
    The colours mirror [palette] in crunk.toml (a vitest check fails on drift); crunk does not lint this file.
    Theme: html[data-theme] (set by the toggle, persisted in localStorage) wins; otherwise prefers-color-scheme. */
 
@@ -8,97 +10,97 @@
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f3f5f8;
-  --surface: #ffffff;
-  --surface-2: #eaeef3;
-  --fg: #14181d;
-  --muted: #475160;
-  --accent: #0b57b0;
-  --accent-fg: #ffffff;
-  --accent-soft: #dbe9fb;
-  --border: #66717f;
-  --line: #d3d9e1;
-  --focus: #a64f00;
-  --btn-bg: #eef1f5;
-  --ok: #17663a;
-  --ok-soft: #dcf2e4;
-  --warn: #7a4a00;
-  --warn-soft: #fbecce;
-  --bad: #a8201a;
-  --bad-soft: #fbe0de;
-  --shadow-1: 0 1px 2px rgb(16 24 40 / 8%), 0 1px 3px rgb(16 24 40 / 6%);
-  --shadow-2: 0 4px 12px rgb(16 24 40 / 12%);
+  --bg: #d6ebd0;
+  --surface: #e6f5e1;
+  --surface-2: #c5dfbe;
+  --fg: #06200c;
+  --muted: #2b5636;
+  --accent: #0a5a2a;
+  --accent-fg: #e6f5e1;
+  --accent-soft: #b9dcb1;
+  --border: #3a6845;
+  --line: #a6c79e;
+  --focus: #8a4400;
+  --btn-bg: #cbe4c4;
+  --ok: #0a5a2a;
+  --ok-soft: #c3e6bb;
+  --warn: #5e3b00;
+  --warn-soft: #efdfa6;
+  --bad: #9a1a10;
+  --bad-soft: #f2d4cd;
+  --shadow-1: none;
+  --shadow-2: none;
 }
 
 /* ---- Tokens: dark, from the OS when no manual choice is stored ---- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0e1217;
-    --surface: #171c23;
-    --surface-2: #212832;
-    --fg: #e8ecf1;
-    --muted: #a9b3c0;
-    --accent: #7ab6ff;
-    --accent-fg: #08111f;
-    --accent-soft: #1b2e48;
-    --border: #8792a1;
-    --line: #2d3541;
-    --focus: #ffb454;
-    --btn-bg: #232b36;
-    --ok: #6fd39a;
-    --ok-soft: #14301f;
-    --warn: #f0b45a;
-    --warn-soft: #36280f;
-    --bad: #ff8f87;
-    --bad-soft: #3b1a18;
-    --shadow-1: 0 1px 2px rgb(0 0 0 / 50%);
-    --shadow-2: 0 4px 14px rgb(0 0 0 / 55%);
+    --bg: #070b07;
+    --surface: #0c130c;
+    --surface-2: #132013;
+    --fg: #7dff9a;
+    --muted: #6cc784;
+    --accent: #5dffa0;
+    --accent-fg: #03100a;
+    --accent-soft: #0f3a20;
+    --border: #4fa468;
+    --line: #1d3a25;
+    --focus: #ffd24a;
+    --btn-bg: #10200f;
+    --ok: #7bffa0;
+    --ok-soft: #0e3a1a;
+    --warn: #ffcf5a;
+    --warn-soft: #3a2d08;
+    --bad: #ff8a80;
+    --bad-soft: #3f1512;
+    --shadow-1: none;
+    --shadow-2: none;
   }
 }
 
 /* ---- Tokens: dark, manual choice ---- */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0e1217;
-  --surface: #171c23;
-  --surface-2: #212832;
-  --fg: #e8ecf1;
-  --muted: #a9b3c0;
-  --accent: #7ab6ff;
-  --accent-fg: #08111f;
-  --accent-soft: #1b2e48;
-  --border: #8792a1;
-  --line: #2d3541;
-  --focus: #ffb454;
-  --btn-bg: #232b36;
-  --ok: #6fd39a;
-  --ok-soft: #14301f;
-  --warn: #f0b45a;
-  --warn-soft: #36280f;
-  --bad: #ff8f87;
-  --bad-soft: #3b1a18;
-  --shadow-1: 0 1px 2px rgb(0 0 0 / 50%);
-  --shadow-2: 0 4px 14px rgb(0 0 0 / 55%);
+  --bg: #070b07;
+  --surface: #0c130c;
+  --surface-2: #132013;
+  --fg: #7dff9a;
+  --muted: #6cc784;
+  --accent: #5dffa0;
+  --accent-fg: #03100a;
+  --accent-soft: #0f3a20;
+  --border: #4fa468;
+  --line: #1d3a25;
+  --focus: #ffd24a;
+  --btn-bg: #10200f;
+  --ok: #7bffa0;
+  --ok-soft: #0e3a1a;
+  --warn: #ffcf5a;
+  --warn-soft: #3a2d08;
+  --bad: #ff8a80;
+  --bad-soft: #3f1512;
+  --shadow-1: none;
+  --shadow-2: none;
 }
 
 /* ---- Tokens: theme-independent ---- */
 :root {
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  --text-xs: 0.78rem;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.6rem;
+  --text-xs: 0.72rem; /* micro-labels (silkscreen) */
+  --text-sm: 0.8125rem;
+  --text-md: 0.875rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.4rem;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 0;
+  --radius-md: 0;
   --radius-pill: 999px;
   --content-width: 72rem;
 }

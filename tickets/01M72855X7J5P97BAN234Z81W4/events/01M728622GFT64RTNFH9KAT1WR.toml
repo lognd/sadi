@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/styles.css"]
+new = ["web/src/styles.css", "web/src/hooks/useStickyOffset.ts"]
+at = "2026-11-10T08:11:23Z"
+actor = "lognd"
+rev = 1

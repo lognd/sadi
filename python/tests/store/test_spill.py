@@ -4,20 +4,35 @@
 from __future__ import annotations
 
 import hashlib
+import shutil
+import time
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from sadi.store.records import FRAME_HEADER_LEN, RecordType, encode_frame
-from sadi.store.session import SessionMeta, create_session
+import pytest
+from typani import Err
+
+from sadi.store import failpoints, spill
+from sadi.store.durable import DurableIo
+from sadi.store.manifest import read_manifest
+from sadi.store.records import FRAME_HEADER_LEN, NewRecord, Record, RecordType, encode_frame
+from sadi.store.session import (
+    SessionMeta,
+    TooManyVersions,
+    create_session,
+    session_is_synthetic,
+    session_provenance_unknown,
+)
 from sadi.store.spill import (
     SpillEmpty,
     SpillHeaderInvalid,
     discover_spills,
     import_all_spills,
     scan_spill,
+    write_spill,
 )
-from sadi.store.wal import WalReader, encode_segment_header
+from sadi.store.wal import WalConfig, WalCorrupt, WalReader, WalWriter, encode_segment_header
 
 NOTE = int(RecordType.NOTE)
 
@@ -148,3 +163,377 @@ def test_parent_family_link_and_no_overwrite(tmp_path: Path) -> None:
     assert rep.parent == parent_name
     assert rep.version_dir.name.endswith(".v002")
     assert (root / "sessions" / parent_name).is_dir()
+
+
+# frob:ticket 01M729648PC6N7FK6D2J6H1ETV
+def _parent_with_records(root: Path, n: int, state: str = "incomplete") -> tuple[Path, uuid.UUID]:
+    """Create a parent session with n durable NOTE records (writer closed) and return it."""
+    h = create_session(root, SessionMeta(slug="cu"), datetime(2026, 11, 8, tzinfo=UTC)).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    for i in range(n):
+        assert w.append(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i]))).is_ok
+    w.close()
+    h.close(state)
+    return h.path, suid
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_import_joins_parent_records_and_spill(tmp_path: Path) -> None:
+    """The successor holds the parent's verified records plus the spill; parent is untouched."""
+    root, user, tmp = dirs(tmp_path)
+    parent, suid = _parent_with_records(root, 3)
+    before = sorted((parent / "wal").glob("*.wal"))[0].read_bytes()
+    make_spill(root / "spill" / "s.wal", 4, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is True
+    recs = [r.danger_ok for r in WalReader(rep.version_dir / "wal").records()]
+    assert [r.seq for r in recs] == [1, 2, 3, 4, 5]
+    assert [r.payload[8] for r in recs[:3]] == [0, 1, 2]
+    assert recs[3].payload == bytes([0]) * 20
+    assert read_manifest(rep.version_dir).danger_ok.last_seq == 5
+    assert sorted((parent / "wal").glob("*.wal"))[0].read_bytes() == before
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_non_continuing_spill_stays_fragment(tmp_path: Path) -> None:
+    """A spill that does not directly continue the parent is kept alone, never dropped."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 10, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 2
+
+
+# frob:tests python/sadi/store/spill.py::write_spill
+def test_write_spill_retry_is_idempotent_and_never_overwrites(tmp_path: Path) -> None:
+    """Same records twice reuse one file; different records for the same key keep both."""
+    root, user, tmp = dirs(tmp_path)
+    suid = uuid.uuid4()
+    recs = [Record(type=NOTE, seq=s, wall_ns=1, flags=0, payload=b"a" * 8, crc=0) for s in (4, 5)]
+    first = write_spill(recs, suid, root, user, tmp).danger_ok
+    again = write_spill(recs, suid, root, user, tmp).danger_ok
+    assert first == again and len(list((root / "spill").glob("*.wal"))) == 1
+    more = [*recs, Record(type=NOTE, seq=6, wall_ns=1, flags=0, payload=b"a" * 8, crc=0)]
+    third = write_spill(more, suid, root, user, tmp).danger_ok
+    assert third != first
+    assert len(list((root / "spill").glob("*.wal"))) == 2
+    assert first[0].exists()
+
+
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_identical_spills_in_two_locations_import_once(tmp_path: Path) -> None:
+    """Byte-identical spill copies in two locations yield a single new version."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    data = make_spill(root / "spill" / "a.wal", 4, 2, suid)
+    (user / "spill").mkdir(parents=True)
+    (user / "spill" / "b.wal").write_bytes(data)
+    out = import_all_spills(root, user, tmp)
+    assert [o[1].danger_ok is not None for o in out] == [True, False]
+    assert len(list((root / "sessions").iterdir())) == 2
+
+
+def _fsync_failed_parent(root: Path, user: Path, tmp: Path) -> tuple[Path, uuid.UUID]:
+    """Real writer: 3 durable NOTEs, then 2 whose fsync fails (undurable); spill them."""
+    h = create_session(root, SessionMeta(slug="cu"), datetime(2026, 11, 8, tzinfo=UTC)).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    for i in range(3):
+        assert w.append(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i]))).is_ok
+    failpoints.configure({"wal.fsync.before": "once:error:5"})
+    try:
+        for i in range(3, 5):
+            w.append_nowait(NewRecord(type=NOTE, payload=b"p" * 8 + bytes([i])))
+        deadline = time.monotonic() + 5
+        while not w.undurable_records() and time.monotonic() < deadline:
+            time.sleep(0.02)
+    finally:
+        und = w.undurable_records()
+        failpoints.clear()
+    assert [r.seq for r in und] == [4, 5]
+    w.close()
+    h.close("incomplete")
+    assert write_spill(und, suid, root, user, tmp).is_ok
+    return h.path, suid
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_fsync_failure_spill_overlapping_parent_still_joins(tmp_path: Path) -> None:
+    """M1: the failed batch is already in the parent segment; the spill overlaps and still joins."""
+    root, user, tmp = dirs(tmp_path)
+    parent, _ = _fsync_failed_parent(root, user, tmp)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is True
+    recs = [r.danger_ok for r in WalReader(rep.version_dir / "wal").records()]
+    assert [r.seq for r in recs] == [1, 2, 3, 4, 5]
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "joined"
+    assert parent.is_dir()
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_overlap_with_different_bytes_stays_fragment(tmp_path: Path) -> None:
+    """M1: an overlapping spill whose frames differ from the parent is kept alone (both kept)."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 3, 3, suid)  # seq 3 overlaps with other payload
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 3
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "fragment"
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_import_inherits_synthetic_and_orphan_is_not_real(tmp_path: Path) -> None:
+    """M3: a synthetic parent gives a synthetic import; an orphan spill is never labelled real."""
+    root, user, tmp = dirs(tmp_path)
+    h = create_session(
+        root, SessionMeta(slug="cu", synthetic=True), datetime(2026, 11, 8, tzinfo=UTC)
+    ).danger_ok
+    suid = uuid.UUID(h.manifest.session_uuid)
+    w = WalWriter.open(h.path / "wal", suid, 1, WalConfig()).danger_ok
+    assert w.append(NewRecord(type=NOTE, payload=b"p" * 9)).is_ok
+    w.close()
+    h.close("incomplete")
+    make_spill(root / "spill" / "s.wal", 2, 2, suid)
+    make_spill(root / "spill" / "o.wal", 1, 2)
+    outs = {p.name: r.danger_ok for p, r in import_all_spills(root, user, tmp)}
+    joined, orphan = outs["s.wal"], outs["o.wal"]
+    assert joined is not None and orphan is not None
+    assert session_is_synthetic(joined.version_dir)
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    assert not session_is_synthetic(orphan.version_dir)
+    assert session_provenance_unknown(orphan.version_dir)
+    assert not session_provenance_unknown(joined.version_dir)
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_low_space_defers_join_to_fragment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """M4: without room for a full copy the spill is imported as a fragment and the log says why."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    make_spill(root / "spill" / "s.wal", 4, 2, suid)
+    monkeypatch.setattr(spill.shutil, "disk_usage", lambda _p: shutil._ntuple_diskusage(10, 9, 1))
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert WalReader.scan(rep.version_dir / "wal").danger_ok.record_count == 2
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_failed_join_writes_marker_and_falls_back_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """M4: a join that fails mid-copy leaves a failed marker, imports a fragment, no retry."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real = spill._write_segment
+    calls: list[int] = []
+
+    def flaky(wal_dir: Path, header: bytes, frames: object) -> object:
+        """Fail the first (join) write like ENOSPC; later writes pass through."""
+        calls.append(1)
+        if len(calls) == 1:
+            return Err(DurableIo(errno=28, path=wal_dir))
+        return real(wal_dir, header, frames)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(spill, "_write_segment", flaky)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    assert (sp.parent / "s.wal.join-failed.json").is_file()
+    assert len(list((root / "sessions").iterdir())) == 3  # parent, crashed partial, fragment
+    states = sorted(read_manifest(d).danger_ok.state for d in (root / "sessions").iterdir())
+    assert states == ["closed", "crashed", "incomplete"]
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_join_verify_failure_is_crashed_marked_and_fragment_imported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """M3: a joined import failing re-verification is crashed, marked, then imported as fragment."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real_scan = spill.WalReader.scan
+
+    def scan(d: Path) -> object:
+        """Fail the re-read of the joined version (v002) only."""
+        if "v002" in str(d):
+            return Err(WalCorrupt(segment=1, offset=64, reason="simulated bad sector"))
+        return real_scan(d)
+
+    monkeypatch.setattr(spill.WalReader, "scan", staticmethod(scan))
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    assert (sp.parent / "s.wal.join-failed.json").is_file()
+    by_name = {d.name: read_manifest(d).danger_ok for d in (root / "sessions").iterdir()}
+    states = sorted((m.state, m.spill_import) for m in by_name.values() if m.spill_import)
+    assert states == [("closed", "fragment"), ("crashed", "joined")]
+    again = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert again is None  # imported marker present: no further copies
+    assert len(list((root / "sessions").iterdir())) == 3
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_inprogress_sidecar_prevents_repeat_join(tmp_path: Path) -> None:
+    """M3: a join that died mid-copy (sidecar, no marker) goes straight to a fragment."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    scan = spill.scan_spill(sp).danger_ok
+    assert spill._begin_join(scan)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None and rep.continuity_ok is False
+    kinds = [read_manifest(d).danger_ok.spill_import for d in (root / "sessions").iterdir()]
+    assert sorted(k for k in kinds if k) == ["fragment"]
+    assert not spill._begin_join(scan)  # exclusive: a second start cannot re-claim
+
+
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_failed_fragment_verify_is_marked_and_not_recopied(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fragment whose verify fails is marked; later starts skip it and delete nothing."""
+    root, user, tmp = dirs(tmp_path)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 1, 2, uuid.uuid4())  # orphan: fragment import
+    real_scan = spill.WalReader.scan
+
+    def scan(d: Path) -> object:
+        """Fail the re-read of every imported version."""
+        if "sessions" in str(d):
+            return Err(WalCorrupt(segment=1, offset=64, reason="simulated bad sector"))
+        return real_scan(d)
+
+    monkeypatch.setattr(spill.WalReader, "scan", staticmethod(scan))
+    assert import_all_spills(root, user, tmp)[0][1].is_err
+    assert (sp.parent / "s.wal.fragment-failed.json").is_file()
+    before = sorted((root / "sessions").iterdir())
+    again = import_all_spills(root, user, tmp)[0][1]
+    assert again.is_ok and isinstance(again.danger_ok, spill.FragmentFailedSkip)
+    assert len(again.danger_ok.crashed_dirs) == 1 and again.danger_ok.crashed_dirs[0].is_dir()
+    assert sorted((root / "sessions").iterdir()) == before
+    assert sp.is_file()
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::_already_imported
+def test_marker_for_another_data_root_is_not_trusted(tmp_path: Path) -> None:
+    """M5: a marker naming a version under another data root is set aside and re-imported."""
+    _r, user, tmp = dirs(tmp_path)
+    root_a, root_b = tmp_path / "a", tmp_path / "b"
+    sp = tmp_path / "shared" / "s.wal"
+    data = make_spill(sp, 1, 2)
+    first = import_all_spills(root_a, user, tmp_path / "t1")  # no spill in root_a: nothing found
+    assert first == []
+    rep_a = spill.import_spill(root_a, scan_spill(sp).danger_ok).danger_ok
+    assert rep_a.marker_written
+    # the same spill dir as seen from root_b: marker points under root_a, so it must be re-imported
+    place = root_b / "spill"
+    place.mkdir(parents=True)
+    shutil.copy(sp, place / "s.wal")
+    shutil.copy(sp.with_name("s.wal.imported.json"), place / "s.wal.imported.json")
+    out = import_all_spills(root_b, user, tmp)
+    assert out[0][1].danger_ok is not None
+    assert len(list((root_b / "sessions").iterdir())) == 1
+    assert list(place.glob("s.wal.imported.json.stale-*"))  # old marker kept, not deleted
+    assert sp.read_bytes() == data
+    assert import_all_spills(root_b, user, tmp)[0][1].danger_ok is None
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::_already_imported
+def test_marker_with_vanished_version_dir_is_not_trusted(tmp_path: Path) -> None:
+    """M5: a marker whose version dir no longer exists does not hide the spill."""
+    root, user, tmp = dirs(tmp_path)
+    make_spill(root / "spill" / "s.wal", 1, 2)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    shutil.move(str(rep.version_dir), str(tmp_path / "moved-away"))
+    again = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert again is not None and again.version_dir.is_dir()
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+def test_autouse_isolates_user_data_dir() -> None:
+    """M5: with no explicit fixture, the user data dir is not the real one."""
+    assert "isolated-home" in str(spill.user_data_dir())
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::import_spill
+def test_join_error_before_bytes_clears_inprogress_and_retries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """L5a: _init_dir failing aborts the join, sets the sidecar aside, next start joins fully."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    real = spill._init_dir
+    monkeypatch.setattr(spill, "_init_dir", lambda *a, **k: Err(TooManyVersions(family="x")))
+    assert import_all_spills(root, user, tmp)[0][1].is_err
+    assert not sp.with_name("s.wal.join-inprogress.json").exists()
+    assert list(sp.parent.glob("s.wal.join-inprogress.json.aborted-*"))
+    monkeypatch.setattr(spill, "_init_dir", real)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    assert read_manifest(rep.version_dir).danger_ok.spill_import == "joined"
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_closed_import_without_marker_gets_marker_not_duplicate(tmp_path: Path) -> None:
+    """L5b: a joined+closed version for this sha but no marker: marker is written, no v003."""
+    root, user, tmp = dirs(tmp_path)
+    _parent, suid = _parent_with_records(root, 3)
+    sp = root / "spill" / "s.wal"
+    make_spill(sp, 4, 2, suid)
+    rep = import_all_spills(root, user, tmp)[0][1].danger_ok
+    assert rep is not None
+    marker = sp.with_name("s.wal.imported.json")
+    marker.rename(tmp_path / "lost-marker")  # simulate crash before the marker write
+    sp.with_name("s.wal.join-inprogress.json").exists()
+    again = import_all_spills(root, user, tmp)[0][1]
+    assert again.is_ok and again.danger_ok is None
+    assert marker.is_file()
+    assert len(list((root / "sessions").iterdir())) == 2
+
+
+# frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+# frob:tests python/sadi/server/app.py::_import_spills
+def test_app_logs_fragment_failed_skip_at_warning(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """L6: the startup log names crashed copies at WARNING, not 'already imported'."""
+    from sadi.server import app as app_mod
+
+    crashed = tmp_path / "crashed.v001"
+    skip = spill.FragmentFailedSkip(spill=tmp_path / "s.wal", crashed_dirs=(crashed,))
+    monkeypatch.setattr(app_mod, "import_all_spills", lambda _root, **_kw: [(skip.spill, spill.Ok(skip))])
+    cfg = type("C", (), {"data_root": tmp_path, "synthetic": False})()
+    with caplog.at_level("INFO"):
+        assert app_mod._import_spills(cfg) == 0  # type: ignore[arg-type]
+    recs = [r for r in caplog.records if "NOT recovered" in r.getMessage()]
+    assert recs and recs[0].levelname == "WARNING" and str(crashed) in recs[0].getMessage()
+    assert not any("already imported" in r.getMessage() for r in caplog.records)
+
+
+# frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+# frob:tests python/sadi/store/spill.py::import_all_spills
+def test_synthetic_root_skips_foreign_spill_and_keeps_it_intact(tmp_path: Path) -> None:
+    """A synthetic root adopts no orphan spill: no new version, no marker, file byte-identical."""
+    root, user, tmp = dirs(tmp_path)
+    data = make_spill(user / "spill" / "real.wal", 1, 2)
+    out = import_all_spills(root, user, tmp, synthetic=True)
+    assert len(out) == 1 and isinstance(out[0][1].danger_ok, spill.SyntheticSkip)
+    assert (user / "spill" / "real.wal").read_bytes() == data
+    assert sorted(p.name for p in (user / "spill").iterdir()) == ["real.wal"]
+    assert not (root / "sessions").exists() or not list((root / "sessions").iterdir())
+    again = import_all_spills(root, user, tmp)  # a real root still recovers it
+    assert again[0][1].danger_ok is not None and not isinstance(
+        again[0][1].danger_ok, spill.SyntheticSkip
+    )

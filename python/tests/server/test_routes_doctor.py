@@ -45,3 +45,23 @@ def test_unknown_id_404(client: TestClient, bad: str) -> None:
     r = client.post(f"/api/doctor/{bad}/run")
     assert r.status_code == 404
     assert "detail" in r.json()
+
+
+# frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+# frob:tests python/sadi/server/routes_doctor.py::make_doctor_router
+def test_single_run_never_probes_device(monkeypatch: pytest.MonkeyPatch) -> None:
+    from sadi.server import routes_doctor
+
+    seen = []
+    real = routes_doctor.run
+
+    def spy(opts):  # type: ignore[no-untyped-def]
+        seen.append(opts)
+        return real(opts)
+
+    monkeypatch.setattr(routes_doctor, "run", spy)
+    app = FastAPI()
+    app.include_router(make_doctor_router())
+    check_id = all_checks()[0][0].id
+    assert TestClient(app).post(f"/api/doctor/{check_id}/run").status_code == 200
+    assert seen and seen[0].probe_device is False

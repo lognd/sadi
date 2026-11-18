@@ -1,0 +1,20 @@
+kind = "evidence"
+accepts = [1, 2, 3, 4]
+captured_at = "2026-11-10T15:19:04Z"
+digest = "2ef77a38ab0e756e96aa233ee84ff25bd1ef56a8615d35627eb7b129f089395e"
+exit_code = 0
+head = "02af53dd220125f652f899f689b856194845d1d0"
+inline = """
+.................................................                        [100%]
+49 passed in 4.58s
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/design -q"
+size = 99
+status = "measured"
+test_count = 49
+tests_digest = "f66c2a3b46d32b6ffcd7013499dd6d9c5be6b5166bfda654f5188d54cf316b72"
+at = "2026-11-10T15:19:04Z"
+actor = "lognd"
+rev = 1

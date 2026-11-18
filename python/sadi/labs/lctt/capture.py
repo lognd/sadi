@@ -1,11 +1,14 @@
 """LCTT capture modes: human confirm, auto-capture with max wait, fixed dwell, forced-early."""
 
 # frob:ticket 01M6W7R06C7F7ZN0RC4CV3NWW5
+# frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
 
 from __future__ import annotations
 
 import math
-from collections.abc import Callable, Sequence
+import threading
+from collections import deque
+from collections.abc import Callable, Iterable, Sequence
 from enum import StrEnum
 
 from pydantic import BaseModel, Field, model_validator
@@ -43,6 +46,71 @@ class CaptureError(ErrorSet):
     NoOpenPoint = "No open point; start a point (load change) before capturing"
     ModeMismatch = "fixed_dwell capture needs a StreamConfig in fixed_dwell mode, and only then"
     NoRawRange = "No raw WAL seq range covers the averaging window; flush raw before capturing"
+
+
+BLOCK_SAMPLES_DEFAULT = 2500
+"""Raw samples averaged per tare/calibration capture (like the VI's 2500-sample block)."""
+
+MIN_BLOCK_N_DEFAULT = 100
+"""Smallest raw block accepted for a capture; fewer samples is refused."""
+
+
+class BlockError(ErrorSet):
+    """A raw block too small or absent to capture from; the description says what to do."""
+
+    TooFew = "Too few raw samples collected yet; wait for the block to fill and capture again"
+
+
+class BlockStats(BaseModel):
+    """Mean, sample standard deviation and count of one raw-sample block."""
+
+    model_config = {"frozen": True}
+
+    mean: float
+    sd: float = Field(ge=0)
+    n: int = Field(ge=1)
+
+    def u_mean(self, accuracy: float = 0.0) -> float:
+        """Standard uncertainty of the mean: sd/sqrt(n) combined in quadrature with accuracy."""
+        return math.hypot(self.sd / math.sqrt(self.n), accuracy)
+
+
+def block_stats(volts: Iterable[float], min_n: int = MIN_BLOCK_N_DEFAULT) -> Result[BlockStats, BlockError]:
+    """Mean, sample sd and n of `volts`; Err(TooFew) below `min_n` samples."""
+    ys = list(volts)
+    n = len(ys)
+    if n < max(min_n, 1):
+        _log.warning("raw block too small: n=%d < min %d", n, min_n)
+        return Err(BlockError.TooFew)
+    mean = math.fsum(ys) / n
+    sd = math.sqrt(math.fsum((y - mean) ** 2 for y in ys) / (n - 1)) if n > 1 else 0.0
+    _log.info("raw block stats n=%d mean=%g sd=%g", n, mean, sd)
+    return Ok(BlockStats(mean=mean, sd=sd, n=n))
+
+
+class RawBlockBuffer:
+    """Thread-safe ring of the newest raw (undecimated) samples; source of capture block stats."""
+
+    def __init__(self, size: int = BLOCK_SAMPLES_DEFAULT) -> None:
+        """Keep at most `size` samples."""
+        self._buf: deque[float] = deque(maxlen=size)
+        self._lock = threading.Lock()
+
+    def extend(self, volts: Iterable[float]) -> None:
+        """Append newly arrived raw samples, dropping the oldest beyond capacity."""
+        with self._lock:
+            self._buf.extend(float(v) for v in volts)
+
+    def clear(self) -> None:
+        """Forget all samples (new run or load change)."""
+        with self._lock:
+            self._buf.clear()
+
+    def stats(self, min_n: int = MIN_BLOCK_N_DEFAULT) -> Result[BlockStats, BlockError]:
+        """Stats of the buffered block; Err(TooFew) below `min_n`."""
+        with self._lock:
+            snap = list(self._buf)
+        return block_stats(snap, min_n)
 
 
 class CaptureMode(StrEnum):
@@ -113,6 +181,7 @@ class CaptureController:
         self._resolve = resolver
         self._clock = clock
         self._started: float | None = None
+        self._armed = False
         self._mass_kg = 0.0
         self._u_mass_kg = 0.0
 
@@ -147,6 +216,7 @@ class CaptureController:
         self._mass_kg = mass_kg
         self._u_mass_kg = u_mass_kg
         self._started = self._clock()
+        self._armed = True
         _log.info("point started at t=%g (clock %g)", t, self._started)
         return Ok(None)
 
@@ -178,6 +248,10 @@ class CaptureController:
         """Apply the mode policy to the current status."""
         if status.point_index is None or self._cfg.mode is CaptureMode.CONFIRM:
             return Ok(CaptureStep(status=status))
+        if not self._armed:
+            # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+            # no start_point since the last capture: the auto-opened point is the same load
+            return Ok(CaptureStep(status=status))
         if status.state is SettleState.SETTLED:
             _log.info("auto-capture on settle (mode=%s)", self._cfg.mode)
             return self._step(status, forced=False, warnings=())
@@ -198,7 +272,8 @@ class CaptureController:
 
     def _waited(self) -> float:
         """Clock seconds since the point was started."""
-        assert self._started is not None
+        if self._started is None:
+            self._started = self._clock()
         return self._clock() - self._started
 
     def _window_volts(self, start: float, end: float) -> tuple[float, float, float | None]:
@@ -221,7 +296,10 @@ class CaptureController:
         if isinstance(rec_res, Err):
             return Err(rec_res.danger_err)
         rec = rec_res.danger_ok
-        self._started = None
+        # the detector auto-opens the next point: restart the max-wait clock for it, but do not
+        # auto-capture it again until start_point marks a new load (otherwise: same load forever)
+        self._started = self._clock()
+        self._armed = False
         if rec.window_start is None or rec.window_end is None:
             _log.error("point %d has no averaging window", rec.point_index)
             return Err(CaptureError.NoRawRange)

@@ -49,7 +49,10 @@ def test_notes_and_curve_do_not_scale_with_raw_records(client: TestClient, tmp_p
     assert writer.wait_durable(last, 120.0).is_ok
 
     # Disable the periodic full re-verify so a rebuild cannot land inside the timing loop.
-    source = make_curve_source(tmp_path, SessionReplayCache(reverify_interval_s=float("inf")))
+    source = make_curve_source(
+        lambda: svc.session_path().unwrap_or(None),
+        SessionReplayCache(reverify_interval_s=float("inf")),
+    )
     assert svc.notes().danger_ok == []
     source()
     times: list[float] = []

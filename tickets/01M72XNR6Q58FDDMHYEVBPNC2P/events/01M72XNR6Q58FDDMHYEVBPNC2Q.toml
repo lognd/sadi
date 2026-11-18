@@ -1,0 +1,11 @@
+kind = "create"
+title = "Restyle the web UI as a terminal: monospace font, dark-on-phosphor look, square plots kept"
+type = "story"
+category = "todo"
+priority = "medium"
+points = 3
+scope = ["web/src/styles/**", "web/index.html", "web/src/plots/core/theme*"]
+acceptance = ["All text uses a monospace stack; terminal palette (dark background, high-contrast foreground) from one token file; status keeps glyph plus word; WCAG AA contrast; live and stress-strain plots stay square and read colours from the tokens; web vitest and tsc pass"]
+at = "2026-11-10T14:26:58Z"
+actor = "lognd"
+rev = 1

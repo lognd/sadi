@@ -127,3 +127,9 @@ export function isControlTarget(t: { closest?: (sel: string) => unknown } | null
   if (t === null || typeof t.closest !== "function") return false;
   return t.closest('button, a[href], summary, [role="button"], [role="link"]') !== null;
 }
+
+// frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+/** True when a held (auto-repeating) key would re-fire an accept action and must be ignored. */
+export function isHeldAccept(repeat: boolean, action: KeyAction): boolean {
+  return repeat && (action === "accept" || action === "accept-unsettled");
+}

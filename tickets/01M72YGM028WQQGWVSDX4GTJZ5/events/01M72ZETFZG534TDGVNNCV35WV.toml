@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/**", "python/sadi/server/curve_source.py"]
+new = ["python/sadi/store/**", "python/sadi/server/curve_source.py", "python/sadi/server/service.py"]
+at = "2026-11-10T14:58:08Z"
+actor = "lognd"
+rev = 1

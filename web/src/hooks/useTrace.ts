@@ -26,8 +26,24 @@ export interface UseTraceOptions {
   readonly open?: (o: StreamOptions, h: StreamHandlers) => StreamHandle;
 }
 
+/** Newest binary-frame facts for the debug strip (frob:ticket 01M71SKWW36NDBJK24QD7DHSW4). */
+export interface FrameMeta {
+  /** Frame sequence number. */
+  readonly seq: number;
+  /** Highest raw seq the server has made durable (WAL). */
+  readonly durableSeq: number;
+  /** Highest raw seq queued for the WAL. */
+  readonly enqueuedSeq: number;
+  /** Sample interval in seconds (rate = 1 / dtS). */
+  readonly dtS: number;
+  /** Browser wall-clock ms when the frame arrived. */
+  readonly atMs: number;
+}
+
 /** What useTrace returns. */
 export interface TraceView {
+  /** Newest frame facts, or null before the first frame. */
+  readonly meta?: FrameMeta | null;
   readonly snapshot: Snapshot;
   readonly conn: ConnState;
   /** Last server "stopped" or "analysis_failed" note, for display. */
@@ -74,20 +90,27 @@ export function useTrace(o: UseTraceOptions = {}): TraceView {
   const [snapshot, setSnapshot] = useState<Snapshot>(() => win.snapshot(columns));
   const [conn, setConn] = useState<ConnState>({ status: "connecting", attempt: 1 });
   const [notice, setNotice] = useState<string | null>(null);
+  const [meta, setMeta] = useState<FrameMeta | null>(null);
   const open = useRef(o.open ?? openStream);
   open.current = o.open ?? openStream;
 
   useEffect(() => {
     let raf: number | null = null;
+    let pending: FrameMeta | null = null;
     const lastPoint: { v: number | null } = { v: null };
     const schedule = (): void => {
       if (raf !== null) return;
-      raf = requestAnimationFrame(() => { raf = null; setSnapshot(win.snapshot(columns)); });
+      raf = requestAnimationFrame(() => { raf = null; setSnapshot(win.snapshot(columns)); if (pending !== null) setMeta(pending); });
     };
     log.info("subscribing", { url, spanS, channel });
     const handle = open.current({ url }, {
       onState: (s) => { setConn(s); schedule(); },
-      onFrame: (f) => { if (f.type === "trace") { win.push(f); schedule(); } },
+      onFrame: (f) => {
+        if (f.type !== "trace") return;
+        win.push(f);
+        pending = { seq: f.seq, durableSeq: f.durableSeq, enqueuedSeq: f.enqueuedSeq, dtS: f.dtS, atMs: Date.now() };
+        schedule();
+      },
       onMessage: (m) => {
         const n = applyMessage(win, m, lastPoint);
         if (n !== undefined) setNotice(n);
@@ -103,5 +126,5 @@ export function useTrace(o: UseTraceOptions = {}): TraceView {
     };
   }, [url, win, columns, spanS, channel]);
 
-  return { snapshot, conn, notice };
+  return { snapshot, conn, notice, meta };
 }

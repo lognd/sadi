@@ -55,6 +55,20 @@ contract in [core/lab-modules.md](core/lab-modules.md).
 - Work area: left, at least 60% of the width. Next-action panel: right,
   fixed width, never scrolls away.
 - Status bar: always visible, three indicators (section 5).
+- Sticky offset: `--top-h` (scroll padding and the sticky live panel's `top`) is
+  the measured height of the sticky header stack (`.app-top`: instrument bar,
+  debug strip, banners), published by `watchStickyTop` (`web/src/hooks/useStickyOffset.ts`)
+  via ResizeObserver, so banners appearing or a short viewport never leave
+  sticky content overlapping. `11rem` in `styles.css` is only the fallback.
+  The variable is published only while `.app-top` is really `position: sticky`;
+  under the narrow-viewport media rule (static header) it is removed so the
+  stylesheet's `1rem` applies.
+- Session facts: the status bar polls `/api/session` slowly while no session is
+  open, so `SessionSetup` (after create/resume) and `CloseSession` call
+  `useRefreshFacts()` to poll at once; "No session" never lingers after either.
+- Setup list: sessions whose provenance is synthetic carry a bold SYNTHETIC badge.
+- Run hints: the first point of a phase needs the mark button; after each Accept
+  the next point opens by itself, and the button only restarts the settle timer.
 
 ### 2.1 Step rail states
 
@@ -279,6 +293,22 @@ seqs (`sadi.api.save_indicator`, `GET /api/save-indicator`): `Saving...` is
 shown as soon as a record is enqueued and not yet durable, so clients polling
 every 250 ms (`poll_ms`) show it within 250 ms. `NOT SAVED` latches on writer
 failure and never clears.
+
+The web UI has ONE save indicator source: `saveView` (web/src/components/status/saveView.ts)
+over the polled backend facts. The status bar and the debug strip both render it.
+With no open session it reads `No session` (never `Saved`); with a session it shows
+the backend label (`Saved 12:04:11` / `Saving... (n pending)` / `NOT SAVED`); an
+unreachable or unrecognised backend answer reads `Save status unknown`. The UI never
+stamps its own "saved" time on a write, so it cannot claim durability the writer has
+not confirmed.
+
+The debug strip keeps the two seq spaces apart: `WS frame seq` is the
+hub-assigned WebSocket frame counter (gaps mean dropped frames), and
+`WAL seq (durable / queued)` is the raw WAL seq space (highest durable /
+highest enqueued). They are never shown as one number. A faulted device
+(`status` error, a device fault, or an acquisition fault) renders as
+`(!) fault: <reason>`, never `[ok]`; `GET /api/device/status` reports
+`attached=false` for it.
 
 ## 6. Error and warning style: say what to do
 

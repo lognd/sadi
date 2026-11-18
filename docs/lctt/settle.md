@@ -59,3 +59,9 @@ unsettled point with `forced_early=True`; `close_point()` closes it as it stands
 of drift (the drift rate is still reported). Errors: the `SettleError` set for bad
 blocks plus `StreamError` (`BadMarker`, `NoOpenPoint`). Each push re-runs the detector
 over the open point's samples (O(n) per block), which is fine for lab-scale points.
+
+## Live defaults (server)
+
+`sadi.server.live.LIVE_SETTLE` is `window_s=0.5`, `threshold=0.05` V/s, `min_dwell_s=0.5`,
+`min_points=10`. A 20 ms window has a slope standard error near 0.13 V/s, so the old defaults
+declared "settled" while the signal still drifted at 113 mV/s (audit1 #18).

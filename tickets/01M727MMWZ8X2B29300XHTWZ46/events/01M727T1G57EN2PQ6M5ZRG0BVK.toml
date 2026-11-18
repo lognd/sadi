@@ -1,0 +1,50 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T08:04:48Z"
+digest = "5814187ef24f524a33f0fb1d58d025dd5ca9c5c1cc5189a7fe1f9c773ecebf26"
+exit_code = 0
+head = "54d63b0aa540e136aad154dd79694dc21c4c914c"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > POSTs /api/device/reconnect
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] resume requested { path: '/api/acquisition/resume' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] resume requested { path: '/api/acquisition/resume' }
+
+ \u{2713} web/src/components/instrument/StopBanner.test.tsx (9 tests) 35ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  03:04:48
+   Duration  1.18s (transform 383ms, setup 0ms, collect 535ms, tests 35ms, environment 0ms, prepare 238ms)
+
+JSON report written to /tmp/frob-vitest-804694-0.json
+stderr | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] network failure { path: '/api/device/reconnect', message: 'down' }
+
+stderr | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > extracts the 409 hint from a problem body
+[instrument.stop] resume error body was not JSON {}
+
+stderr | web/src/components/instrument/StopBanner.test.tsx > Resume live readings > postResume POSTs the resume path and maps 409 to an http error
+[api.client] http error { path: '/api/acquisition/resume', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/instrument/StopBanner.test.tsx"
+size = 1714
+status = "measured"
+test_count = 9
+tests_digest = "3eb162cf4245f29e1933324a96de5302bbbc9345ef4302720685befcc7cf95c8"
+at = "2026-11-10T08:04:48Z"
+actor = "lognd"
+rev = 1

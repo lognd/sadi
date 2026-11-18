@@ -10,11 +10,13 @@ One `RunScreen` serves all four capture phases (`phases.ts`). It holds a single 
 subscription: `useRunLive` wraps `useTrace`'s injectable `open` and taps `state` and `result`
 messages, so there is no second socket. `TraceCanvas` draws the shared live scene.
 
-- Big readout: `Live V: 1.2345 V [Settled]` or `[Creeping N mV/s]`, via `settleText`.
+- Readout: the big volts, drift and settle state now live in the app-level `InstrumentBar`
+  (see [front-panel.md](front-panel.md)); `settleText` stays in `components/live/settle.ts`.
 - Capture: the accept key (Space) posts `POST /api/session/points` (`capture.ts`).
   `decide` is the single rule table: Space never fires while Creeping, Saturated or
   Disconnected. Shift+Space asks for confirmation, then records the point as unsettled
   (`settled: false`, `forced_early: true`).
+  Each accept attempt freezes its whole request body together with its `request_id` (and a separate id for the specimen point) and resends exactly that on retry, so the server replays instead of saving twice; the freeze is dropped on success, a field edit, a load change, a phase change, or a `request_id_reused` refusal. The server matches a retried id on the operator-chosen fields only (phase, non-live inputs, forced_early), never on live volts or the window. Refusals show the server hint (else detail) in plain text, never raw JSON or an HTTP code. A held key (auto-repeat) never re-accepts, and after a successful capture a further accept is refused until the load change is marked.
 - Saturation: above 4.9 V in the recent envelope the view shows a warning, the status bar signal
   reads SATURATED, and capture is blocked even when forced.
 - Disconnect: Source becomes Disconnected, the readout is marked stale, capture is paused and a
@@ -51,3 +53,5 @@ ignored while a field has focus (typing never captures); a hint under the inputs
 
 `web/src/screens/run/RunScreen.test.tsx` feeds mocked sim-like TRACE frames and state texts
 through the real decoder, `TraceWindow` and `foldSide`. A real-browser sim run is a follow-up.
+
+`SuggestedWeightPanel` (Run screen, elastic/plastic/calibrate) shows the suggested next weight in kg and N, one plain sentence why, up to three alternatives and an enough-data indicator; it refetches `/api/design/next-weight` after each capture and is advice only. See [design/gp-selector.md](../design/gp-selector.md).

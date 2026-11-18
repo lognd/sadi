@@ -103,6 +103,14 @@ changed scaling constant must never cost a run. Settings needed to decode
 (ADC range codes, which the device never echoes) are recorded as a
 `SETTINGS` record before the first `RAW_BLOCK`.
 
+Implementation: `LiveAcquisition.on_session_open` calls
+`AcquisitionPipeline.record_settings` (scopes `device`: ADC mode, full-scale
+volts, code bits, rate, kind, firmware; `acquisition`: decimation, packet
+length) and waits for them to be durable before the device starts. Every
+version, including a resume, writes its own. Sessions recorded before this
+have none; they still open and replay, and Doctor WAL-040 keeps flagging them
+(their WAL is never rewritten).
+
 ### 2.3 Nothing is edited in place; recovery never writes to the old data
 
 Points, window edits, exclusions, settings changes, notes and markers are
@@ -483,19 +491,34 @@ On any `OSError` from open, write, flush or rename in the writer:
    batch is not durable).
 2. Acquisition stops loudly (as in 6.4). All undurable records (the failed
    batch and the queue) are kept in memory in order.
-3. The UI offers: Retry (re-open the same version by rotating to a fresh
-   segment on the same path; the failed batch is re-encoded with the same
-   seqs so I1 holds), or Save elsewhere (resume as a new version under a
-   different data root; the parent link records the original path and the
-   failed batch's first seq).
-4. The process refuses to exit while undurable records exist. On a forced
-   quit request it first tries, in order, to spill the pending records as a
-   plain segment file (same framing) to: `<data-root>/spill/`, the user
-   data directory (`platformdirs`-style `~/.local/share/sadi/spill`,
+3. Retry and Save-elsewhere UI actions are NOT implemented yet; the only
+   shipped recovery is the spill in step 4 (Close session retries it).
+4. `SessionService.close` (and so `shutdown`, at process exit) handles a
+   writer whose `close()` fails: it takes `writer.undurable_records()` and
+   writes them with `sadi.store.spill.write_spill` as a plain segment file
+   (same framing, header carries the session uuid and the first seq; one file
+   per dense seq run). Each file is written to a hidden tmp name, fsynced,
+   published with a no-replace rename and the directory fsynced, so an
+   existing spill is never overwritten. Locations are tried in order:
+   `<data-root>/spill/`, the user data directory (`~/.local/share/sadi/spill`,
    `%LOCALAPPDATA%\sadi\spill`, `~/Library/Application Support/sadi/spill`),
-   then the OS temp dir; it logs every attempt and the final path. Spill
-   files are picked up at next start and offered for import as a new
-   version with a parent link.
+   then the OS temp dir (`sadi-spill-*.wal`); every attempt and the final path
+   are logged. The file name is deterministic (`sadi-spill-<session uuid>-<first seq>.wal`),
+   so a Close retry that spills the same records reuses the existing file instead of piling up
+   copies; a retry with different records for the same key is written beside it under a
+   content-hash suffix (nothing is overwritten). Spill files are picked up at next start by
+   `import_all_spills` and become a new version with a parent link. When the spill directly
+   continues the parent's verified records, the new version is self-contained: the parent's
+   verified records (calibration, tare, points; seals dropped) followed by the spill frames,
+   renumbered densely from 1, so it resumes and downloads like any session. The parent is
+   never modified and stays on disk; a complete successor supersedes an `incomplete` parent in
+   the setup list. A spill that does not continue the parent is kept alone as a fragment
+   version (`continuity_ok=false`), never dropped. Byte-identical spill copies in two
+   locations import once. If NO location accepts the
+   records, close returns HTTP 409 (`undurable_records`), the session and its
+   in-memory writer stay open, and the user can fix the disk and press Close
+   session again; records are never dropped silently. If the process is
+   forced to exit in that state the loss is logged at CRITICAL.
 
 ### 6.6 Latency budget (DS3 acceptance 3 measures these)
 
@@ -691,6 +714,11 @@ The parent is never modified. Review (read-only) of an `open` session with
 a torn tail shows the verified prefix plus a "recovered after crash;
 N bytes unverifiable tail" banner.
 
+Stale data-root lock after a crash: `acquire` reports `LockStale` (OS lock free, dead pid
+recorded) and changes nothing. The user-visible recovery is `sadi serve --recover-stale`
+(or `sadi-store recover --recover-stale`); it only rewrites the lock file's holder line and
+never touches session data (I9: loud, never silent, never destructive).
+
 ## 9. Snapshots and exports (derived)
 
 ### 9.1 Snapshot files (DS5)
@@ -764,6 +792,30 @@ Procedure (`write_export(session, kind, basename, ext, payload: bytes)`):
 3. Create the sidecar the same way (tmp, fsync, rename no-replace).
 4. fsync(dir).
 5. Enqueue `EXPORT_REF`.
+
+Server wiring (audit1 #22): every download from `GET /api/export/{id}`
+is also written through `write_export` into `exports/<id>/`, and the
+response carries `X-SADI-Saved` (the relative path, or `failed`; a failed
+copy never blocks the download). Rendered figures are uploaded by the UI to
+`POST /api/export/figure/{figure_id}` and kept under `exports/figure/` with
+the session name in the basename. Snapshots: `SessionService` calls
+`snapshot.write_snapshot` after each durable command that appended a `POINT`
+or `EDIT`, after any other command at most every `SNAPSHOT_MIN_INTERVAL_S`
+(5 s), and once at session close (after the writer drained). The server does not
+enqueue the informational `SNAPSHOT_REF` (it would change the WAL record
+count of the recording). A snapshot of an
+already-snapshotted `covers_seq` is skipped; names are never replaced. A
+failed snapshot is logged and never fails or blocks the request (derived
+data, I7); after SIGKILL recovery uses the newest snapshot whose prefix hash
+matches and replays the WAL tail.
+
+Session families (audit1 #12, #34, #41): the slug is ASCII-folded; two
+sessions created in the same second with the same slug become distinct
+families (`name`, `name-2`, ...) instead of silently becoming versions of
+one family. `GET /api/sessions` marks older versions `latest: false` with
+`latest_name`, and `POST /api/sessions/resume` returns `newer_versions`
+when a later version exists. A clean close records `last_seq` in the
+manifest so closed sessions are not reported stale.
 
 `ExportProvenanceV1`: `v`, `kind`, `path`, `sha256` (of the export bytes),
 `size`, `created`, `covers_seq`, `prefix_hash`, `snapshot_path` (or null),
@@ -944,7 +996,7 @@ here (DS6 depends on the names):
 | F2 | Power loss after write, before flush | same as F1 after reboot | same | same | same |
 | F3 | Power loss between seal fsync and next segment create | 5.3 row 1 | none | none | resume |
 | F4 | Kill between snapshot rename and dir fsync (Linux) | snapshot may be absent after reboot | derived only | none | replay from WAL; older snapshot used |
-| F5 | Disk full | `ENOSPC` from write, or free-space poll | writer FAILED, acquisition stopped loudly, queue held in memory | none if the user frees space or saves elsewhere; the queue is spilled on forced exit | Retry or Save elsewhere (6.5) |
+| F5 | Disk full | `ENOSPC` from write, or free-space poll | writer FAILED, acquisition stopped loudly, queue held in memory | none if the user frees space or saves elsewhere; the undurable queue is spilled by close/shutdown | Close session retries the spill (6.5); Retry/Save elsewhere UI not built |
 | F6 | I/O error on fsync | `OSError` | FAILED, no ack, no retry on the fd | the failed batch is re-emitted on a new segment on Retry | 6.5 |
 | F7 | Store stalled (slow disk) | 5 s without durable progress | acquisition stopped loudly; display gate holds | none | resumes when the disk responds; queue drains |
 | F8 | Antivirus / indexer holds a derived file on Windows | `PermissionError` 5/32 | retry up to 5 s, then loud failure | derived only | user excludes the root from scanning |
@@ -962,7 +1014,7 @@ here (DS6 depends on the names):
 | F20 | Unknown record type from a newer SADI | type not in registry, CRC valid | passed through as `UnknownRecord`, logged once | none | upgrade SADI |
 | F21 | Older SADI opens newer `format_version` | header check | `WalError.UnsupportedFormat`, read refused | none | upgrade SADI |
 | F22 | Cross-volume tmp and dst for a derived file | parent dirs differ | `DurableError.CrossDevice` before any write | none | programmer bug; tmp is always created next to dst |
-| F23 | Process exit requested with undurable records | writer not CLOSED | exit refused; spill attempted (6.5 step 4) | none if a spill location is writable | spill imported as new version at next start |
+| F23 | Process exit requested with undurable records | writer not CLOSED | close/shutdown spills (6.5 step 4); 409 and writer kept if every location fails | none if a spill location is writable (else records stay in memory, close returns 409) | spill imported as new version at next start |
 
 ## 14. Schema versioning and compatibility policy
 
@@ -1089,3 +1141,19 @@ scope for them):
 Decisions deliberately left to CC1 ~DK06Q2F: exact queue hand-off between
 the Rust acquisition thread (R8) and `WriterHandle.submit`, lock ordering
 across the pipeline, and shutdown order of threads and the job pool.
+
+Live-stream guard (audit2 H2b): `LiveAcquisition` additionally stops raw streaming at
+`LIVE_MIN_FREE_BYTES = 1 GiB` free (before the writer's own 512 MiB warn level) and after an idle
+timeout or session finish. Stopping drains all blocks already read into the WAL first and deletes
+nothing; see docs/server/app.md.
+
+## Cross-site request guard
+
+`sadi.server.security.OriginGuard` (installed first in `create_app`) protects the
+session from web pages the operator happens to have open. Every request must carry a
+local `Host` (`localhost`, `127.0.0.1`, `[::1]`), which defeats DNS rebinding. Unsafe
+methods (POST/PUT/PATCH/DELETE) and WebSocket handshakes are additionally refused with
+403 when `Sec-Fetch-Site: cross-site` is present or an `Origin` header is not a local
+origin on the served port. Requests without `Origin` (curl, tests) pass. A dev server
+origin can be trusted via `AppSettings.extra_origins`. Refusals are logged and never
+touch session data, so undo/close/export/resume cannot be triggered cross-site.

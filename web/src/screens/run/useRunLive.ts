@@ -2,7 +2,7 @@
 // frob:ticket 01M6X9NXWB7KW3ZGQP02KDWN8N
 // frob:accept COV001 because="covered by RunScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
 /** Live feed for the run screens: wraps useTrace and taps the settle state and newest raw seq. */
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTrace, type TraceView, type UseTraceOptions } from "../../hooks/useTrace";
 import { openStream, type StreamHandle, type StreamHandlers, type StreamOptions } from "../../ws/client";
 import type { CaptureWindow, ServerMessage, SettleState } from "../../ws/messages";
@@ -19,6 +19,8 @@ export interface SideState {
   readonly window: CaptureWindow | null;
   /** True when the server reports a simulated data source. */
   readonly simulated: boolean;
+  /** True after a device_fault stop until the next hello (a fresh stream); never reads as Connected. */
+  readonly faulted?: boolean;
   /** Newest guided-run next step from a guidance message, if any has arrived. */
   readonly guidance?: GuidanceNote | null;
 }
@@ -31,15 +33,17 @@ export interface GuidanceNote {
   readonly stopReason: string;
 }
 
-/** Fold one message into the side state (pure; unrelated kinds return the same object). */
+/** Fold one message into the side state (pure; unrelated kinds return the same object); `simulated` is sticky once seen. */
+// frob:ticket 01M72YKET24FEMR0Z6E2KP8YNY
 export function foldSide(s: SideState, m: ServerMessage): SideState {
-  if (m.kind === "hello") return { ...s, simulated: m.simulated };
+  if (m.kind === "hello") return { ...s, simulated: s.simulated || m.simulated, faulted: false };
   if (m.kind === "state") {
-    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: m.simulated ?? false, guidance: s.guidance ?? null };
+    return { settle: m.state, rawSeq: m.rawSeq, pointIndex: m.pointIndex ?? s.pointIndex, driftVps: m.driftVps ?? null, window: m.window ?? null, simulated: s.simulated || (m.simulated ?? false), guidance: s.guidance ?? null, faulted: s.faulted ?? false };
   }
   if (m.kind === "guidance") {
     return { ...s, guidance: { phase: m.phase, nextAction: m.nextAction, stopEarly: m.stopEarly, stopReason: m.stopReason } };
   }
+  if (m.kind === "stopped" && m.reason === "device_fault") return { ...s, faulted: true };
   if (m.kind === "result") return { ...s, rawSeq: Math.max(s.rawSeq, m.rawSeq) };
   return s;
 }
@@ -58,9 +62,16 @@ export function useRunLive(o: UseTraceOptions & { readonly simulated?: boolean }
   const open = useCallback((so: StreamOptions, h: StreamHandlers): StreamHandle =>
     base.current(so, { ...h, onMessage: (m) => { setSide((s) => foldSide(s, m)); h.onMessage(m); } }), []);
   const trace = useTrace({ ...o, open });
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => { setNowMs(Date.now()); }, 1000);
+    return () => { clearInterval(id); };
+  }, []);
+  const atMs = trace.meta?.atMs ?? null;
+  const frameAgeMs = atMs === null ? null : Math.max(0, nowMs - atMs);
   const view = useMemo(
-    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? side.simulated, side.driftVps),
-    [trace.snapshot, trace.conn, side.settle, o.simulated, side.simulated, side.driftVps],
+    () => deriveLive(trace.snapshot, trace.conn, side.settle, o.simulated ?? side.simulated, side.driftVps, frameAgeMs, side.faulted ?? false),
+    [trace.snapshot, trace.conn, side.settle, o.simulated, side.simulated, side.driftVps, frameAgeMs, side.faulted],
   );
   return { ...trace, view, side };
 }

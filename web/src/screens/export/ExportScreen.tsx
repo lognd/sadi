@@ -5,7 +5,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { getLogger } from "../../api/log";
 import { exportFigure, validateDrawable, type ExportOptions } from "../../plots/core";
-import { exportUrl, getExportFormats, getFigureData, getResults, toProblem } from "./api";
+import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
+import { currentlySynthetic, EXPORT_PREFIX, type DataProvenance, exportFilename, isSynthetic, useProvenance } from "../../state/provenance";
+import { downloadExport, exportUrl, getExportFormats, getFigureData, getResults, getSessionName, keepFigure, savedMessage, toProblem } from "./api";
 import { figureDataScenes, isFigureData } from "./figureScenes";
 import type { ExportFormatView, Problem, QuantityProvenance, ResultSet, ResultValue } from "./types";
 
@@ -14,9 +16,10 @@ const log = getLogger("screens.export");
 /** PNG resolutions offered for figure export. */
 export const DPI_CHOICES = [96, 192, 300, 600] as const;
 
-/** Download file name for a figure export. */
-export function figureFileName(formatId: string, fmt: ExportOptions["format"]): string {
-  return `${formatId}.${fmt}`;
+/** Download file name for a figure export (SYNTHETIC- prefixed when the data is synthetic). */
+export function figureFileName(formatId: string, fmt: ExportOptions["format"], sessionName = ""): string {
+  const base = sessionName === "" ? formatId : `${sessionName}-${formatId}`;
+  return exportFilename(`${base}.${fmt}`, currentlySynthetic());
 }
 
 /** Save a blob through a temporary link; browser only. */
@@ -50,7 +53,8 @@ export async function exportFigureFormat(
     log.info("no figure data to draw yet", { formatId });
     return { title: "Nothing to plot yet", detail: `format ${formatId}`, hint: "Capture some points, then export again.", status: null };
   }
-  const files: { blob: Blob; name: string }[] = [];
+  const sessionName = await getSessionName(fetchImpl);
+  const files: { blob: Blob; name: string; id: string }[] = [];
   for (const { suffix, scene } of figures) {
     const v = validateDrawable(scene);
     if (!v.ok) {
@@ -62,9 +66,13 @@ export async function exportFigureFormat(
       log.error("figure export failed", { formatId, suffix, error: x.error });
       return { title: "Figure export failed", detail: x.error, hint: "Try SVG, or a lower DPI.", status: null };
     }
-    files.push({ blob: x.value.blob, name: figureFileName(`${formatId}-${suffix}`, opts.format) });
+    files.push({ blob: x.value.blob, name: figureFileName(`${formatId}-${suffix}`, opts.format, sessionName), id: `${formatId}-${suffix}` });
   }
-  for (const f of files) save(f.blob, f.name);
+  for (const f of files) {
+    save(f.blob, f.name);
+    const kept = await keepFigure(f.id, f.blob, fetchImpl);
+    log.info("figure copy in session folder", { id: f.id, kept });
+  }
   log.info("figure exported", { formatId, format: opts.format, dpi: opts.dpi, files: files.length });
   return null;
 }
@@ -73,7 +81,7 @@ export async function exportFigureFormat(
 export function ReportRow({ v }: { v: ResultValue }) {
   return (
     <tr data-testid={`result-${v.name}`}>
-      <th scope="row">{v.name}</th>
+      <th scope="row">{quantityLabel(v.name)}</th>
       <td>{v.display}</td>
       <td>{`${String(v.low95)} to ${String(v.high95)} ${v.unit}`}</td>
       <td>{v.confidence}</td>
@@ -82,9 +90,35 @@ export function ReportRow({ v }: { v: ResultValue }) {
   );
 }
 
-/** Sample span text for one quantity; a dash when the server has no span. */
+/** Plain-language names for reported quantities; unknown names pass through. */
+export const QUANTITY_LABELS: Readonly<Record<string, string>> = {
+  E: "Elastic modulus E", yield_stress: "Yield stress", slope: "Calibration slope",
+  intercept: "Calibration intercept", tare: "Tare", r2: "Calibration fit r^2",
+  stress: "Stress at last point", strain: "Strain at last point", secant_modulus: "Secant modulus at last point",
+};
+
+/** Human label for a quantity name. */
+export function quantityLabel(name: string): string {
+  return QUANTITY_LABELS[name] ?? name;
+}
+
+/** Sample span text for one quantity; a dash when the server has no span or the span is empty (0 to 0). */
 export function sampleSpan(p: QuantityProvenance): string {
-  return p.first_sample === null || p.last_sample === null ? "-" : `${String(p.first_sample)} to ${String(p.last_sample)}`;
+  if (p.first_sample === null || p.last_sample === null) return "-";
+  if (p.first_sample === 0 && p.last_sample === 0) return "-";
+  return `${String(p.first_sample)} to ${String(p.last_sample)}`;
+}
+
+/** Point ids cell: a count with the ids in a tooltip, since lists of UUIDs are unreadable. */
+export function pointCount(p: QuantityProvenance): string {
+  const n = p.point_ids.length;
+  return n === 0 ? "-" : `${String(n)} point${n === 1 ? "" : "s"}`;
+}
+
+/** Plain statement of where the data came from: real instrument or synthetic. */
+export function dataSourceText(p: DataProvenance | null | undefined): string {
+  if (p === undefined || p === null) return "Data source: not recorded by this server.";
+  return isSynthetic(p) ? "Data source: SYNTHETIC (simulated, not a real measurement)." : "Data source: real measurement from the instrument.";
 }
 
 /** Per-quantity provenance table: point ids, sample span and algorithm; nothing when empty. */
@@ -93,12 +127,12 @@ export function ProvenanceTable({ provenance }: { provenance: QuantityProvenance
   return (
     <table aria-label="Provenance" data-testid="provenance">
       <caption>Provenance</caption>
-      <thead><tr><th scope="col">Quantity</th><th scope="col">Point ids</th><th scope="col">Sample span</th><th scope="col">Algorithm</th></tr></thead>
+      <thead><tr><th scope="col">Quantity</th><th scope="col">Points used</th><th scope="col">Sample span</th><th scope="col">Algorithm</th></tr></thead>
       <tbody>
         {provenance.map((p) => (
           <tr key={p.name} data-testid={`provenance-${p.name}`}>
-            <th scope="row">{p.name}</th>
-            <td>{p.point_ids.length === 0 ? "-" : p.point_ids.join(", ")}</td>
+            <th scope="row">{quantityLabel(p.name)}</th>
+            <td title={p.point_ids.join(", ")}>{pointCount(p)}</td>
             <td>{sampleSpan(p)}</td>
             <td>{p.algorithm}</td>
           </tr>
@@ -114,13 +148,17 @@ export function ReportView({ results }: { results: ResultSet | null }) {
   return (
     <section aria-label="Report">
       <h2>Report</h2>
+      <SyntheticBanner provenance={results.data_provenance} />
+      <p data-testid="data-source">{dataSourceText(results.data_provenance)}</p>
       <p>{`Based on ${String(results.n_points)} points.`}</p>
       {results.values.length === 0 ? <p>No values computable yet.</p> : (
+        <div className="table-scroll" style={{ overflowX: "auto", maxWidth: "100%" }}>
         <table>
           <caption>Final values</caption>
           <thead><tr><th scope="col">Quantity</th><th scope="col">Value</th><th scope="col">95 % interval</th><th scope="col">Confidence</th><th scope="col">MC check</th></tr></thead>
           <tbody>{results.values.map((v) => <ReportRow key={v.name} v={v} />)}</tbody>
         </table>
+        </div>
       )}
       {results.pending.length > 0 ? <p data-testid="pending">{`Pending: ${results.pending.join(", ")}`}</p> : null}
       <ProvenanceTable provenance={results.provenance} />
@@ -149,23 +187,30 @@ export function FormatList(props: {
   dpi: number;
   onDpi?: (dpi: number) => void;
   onFigure?: (f: ExportFormatView, format: ExportOptions["format"]) => void;
+  provenance?: DataProvenance | null;
+  /** Called instead of following the link, so the page can show a refusal or the saved-copy message. */
+  onDownload?: (f: ExportFormatView) => void;
 }) {
-  const { formats, dpi, onDpi, onFigure } = props;
+  const { formats, dpi, onDpi, onFigure, provenance, onDownload } = props;
   if (formats.length === 0) {
     return <section aria-label="Export formats"><p data-testid="no-formats">This lab declares no export formats yet.</p></section>;
   }
   // frob:ticket 01M6XAASK3B2CWRRHQZ995FN7K
   // Downloads (the primary CSV deliverable) come first so they are first in Tab order (U-08).
+  const stored = useProvenance((s) => s.provenance);
+  const synthetic = isSynthetic(provenance === undefined ? stored : provenance);
   const downloads = formats.filter((f) => f.download);
   const figures = formats.filter((f) => !f.download);
   return (
     <section aria-label="Export formats">
       <h2>Export</h2>
+      <SyntheticBanner provenance={provenance} />
       {downloads.length > 0 ? (
         <ul aria-label="Downloads">
           {downloads.map((f) => (
             <li key={f.id} data-testid={`format-${f.id}`}>
-              <a href={exportUrl(f.id)} download>{`Download ${f.title}`}</a>
+              <a href={exportUrl(f.id)} download onClick={onDownload === undefined ? undefined : (e) => { e.preventDefault(); onDownload(f); }}>{`Download ${f.title}`}</a>
+              {synthetic ? <code className="synthetic-file" data-testid={`prefix-${f.id}`}>{` (saved as ${EXPORT_PREFIX}...)`}</code> : null}
             </li>
           ))}
         </ul>
@@ -198,29 +243,43 @@ export function ExportScreen({ fetchImpl = fetch }: { fetchImpl?: typeof fetch }
   const [results, setResults] = useState<ResultSet | null>(null);
   const [formats, setFormats] = useState<ExportFormatView[]>([]);
   const [problem, setProblem] = useState<Problem | null>(null);
+  const observe = useProvenance((s) => s.observe);
   const [dpi, setDpi] = useState<number>(300);
+  const [saved, setSaved] = useState("");
 
   useEffect(() => {
     const live = { current: true };
     void (async () => {
       const [r, f] = await Promise.all([getResults(fetchImpl), getExportFormats(fetchImpl)]);
       if (!live.current) return;
-      if (r.ok) setResults(r.value); else { log.warn("results failed", { kind: r.error.kind }); setProblem(toProblem(r.error)); }
+      if (r.ok) { setResults(r.value); observe(r.value.data_provenance); } else { log.warn("results failed", { kind: r.error.kind }); setProblem(toProblem(r.error)); }
       if (f.ok) setFormats(f.value); else { log.warn("formats failed", { kind: f.error.kind }); setProblem((p) => p ?? toProblem(f.error)); }
     })();
     return () => { live.current = false; };
-  }, [fetchImpl]);
+  }, [fetchImpl, observe]);
 
   const onFigure = useCallback((f: ExportFormatView, format: ExportOptions["format"]) => {
     log.info("figure export requested", { id: f.id, format, dpi });
     void exportFigureFormat(f.id, { format, dpi }, fetchImpl).then(setProblem);
   }, [dpi, fetchImpl]);
 
+  // frob:ticket 01M7230XGWSR1B8D93KW5M4P7D
+  const onDownload = useCallback((f: ExportFormatView) => {
+    setProblem(null);
+    setSaved("");
+    void downloadExport(f.id, fetchImpl).then((r) => {
+      if (!r.ok) { log.warn("download failed", { id: f.id, kind: r.error.kind }); setProblem(toProblem(r.error)); return; }
+      saveBlob(r.value.blob, r.value.filename);
+      setSaved(savedMessage(r.value.saved));
+    });
+  }, [fetchImpl]);
+
   return (
     <section aria-label="Results and export">
       {problem ? <ProblemAlert p={problem} /> : null}
+      {saved !== "" ? <p role="status" data-testid="saved-copy">{saved}</p> : null}
       <ReportView results={results} />
-      <FormatList formats={formats} dpi={dpi} onDpi={setDpi} onFigure={onFigure} />
+      <FormatList formats={formats} dpi={dpi} onDpi={setDpi} onFigure={onFigure} onDownload={onDownload} />
     </section>
   );
 }

@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/AVFBREF; scope: python/sadi/server/routes/results.py, web/src/components/instrument/DebugStrip.tsx; ttl 7200s"
+at = "2026-11-10T08:05:31Z"
+actor = "lognd"
+rev = 1

@@ -1,5 +1,6 @@
-"""Read-only CurveSource over the active session: newest session dir under the data root."""
+"""Read-only CurveSource over the open session (path supplied by the SessionService)."""
 
+# frob:ticket 01M726PZNXA6BEXH97TQPK3176
 # frob:ticket 01M6WMXEM0M76VKMN2WF3C3VYD
 # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
 # frob:ticket 01M6X8XTQ31XRDC5BZFNQZXN6Q
@@ -47,7 +48,10 @@ _EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 
 def active_session(data_root: Path) -> Path | None:
-    """Return the newest session dir (names sort by UTC stamp), or None; never writes."""
+    """Return the newest session dir by name, or None; CLI/offline use only, never the request path.
+
+    Names sort by family creation stamp, so this is NOT the open session once families resume.
+    """
     base = data_root / SESSIONS_DIRNAME
     try:
         dirs = sorted(p for p in base.iterdir() if p.is_dir() and (p / "wal").is_dir())
@@ -83,6 +87,7 @@ def _event(cp: CurrentPoint) -> LiveEvent | None:
         drift_rate=meta.drift_rate,
         t_since_load_s=meta.t_since_load_s,
         point_id=cp.point.point_id,
+        phase=cp.point.phase,  # frob:ticket 01M729642YCP4MRYBWBNQBYW7A
         volts=p.volts,
         u_volts=p.u_volts,
         volts_sd=p.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
@@ -98,6 +103,9 @@ def session_events(
 ) -> Result[list[LiveEvent], str]:
     """Replay a session dir into LiveEvents; load points carry settled/forced-early/drift flags.
 
+    Excluded load points are kept and flagged (ExcludePoint); excluded cal/tare/specimen are
+    omitted.
+
     With `replayer` (tracking `sdir`) the fold is incremental yet equal to a full replay.
     """
     state: Result[ReplayState, object] = (
@@ -111,23 +119,39 @@ def session_events(
             continue
         if isinstance(ev, LoadPoint) and ev.forced_early:
             _log.warning("curve source: point %s was forced early", cp.point.point_id)
+        if cp.excluded and not isinstance(ev, LoadPoint):
+            # frob:ticket 01M7230XQFMBWVCNP4NASD05SE
+            # Cal/tare/specimen carry no id in the fold: leave them out of the events (the WAL
+            # keeps them) so export and plots agree with the results.
+            _log.info("curve source: excluded %s point %s left out", ev.kind, cp.point.point_id)
+            continue
         events.append(ev)
         if cp.excluded and isinstance(ev, LoadPoint):
             events.append(ExcludePoint(point_id=ev.point_id))
     return Ok(events)
 
 
+_PLASTIC_PHASE = "plastic"  # rows of the short-specimen run; never part of the E fit curve
+
+
 def load_curve(
     data_root: Path, cache: dict[Path, IncrementalReplay] | None = None
 ) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded) stress-strain curve from the active session's events.
-
-    `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
-    """
+    """Build the curve of the newest session dir under `data_root` (CLI/offline use only)."""
     sdir = active_session(data_root)
     if sdir is None:
         _log.info("curve source: no session under %s", data_root)
         return Err(RefitError.NoData)
+    return load_session_curve(sdir, cache)
+
+
+def load_session_curve(
+    sdir: Path, cache: dict[Path, IncrementalReplay] | None = None
+) -> Result[Sequence[CurvePoint], RefitError]:
+    """Build the active (non-excluded, elastic or unphased) stress-strain curve from `sdir`'s events.
+
+    `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
+    """
     replayer = None
     if cache is not None:
         replayer = cache.setdefault(sdir, IncrementalReplay(sdir))
@@ -143,6 +167,10 @@ def load_curve(
     out: list[CurvePoint] = []
     for row in doc.danger_ok.rows:
         if row.excluded:
+            continue
+        if row.phase == _PLASTIC_PHASE:
+            # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+            # The plastic run is a different specimen (own L0): E is fitted on elastic rows only.
             continue
         stress = Measured.create(row.stress_pa, row.u_stress_pa, "Pa")
         strain = Measured.create(row.strain, row.u_strain, "")
@@ -162,8 +190,11 @@ class SessionReplayCache:
     """One IncrementalReplay per session dir, shared by curve, plots and export (thread-safe).
 
     Incremental tailing never re-reads bytes it already applied, so corruption there would go
-    unnoticed. Hence a cached entry older than `reverify_interval_s` is dropped and rebuilt by a
-    full CRC-verified replay, and `events(..., verify=True)` (used by export) always does so.
+    unnoticed. Hence a cached entry older than `reverify_interval_s` is re-verified by a full
+    CRC-verified replay run on a background thread (the request keeps being served from the warm
+    entry; on success the fresh replayer is swapped in, on failure the entry is dropped so the
+    next request replays synchronously and reports the error). `events(..., verify=True)` (used
+    by export) always verifies synchronously.
     """
 
     def __init__(
@@ -177,6 +208,7 @@ class SessionReplayCache:
         self._interval = reverify_interval_s
         self._clock = clock
         self._lock = threading.Lock()
+        self._pending: dict[Path, threading.Thread] = {}  # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
 
     def _evict(self) -> None:
         """Drop the oldest-inserted entries beyond the bound (caller holds the lock)."""
@@ -186,17 +218,58 @@ class SessionReplayCache:
             self._verified_at.pop(old, None)
 
     def _replayer(self, sdir: Path, verify: bool) -> IncrementalReplay:
-        """Return the replayer for `sdir`, fresh (so fully verified) if forced or stale."""
+        """Return the replayer for `sdir`; cold or forced gets a fresh one, stale re-verifies async."""
         now = self._clock()
         have = self._cache.get(sdir)
         stale = have is not None and now - self._verified_at.get(sdir, 0.0) >= self._interval
-        if have is None or verify or stale:
+        if have is None or verify:
             if have is not None:
                 _log.info("replay cache: full re-verify of %s (forced=%s)", sdir.name, verify)
             have = IncrementalReplay(sdir)  # first state() is a full CRC-verified replay
             self._cache[sdir] = have
             self._verified_at[sdir] = now
+        elif stale:
+            self._start_reverify(sdir)
         return have
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def _start_reverify(self, sdir: Path) -> None:
+        """Begin a background full verified replay of `sdir` unless one is already running."""
+        if sdir in self._pending:
+            return
+        thread = threading.Thread(
+            target=self._reverify, args=(sdir,), name=f"reverify-{sdir.name}", daemon=True
+        )
+        self._pending[sdir] = thread
+        _log.info("replay cache: background re-verify of %s started", sdir.name)
+        thread.start()
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def _reverify(self, sdir: Path) -> None:
+        """Verify `sdir` on a private replayer, then swap it in or drop the entry (off-request)."""
+        fresh = IncrementalReplay(sdir)
+        got = fresh.state()  # the full CRC-verified walk, without holding the cache lock
+        with self._lock:
+            self._pending.pop(sdir, None)
+            if sdir not in self._cache:
+                return
+            if got.is_err:
+                _log.error(
+                    "replay cache: re-verify of %s failed, dropping: %s", sdir.name, got.danger_err
+                )
+                self._cache.pop(sdir, None)
+                self._verified_at.pop(sdir, None)
+                return
+            self._cache[sdir] = fresh
+            self._verified_at[sdir] = self._clock()
+            _log.info("replay cache: re-verified %s", sdir.name)
+
+    def wait_idle(self, timeout: float = 10.0) -> None:
+        """Block until background re-verifies finish (for tests and orderly shutdown)."""
+        with self._lock:
+            threads = list(self._pending.values())
+        for thread in threads:
+            thread.join(timeout)
 
     # frob:ticket 01M6X9CP3SGVZ93H22ARANVN2E
     def events(self, sdir: Path, *, verify: bool = False) -> Result[list[LiveEvent], str]:
@@ -214,23 +287,30 @@ class SessionReplayCache:
                 self._verified_at.pop(sdir, None)
             return res
 
-    def curve(self, data_root: Path) -> Result[Sequence[CurvePoint], RefitError]:
-        """Return the active-session curve, reading only newly appended WAL frames."""
+    def curve(self, sdir: Path) -> Result[Sequence[CurvePoint], RefitError]:
+        """Return the curve of session `sdir`, reading only newly appended WAL frames."""
         with self._lock:
-            sdir = active_session(data_root)
-            if sdir is not None:
-                self._replayer(sdir, False)  # applies the periodic re-verify policy
-            res = load_curve(data_root, self._cache)
+            self._replayer(sdir, False)  # applies the periodic re-verify policy
+            res = load_session_curve(sdir, self._cache)
             self._evict()
             return res
 
 
-def make_curve_source(data_root: Path, cache: SessionReplayCache | None = None) -> CurveSource:
-    """Return a CurveSource over the active session under `data_root` (incremental WAL tail)."""
+def make_curve_source(
+    open_session: Callable[[], Path | None], cache: SessionReplayCache | None = None
+) -> CurveSource:
+    """Return a CurveSource over the open session (incremental WAL tail).
+
+    `open_session` yields the open session dir, or None; None gives RefitError.NoOpenSession.
+    """
     shared = cache if cache is not None else SessionReplayCache()
 
     def source() -> Result[Sequence[CurvePoint], RefitError]:
-        """Delegate to the shared, lock-guarded cache."""
-        return shared.curve(data_root)
+        """Delegate to the shared, lock-guarded cache for the currently open session."""
+        sdir = open_session()
+        if sdir is None:
+            _log.info("curve source: no session is open")
+            return Err(RefitError.NoOpenSession)
+        return shared.curve(sdir)
 
     return source

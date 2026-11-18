@@ -1,0 +1,8 @@
+kind = "field"
+field = "acceptance"
+old = ["Export (CSV of captured points so far) is reachable from every wizard step without finishing the phase", "Step rail lets the operator view any step read-only without advancing; nothing is locked out of viewing", "Intermediate export is labelled PARTIAL in the file and never overwrites a prior export"]
+new = ["Export (CSV of captured points so far) is reachable from every wizard step without finishing the phase", "Step rail lets the operator view any step read-only without advancing; nothing is locked out of viewing", "Intermediate export is labelled PARTIAL in the file and never overwrites a prior export", "Partial export works with calibration points only (no tare/load yet): build_document must not refuse; header carries cal points, fit, n, r2", "Standalone calibration CSV (volts, height, fit slope/intercept/se/t95/U95) downloadable mid-run, matching LabVIEW lctt_export_calibration.vi", "Every export is served from the open session without stopping the run or closing the VI-equivalent session"]
+moved = [1, 2, 3]
+at = "2026-11-10T15:00:49Z"
+actor = "lognd"
+rev = 1

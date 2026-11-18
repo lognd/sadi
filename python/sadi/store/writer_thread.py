@@ -26,7 +26,7 @@ from typani import Err, Ok, Result
 from sadi.core.errors import StoreCode, StoreError
 from sadi.logging_setup import get_logger
 from sadi.store.durable import DurableIo
-from sadi.store.records import NewRecord
+from sadi.store.records import NewRecord, Record
 from sadi.store.wal import (
     WalClosed,
     WalConfig,
@@ -406,6 +406,11 @@ class WriterHandle:
     def undurable_count(self) -> int:
         """Return how many records are held in memory and not known durable (after FAILED)."""
         return len(self._wal.undurable_records())
+
+    # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+    def undurable_records(self) -> list[Record]:
+        """Return the in-memory records not known durable (after FAILED), in seq order."""
+        return self._wal.undurable_records()
 
     def close(self, final: NewRecord | None = None) -> Result[None, WriterError]:
         """Optionally enqueue `final` (e.g. SESSION_CLOSE), drain the queue, fsync and join."""

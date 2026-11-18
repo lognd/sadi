@@ -1,0 +1,8 @@
+kind = "transition"
+from = "in-progress"
+to = "done"
+outcome = "done"
+reason = "test-only fix, no user-visible effect"
+at = "2026-11-10T08:04:25Z"
+actor = "lognd"
+rev = 1

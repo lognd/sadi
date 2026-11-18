@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T07:53:21Z"
+digest = "e1577e08045d4c42fd8675ea36c920e39b397ba38bd964105fb2d04606004915"
+exit_code = 0
+head = "47db741d718122527806b636ae9f5b8acda0de74"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/server/test_failed_writer_spill.py ..                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-765645-0.xml ---------------
+============================== 2 passed in 1.99s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_failed_writer_spill.py"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "d900c0699fc1174d80fea8826c4215558c4a9092947718d799ca594f90ffedf0"
+at = "2026-11-10T07:53:21Z"
+actor = "lognd"
+rev = 1

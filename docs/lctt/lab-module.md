@@ -69,3 +69,9 @@ results and export. It is pure; raw events are never rewritten.
 ## Known gaps
 
 Short-specimen `short-data.csv` is slip-affected and is not used to validate E. A bare `LcttLab()` still uses nominal geometry; the server supplies the real context via `analyze`.
+
+## Uncertainty notes
+
+The reported `tare` quantity carries the standard error of the tare mean, sd/sqrt(n), of the last
+tare block (not the per-sample sd). `CREEP_REL_ALLOWANCE` (3 %) is a stated systematic allowance
+added in quadrature to the fitted E uncertainty; it is not a fitted creep correction.

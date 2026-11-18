@@ -88,7 +88,7 @@ def test_accept_without_point() -> None:
     ctl, _ = make(mode=CaptureMode.CONFIRM)
     ctl.push(*block(0, 60))
     assert not isinstance(ctl.accept(), Err)
-    assert ctl.accept() == Err(CaptureError.NoOpenPoint)
+    assert ctl.accept() == Err(CaptureError.NoRawRange)  # auto-opened point has no samples yet
 
 
 def test_auto_captures_on_settle() -> None:
@@ -119,6 +119,20 @@ def test_tick_after_capture_is_noop() -> None:
     ctl.push(*block(0, 60))
     tick = ctl.tick()
     assert not isinstance(tick, Err) and tick.danger_ok.captured is None
+
+
+# frob:ticket 01M72B7QAB5FFFNXRHZ80T48X8
+# frob:tests python/sadi/labs/lctt/capture.py::CaptureController.tick
+def test_auto_tick_and_push_after_auto_capture_do_not_assert() -> None:
+    ctl, clock = make(mode=CaptureMode.AUTO, max_wait_s=500.0)
+    first = ctl.push(*block(0, 60))
+    assert not isinstance(first, Err) and first.danger_ok.captured is not None
+    for _ in range(2):
+        tick = ctl.tick()
+        assert not isinstance(tick, Err) and tick.danger_ok.captured is None
+    clock.now += 1000.0
+    nxt = ctl.push(*block(60, 62))
+    assert not isinstance(nxt, Err)
 
 
 def test_fixed_dwell_captures_after_dwell() -> None:
@@ -173,3 +187,23 @@ def test_detector_exposes_raw_and_records() -> None:
     ctl.accept()
     assert len(ctl.detector.raw[0]) == 60
     assert len(ctl.detector.records) == 1
+
+
+# frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+# frob:tests python/sadi/labs/lctt/capture.py::CaptureController.tick
+def test_auto_does_not_recapture_same_load_until_start_point() -> None:
+    ctl, clock = make(mode=CaptureMode.AUTO, max_wait_s=30.0)
+    first = ctl.push(*block(0, 60))
+    assert not isinstance(first, Err) and first.danger_ok.captured is not None
+    clock.now += 1000.0
+    for _ in range(3):
+        tick = ctl.tick()
+        assert not isinstance(tick, Err) and tick.danger_ok.captured is None
+    again = ctl.push(*block(60, 200))
+    assert not isinstance(again, Err) and again.danger_ok.captured is None
+    # a new load change re-arms the controller
+    assert not isinstance(ctl.start_point(200.0, 2.0), Err)
+    ctl.push(*block(200, 206, decay))
+    clock.now += 31.0
+    tick = ctl.tick()
+    assert not isinstance(tick, Err) and tick.danger_ok.captured is not None

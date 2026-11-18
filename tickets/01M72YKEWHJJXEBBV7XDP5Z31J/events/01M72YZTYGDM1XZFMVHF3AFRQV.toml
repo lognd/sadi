@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:49:50Z"
+digest = "104ce0464aca9e0b8dd453c9f3b654a6b9babad2fe425be16fff5fc5eb978006"
+exit_code = 0
+head = "048f06bc06470ccb903ef09bace4ab7ff0d8e840"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  09:49:57
+   Duration  284ms (transform 75%, import 17%, worker 4%, tests 4%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/review/problemText.test.ts"
+size = 170
+status = "measured"
+at = "2026-11-10T14:49:50Z"
+actor = "lognd"
+rev = 1

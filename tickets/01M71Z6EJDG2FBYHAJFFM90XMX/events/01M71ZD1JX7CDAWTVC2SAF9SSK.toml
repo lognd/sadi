@@ -1,0 +1,182 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T05:37:54Z"
+digest = "ee0a0ac085c1019b611753d1965cc4b18c47d333a3481191690bbb7b704a51ee"
+exit_code = 0
+head = "89e117e99f350266ce162cdb544886ee71d28c4a"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+ \u{2713} web/src/components/results/ResultsPanel.test.tsx (5 tests) 23ms
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > posts the edit, then reloads points, history and results
+[screens.review.api] request { path: '/api/session/points/p1/edit', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > posts the edit, then reloads points, history and results
+[screens.review.session] action committed { seq: 5, summary: 'exclude p1' }
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+[api.client] response ok { path: '/api/session/points', status: 200 }
+[api.client] response ok { path: '/api/session/history', status: 200 }
+[api.client] response ok { path: '/api/results', status: 200 }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > undo and redo are POSTs
+[screens.review.api] request { path: '/api/session/undo', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > undo and redo are POSTs
+[screens.review.api] request { path: '/api/session/redo', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.api] request { path: '/api/session/points/p1/edit', method: 'POST' }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+[api.client] response ok { path: '/api/session/points', status: 200 }
+[api.client] response ok { path: '/api/session/history', status: 200 }
+
+stdout | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] request { path: '/api/session/points' }
+[api.client] request { path: '/api/session/history' }
+[api.client] request { path: '/api/results' }
+
+ \u{2713} web/src/screens/review/ReviewScreen.test.tsx (14 tests) 47ms
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] request { path: '/api/export' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > builds urls and fetches formats
+[api.client] response ok { path: '/api/export', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/session' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/session', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 597.44, y: 364, penalty: 0 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 53, series: 1 }
+[plots.export] svg exported { bytes: 4650, title: 'LVDT calibration, height versus voltage' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 50, series: 2 }
+[plots.export] svg exported { bytes: 4313, title: 'Stress-strain' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-calibration', kept: true }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure copy in session folder { id: 'fig-stress-strain', kept: true }
+[screens.export] figure exported { formatId: 'fig', format: 'svg', dpi: undefined, files: 2 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/nope' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] request { path: '/api/export/fig' }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[api.client] response ok { path: '/api/export/fig', status: 200 }
+
+stdout | web/src/screens/export/ExportScreen.test.tsx > export screen > says so when the session has no points to plot
+[screens.export] no figure data to draw yet { formatId: 'fig' }
+
+ \u{2713} web/src/screens/export/ExportScreen.test.tsx (10 tests) 50ms
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  00:37:54
+   Duration  1.04s (transform 521ms, setup 0ms, collect 954ms, tests 121ms, environment 1ms, prepare 604ms)
+
+JSON report written to /tmp/frob-vitest-551655-0.json
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > renders pre-formatted sig-fig strings verbatim with interval and confidence
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > shows pending rows, notes and the settle source
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > flags RSS vs Monte Carlo disagreement
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > builds copy text with units and calls the injected copy fn
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/components/results/ResultsPanel.test.tsx > results panel > rounds long floats and wraps the table for narrow screens
+[components.results] RSS vs MC disagree { name: 'E', mc: null }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.api] http error { path: '/api/session/points/p1/edit', status: 422 }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > keeps the data and shows the hint when the edit is refused
+[screens.review.session] action refused; data unchanged { kind: 'http' }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] http error { path: '/api/results', status: 409 }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[screens.review.session] results recompute unavailable { kind: 'http' }
+
+stderr | web/src/screens/review/ReviewScreen.test.tsx > actions > loads without results when recompute is unavailable
+[api.client] network failure { path: '/api/session/points', message: 'down' }
+[api.client] network failure { path: '/api/session/history', message: 'down' }
+[api.client] network failure { path: '/api/results', message: 'down' }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > parses problem+json and shows the hint
+[screens.export.api] non-json error body { status: 500 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[api.client] http error { path: '/api/export/nope', status: 404 }
+
+stderr | web/src/screens/export/ExportScreen.test.tsx > export screen > exports figure data as one svg per figure and reports errors as problems
+[screens.export] figure data has unexpected shape { formatId: 'fig' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/review/ReviewScreen.test.tsx web/src/screens/export/ExportScreen.test.tsx web/src/components/results/ResultsPanel.test.tsx"
+size = 9161
+status = "measured"
+test_count = 29
+tests_digest = "8d720a43a7351de1c85b28b6ee526a7111b71f762cc399d7e988482dfe8ade19"
+at = "2026-11-10T05:37:54Z"
+actor = "lognd"
+rev = 1

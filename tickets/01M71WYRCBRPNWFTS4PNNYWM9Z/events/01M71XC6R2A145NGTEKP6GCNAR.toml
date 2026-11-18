@@ -1,0 +1,46 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T05:02:26Z"
+digest = "14266a524e1d8d94d2fc543d48e17e3f981115967f0f70bd3bbbec30b4f3093d"
+exit_code = 1
+head = "46d12669e6830df5bae05a2d08878be0218093af"
+inline = """
+web/vite.config.ts (1:316) \u001B[33m[UNRESOLVED_IMPORT] \u001B[0mCould not resolve '@vitejs/plugin-react' in web/vite.config.ts
+ - Module not found, treating it as an external dependency in web/vite.config.ts at 316..338
+
+web/vite.config.ts (2:29) \u001B[33m[UNRESOLVED_IMPORT] \u001B[0mCould not resolve 'vitest/config' in web/vite.config.ts
+   \u001B[38;5;246m\\u{256d}\u001B[0m\u001B[38;5;246m\\u{2500}\u001B[0m\u001B[38;5;246m[\u001B[0m web/vite.config.ts:2:30 \u001B[38;5;246m]\u001B[0m
+   \u001B[38;5;246m\\u{2502}\u001B[0m
+ \u001B[38;5;246m2 \\u{2502}\u001B[0m \u001B[38;5;249mi\u001B[0m\u001B[38;5;249mm\u001B[0m\u001B[38;5;249mp\u001B[0m\u001B[38;5;249mo\u001B[0m\u001B[38;5;249mr\u001B[0m\u001B[38;5;249mt\u001B[0m\u001B[38;5;249m \u001B[0m\u001B[38;5;249m{\u001B[0m\u001B[38;5;249m \u001B[0m\u001B[38;5;249md\u001B[0m\u001B[38;5;249me\u001B[0m\u001B[38;5;249mf\u001B[0m\u001B[38;5;249mi\u001B[0m\u001B[38;5;249mn\u001B[0m\u001B[38;5;249me\u001B[0m\u001B[38;5;249mC\u001B[0m\u001B[38;5;249mo\u001B[0m\u001B[38;5;249mn\u001B[0m\u001B[38;5;249mf\u001B[0m\u001B[38;5;249mi\u001B[0m\u001B[38;5;249mg\u001B[0m\u001B[38;5;249m \u001B[0m\u001B[38;5;249m}\u001B[0m\u001B[38;5;249m \u001B[0m\u001B[38;5;249mf\u001B[0m\u001B[38;5;249mr\u001B[0m\u001B[38;5;249mo\u001B[0m\u001B[38;5;249mm\u001B[0m\u001B[38;5;249m \u001B[0m"vitest/config"\u001B[38;5;249m;\u001B[0m
+ \u001B[38;5;240m  \\u{2502}\u001B[0m                              \\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{252c}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}  
+ \u001B[38;5;240m  \\u{2502}\u001B[0m                                     \\u{2570}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500}\\u{2500} Module not found, treating it as an external dependency
+\u001B[38;5;246m\\u{2500}\\u{2500}\\u{2500}\\u{256f}\u001B[0m
+
+failed to load config from <worktree>/web/vite.config.ts
+
+\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af} Startup Error \\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}\\u{23af}
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from ~/projects/SADI/web/node_modules/.vite-temp/vite.config.ts.timestamp-1794286951107-4a288997065ec.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:331:9)
+    at packageResolve (node:internal/modules/esm/resolve:784:25)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+
+
+"""
+passed = false
+provider = "command"
+ref = "npx vitest run --root web src/screens src/plots/live src/components/wizard"
+size = 2549
+status = "measured"
+at = "2026-11-10T05:02:26Z"
+actor = "lognd"
+rev = 1

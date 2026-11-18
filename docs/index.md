@@ -16,6 +16,7 @@ docs current are in [README.md](README.md).
 ## User guides
 
 - [user-guide.md](user-guide.md) - Running a test with the app: procedure, two specimens, creep
+- [synthetic.md](synthetic.md) - Opt-in synthetic copper specimen source, scenario generator and driver
 - [user-guide-screens.md](user-guide-screens.md) - User guide with screenshots of each screen
 - [ux.md](ux.md) - UX design: wizard flow, step rail, wireframes, keyboard map
 - [live-view.md](live-view.md) - Live-view UX: readouts, trace, indicators, guidance placement
@@ -92,6 +93,7 @@ docs current are in [README.md](README.md).
 - [lctt/modulus.md](lctt/modulus.md) - E fit, r^2, secant E, yield, saturation
 - [lctt/creep.md](lctt/creep.md) - Creep fit: strain vs log-time per hold
 - [labs/lctt-gp-selector.md](labs/lctt-gp-selector.md) - GP/c-optimal load selector for the guided run
+- [design/gp-selector.md](design/gp-selector.md) - Sequential-design selector: next weight and enough-data indicator
 - [lctt/calibration.md](lctt/calibration.md) - Calibration: LINEST-equivalent fit with standard errors
 - [lctt/lab-module.md](lctt/lab-module.md) - Lab module and two-specimen workflow
 - [lctt/live-results.md](lctt/live-results.md) - Live recompute engine
@@ -115,6 +117,7 @@ docs current are in [README.md](README.md).
 ## Web UI
 
 - [web/wizard.md](web/wizard.md) - Wizard shell: step rail, next-action panel, status bar, keyboard
+- [web/design-system.md](web/design-system.md) - Lab-instrument visual system: tokens, palette, type, panels, plots
 - [web/run-screens.md](web/run-screens.md) - Run screens: calibrate, tare, elastic, plastic capture
 - [web/review-screen.md](web/review-screen.md) - Review screen: re-edit points, undo/redo, recompute
 - [web/export-screen.md](web/export-screen.md) - Results and export screen

@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/curve_source.py", "python/sadi/server/app.py", "python/tests/server/test_curve_source_open_session.py", "python/sadi/server/routes_stress_strain.py"]
+new = ["python/sadi/server/curve_source.py", "python/sadi/server/app.py", "python/tests/server/test_curve_source_open_session.py", "python/sadi/server/routes_stress_strain.py", "python/tests/server/test_curve_source.py", "python/tests/server/test_session_replay_cache.py", "python/tests/server/test_curve_notes_latency.py"]
+at = "2026-11-10T07:46:36Z"
+actor = "lognd"
+rev = 1

@@ -25,6 +25,64 @@
         "title": "Action",
         "type": "object"
       },
+      "AltCandidate": {
+        "description": "A runner-up candidate with its expected gain.",
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "x",
+          "expected_gain"
+        ],
+        "title": "AltCandidate",
+        "type": "object"
+      },
+      "ApiProblem": {
+        "description": "RFC 7807 body: stable `type`, human `title`/`detail` and a 'what to do' `hint`.",
+        "properties": {
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "hint": {
+            "default": "",
+            "title": "Hint",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status"
+        ],
+        "title": "ApiProblem",
+        "type": "object"
+      },
       "BudgetRow": {
         "description": "One input's line in the budget: value, u, sensitivity and variance share.",
         "properties": {
@@ -87,6 +145,41 @@
           "rank"
         ],
         "title": "BudgetRow",
+        "type": "object"
+      },
+      "CalibrationDefaults": {
+        "description": "The calibration slope the plan would use when none is entered, and where it came from.",
+        "properties": {
+          "cal_slope_v_per_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cal Slope V Per M"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "session",
+              "none"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cal_slope_v_per_m",
+          "source",
+          "explanation"
+        ],
+        "title": "CalibrationDefaults",
         "type": "object"
       },
       "CalibrationFitView": {
@@ -162,6 +255,15 @@
             "title": "Height M",
             "type": "array"
           },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "volts": {
             "items": {
               "type": "number"
@@ -207,6 +309,19 @@
             "minLength": 1,
             "title": "Phase",
             "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
           },
           "settled": {
             "default": false,
@@ -559,9 +674,240 @@
         "title": "Confidence",
         "type": "object"
       },
+      "ConfidenceIndicator": {
+        "description": "The \"confidence is enough\" payload (advisory; the user always decides).",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "consecutive_ok": {
+            "title": "Consecutive Ok",
+            "type": "integer"
+          },
+          "current": {
+            "$ref": "#/components/schemas/CurrentFit"
+          },
+          "job_version": {
+            "title": "Job Version",
+            "type": "integer"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "patience": {
+            "title": "Patience",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          },
+          "ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ratio"
+          },
+          "reasons": {
+            "default": [],
+            "items": {
+              "enum": [
+                "cold_start",
+                "singular",
+                "no_offset",
+                "yield_not_reached",
+                "departure_from_linear",
+                "diminishing_returns",
+                "no_elastic_fit",
+                "no_calibration",
+                "range_exhausted"
+              ],
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "state": {
+            "$ref": "#/components/schemas/GpState"
+          },
+          "target": {
+            "$ref": "#/components/schemas/TargetSpec"
+          }
+        },
+        "required": [
+          "phase",
+          "job_version",
+          "n",
+          "target",
+          "current",
+          "ratio",
+          "state",
+          "consecutive_ok",
+          "patience"
+        ],
+        "title": "ConfidenceIndicator",
+        "type": "object"
+      },
+      "Criterion": {
+        "description": "Acquisition criterion; `target` is c-optimal (expected shrink of the target interval).",
+        "enum": [
+          "target",
+          "d_opt",
+          "a_opt"
+        ],
+        "title": "Criterion",
+        "type": "string"
+      },
+      "CurrentFit": {
+        "description": "Current estimate of the target quantity; `half_width` is None while it cannot be formed.",
+        "properties": {
+          "dof": {
+            "title": "Dof",
+            "type": "number"
+          },
+          "half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Half Width"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "half_width",
+          "value",
+          "dof"
+        ],
+        "title": "CurrentFit",
+        "type": "object"
+      },
+      "DataProvenance": {
+        "description": "Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped.",
+        "properties": {
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "default": "real",
+            "enum": [
+              "real",
+              "synthetic",
+              "unknown"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "synthetic": {
+            "default": false,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "truth": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "scenario ground truth",
+            "title": "Truth"
+          },
+          "warning": {
+            "default": "",
+            "title": "Warning",
+            "type": "string"
+          }
+        },
+        "title": "DataProvenance",
+        "type": "object"
+      },
+      "DesignAdvice": {
+        "description": "REST payload: the suggestion (None when there is nothing to suggest) plus the indicator.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "indicator": {
+            "$ref": "#/components/schemas/ConfidenceIndicator"
+          },
+          "suggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextSuggestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "suggestion",
+          "indicator"
+        ],
+        "title": "DesignAdvice",
+        "type": "object"
+      },
+      "DesignPhase": {
+        "description": "Which model the design uses: LVDT calibration, elastic fit or yield GP.",
+        "enum": [
+          "lvdt_cal",
+          "elastic",
+          "yield"
+        ],
+        "title": "DesignPhase",
+        "type": "string"
+      },
       "DeviceView": {
         "description": "Device state for the header: coarse status, whether a service exists, and any fault.",
         "properties": {
+          "acquisition_fault": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acquisition Fault"
+          },
           "attached": {
             "title": "Attached",
             "type": "boolean"
@@ -582,9 +928,29 @@
             "title": "Hint",
             "type": "string"
           },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "stop_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Reason"
           }
         },
         "required": [
@@ -818,6 +1184,17 @@
         "title": "FitWindowRequest",
         "type": "object"
       },
+      "GpState": {
+        "description": "Advisory model state shown in the UI; never gates anything.",
+        "enum": [
+          "collecting",
+          "enough",
+          "diminishing",
+          "unreliable"
+        ],
+        "title": "GpState",
+        "type": "string"
+      },
       "GuidanceState": {
         "description": "Everything the guidance panel shows for one phase after one point.",
         "properties": {
@@ -950,9 +1327,119 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "Hang": {
+        "description": "One planned hang: which weights, their total, predicted volts and the gain it buys.",
+        "properties": {
+          "e_half_width_pa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "E Half Width Pa"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          },
+          "predicted_volts": {
+            "title": "Predicted Volts",
+            "type": "number"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "slope_half_width_v_per_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slope Half Width V Per Kg"
+          },
+          "tension_n": {
+            "title": "Tension N",
+            "type": "number"
+          },
+          "total_mass_kg": {
+            "title": "Total Mass Kg",
+            "type": "number"
+          },
+          "u_mass_kg": {
+            "title": "U Mass Kg",
+            "type": "number"
+          },
+          "u_predicted_volts": {
+            "title": "U Predicted Volts",
+            "type": "number"
+          },
+          "weight_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weight Ids",
+            "type": "array"
+          },
+          "yield_half_width_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Yield Half Width Kg"
+          }
+        },
+        "required": [
+          "order",
+          "weight_ids",
+          "total_mass_kg",
+          "u_mass_kg",
+          "tension_n",
+          "predicted_volts",
+          "u_predicted_volts",
+          "expected_gain"
+        ],
+        "title": "Hang",
+        "type": "object"
+      },
       "HealthOut": {
         "description": "Health payload consumed by web/src/api/client.ts getHealth.",
         "properties": {
+          "data_root": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Root"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "simulated": {
             "anyOf": [
               {
@@ -1229,6 +1716,15 @@
             "title": "Modulusmpa",
             "type": "number"
           },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "r2": {
             "title": "R2",
             "type": "number"
@@ -1260,6 +1756,94 @@
         ],
         "title": "Mutates",
         "type": "string"
+      },
+      "NextSuggestion": {
+        "description": "Recommended next candidate with the expected gain; never acts on the machine.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "alternatives": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AltCandidate"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "budget_exceeded": {
+            "default": false,
+            "title": "Budget Exceeded",
+            "type": "boolean"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "criterion": {
+            "$ref": "#/components/schemas/Criterion",
+            "default": "target"
+          },
+          "elapsed_ms": {
+            "default": 0.0,
+            "title": "Elapsed Ms",
+            "type": "number"
+          },
+          "expected_gain": {
+            "title": "Expected Gain",
+            "type": "number"
+          },
+          "expected_half_width": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Half Width"
+          },
+          "job_version": {
+            "title": "Job Version",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "why": {
+            "default": "",
+            "title": "Why",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          }
+        },
+        "required": [
+          "phase",
+          "job_version",
+          "candidate_id",
+          "x",
+          "unit",
+          "expected_gain",
+          "expected_half_width"
+        ],
+        "title": "NextSuggestion",
+        "type": "object"
       },
       "Os": {
         "description": "Detected host OS; WSL is distinct because its fixes differ.",
@@ -1493,6 +2077,59 @@
         "title": "ProbeError",
         "type": "object"
       },
+      "PropagatedView": {
+        "description": "Propagated uncertainty of the planned run: per-hang stress and strain, E and yield.",
+        "properties": {
+          "modulus": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuantityView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "strain": {
+            "items": {
+              "$ref": "#/components/schemas/QuantityView"
+            },
+            "title": "Strain",
+            "type": "array"
+          },
+          "stress": {
+            "items": {
+              "$ref": "#/components/schemas/QuantityView"
+            },
+            "title": "Stress",
+            "type": "array"
+          },
+          "yield_stress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuantityView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "stress",
+          "strain"
+        ],
+        "title": "PropagatedView",
+        "type": "object"
+      },
       "QuantityProvenance": {
         "description": "Where one reported quantity came from: its inputs, sample span and algorithm.",
         "properties": {
@@ -1542,6 +2179,45 @@
           "algorithm"
         ],
         "title": "QuantityProvenance",
+        "type": "object"
+      },
+      "QuantityView": {
+        "description": "A propagated value with standard uncertainty and its 95 % interval.",
+        "properties": {
+          "high95": {
+            "title": "High95",
+            "type": "number"
+          },
+          "low95": {
+            "title": "Low95",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "std_unc": {
+            "title": "Std Unc",
+            "type": "number"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "unit",
+          "value",
+          "std_unc",
+          "low95",
+          "high95"
+        ],
+        "title": "QuantityView",
         "type": "object"
       },
       "RailItem": {
@@ -1794,6 +2470,15 @@
       "ResultsView": {
         "description": "`ResultSet` plus per-quantity provenance (which settle windows fed each value).",
         "properties": {
+          "data_provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
           "n_points": {
             "default": 0,
             "title": "N Points",
@@ -1841,6 +2526,20 @@
           }
         },
         "title": "ResultsView",
+        "type": "object"
+      },
+      "ResumeOut": {
+        "description": "Result of resuming: streaming is running again and nothing was written to the WAL.",
+        "properties": {
+          "streaming": {
+            "title": "Streaming",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "streaming"
+        ],
+        "title": "ResumeOut",
         "type": "object"
       },
       "RevertBody": {
@@ -1946,6 +2645,11 @@
               }
             ],
             "title": "Port"
+          },
+          "probe_device": {
+            "default": true,
+            "title": "Probe Device",
+            "type": "boolean"
           },
           "render_os": {
             "anyOf": [
@@ -2128,6 +2832,14 @@
             "title": "Name",
             "type": "string"
           },
+          "newer_versions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Newer Versions",
+            "type": "array"
+          },
           "parent": {
             "anyOf": [
               {
@@ -2149,6 +2861,15 @@
               }
             ],
             "title": "Parent Last Seq"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           }
         },
         "required": [
@@ -2186,6 +2907,22 @@
             "title": "Lab",
             "type": "string"
           },
+          "latest": {
+            "default": true,
+            "title": "Latest",
+            "type": "boolean"
+          },
+          "latest_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Name"
+          },
           "name": {
             "title": "Name",
             "type": "string"
@@ -2200,6 +2937,26 @@
               }
             ],
             "title": "Parent"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
+          },
+          "spill_import": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spill Import"
           },
           "state": {
             "title": "State",
@@ -2385,12 +3142,29 @@
             "title": "Excluded",
             "type": "array"
           },
+          "phase": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Phase",
+            "type": "array"
+          },
           "point_ids": {
             "items": {
               "type": "string"
             },
             "title": "Point Ids",
             "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/DataProvenance",
+            "default": {
+              "label": "",
+              "source": "real",
+              "synthetic": false,
+              "warning": ""
+            }
           },
           "strain": {
             "items": {
@@ -2470,6 +3244,30 @@
         "title": "Summary",
         "type": "object"
       },
+      "TargetSpec": {
+        "description": "User target half-width of the 95 % interval; relative to the estimate unless stated.",
+        "properties": {
+          "half_width": {
+            "title": "Half Width",
+            "type": "number"
+          },
+          "relative": {
+            "default": true,
+            "title": "Relative",
+            "type": "boolean"
+          },
+          "unit": {
+            "default": "",
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "half_width"
+        ],
+        "title": "TargetSpec",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -2508,6 +3306,197 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "WeightIn": {
+        "description": "One entered weight: mass in kg, optional uncertainty, optional id (defaults to w1, w2...).",
+        "properties": {
+          "mass_kg": {
+            "exclusiveMinimum": 0.0,
+            "title": "Mass Kg",
+            "type": "number"
+          },
+          "u_mass_kg": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Mass Kg",
+            "type": "number"
+          },
+          "weight_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Id"
+          }
+        },
+        "required": [
+          "mass_kg"
+        ],
+        "title": "WeightIn",
+        "type": "object"
+      },
+      "WeightPlan": {
+        "description": "Ordered hangs for the remaining run; advisory only.",
+        "properties": {
+          "advisory": {
+            "const": true,
+            "default": true,
+            "title": "Advisory",
+            "type": "boolean"
+          },
+          "dropped_capacity": {
+            "default": 0,
+            "title": "Dropped Capacity",
+            "type": "integer"
+          },
+          "dropped_saturation": {
+            "default": 0,
+            "title": "Dropped Saturation",
+            "type": "integer"
+          },
+          "hangs": {
+            "items": {
+              "$ref": "#/components/schemas/Hang"
+            },
+            "title": "Hangs",
+            "type": "array"
+          },
+          "n_achievable": {
+            "title": "N Achievable",
+            "type": "integer"
+          },
+          "n_inventory": {
+            "title": "N Inventory",
+            "type": "integer"
+          },
+          "n_usable": {
+            "title": "N Usable",
+            "type": "integer"
+          },
+          "phase": {
+            "$ref": "#/components/schemas/DesignPhase"
+          }
+        },
+        "required": [
+          "phase",
+          "hangs",
+          "n_inventory",
+          "n_achievable",
+          "n_usable"
+        ],
+        "title": "WeightPlan",
+        "type": "object"
+      },
+      "WeightPlanBody": {
+        "description": "Operator inputs: weights, wire geometry and (optionally) the LVDT calibration slope.",
+        "properties": {
+          "cal_offset_v": {
+            "default": 0.0,
+            "title": "Cal Offset V",
+            "type": "number"
+          },
+          "cal_slope_v_per_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "LVDT volts per metre; defaults from the current calibration",
+            "title": "Cal Slope V Per M"
+          },
+          "diameter_m": {
+            "default": 0.000202,
+            "exclusiveMinimum": 0.0,
+            "title": "Diameter M",
+            "type": "number"
+          },
+          "length_m": {
+            "default": 0.08313,
+            "description": "gauge length L0",
+            "exclusiveMinimum": 0.0,
+            "title": "Length M",
+            "type": "number"
+          },
+          "u_diameter_m": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Diameter M",
+            "type": "number"
+          },
+          "u_length_m": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "U Length M",
+            "type": "number"
+          },
+          "u_volts": {
+            "default": 0.001,
+            "minimum": 0.0,
+            "title": "U Volts",
+            "type": "number"
+          },
+          "weights": {
+            "items": {
+              "$ref": "#/components/schemas/WeightIn"
+            },
+            "title": "Weights",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weights"
+        ],
+        "title": "WeightPlanBody",
+        "type": "object"
+      },
+      "WeightPlanOut": {
+        "description": "The plan, the slope that was used and the propagated uncertainty (when computable).",
+        "properties": {
+          "cal_slope_v_per_m": {
+            "title": "Cal Slope V Per M",
+            "type": "number"
+          },
+          "cal_source": {
+            "enum": [
+              "entered",
+              "session"
+            ],
+            "title": "Cal Source",
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/WeightPlan"
+          },
+          "propagated": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PropagatedView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "propagation_note": {
+            "default": "",
+            "title": "Propagation Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan",
+          "cal_slope_v_per_m",
+          "cal_source"
+        ],
+        "title": "WeightPlanOut",
         "type": "object"
       },
       "WizardState": {
@@ -2579,6 +3568,114 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/acquisition/resume": {
+      "post": {
+        "description": "Restart streaming after an idle pause; writes no marker and applies no load.",
+        "operationId": "resume_api_acquisition_resume_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Resume",
+        "tags": [
+          "acquisition"
+        ]
+      }
+    },
+    "/api/design/next-weight": {
+      "get": {
+        "description": "Advisory next load (kg) or height (m) and the enough-data indicator; never acts.",
+        "operationId": "next_weight_api_design_next_weight_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "phase",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/DesignPhase",
+              "default": "elastic"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target",
+            "required": false,
+            "schema": {
+              "default": 0.05,
+              "exclusiveMinimum": 0,
+              "title": "Target",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignAdvice"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Next Weight"
+      }
+    },
+    "/api/device/reconnect": {
+      "post": {
+        "description": "Open the board now (no restart); attaches to the open session, WAL untouched.",
+        "operationId": "device_reconnect_api_device_reconnect_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Device Reconnect"
+      }
+    },
     "/api/device/status": {
       "get": {
         "description": "Device status; attached=false (status error) when no device service is configured.",
@@ -2684,6 +3781,50 @@
           }
         },
         "summary": "List Formats"
+      }
+    },
+    "/api/export/figure/{figure_id}": {
+      "post": {
+        "description": "Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites).",
+        "operationId": "save_figure_api_export_figure__figure_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "figure_id",
+            "required": true,
+            "schema": {
+              "title": "Figure Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Save Figure Api Export Figure  Figure Id  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Figure"
       }
     },
     "/api/export/{format_id}": {
@@ -2922,6 +4063,25 @@
           }
         },
         "summary": "Result Budgets"
+      }
+    },
+    "/api/results/finish": {
+      "post": {
+        "description": "Results reached: drain raw blocks to the WAL and stop streaming (session stays open).",
+        "operationId": "finish_results_api_results_finish_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Finish Results"
       }
     },
     "/api/results/guidance": {
@@ -3309,6 +4469,16 @@
             },
             "description": "Successful Response"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            },
+            "description": "request_id_reused, no_device or wizard conflict"
+          },
           "422": {
             "content": {
               "application/json": {
@@ -3318,6 +4488,16 @@
               }
             },
             "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProblem"
+                }
+              }
+            },
+            "description": "durability wait timed out or backpressure"
           }
         },
         "summary": "Capture"
@@ -3702,6 +4882,53 @@
         "summary": "Resume"
       }
     },
+    "/api/sessions/{name}/export/{format_id}": {
+      "get": {
+        "description": "Download one export of a closed session; read-only, so no copy is kept and nothing is written.",
+        "operationId": "export_closed_api_sessions__name__export__format_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "format_id",
+            "required": true,
+            "schema": {
+              "title": "Format Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Closed"
+      }
+    },
     "/api/stress-strain/fit": {
       "post": {
         "description": "Recompute E, r^2 and U95 over the window from stored data; read-only.",
@@ -3742,6 +4969,64 @@
         "tags": [
           "stress-strain"
         ]
+      }
+    },
+    "/api/weight-plan": {
+      "post": {
+        "description": "Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing.",
+        "operationId": "make_plan_api_weight_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightPlanBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightPlanOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Make Plan"
+      }
+    },
+    "/api/weight-plan/defaults": {
+      "get": {
+        "description": "The calibration slope used when none is entered, and where it comes from.",
+        "operationId": "defaults_api_weight_plan_defaults_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationDefaults"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Defaults"
       }
     }
   }

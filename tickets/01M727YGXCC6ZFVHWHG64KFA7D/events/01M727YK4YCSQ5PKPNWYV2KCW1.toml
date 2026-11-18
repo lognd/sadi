@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/lib/exportTrace.ts", "docs/server/results.md"]
+new = ["docs/server/results.md", "web/src/screens/run/exportTrace.ts", "web/src/screens/WizardHost.tsx"]
+at = "2026-11-10T08:07:19Z"
+actor = "lognd"
+rev = 1

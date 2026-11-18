@@ -10,18 +10,29 @@ redo are compensating edits, so nothing is ever deleted or overwritten.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import threading
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel
 from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import LabId, LabModule, StepId
-from sadi.core.point_inputs import PointMeta, build_point, parse_inputs
+from sadi.labs.lctt.capture import BlockError, BlockStats
+from sadi.core.point_inputs import (
+    PHASE_CALIBRATION,
+    PHASE_TARE,
+    PointMeta,
+    build_point,
+    check_ranges,
+    check_window,
+    parse_inputs,
+)
 from sadi.core.registry import LabRegistry
 from sadi.core.wizard import Command, History, Wizard, WizardError, WizardState
 from sadi.labs.lctt.guidance import Phase
@@ -46,7 +57,7 @@ from sadi.server.schemas import (
     SessionInfo,
     SessionSummary,
 )
-from sadi.store.events import EventsWal, ReplayState
+from sadi.store.events import EventsWal, ReplayState, recover_state
 from sadi.store.incremental import IncrementalReplay
 from sadi.store.manifest import read_manifest
 from sadi.store.records import FLAG_JSON, NewRecord, RecordType
@@ -55,10 +66,16 @@ from sadi.store.session import (
     SessionHandle,
     SessionMeta,
     create_session_in_held_root,
+    read_lock_holder,
     resume_session_in_held_root,
+    session_is_synthetic,
+    session_provenance_unknown,
 )
+from sadi.store.snapshot import SnapshotCadence, write_snapshot
+from sadi.store.spill import write_spill
 from sadi.store.wal import WalReader
 from sadi.store.writer_thread import WriterHandle
+from sadi.synthetic.provenance import REAL, SYNTHETIC, UNKNOWN, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -66,6 +83,39 @@ _log = get_logger(__name__)
 DURABLE_TIMEOUT_S = 10.0
 
 _T = TypeVar("_T")
+
+
+@dataclass(frozen=True)
+class ClosedSession:
+    """A session read straight from disk for review: nothing about it can be written."""
+
+    path: Path
+    lab: LabModule
+    views: list[PointView]
+    provenance: DataProvenance
+    # frob:ticket 01M727965F98C8FB295P7A7FRS
+    torn_tail: str | None = None  # "segment/offset" when only the verified prefix was read
+
+
+# Live-derived input keys: they change on every sample, so they never identify a point.
+_LIVE_INPUT_KEYS = frozenset({"volts", "mean", "sd", "n"})
+
+
+def _capture_digest(body: CaptureBody) -> str:
+    """Stable digest of what the operator chose (phase, typed inputs, forced_early), not live data."""
+    # frob:ticket 01M72VM5RSJM7EMREPXDYDN79W
+    chosen = {k: v for k, v in body.inputs.items() if k not in _LIVE_INPUT_KEYS}
+    keyed = {"phase": body.phase, "inputs": chosen, "forced_early": body.forced_early}
+    return hashlib.sha256(json.dumps(keyed, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _reused() -> ApiProblem:
+    """The 409 for a `request_id` reused with a different body."""
+    return conflict(
+        "request_id_reused",
+        "request id already used for a different point",
+        "This point differs from the earlier try; press Accept again to save it.",
+    )
 
 
 @dataclass
@@ -78,11 +128,22 @@ class _Open:
     wizard: Wizard
     # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
     replayer: IncrementalReplay = field(init=False)
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    cadence: SnapshotCadence = field(default_factory=SnapshotCadence)
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    requests: dict[str, tuple[int, str]] = (
+        field(  # capture request_id -> (submitted seq, body digest)
+            default_factory=dict
+        )
+    )
 
     def __post_init__(self) -> None:
         """Attach the incremental replay cache for this session's directory."""
         self.replayer = IncrementalReplay(self.handle.path)
 
+
+#: Record types after which a snapshot is always taken (data-safety.md 9.1 cadence).
+_SNAPSHOT_FORCING = frozenset({int(RecordType.POINT), int(RecordType.EDIT)})
 
 # frob:ticket 01M6WTCAA5WR1VD7H7ES7757MP
 _FOLD_TYPES = frozenset(
@@ -127,22 +188,65 @@ def _fold_parent(parent: Path, writer: WriterHandle) -> Result[int, ApiProblem]:
     return Ok(count)
 
 
+def _unprocessable(code: str, detail: str, hint: str) -> ApiProblem:
+    """A 422 for rejected input; the WAL is untouched."""
+    return ApiProblem(
+        type=f"urn:sadi:error:input:{code}",
+        title=code.replace("_", " "),
+        status=422,
+        detail=detail,
+        hint=hint,
+    )
+
+
 def _phase_view(phase: Phase | None) -> RunPhaseView:
     """Project a recorded phase into the REST view."""
     return RunPhaseView(phase=phase, next_phase=next_allowed(phase))
 
 
+def _session_provenance(session_dir: Path) -> DataProvenance:
+    """Stamp for a stored session: synthetic wins, then unknown (orphan import), else real."""
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    if session_is_synthetic(session_dir):
+        return SYNTHETIC
+    if session_provenance_unknown(session_dir):
+        return UNKNOWN
+    return REAL
+
+
 class SessionService:
     """Owns the single open session of this server process; calls are serialized by a lock."""
 
-    def __init__(self, data_root: Path, labs: LabRegistry) -> None:
-        """Serve sessions under `data_root` (lock held by the app) for the registered `labs`."""
+    def __init__(self, data_root: Path, labs: LabRegistry, synthetic: bool = False) -> None:
+        """Serve sessions under `data_root` (lock held by the app) for the registered `labs`.
+
+        `synthetic` makes every session this service creates synthetic and refuses to resume a
+        real one (and vice versa): the two data modes are never mixed.
+        """
+        self._synthetic = synthetic  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
         self._root = data_root
         self._labs = labs
         self._lock = threading.RLock()
         self._open: _Open | None = None
         self._on_open: Callable[[WriterHandle, Path], None] | None = None
         self._before_close: Callable[[], None] | None = None
+        # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        self._capture_gate: Callable[[], str | None] | None = None
+        self._block_source: Callable[[], Result[BlockStats, BlockError]] | None = None
+        # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        self._finisher: Callable[[], Result[int, object]] | None = None
+        self._acq_state: Callable[[], tuple[str | None, str | None]] | None = None
+
+    def provenance(self) -> DataProvenance:
+        """Provenance of the open session (synthetic, else unknown, else real); process default when none."""
+        # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        if self._synthetic:
+            return SYNTHETIC
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return REAL
+            return _session_provenance(cur.handle.path)
 
     def set_hooks(
         self,
@@ -152,6 +256,65 @@ class SessionService:
         """Register live-acquisition hooks: after a session opens, and before its writer closes."""
         self._on_open = on_open
         self._before_close = before_close
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    def set_capture_gate(self, gate: Callable[[], str | None]) -> None:
+        """Register a gate returning a hint while capture is blocked (no device), else None."""
+        self._capture_gate = gate
+
+    # frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
+    def set_block_source(self, source: Callable[[], Result[BlockStats, BlockError]]) -> None:
+        """Register the raw-block stats source tare/calibration captures average over."""
+        self._block_source = source
+
+    def _apply_block(self, body: CaptureBody) -> Result[dict[str, Any], ApiProblem]:
+        """Inputs with tare mean/sd/n or calibration volts replaced by the server raw block stats."""
+        inputs = dict(body.inputs)
+        if self._block_source is None or body.phase not in (PHASE_TARE, PHASE_CALIBRATION):
+            return Ok(inputs)
+        got = self._block_source()
+        if got.is_err:
+            why = str(got.danger_err.description)
+            _log.warning("capture refused: %s", why)
+            return Err(_unprocessable("too_few_samples", why, why))
+        st = got.danger_ok
+        if body.phase == PHASE_TARE:
+            inputs.update(mean=st.mean, sd=st.sd, n=st.n)
+        else:
+            inputs["volts"] = st.mean
+        _log.info("capture %s from raw block n=%d mean=%g sd=%g", body.phase, st.n, st.mean, st.sd)
+        return Ok(inputs)
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def set_acquisition(
+        self,
+        finish: Callable[[], Result[int, object]],
+        state: Callable[[], tuple[str | None, str | None]],
+    ) -> None:
+        """Register the live-acquisition finish action and its (stop_reason, fault) reader."""
+        self._finisher = finish
+        self._acq_state = state
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def finish_acquisition(self) -> bool:
+        """Drain raw blocks into the WAL and stop streaming; True when it ended cleanly or is unwired.
+
+        Idempotent and data-safe: nothing is deleted or truncated, the session stays open, and a
+        fault is logged and kept for the status API, never raised into the request.
+        """
+        if self._finisher is None:
+            return True
+        done = self._finisher()
+        if done.is_err:
+            _log.error("finish_acquisition faulted (recorded blocks remain): %s", done.danger_err)
+            return False
+        _log.info("finish_acquisition ok: %d trailing blocks saved", done.danger_ok)
+        return True
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    def acquisition_state(self) -> tuple[str | None, str | None]:
+        """(stop_reason, fault detail) of raw streaming; (None, None) when no live acquisition."""
+        return self._acq_state() if self._acq_state is not None else (None, None)
 
     # ---- discovery --------------------------------------------------------------------
 
@@ -182,9 +345,87 @@ class SessionService:
                     lab=m.lab_module,
                     state=m.state,
                     parent=m.parent,
+                    provenance=_session_provenance(d),
+                    spill_import=m.spill_import,  # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
                 )
             )
         return out
+
+    # frob:ticket 01M724AKTJNNRY06637VBQ0A3E
+    @propagate
+    def read_closed(self, name: str) -> Result[ClosedSession, ApiProblem]:
+        """Read session `name` from disk without a writer, lock, version, WAL append or device.
+
+        Refuses the session this service has open and one whose writer is alive elsewhere;
+        a corrupt log is a problem too, but a torn tail (crash) exports the verified prefix. Nothing under the session directory is modified.
+        """
+        with self._lock:
+            if self._open is not None and self._open.handle.path.name == name:
+                return Err(
+                    conflict(
+                        "session_open",
+                        f"{name} is the open session and is still being written",
+                        "Close it first, or use the export on the open session.",
+                    )
+                )
+            path = self._root / SESSIONS_DIRNAME / name
+            if not name or "/" in name or "\\" in name or name.startswith(".") or not path.is_dir():
+                return Err(not_found(name, "Pick a session from the list of sessions."))
+            mf = read_manifest(path)
+            if mf.is_err or mf.danger_ok is None:
+                _log.error("read_closed %s: manifest unreadable", name)
+                return Err(
+                    conflict(
+                        "session_unreadable",
+                        f"{name} has no readable manifest",
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            holder, alive = read_lock_holder(path)
+            if mf.danger_ok.state == "open" and alive:
+                _log.warning("read_closed %s: writer alive (%s)", name, holder)
+                return Err(
+                    conflict(
+                        "session_open",
+                        f"{name} is being written by a running process",
+                        "Close it there first; nothing was changed.",
+                    )
+                )
+            lab = self._labs.get(LabId(mf.danger_ok.lab_module)).map_err(from_sadi).unwrap()
+            scan = WalReader.scan(path / "wal")  # read-only verification of the whole log
+            if scan.is_err:
+                detail = repr(scan.danger_err)
+                _log.error("read_closed %s: WAL not clean: %s", name, detail)
+                return Err(
+                    conflict(
+                        "session_corrupt",
+                        f"{name} has a damaged or incomplete log: {detail}"[:300],
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            tail = scan.danger_ok.tail  # frob:ticket 01M727965F98C8FB295P7A7FRS
+            torn = None if tail is None else f"{tail.segment}/{tail.offset}"
+            if tail is not None:
+                # A torn tail is the normal result of a crash: export the verified prefix.
+                _log.warning(
+                    "read_closed %s: torn tail at %s; exporting verified prefix", name, torn
+                )
+            state = recover_state(path)
+            if state.is_err:
+                _log.error("read_closed %s: replay failed: %s", name, state.danger_err)
+                return Err(
+                    conflict(
+                        "session_corrupt",
+                        f"{name} could not be replayed: {state.danger_err!r}"[:300],
+                        "Run the Doctor to inspect the session; nothing was changed.",
+                    )
+                )
+            views = [PointView.of(p) for p in state.danger_ok.view().points]
+            prov = _session_provenance(path)
+            _log.info("read_closed %s: %d points (read-only)", name, len(views))
+            return Ok(
+                ClosedSession(path=path, lab=lab, views=views, provenance=prov, torn_tail=torn)
+            )
 
     # ---- lifecycle --------------------------------------------------------------------
 
@@ -196,7 +437,9 @@ class SessionService:
             if busy is not None:
                 return Err(busy)
             lab = self._labs.get(LabId(req.lab)).map_err(from_sadi).unwrap()
-            meta = SessionMeta(slug=req.slug, lab_module=req.lab, specimen=req.specimen)
+            meta = SessionMeta(
+                slug=req.slug, lab_module=req.lab, specimen=req.specimen, synthetic=self._synthetic
+            )
             made = create_session_in_held_root(self._root, meta)
             return self._attach(made.map_err(_from_store).unwrap(), lab)
 
@@ -217,7 +460,7 @@ class SessionService:
             mf = read_manifest(parent)
             lab_id = mf.danger_ok.lab_module if mf.is_ok and mf.danger_ok is not None else ""
             lab = self._labs.get(LabId(lab_id)).map_err(from_sadi).unwrap()
-            made = resume_session_in_held_root(parent)
+            made = resume_session_in_held_root(parent, synthetic=self._synthetic)
             return self._attach(made.map_err(_from_store).unwrap(), lab, fold_from=parent)
 
     @propagate
@@ -227,18 +470,56 @@ class SessionService:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
+            self.finish_acquisition()  # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
             if self._before_close is not None:
                 self._before_close()
             closed = cur.writer.close()
-            self._open = None
-            if closed.is_err:
+            if closed.is_ok:
+                self._open = None
+                self._snapshot(cur, forced=True)  # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+            else:
+                # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
                 _log.error("writer close failed: %s", closed.danger_err)
+                kept = self._spill_failed(cur)
+                if kept is not None:
+                    return Err(kept)
+                self._open = None
                 cur.handle.close(state="incomplete")
                 return Err(from_model(closed.danger_err, "store"))
             shut = cur.handle.close()
             shut.map_err(_from_store).unwrap()
             _log.info("session %s closed", cur.handle.path.name)
             return Ok(None)
+
+    # frob:ticket 01M726PZKE3CYNC5NABZC56HT2
+    def _spill_failed(self, cur: _Open) -> ApiProblem | None:
+        """Spill a failed writer's undurable records; return a 409 when they could not be saved.
+
+        None means nothing was lost (spilled to disk, or there was nothing undurable); on a
+        409 the writer stays open in memory so the user can fix the disk and retry Close.
+        """
+        pending = cur.writer.undurable_records()
+        if not pending:
+            return None
+        spilled = write_spill(pending, uuid.UUID(cur.handle.manifest.session_uuid), self._root)
+        if spilled.is_ok:
+            _log.warning(
+                "failed writer: %d undurable record(s) spilled to %s; import_all_spills "
+                "recovers them at next start",
+                len(pending),
+                [str(p) for p in spilled.danger_ok],
+            )
+            return None
+        _log.critical(
+            "failed writer: %d undurable record(s) could NOT be spilled (%s); kept in memory",
+            len(pending),
+            spilled.danger_err.attempts,
+        )
+        return conflict(
+            "undurable_records",
+            f"{len(pending)} unsaved record(s) could not be written to any spill location",
+            "Free disk space or reattach the drive, then press Close session again.",
+        )
 
     def shutdown(self) -> None:
         """Close any open session at app shutdown; failures are logged, never raised."""
@@ -271,8 +552,16 @@ class SessionService:
         return self._read(lambda cur, rp: cur.wizard.state(rp))
 
     def complete(self, step: str) -> Result[Committed, ApiProblem]:
-        """Mark the current step done."""
-        return self._act(lambda cur, rp: cur.wizard.complete(rp, StepId(step)))
+        """Mark the current step done, unless the lab's quality gate for it fails (422)."""
+        with self._lock:
+            cur = self._open
+            if cur is not None:
+                rp = self._replay(cur)
+                if rp.is_ok and cur.wizard.complete(rp.danger_ok, StepId(step)).is_ok:
+                    why = cur.wizard.not_ready(rp.danger_ok, StepId(step))
+                    if why is not None:
+                        return Err(_unprocessable("step_quality_gate", why, why))
+            return self._act(lambda cur, rp: cur.wizard.complete(rp, StepId(step)))
 
     def skip(self, step: str) -> Result[Committed, ApiProblem]:
         """Explicitly skip the current step."""
@@ -292,15 +581,37 @@ class SessionService:
 
     @propagate
     def capture(self, body: CaptureBody) -> Result[Committed, ApiProblem]:
-        """Validate typed inputs, then append a POINT through the wizard."""
-        parsed = parse_inputs(body.phase, body.inputs)
+        """Validate typed inputs and window (nothing logged on rejection), then append a POINT.
+
+        A `request_id` makes the call idempotent: a replay of the same body returns the existing
+        commit and never records a second point; the same id with a different body is a 409.
+        """
+        # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        digest = _capture_digest(body)
+        if body.request_id is not None:
+            existing = self._existing_capture(body.request_id, digest).unwrap()
+            if existing is not None:
+                return Ok(existing)
+        # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        blocked = None if self._capture_gate is None else self._capture_gate()
+        if blocked is not None:
+            _log.warning("capture refused: %s", blocked)
+            return Err(conflict("no_device", blocked, blocked))
+        inputs = self._apply_block(body).unwrap()
+        parsed = parse_inputs(body.phase, inputs)
         parsed_ok = parsed.map_err(
-            lambda detail: ApiProblem(
-                type="urn:sadi:error:input:missing",
-                title="missing",
-                status=422,
-                detail=detail,
-                hint="Fill in the required field before continuing.",
+            lambda detail: _unprocessable(
+                "missing", detail, "Fill in the required field before continuing."
+            )
+        ).unwrap()
+        check_ranges(parsed_ok).map_err(
+            lambda detail: _unprocessable(
+                "out_of_range", detail, "Enter the value in the unit named in the message."
+            )
+        ).unwrap()
+        check_window(body.window).map_err(
+            lambda detail: _unprocessable(
+                "bad_window", detail, "Capture from the live trace so the window is recorded."
             )
         ).unwrap()
         meta = PointMeta(
@@ -309,8 +620,79 @@ class SessionService:
             settled=body.settled,
             forced_early=body.forced_early,
         )
-        point = build_point(parsed_ok, body.window, meta)
-        return self._act(lambda cur, rp: cur.wizard.capture(rp, point))
+        point = build_point(parsed_ok, body.window, meta).model_copy(
+            update={
+                "request_id": body.request_id,
+                "request_digest": digest if body.request_id else None,
+            }
+        )
+        return self._act(
+            lambda cur, rp: cur.wizard.capture(rp, point),
+            request_id=body.request_id,
+            digest=digest,
+        )
+
+    # frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+    @staticmethod
+    def _check_stored_digest(
+        request_id: str, stored: str | None, digest: str
+    ) -> Result[None, ApiProblem]:
+        """409 when a stored point's digest differs; a point without one (older log) matches."""
+        if stored is None:
+            _log.debug(
+                "capture request_id=%s: stored point has no digest, treated as match", request_id
+            )
+            return Ok(None)
+        if stored != digest:
+            _log.warning("capture request_id=%s reused for a different stored point", request_id)
+            return Err(_reused())
+        return Ok(None)
+
+    # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+    @propagate
+    def _existing_capture(
+        self, request_id: str, digest: str
+    ) -> Result[Committed | None, ApiProblem]:
+        """The commit of an earlier capture with this `request_id`, else None (nothing written).
+
+        A known id carrying a different body digest is a 409: the point is never dropped.
+
+        Covers both a point already in the replay and one submitted whose durability wait
+        timed out: the latter is waited on again instead of being recorded twice.
+        """
+        with self._lock:
+            cur = self._open
+            if cur is None:
+                return Err(self._none_open())
+            rp = self._replay(cur).unwrap()
+            known = cur.requests.get(request_id)
+            seq = None if known is None else known[0]
+            if known is not None and known[1] != digest:
+                _log.warning("capture request_id=%s reused for a different point", request_id)
+                return Err(_reused())
+            if seq is None:
+                stored = next(
+                    (p for p in rp.view().points if p.point.request_id == request_id), None
+                )
+                if stored is not None:
+                    # frob:ticket 01M72VV7AGMWE3JE4MZFA8P5T6
+                    self._check_stored_digest(
+                        request_id, stored.point.request_digest, digest
+                    ).unwrap()
+                    seq = stored.seq
+            if seq is None:
+                return Ok(None)
+            cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S).map_err(_from_store).unwrap()
+            after = self._replay(cur).unwrap()
+            _log.info("capture replay request_id=%s -> existing seq %d", request_id, seq)
+            return Ok(
+                Committed(
+                    seq=seq,
+                    summary="Already saved - the earlier try went through.",
+                    wizard=cur.wizard.state(after),
+                    history=cur.wizard.history(after),
+                )
+            )
 
     def edit(self, target: str, body: EditBody) -> Result[Committed, ApiProblem]:
         """Append an edit of `target`; the original value stays in the log."""
@@ -425,6 +807,7 @@ class SessionService:
             parent=m.parent,
             parent_last_seq=m.parent_last_seq,
             durable_seq=cur.writer.durable_seq,
+            provenance=self.provenance(),
         )
 
     def _attach(
@@ -457,6 +840,35 @@ class SessionService:
             self._on_open(opened.danger_ok, handle.path)
         return Ok(self._info(self._open))
 
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    def _snapshot(self, cur: _Open, forced: bool) -> None:
+        """Best-effort atomic snapshot of the live state (no SNAPSHOT_REF); failures are only logged."""
+        replayed = cur.replayer.state()
+        if replayed.is_err:
+            _log.warning("snapshot skipped, replay failed: %s", replayed.danger_err)
+            return
+        state = replayed.danger_ok
+        if not cur.cadence.due(state.covers_seq, forced):
+            return
+        # frob:ticket 01M72Y6ZT01R2CXQT2XM4CMVZT
+        running = cur.replayer.prefix_hash_at(state.covers_seq)
+        if running is None:
+            # never fall back to a whole-WAL prefix_hash walk while holding the service lock
+            _log.info("snapshot at seq %d deferred: no running prefix hash", state.covers_seq)
+            return
+        wrote = write_snapshot(
+            cur.handle,
+            state,
+            state.covers_seq,
+            prefix_hash_hex=running,
+            lab_module=str(cur.lab.id),
+            notes=cur.replayer.notes_at(state.covers_seq),  # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+        )
+        if wrote.is_err:
+            _log.warning("snapshot at seq %d failed: %s", state.covers_seq, wrote.danger_err)
+            return
+        cur.cadence.written(state.covers_seq)
+
     # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
     @propagate
     def _replay(self, cur: _Open) -> Result[ReplayState, ApiProblem]:
@@ -476,22 +888,39 @@ class SessionService:
 
     @propagate
     def _act(
-        self, fn: Callable[[_Open, ReplayState], Result[Command, WizardError]]
+        self,
+        fn: Callable[[_Open, ReplayState], Result[Command, WizardError]],
+        request_id: str | None = None,
+        digest: str = "",
     ) -> Result[Committed, ApiProblem]:
-        """Run a wizard command, append its records, wait for durability, return the new state."""
+        """Run a wizard command, append its records, wait for durability, return the new state.
+
+        With a `request_id` the last submitted seq is remembered before the durability wait,
+        so a retry after a timeout finds the in-flight record instead of writing another.
+        """
         with self._lock:
             cur = self._open
             if cur is None:
                 return Err(self._none_open())
+            if request_id is not None:
+                # frob:ticket 01M72T4R1WNQRV303D0WJXW1MW
+                again = self._existing_capture(request_id, digest).unwrap()
+                if again is not None:
+                    return Ok(again)
             rp = self._replay(cur)
             cmd = fn(cur, rp.unwrap())
             seq = 0
             for rec in cmd.map_err(from_wizard).unwrap().records:
                 sub = cur.writer.submit(rec)
                 seq = sub.map_err(_from_store).unwrap()
+            if request_id is not None:
+                cur.requests[request_id] = (seq, digest)
             durable = cur.writer.wait_durable(seq, DURABLE_TIMEOUT_S)
             durable.map_err(_from_store).unwrap()
             after = self._replay(cur).unwrap()
+            self._snapshot(
+                cur, forced=any(r.type in _SNAPSHOT_FORCING for r in cmd.danger_ok.records)
+            )
             _log.info("committed seq %d: %s", seq, cmd.danger_ok.summary)
             return Ok(
                 Committed(

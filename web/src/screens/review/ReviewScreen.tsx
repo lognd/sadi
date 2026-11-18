@@ -2,6 +2,7 @@
 // frob:ticket 01M6W7RARKCF5E5N60RFHNEDX8
 // frob:ticket 01M6X9Y0CWQ6YRMDT8QF5JD036
 // frob:accept COV001 because="covered by ReviewScreen.test.tsx (vitest); TypeScript test discovery needs grimble, not installed here"
+import { SyntheticBanner } from "../../components/provenance/SyntheticBanner";
 import type * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLogger } from "../../api/log";
@@ -25,6 +26,11 @@ export function pointFlags(p: PointView): string {
   if (p.forced_early === true) flags.push("forced early");
   if (p.excluded) flags.push("excluded");
   return flags.length ? flags.join(", ") : "none";
+}
+
+/** Shorten a long point id (UUID) to its first 8 characters for display; short ids pass through. */
+export function shortId(id: string): string {
+  return id.length > 12 ? id.slice(0, 8) : id;
 }
 
 /** Short text for one input value. */
@@ -189,6 +195,7 @@ export function PointList(props: {
   return (
     <>
     <a href="#next-action" data-testid="skip-to-finish">Skip to Finish</a>
+    <div className="table-scroll" data-testid="points-scroll" style={{ overflowX: "auto", maxWidth: "100%" }}>
     <table aria-label="Captured points">
       <thead>
         <tr><th scope="col">Point</th><th scope="col">Phase</th><th scope="col">Flags</th>
@@ -197,7 +204,7 @@ export function PointList(props: {
       <tbody>
         {points.map((p) => (
           <tr key={p.point_id} data-testid={`point-${p.point_id}`} aria-selected={p.point_id === selected}>
-            <th scope="row">{`#${String(p.seq)} ${p.point_id}`}</th>
+            <th scope="row" title={p.point_id}>{`#${String(p.seq)} ${shortId(p.point_id)}`}</th>
             <td>{p.phase}</td>
             <td>{pointFlags(p)}</td>
             <td>{Object.entries(p.inputs).map(([k, v]) => `${k}=${inputText(v)}`).join("; ")}</td>
@@ -219,6 +226,7 @@ export function PointList(props: {
         ))}
       </tbody>
     </table>
+    </div>
     </>
   );
 }
@@ -283,6 +291,9 @@ export function ReviewScreen({ initial, fetchImpl }: { initial?: ReviewData; fet
   return (
     <section aria-label="Review" aria-busy={busy}>
       <h1>Review</h1>
+      <p>Your results are shown first; the captured points below let you correct them.</p>
+      <SyntheticBanner />
+      {data.results ? <ResultsPanel results={data.results} /> : <p>Results are not available yet.</p>}
       <p>{SAFETY_NOTE}</p>
       <div>
         <button type="button" disabled={busy || data.history.undo.length === 0} aria-keyshortcuts="Control+Z"
@@ -302,7 +313,6 @@ export function ReviewScreen({ initial, fetchImpl }: { initial?: ReviewData; fet
                      onEdit={(req) => { doEdit(point.point_id, req); }}
                      onInvalid={(m) => { setError(m); }} />
       ) : null}
-      {data.results ? <ResultsPanel results={data.results} /> : <p>Results are not available yet.</p>}
       <HistoryList data={data} />
     </section>
   );

@@ -58,3 +58,27 @@ loop-lag test are tracked as follow-up tickets.
 `sadi.server.routes.acquisition` calls `LiveAcquisition.mark_load_change`, which records a WAL
 MARKER (`load_applied`) through the live pipeline and returns `{marker_seq}`. 409
 `no_live_session` when no acquisition runs; 409 `acquisition_halted` when the pipeline refuses.
+
+## POST /api/acquisition/resume
+
+`LiveAcquisition.resume` restarts raw streaming after an idle pause (`stop_reason == "idle"`)
+without writing a load-change MARKER and without the simulator's extra load step. Response
+`{streaming: true}`; idempotent while streaming. 409 `no_live_session` for a finished, low-disk,
+no-device or absent run. The UI button ("Resume live readings") is a follow-up; the web client does
+not call it yet. If the device stop command fails (cable pulled), `AcquisitionDriver.stop` still
+ingests the blocks already drained (`StopFailed.blocks`) before reporting the fault, and a
+reconnect teardown keeps queued blocks (`DeviceService.take_salvaged`) and writes them to the WAL.
+
+## Capture validation and completion gates
+
+`POST /session/points` is checked before anything reaches the WAL, and a rejection writes nothing.
+All checks answer 422 `urn:sadi:error:input:<code>`: `missing` (required field absent or not
+finite), `out_of_range` (`core.point_inputs.check_ranges`: every value finite and inside a
+physical range in SI units, e.g. diameter 0.05..5 mm, heights 0..1 m; a value that looks like mm
+gets "did you mean ..." in the message) and `bad_window` (`check_window`: seqs and sample offsets
+non-negative, first not after last). Limitation: the server has no raw index, so it does not
+re-derive volts from the window nor require the window to point at durable RAW_BLOCK records.
+
+`POST /session/wizard/complete` consults the step's `complete_check` (`StepSpec`) and answers 422
+`step_quality_gate` if it fails: `calibrate` needs a valid `fit_calibration`, and `setup` is
+blocked while the clamp-slip check has failed (repeat it, or skip the step explicitly).

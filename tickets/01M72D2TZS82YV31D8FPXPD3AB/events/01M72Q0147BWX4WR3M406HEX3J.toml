@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "docs/store/spill.md", "python/sadi/store/manifest.py", "python/tests/server/test_latest_lineage.py", "python/tests/store/test_spill.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py"]
+new = ["python/sadi/store/spill.py", "python/sadi/server/routes/sessions.py", "docs/store/spill.md", "python/sadi/store/manifest.py", "python/tests/server/test_latest_lineage.py", "python/tests/store/test_spill.py", "python/sadi/server/schemas.py", "python/sadi/server/service.py", "web/src/api/openapi.json"]
+at = "2026-11-10T12:30:15Z"
+actor = "lognd"
+rev = 1

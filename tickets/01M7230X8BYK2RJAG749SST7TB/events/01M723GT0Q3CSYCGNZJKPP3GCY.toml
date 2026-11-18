@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T06:49:45Z"
+digest = "a0ec362f9269995ec3280fd303bcde6ad06b7394438687dce8f9b948ff89ecdc"
+exit_code = 0
+head = "48ccd771b42606d0afd3e8446027aa3898d7fe04"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 3 items
+
+python/tests/server/test_sim_pacing.py ...                               [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-697615-0.xml ---------------
+========================= 3 passed, 1 warning in 6.52s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_sim_pacing.py"
+size = 1003
+status = "measured"
+test_count = 3
+tests_digest = "3a3eedd018c99166e6c90f9c3ec094a976fc95a06d9a44a5c688b3e8f0bb5f88"
+at = "2026-11-10T06:49:45Z"
+actor = "lognd"
+rev = 1

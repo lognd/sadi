@@ -1,0 +1,9 @@
+kind = "create"
+title = "Backend: expose firmware, sample rate, and active data root in a status endpoint"
+type = "task"
+category = "todo"
+priority = "medium"
+body = "found while working ~D7DHSW4: debug strip shows firmware as unavailable; sample rate and active data folder are only inferred (doctor reports the default root, not --data-root)."
+at = "2026-11-10T04:06:50Z"
+actor = "lognd"
+rev = 1

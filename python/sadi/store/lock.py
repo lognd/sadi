@@ -39,7 +39,11 @@ class LockStale(LockError):
     """The OS lock is free but the file records a dead holder; needs explicit recovery."""
 
     pid: int
-    hint: str = "A previous sadi process exited uncleanly; reacquire with recover_stale=True."
+    hint: str = (
+        "A previous sadi process exited uncleanly and left the data folder marked as in use. "
+        "Its process is gone, so this is safe: start again with `sadi serve --recover-stale`. "
+        "Nothing is deleted; your sessions are kept and checked on the next open."
+    )
 
 
 class LockIo(LockError):

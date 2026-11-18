@@ -13,6 +13,12 @@ export interface PhaseMeta {
   readonly apiPhase: string;
   /** Label of the main capture button. */
   readonly acceptLabel: string;
+  /** Label of the mark-load-change button, worded for what the operator just did in this phase. */
+  readonly markLabel: string;
+  /** Hint under the mark button saying when to press it. */
+  readonly markHint: string;
+  /** Fewest accepted points before the step can be finished. */
+  readonly minPoints: number;
   /** One-line instruction shown under the heading. */
   readonly instruction: string;
   /** Which plot the phase shows. */
@@ -23,18 +29,22 @@ export interface PhaseMeta {
 export const PHASES: Readonly<Record<RunPhase, PhaseMeta>> = {
   calibrate: {
     title: "Calibrate (LVDT)", apiPhase: "calibration", acceptLabel: "Accept point",
-    instruction: "Set the gauge block, press Mark load change, wait for Settled, then press Space.", plot: "calibration",
+    markLabel: "I moved to a new gauge block", markHint: "Click this for the first gauge block, or when you change blocks before accepting; click it again after every Accept once you change the load.", minPoints: 3,
+    instruction: "Set the gauge block (click I moved to a new gauge block for the first one), wait for Settled, type the Gauge height, then press Accept point (Space).", plot: "calibration",
   },
   tare: {
-    title: "Tare", apiPhase: "tare", acceptLabel: "Record tare",
-    instruction: "Make sure the hanger is empty and nothing touches it, then press Space.", plot: "none",
+    title: "Tare", apiPhase: "tare", acceptLabel: "Accept point",
+    markLabel: "I emptied the hanger", markHint: "Click this once the hanger is empty and still to restart the settle timer; click it again after every Accept once you change the load.", minPoints: 1,
+    instruction: "Make sure the hanger is empty and nothing touches it, click I emptied the hanger if the point is not already open, wait for Settled, then press Accept point (Space).", plot: "none",
   },
   elastic: {
-    title: "Elastic", apiPhase: "elastic", acceptLabel: "Accept",
-    instruction: "Add the next load gently, press Mark load change, then press Space when Settled.", plot: "stress-strain",
+    title: "Elastic", apiPhase: "elastic", acceptLabel: "Accept point",
+    markLabel: "I added a weight", markHint: "Click this after you add a weight to restart the settle timer; the first point needs it; click it again after every Accept once you change the load.", minPoints: 3,
+    instruction: "Hang the suggested weight gently, click I added a weight (needed for the first point), wait for Settled, type the Added mass, then press Accept point (Space).", plot: "stress-strain",
   },
   plastic: {
-    title: "Plastic", apiPhase: "plastic", acceptLabel: "Accept",
-    instruction: "Load past the knee in small steps. Press F to finish the run.", plot: "stress-strain",
+    title: "Plastic", apiPhase: "plastic", acceptLabel: "Accept point",
+    markLabel: "I added a weight", markHint: "Click this after you add a weight to restart the settle timer; the first point needs it; click it again after every Accept once you change the load.", minPoints: 1,
+    instruction: "Load past the knee in small steps: add a weight, click I added a weight (needed for the first point), wait for Settled, then press Accept point (Space). Press F to finish the run.", plot: "stress-strain",
   },
 };

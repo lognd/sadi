@@ -12,7 +12,7 @@ import errno
 import os
 import secrets
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
@@ -42,6 +42,8 @@ _log = get_logger(__name__)
 
 SNAPSHOT_DIR = "snapshots"
 SNAPSHOT_VERSION = 1
+#: Minimum seconds between snapshots that no POINT/EDIT/close forced (data-safety.md 9.1).
+SNAPSHOT_MIN_INTERVAL_S = 5.0
 SNAPSHOT_FRAME_TYPE = int(RecordType.SNAPSHOT_REF)
 _LINK_FALLBACK_ERRNOS = frozenset(
     {errno.EPERM, errno.ENOTSUP, errno.EOPNOTSUPP, errno.EMLINK, errno.ENOSYS, errno.EACCES}
@@ -94,6 +96,8 @@ class SnapshotV1(BaseModel):
     code_version: dict[str, Any] = {}
     lab_module: str = ""
     state: dict[str, Any]
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    notes: list[str] | None = None  # JSON NOTE payloads up to covers_seq; None on old snapshots
 
 
 class SnapshotRef(BaseModel):
@@ -116,34 +120,79 @@ class _HasPath(Protocol):
 RefSink = Callable[[NewRecord], Result[Any, Any]]
 
 
+class SnapshotCadence:
+    """Decides when a live session should snapshot: always when forced, else at most every 5 s."""
+
+    def __init__(
+        self,
+        min_interval_s: float = SNAPSHOT_MIN_INTERVAL_S,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._min = min_interval_s
+        self._clock = clock
+        self._last_at: float | None = None
+        self._last_seq: int | None = None
+
+    def due(self, covers_seq: int, forced: bool) -> bool:
+        """Return True when a snapshot of `covers_seq` should be written now."""
+        if covers_seq == self._last_seq:
+            return False
+        if forced or self._last_at is None:
+            return True
+        return self._clock() - self._last_at >= self._min
+
+    def written(self, covers_seq: int) -> None:
+        """Record that a snapshot of `covers_seq` was committed just now."""
+        self._last_at = self._clock()
+        self._last_seq = covers_seq
+
+
 def snapshot_dir(session_dir: Path) -> Path:
     """Return the `snapshots/` directory of a session version."""
     return session_dir / SNAPSHOT_DIR
 
 
-def prefix_hashes_at(
+def prefix_hash_states_at(
     wal_dir: Path, covers: Iterable[int]
-) -> Result[tuple[dict[int, str], int | None], WalError]:
-    """Return {n: prefix_hash after all data records with seq <= n} and the last verified seq."""
+) -> Result[tuple[dict[int, Any], int | None], WalError]:
+    """Return {n: running hash object after data records <= n} and the last seq seen.
+
+    The scan stops at max(covers): records beyond the largest wanted seq cannot change any
+    requested hash, so walking them is pure redundant work.
+    """
     wanted = sorted(set(covers))
-    out: dict[int, str] = {}
+    out: dict[int, Any] = {}
     h = new_prefix_hash()
     idx = 0
     last: int | None = None
+    if not wanted:
+        return Ok((out, last))
     for item in WalReader(wal_dir).records():
         if item.is_err:
             _log.error("prefix hash scan of %s hit corruption: %s", wal_dir, item.danger_err)
             return Err(item.danger_err)
         rec: Record = item.danger_ok
         while idx < len(wanted) and wanted[idx] < rec.seq:
-            out[wanted[idx]] = h.hexdigest()
+            out[wanted[idx]] = h.copy()
             idx += 1
         prefix_hash_update(h, rec)
         last = rec.seq
+        if rec.seq >= wanted[-1]:
+            break
     while idx < len(wanted):
-        out[wanted[idx]] = h.hexdigest()
+        out[wanted[idx]] = h.copy()
         idx += 1
     return Ok((out, last))
+
+
+@propagate
+def prefix_hashes_at(
+    wal_dir: Path, covers: Iterable[int]
+) -> Result[tuple[dict[int, str], int | None], WalError]:
+    """Return {n: prefix_hash after all data records with seq <= n} and the last verified seq."""
+    scanned = prefix_hash_states_at(wal_dir, covers)
+    states, last = scanned.unwrap()
+    return Ok(({n: h.hexdigest() for n, h in states.items()}, last))
 
 
 @propagate
@@ -207,8 +256,13 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
     code_version: dict[str, Any] | None = None,
     ref_sink: RefSink | None = None,
     now: datetime | None = None,
+    notes: Sequence[str] | None = None,
 ) -> Result[Path, SnapshotError]:
-    """Write `state` as an atomic snapshot covering WAL seq `covers_seq`; return its path."""
+    """Write `state` as an atomic snapshot covering WAL seq `covers_seq`; return its path.
+
+    `notes` (all NOTE payloads up to `covers_seq`) is stored additively so replay need not rewalk
+    the WAL for them; it is dropped, never failing the snapshot, if it would make it too large.
+    """
     session_dir = session.path
     if prefix_hash_hex is None:
         computed = prefix_hash(session_dir / "wal", covers_seq)
@@ -219,8 +273,13 @@ def write_snapshot(  # noqa: PLR0913 - explicit knobs keep tests deterministic
         code_version=code_version or {},
         lab_module=lab_module,
         state=state.model_dump(mode="json"),
+        notes=None if notes is None else list(notes),
     )
     payload = body.model_dump_json().encode("utf-8")
+    if len(payload) > MAX_PAYLOAD and notes is not None:
+        _log.warning("snapshot with notes is %d bytes; storing it without notes", len(payload))
+        body = body.model_copy(update={"notes": None})
+        payload = body.model_dump_json().encode("utf-8")
     if len(payload) > MAX_PAYLOAD:
         _log.error("snapshot payload %d bytes exceeds limit", len(payload))
         return Err(SnapshotTooLarge(size=len(payload)))
@@ -330,22 +389,31 @@ def list_snapshots(session_dir: Path) -> list[tuple[Path, SnapshotV1]]:
 
 
 @propagate
-def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, SnapshotError]:
-    """Return the newest snapshot whose prefix hash matches the WAL, or None to replay from 1."""
+def load_latest_snapshot_hashed(
+    session_dir: Path,
+) -> Result[tuple[SnapshotV1, Any] | None, SnapshotError]:
+    """Like `load_latest_snapshot` but also return the running prefix hash object at covers_seq."""
     candidates = list_snapshots(session_dir)
     if not candidates:
         _log.info("no usable snapshots in %s", session_dir)
         return Ok(None)
-    scanned = prefix_hashes_at(session_dir / "wal", (s.covers_seq for _, s in candidates))
-    hashes, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
+    scanned = prefix_hash_states_at(session_dir / "wal", (s.covers_seq for _, s in candidates))
+    states, last = scanned.map_err(lambda e: SnapshotWal(error=e)).unwrap()
     for path, snap in candidates:
         if last is None or snap.covers_seq > last:
             _log.warning(
                 "ignoring stale snapshot %s: covers %d > verified %s", path, snap.covers_seq, last
             )
-        elif hashes[snap.covers_seq] != snap.prefix_hash:
+        elif states[snap.covers_seq].hexdigest() != snap.prefix_hash:
             _log.warning("ignoring snapshot %s: prefix hash mismatch at %d", path, snap.covers_seq)
         else:
             _log.info("using snapshot %s covers_seq=%d", path, snap.covers_seq)
-            return Ok(snap)
+            return Ok((snap, states[snap.covers_seq]))
     return Ok(None)
+
+
+@propagate
+def load_latest_snapshot(session_dir: Path) -> Result[SnapshotV1 | None, SnapshotError]:
+    """Return the newest snapshot whose prefix hash matches the WAL, or None to replay from 1."""
+    got = load_latest_snapshot_hashed(session_dir).unwrap()
+    return Ok(None if got is None else got[0])

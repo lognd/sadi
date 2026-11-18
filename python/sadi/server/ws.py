@@ -41,6 +41,7 @@ from sadi.logging_setup import get_logger
 from sadi.server.framing import encode_envelope, encode_trace
 from sadi.server.results_stream import Connection, ResultsStream
 from sadi.server.service import SessionService
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -49,6 +50,8 @@ CLIENT_FRAME_DEPTH = 8
 #: JSON messages a client may have queued (state/results are not dropped before this).
 CLIENT_JSON_DEPTH = 1024
 POLL_S = 0.01
+#: Highest rate at which `state` messages are sent (latest wins); raw data is unaffected.
+STATE_MAX_HZ = 30.0  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
 STATS_PERIOD_S = 1.0
 
 
@@ -160,6 +163,7 @@ class StreamHub:
         results: ResultsStream | None = None,
         simulated: Callable[[], bool] | None = None,
         guidance: Callable[[], GuidancePayload | None] | None = None,
+        provenance: DataProvenance = REAL,
     ) -> None:
         """Subscribe once to `bus`; `sessions` supplies `hello` info, `results` the envelopes.
 
@@ -168,6 +172,7 @@ class StreamHub:
         consulted after each result or settle-state change and published when it changed.
         """
         self._guidance = guidance
+        self._provenance = provenance  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
         self._last_guidance: GuidancePayload | None = None
         self._last_settle: str | None = None
         self.results = results
@@ -177,9 +182,13 @@ class StreamHub:
         self._sub: Subscription = bus.subscribe("ws-hub")
         self._sessions = sessions
         self._lock = threading.Lock()
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        self._poll_lock = threading.Lock()
         self._clients: list[_Client] = []
         self._seq = 0
         self._latest: dict[str, dict[str, Any]] = {}
+        self._pending_state: dict[str, Any] | None = None  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        self._last_state_sent = 0.0
 
     def next_seq(self) -> int:
         """Allocate the next hub-wide frame sequence number."""
@@ -216,6 +225,11 @@ class StreamHub:
         """True when the data source is the simulator."""
         return self._simulated is not None and self._simulated()
 
+    def _current_provenance(self) -> DataProvenance:
+        """Provenance of the open session when a service is attached, else the constructor default."""
+        # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        return self._sessions.provenance() if self._sessions is not None else self._provenance
+
     def _stamp_state(self, msg: dict[str, Any]) -> None:
         """Add the capture window (first/last raw seq of the open point) and `simulated`."""
         point = msg["status"].get("point_index")
@@ -225,11 +239,21 @@ class StreamHub:
             _log.info("capture window opened: point=%s first_raw_seq=%d", point, self._window_first)
         msg["window"] = {"first_raw_seq": self._window_first, "last_raw_seq": msg["raw_seq"]}
         msg["simulated"] = self.is_simulated()
+        msg["provenance"] = self._current_provenance().model_dump(
+            mode="json"
+        )  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
     def poll(self) -> None:
-        """Drain the bus subscription and distribute events to clients."""
+        """Drain the bus subscription and distribute events to clients (thread-safe, in order)."""
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        with self._poll_lock:
+            self._poll_locked()
+
+    def _poll_locked(self) -> None:
+        """Body of `poll`; the caller holds `_poll_lock` so drain order equals delivery order."""
         events = self._sub.drain()
         if not events:
+            self._flush_state()
             return
         changed = False
         with self._lock:
@@ -250,11 +274,29 @@ class StreamHub:
                     continue
                 if msg["kind"] == "state":
                     self._stamp_state(msg)
+                if msg["kind"] == "state":
+                    self._pending_state = msg  # coalesce: the latest state wins
+                    continue
                 self._latest[msg["kind"]] = msg
                 for c in self._clients:
                     c.offer_msg(msg)
+        self._flush_state()
         if changed:
             self.refresh_guidance()
+
+    def _flush_state(self) -> None:
+        """Send the pending (latest) `state` message if the STATE_MAX_HZ interval has passed."""
+        # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        with self._lock:
+            msg = self._pending_state
+            now = time.monotonic()
+            if msg is None or now - self._last_state_sent < 1.0 / STATE_MAX_HZ:
+                return
+            self._pending_state = None
+            self._last_state_sent = now
+            self._latest["state"] = msg
+            for c in self._clients:
+                c.offer_msg(msg)
 
     def refresh_guidance(self) -> bool:
         """Recompute guidance and publish it unless identical to the last one; True if sent."""
@@ -286,6 +328,7 @@ class StreamHub:
             "session": session,
             "latest": latest,
             "simulated": self.is_simulated(),
+            "provenance": self._current_provenance().model_dump(mode="json"),
             "bus_dropped": self._sub.dropped,
         }
 
@@ -298,18 +341,19 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
     async def stream(ws: WebSocket) -> None:
         """Push binary trace frames and JSON messages until the client leaves."""
         await ws.accept()
-        client = hub.attach()
+        # frob:ticket 01M72854VNXD656XAJNYNKX6Y1
+        client = await asyncio.to_thread(hub.attach)
         last_stats = time.monotonic()
         try:
-            await ws.send_text(json.dumps(hub.hello()))
+            await ws.send_text(json.dumps(await asyncio.to_thread(hub.hello)))
             while True:
-                hub.poll()
+                await asyncio.to_thread(hub.poll)
                 busy = False
                 while client.msgs:
                     await ws.send_text(json.dumps(client.msgs.popleft()))
                     busy = True
                 while client.envelopes:
-                    await ws.send_bytes(encode_result(hub.next_seq(), client.envelopes.popleft()))
+                    await ws.send_bytes(encode_result(await asyncio.to_thread(hub.next_seq), client.envelopes.popleft()))
                     busy = True
                 while client.frames:
                     seq, f = client.frames.popleft()
@@ -335,6 +379,7 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
         except (WebSocketDisconnect, RuntimeError) as exc:
             _log.info("ws client left: %s", type(exc).__name__)
         finally:
-            hub.detach(client)
+            # shielded so a cancelled handler still detaches (no leaked client)
+            await asyncio.shield(asyncio.to_thread(hub.detach, client))
 
     return router

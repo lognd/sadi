@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/TRQJ0A5; scope: python/sadi/server/routes_doctor.py, python/sadi/doctor/**, web/src/App.tsx, web/src/doctor/**, web/src/components/instrument/**, web/src/components/status/**, web/src/screens/WizardHost.tsx; ttl 7200s"
+at = "2026-11-10T05:05:58Z"
+actor = "lognd"
+rev = 1

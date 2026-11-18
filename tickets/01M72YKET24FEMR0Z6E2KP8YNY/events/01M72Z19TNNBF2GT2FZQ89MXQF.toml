@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:50:38Z"
+digest = "a4648beb9f3528b856fb10678b1c0161fa5a3d6217a8c6c73a9a88303ed71910"
+exit_code = 0
+head = "ff27a92caa0e8c1cb1af41e1abdd335e0de18966"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  1 passed (1)
+      Tests  31 passed (31)
+   Start at  09:50:44
+   Duration  587ms (transform 51%, import 25%, tests 23%, worker 1%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run web/src/screens/run/RunScreen.test.tsx"
+size = 173
+status = "measured"
+at = "2026-11-10T14:50:38Z"
+actor = "lognd"
+rev = 1

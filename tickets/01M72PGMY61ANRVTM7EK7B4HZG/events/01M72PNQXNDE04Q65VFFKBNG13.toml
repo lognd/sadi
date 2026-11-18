@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T12:24:37Z"
+digest = "7611d5b51928b2aca8dc73037f85ad702d5e73072a40ae6c29cb54182613548f"
+exit_code = 1
+head = "7e8ab188e891522ae16239da481deb1c3b2a2439"
+inline = """
+node:internal/modules/esm/resolve:202
+  const resolvedOption = FSLegacyMainResolve(pkgPath, packageConfig.main, baseStringified);
+                         ^
+
+Error: Cannot find package '<worktree>/web/node_modules/loupe/index.js' imported from <worktree>/web/node_modules/@vitest/utils/dist/chunk-_commonjsHelpers.js
+    at legacyMainResolve (node:internal/modules/esm/resolve:202:26)
+    at packageResolve (node:internal/modules/esm/resolve:796:12)
+    at moduleResolve (node:internal/modules/esm/resolve:873:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+    at #resolve (node:internal/modules/esm/loader:687:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.22.1
+"""
+passed = false
+provider = "vitest"
+ref = "src/plots/core/canvas.test.ts"
+size = 1076
+status = "measured"
+at = "2026-11-10T12:24:37Z"
+actor = "lognd"
+rev = 1

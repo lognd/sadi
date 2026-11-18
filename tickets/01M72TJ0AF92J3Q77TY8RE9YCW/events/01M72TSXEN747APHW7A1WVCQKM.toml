@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:36:48Z"
+digest = "592b8c5a4150378056cc93db1a4be5b148152e30016f4ac44bb2ef72dbe6148d"
+exit_code = 0
+head = "3f30db214922f93fda707de714d94905fca4efd6"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 1 item
+
+python/tests/store/test_spill.py .                                       [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1137789-0.xml --------------
+============================== 1 passed in 0.21s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_spill.py::test_failed_fragment_verify_is_marked_and_not_recopied"
+size = 520
+status = "measured"
+test_count = 1
+tests_digest = "8a6dfa058676d0cb915bd5a71dffb11559562265154cff22f978623d44a37d47"
+at = "2026-11-10T13:36:48Z"
+actor = "lognd"
+rev = 1

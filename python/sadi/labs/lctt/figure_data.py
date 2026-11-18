@@ -56,6 +56,9 @@ class StressStrainData(BaseModel):
     strain: list[float]
     stress_mpa: list[float]
     excluded: list[bool]
+    # frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+    #: Per-point phase ("elastic", "plastic" or "" if unphased); same length as the rest.
+    phase: list[str] = []
 
 
 class FigureData(BaseModel):
@@ -95,13 +98,14 @@ def stress_strain_data(events: Sequence[LiveEvent]) -> StressStrainData:
     doc = build_document(list(events), date=_EPOCH)
     if doc.is_err:
         _log.info("figure data: stress-strain not ready: %s", doc.danger_err.name)
-        return StressStrainData(point_ids=[], strain=[], stress_mpa=[], excluded=[])
+        return StressStrainData(point_ids=[], strain=[], stress_mpa=[], excluded=[], phase=[])
     rows = doc.danger_ok.rows
     return StressStrainData(
         point_ids=[r.point_id for r in rows],
         strain=[r.strain for r in rows],
         stress_mpa=[r.stress_pa / _PA_PER_MPA for r in rows],
         excluded=[r.excluded for r in rows],
+        phase=[r.phase for r in rows],
     )
 
 

@@ -621,3 +621,9 @@ failures. Each record carries `data_version`, the point number and the cause.
   ~G2YNMJB thresholds; wording and placement do not depend on it.
 - Keys `E`, `B`, `G`, `P`, `W`, `X`, `R` should be confirmed in the F14
   usability pass for accidental presses; none is destructive without undo.
+
+## Idle pause, resume and firmware (audit4 L1/L2/L6)
+
+- The capture-refused hint for an idle pause reads "press Resume live readings to start again"; Mark load change is not needed.
+- Resume after idle (and `start_streaming` on an unopened service) returns `LiveError.NoDevice` / a `NOT_FOUND` device error when the board is detached or errored, never a 500.
+- The SETTINGS `device.firmware` row records the literal `unknown` until the handshake version is plumbed through.

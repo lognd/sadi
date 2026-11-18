@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**", "python/sadi/server/schemas.py", "python/tests/server/**", "web/src/screens/setup/SessionSetup.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts", "docs/data-safety.md"]
+new = ["python/sadi/store/**", "python/sadi/server/routes/export.py", "python/tests/store/**", "web/src/screens/export/**", "python/sadi/server/schemas.py", "python/tests/server/**", "web/src/screens/setup/SessionSetup.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts", "docs/data-safety.md", "changelog.d/01M71XGK2GSEZ1GM3N3ES7916A.changed.md"]
+at = "2026-11-10T05:12:10Z"
+actor = "lognd"
+rev = 1

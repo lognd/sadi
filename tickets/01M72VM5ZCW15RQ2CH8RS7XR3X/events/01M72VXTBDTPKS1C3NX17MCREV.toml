@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:56:18Z"
+digest = "512dc2bff1627ea1079c8bed67f13d42a14f428ce4ae17718a1c732b06ece63e"
+exit_code = 0
+head = "0c0693f08ac55fe9b6c485c0fee94cb22dbb1266"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 26 items
+
+python/tests/store/test_spill.py ..........................              [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-1160078-0.xml --------------
+============================== 26 passed in 5.43s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_spill.py"
+size = 522
+status = "measured"
+test_count = 26
+tests_digest = "7df42a0c756398aa4079d308469e079babf0de339556b3e5324d1c29ddcec3e4"
+at = "2026-11-10T13:56:18Z"
+actor = "lognd"
+rev = 1

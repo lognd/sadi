@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import tomllib
+from pathlib import Path
 
 from sadi.doctor.registry import Ctx, Fix, Outcome, check, fail, ok, remedy, skip, warn
 from sadi.doctor.schema import Layer, Mutates, Os, Severity, SkipReason
@@ -40,6 +41,14 @@ def _root(ctx: Ctx) -> str:
     return ctx.data_root or ctx.probes.user_data_dir()
 
 
+def _unwritable_ancestor(ctx: Ctx, root: str) -> str | None:
+    """Return the nearest existing parent of `root` if the user cannot write it, else None."""
+    parent = Path(root).parent
+    while parent != parent.parent and not ctx.probes.exists(str(parent)):
+        parent = parent.parent
+    return None if ctx.probes.writable(str(parent)) else str(parent)
+
+
 @check(
     "DATA-010",
     Layer.DATA,
@@ -56,6 +65,13 @@ def data_010(ctx: Ctx) -> Outcome:
     """Read-only look at the data root."""
     root = _root(ctx)
     if not ctx.probes.exists(root):
+        blocked = _unwritable_ancestor(ctx, root)
+        if blocked is not None:
+            return fail(
+                "not-writable",
+                f"Permission denied: {root} cannot be created because {blocked} is not writable by you",
+                root=root,
+            )
         return fail("missing", f"Data root {root} does not exist", root=root)
     if not ctx.probes.is_dir(root):
         return fail("not-a-directory", f"{root} is not a directory", root=root)

@@ -18,7 +18,8 @@ blocks and `tick()` on a timer.
   indicator says settled.
 - `auto`: captures as soon as the detector settles; if `max_wait_s` (clock seconds since
   `start_point`) passes first, the point is captured with `forced_early=true` and a
-  warning.
+  warning. After a capture the detector auto-opens the next point and the max-wait clock
+  restarts for it.
 - `fixed_dwell`: requires a `StreamConfig` in fixed_dwell mode (and vice versa,
   else `CaptureError.ModeMismatch`); captures once the dwell has elapsed.
 
@@ -27,6 +28,13 @@ blocks and `tick()` on a timer.
 `accept()` before the detector has settled records `forced_early=true`,
 `settled=false` and returns a warning in `Captured.warnings` (also logged). After
 settling it records a normal settled point.
+
+## Auto-capture and re-arming
+
+`CaptureController` in auto mode captures once per `start_point` (armed flag). After a
+capture it will not record the same load again until the next `start_point`, so a
+signal that stays settled cannot produce duplicate points. A human `accept()` is
+unaffected.
 
 ## Point event and re-editing
 

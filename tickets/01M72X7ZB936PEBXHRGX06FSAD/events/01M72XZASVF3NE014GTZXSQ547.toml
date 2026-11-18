@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx", "python/sadi/server/app.py", "web/src/App.tsx", "web/src/api/openapi.json"]
+new = ["python/sadi/server/routes/weight_plan.py", "python/tests/server/test_weight_plan_route.py", "web/src/screens/setup/WeightPlanPanel.tsx", "web/src/screens/setup/WeightPlanPanel.test.tsx", "python/sadi/server/app.py", "web/src/App.tsx", "web/src/api/openapi.json", "web/src/api/schema.ts"]
+at = "2026-11-10T14:32:12Z"
+actor = "lognd"
+rev = 1

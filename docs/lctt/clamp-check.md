@@ -46,3 +46,6 @@ last cycle is captured. Excluded points are ignored.
 Setup points are not load points: `results` leaves them out of `n_points`, `analyze` drops them and
 the live curve source skips them. Limitation: the UI records operator-entered zeros and an observed
 slip count, not raw hold strain, so the slip detector is not run on live data.
+
+A failed verdict (`passed` false) blocks `POST /session/wizard/complete` for `setup` with 422
+`step_quality_gate`; repeat the cycles or skip the step explicitly.

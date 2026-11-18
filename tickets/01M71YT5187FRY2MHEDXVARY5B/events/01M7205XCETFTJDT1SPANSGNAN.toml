@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "duplicate"
+reason = "Both server tests were fixed inside ~G13SHSE once the tests/server lease freed"
+at = "2026-11-10T05:51:30Z"
+actor = "lognd"
+rev = 1

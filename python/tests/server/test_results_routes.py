@@ -180,7 +180,29 @@ def test_device_status_attached(tmp_path: Path) -> None:
     """An attached device reports its status and no fault."""
     for c in _client(tmp_path, device=_FakeDevice()):
         body = c.get("/api/device/status").json()
+        # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+        assert body.pop("provenance")["synthetic"] is False
+        assert body.pop("stop_reason") is None  # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        assert body.pop("acquisition_fault") is None
         assert body == {"status": "simulated", "attached": True, "fault": None, "hint": ""}
+
+
+class _FaultedDevice:
+    """A device whose status is error with a fault object."""
+
+    status = "error"
+    fault = RuntimeError("fifo overrun")
+
+
+# frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
+# frob:tests python/sadi/server/routes/results.py::device_status
+def test_device_status_faulted_not_attached(tmp_path: Path) -> None:
+    """A faulted device reports attached=false with the fault text, never healthy."""
+    for c in _client(tmp_path, device=_FaultedDevice()):
+        body = c.get("/api/device/status").json()
+        assert body["status"] == "error"
+        assert body["attached"] is False
+        assert "fifo overrun" in body["fault"]
 
 
 # frob:tests python/sadi/server/routes/results.py::lab_budgets

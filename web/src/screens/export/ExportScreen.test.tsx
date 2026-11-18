@@ -3,8 +3,10 @@
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { describe, expect, it, vi } from "vitest";
 import { renderToString } from "react-dom/server";
-import { FormatList, ProblemAlert, ReportView, exportFigureFormat, figureFileName } from "./ExportScreen";
-import { exportUrl, getExportFormats, toProblem } from "./api";
+import { FormatList, ProblemAlert, ReportView, quantityLabel, sampleSpan, exportFigureFormat, figureFileName } from "./ExportScreen";
+import { downloadExport, exportUrl, getExportFormats, savedMessage, toProblem } from "./api";
+import { exportFilename } from "../../state/provenance";
+import { figureDataScenes } from "./figureScenes";
 import type { ResultSet } from "./types";
 
 const rs: ResultSet = {
@@ -29,7 +31,7 @@ describe("export screen", () => {
 
   it("renders provenance: point ids, sample span, algorithm", () => {
     const h = renderToString(<ReportView results={rs} />);
-    expect(h).toContain("p1, p2");
+    expect(h).toContain("2 points");
     expect(h).toContain("10 to 45");
     expect(h).toContain("lctt.recompute");
     const none = renderToString(<ReportView results={{ ...rs, provenance: [] }} />);
@@ -74,6 +76,7 @@ describe("export screen", () => {
     const r = await getExportFormats(() => json([]));
     expect(r).toEqual({ ok: true, value: [] });
     expect(figureFileName("fig", "svg")).toBe("fig.svg");
+    expect(figureFileName("fig", "svg", "lab-a")).toBe("lab-a-fig.svg");
   });
 
   it("exports figure data as one svg per figure and reports errors as problems", async () => {
@@ -104,5 +107,67 @@ describe("export screen", () => {
     const p = await exportFigureFormat("fig", { format: "svg" }, () => json(empty), save);
     expect(p?.title).toBe("Nothing to plot yet");
     expect(save).not.toHaveBeenCalled();
+  });
+
+  // frob:ticket 01M71Z6EJDG2FBYHAJFFM90XMX
+  it("states the data source and hides empty 0-to-0 spans (Audit1 #36)", () => {
+    const real = renderToString(<ReportView results={{ ...rs, data_provenance: { source: "real", synthetic: false, label: "", warning: "" } }} />);
+    expect(real).toContain("real measurement");
+    const syn = renderToString(<ReportView results={{ ...rs, data_provenance: { source: "synthetic", synthetic: true, label: "SYNTHETIC", warning: "w" } }} />);
+    expect(syn).toContain("SYNTHETIC (simulated");
+    expect(sampleSpan({ name: "x", point_ids: [], first_sample: 0, last_sample: 0, algorithm: "a" })).toBe("-");
+    expect(quantityLabel("secant_modulus")).toBe("Secant modulus at last point");
+    expect(renderToString(<ReportView results={rs} />)).toContain("overflow-x:auto");
+  });
+});
+
+// frob:ticket 01M7230XGWSR1B8D93KW5M4P7D
+describe("download via fetch", () => {
+  it("non-2xx returns an error that becomes a problem with detail and hint", async () => {
+    const body = JSON.stringify({ title: "Not ready", detail: "NotReady: calibration needed", hint: "Finish calibration." });
+    const r = await downloadExport("lctt-csv", (() => Promise.resolve(new Response(body, { status: 422 }))));
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    const p = toProblem(r.error);
+    expect(p.detail).toContain("calibration needed");
+    expect(p.hint).toBe("Finish calibration.");
+    expect(renderToString(<ProblemAlert p={p} />)).toContain("Hint: Finish calibration.");
+  });
+
+  it("success carries the saved-copy header and a message", async () => {
+    const res = new Response("a,b\n", { status: 200, headers: { "X-SADI-Saved": "exports/lctt-csv/x.csv", "Content-Disposition": 'attachment; filename="x.csv"' } });
+    const r = await downloadExport("lctt-csv", (() => Promise.resolve(res)));
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.value.saved).toBe("exports/lctt-csv/x.csv");
+    expect(r.value.filename).toContain("x.csv");
+    expect(savedMessage(r.value.saved)).toBe("Saved a copy in exports/lctt-csv/x.csv");
+    expect(savedMessage("failed")).toContain("could not keep");
+    expect(savedMessage("")).toBe("");
+  });
+
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  it("splits the stress-strain scene by phase", () => {
+    const d = { calibration: { volts: [], height_m: [], fit: null }, stress_strain: { point_ids: ["a", "b", "c"], strain: [0.001, 0.002, 0.003], stress_mpa: [70, 140, 90],
+      excluded: [false, false, false], phase: ["elastic", "elastic", "plastic"] } };
+    const scenes = figureDataScenes(d);
+    const ss = scenes.find((n) => n.suffix.includes("stress"));
+    expect(ss).toBeDefined();
+    expect(JSON.stringify(ss?.scene)).toContain("plastic");
+  });
+
+  // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+  it("keeps the server-provided filename when provenance is stamped", async () => {
+    const mk = (prov: string, name: string) => new Response("a\n", { status: 200, headers: { "X-SADI-Provenance": prov, "Content-Disposition": `attachment; filename="${name}"` } });
+    const real = await downloadExport("lctt-csv", (() => Promise.resolve(mk("real", "RECOVERED-x.csv"))));
+    expect(real.ok && real.value.filename).toBe("RECOVERED-x.csv");
+    const syn = await downloadExport("lctt-csv", (() => Promise.resolve(mk("synthetic", "RECOVERED-SYNTHETIC-x.csv"))));
+    expect(syn.ok && syn.value.filename).toBe("RECOVERED-SYNTHETIC-x.csv");
+    expect(exportFilename("RECOVERED-SYNTHETIC-x.csv", true)).toBe("RECOVERED-SYNTHETIC-x.csv");
+  });
+
+  it("network failure becomes a network error", async () => {
+    const r = await downloadExport("lctt-csv", (() => Promise.reject(new Error("down"))));
+    expect(r.ok).toBe(false);
   });
 });

@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T05:04:48Z"
+digest = "a7e838a780c2b75ce107950f5ac8b0d4c689efaf2a2d497e8f74113cf914274d"
+exit_code = 0
+head = "aa7dbc9870be7417ddf3a0ab61d6505cf0936b1f"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/cli/test_launcher_real_device.py .....                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-215020-0.xml ---------------
+============================== 5 passed in 2.60s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/cli/test_launcher_real_device.py"
+size = 521
+status = "measured"
+test_count = 5
+tests_digest = "ffcac6329a491f20e6702aee06bdd999207c9c0c72fe21847e84607d14e9f177"
+at = "2026-11-10T05:04:48Z"
+actor = "lognd"
+rev = 1

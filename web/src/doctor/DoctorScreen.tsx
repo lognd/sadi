@@ -4,6 +4,8 @@ import { getLogger } from "../api/log";
 import type { Result } from "../api/result";
 import type { CheckResult, DoctorReport } from "./types";
 
+// frob:ticket 01M71XGJ7JM6YWRWCPMTRQJ0A5
+
 const log = getLogger("doctor.screen");
 
 /** Client functions the screen needs; injectable so tests can mock the API. */
@@ -39,9 +41,22 @@ export function FixSteps({ result }: { result: CheckResult }): React.JSX.Element
   );
 }
 
+/** Verdict banner: overall verdict, per-status counts and the first thing to do (audit #33). */
+export function VerdictBanner({ summary, results }: { summary: DoctorReport["summary"]; results: readonly CheckResult[] }): React.JSX.Element {
+  const n = (st: CheckResult["status"]): number => results.filter((c) => c.status === st).length;
+  return (
+    <section role="status" aria-label="Doctor verdict" data-verdict={summary.verdict}>
+      <strong>Verdict: {summary.verdict}</strong>{" "}
+      <span>{n("pass")} passed, {n("warn")} warnings, {n("fail")} failed, {n("skip")} skipped</span>
+      {summary.first_action ? <p>Do this first: {summary.first_action}</p> : null}
+    </section>
+  );
+}
+
 /** Doctor screen: lists checks with status, expandable fix steps and per-check re-run. */
 export function DoctorScreen({ api = defaultApi }: { api?: DoctorApi }): React.JSX.Element {
   const [results, setResults] = useState<CheckResult[]>([]);
+  const [summary, setSummary] = useState<DoctorReport["summary"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<ReadonlySet<string>>(new Set());
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
@@ -56,6 +71,7 @@ export function DoctorScreen({ api = defaultApi }: { api?: DoctorApi }): React.J
     log.info("results loaded", { count: r.value.results.length });
     setError(null);
     setResults(r.value.results);
+    setSummary(r.value.summary);
   }, [api]);
 
   useEffect(() => {
@@ -92,6 +108,7 @@ export function DoctorScreen({ api = defaultApi }: { api?: DoctorApi }): React.J
     <main aria-label="Doctor">
       <h1>Doctor</h1>
       {error !== null && <p role="alert">{error}</p>}
+      {summary !== null && <VerdictBanner summary={summary} results={results} />}
       <ul>
         {results.map((c) => (
           <li key={c.id} data-status={c.status}>

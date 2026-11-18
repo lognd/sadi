@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from enum import StrEnum
-from typing import NewType, Protocol, assert_never, runtime_checkable
+from typing import Any, NewType, Protocol, assert_never, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field
 from typani import Result
@@ -68,12 +68,19 @@ class StepSpec(_Frozen):
     guidance: Callable[[RunState], str]
     #: Completion criterion: active (non-excluded) points needed before `complete`; skip ignores it.
     min_points: int = Field(default=0, ge=0)
+    #: Optional quality gate on `complete`: gets the active point inputs of the step, returns
+    #: None when fine or a message saying why the step cannot be completed (skip ignores it).
+    complete_check: Callable[[list[dict[str, Any]]], str | None] | None = None
 
 
 class AnalysisResult(_Frozen):
     """Named quantities a lab's analysis produced (SI, with uncertainty)."""
 
     values: dict[str, Quantity]
+    #: Names the lab could not compute yet (shown to the student, never dropped).
+    pending: tuple[str, ...] = ()  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    #: Human-readable reasons / caveats that go with the values.
+    notes: tuple[str, ...] = ()  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
 
 
 #: Renders one export payload from a run and its analysis.

@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/64KFA7D; scope: docs/server/results.md, web/src/screens/run/exportTrace.ts, web/src/screens/WizardHost.tsx; ttl 7200s"
+at = "2026-11-10T08:07:33Z"
+actor = "lognd"
+rev = 1

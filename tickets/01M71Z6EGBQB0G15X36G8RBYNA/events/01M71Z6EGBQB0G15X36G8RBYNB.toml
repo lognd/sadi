@@ -1,0 +1,10 @@
+kind = "create"
+title = "Audit1 #8 #43: synthetic driver verifies server results, fault path, quiet logging"
+type = "bug"
+category = "todo"
+priority = "high"
+scope = ["python/sadi/synthetic/**", "python/tests/synthetic/**"]
+acceptance = ["Driver checks /api/results from the server, fault scenarios pass, early return fixed, driver stdout logging quiet; tests added"]
+at = "2026-11-10T05:34:19Z"
+actor = "lognd"
+rev = 1

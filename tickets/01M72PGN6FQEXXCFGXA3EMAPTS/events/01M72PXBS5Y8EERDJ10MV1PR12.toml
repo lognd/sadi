@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/src/styles.css", "web/src/components/*", "docs/web/design-system.md", "docs/web/wizard.md", "web/crunk.toml", "web/src/theme.css"]
+new = ["web/src/styles.css", "web/src/components/*", "docs/web/design-system.md", "docs/web/wizard.md", "web/crunk.toml", "web/src/theme.css", "web/src/tokens.css"]
+at = "2026-11-10T12:28:47Z"
+actor = "lognd"
+rev = 1

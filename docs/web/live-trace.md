@@ -85,3 +85,12 @@ Dev proxy: `web/vite.config.ts` proxies `/api` with `ws: true` so `WS /api/strea
 `driftVps`, `window` (`firstRawSeq`, `lastRawSeq`) and `simulated` (binary frames unchanged).
 `useRunLive` folds them into `SideState`; `deriveLive` prefers the server drift over the
 client-side estimate and the `simulated` prop falls back to the server flag.
+
+## Auto-scaled y axis and idle readout (audit1 #17, #26)
+
+`liveYRange` fits the y axis to the padded signal envelope (minimum span 1 mV). The
++-4.9 V saturation limits and shaded zones appear only once the signal nears them, when the
+axis returns to the fixed +-5.5 V view. Axis and legend text uses larger fonts than the
+default theme. `deriveLive` takes the age of the newest frame: older than 2 s the readout is
+idle (no volts, no drift, motion unknown, no saturation) and capture is blocked, so a stopped
+stream no longer shows stale SATURATED, "NaN mV/s" or Creeping.

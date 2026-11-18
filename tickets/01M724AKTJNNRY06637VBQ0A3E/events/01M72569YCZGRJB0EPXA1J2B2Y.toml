@@ -1,0 +1,41 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T07:19:05Z"
+digest = "19c14926008ef8a63e7a6d95bc3c4ec5afc93211d5731676045ccb73b4e575d4"
+exit_code = 0
+head = "bd748d46744f257f95da55e58a9fef55abd05232"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/setup/SessionSetup.test.tsx > SessionSetup > downloads a closed session with a plain GET and no body
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/sessions/s/export/lctt-csv' }
+
+stdout | web/src/screens/setup/SessionSetup.test.tsx > SessionSetup > downloads a closed session with a plain GET and no body
+[screens.export.api] download fetched { formatId: 'lctt-csv', bytes: 4, saved: '' }
+
+stdout | web/src/screens/setup/SessionSetup.test.tsx > SessionSetup > shows the problem detail and hint when the server refuses
+[screens.export.api] download requested { formatId: 'lctt-csv', url: '/api/sessions/s/export/lctt-csv' }
+
+ \u{2713} web/src/screens/setup/SessionSetup.test.tsx (6 tests) 21ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  02:19:05
+   Duration  878ms (transform 288ms, setup 0ms, collect 374ms, tests 21ms, environment 0ms, prepare 141ms)
+
+JSON report written to /tmp/frob-vitest-739937-0.json
+stderr | web/src/screens/setup/SessionSetup.test.tsx > SessionSetup > shows the problem detail and hint when the server refuses
+[screens.export.api] download refused { formatId: 'lctt-csv', status: 409 }
+
+'''
+passed = true
+provider = "vitest"
+ref = "src/screens/setup/SessionSetup.test.tsx"
+size = 1214
+status = "measured"
+test_count = 6
+tests_digest = "928c07145b62dd13fc538cbbec7fc2a6db9b0d9d282ffd27236f06967ffef624"
+at = "2026-11-10T07:19:05Z"
+actor = "lognd"
+rev = 1

@@ -37,11 +37,12 @@ from sadi.labs.lctt.guidance import (
     guide,
 )
 from sadi.logging_setup import get_logger
-from sadi.server.routes.problem import ApiProblem, from_sadi, not_found, unwrap
+from sadi.server.routes.problem import ApiProblem, conflict, from_sadi, not_found, unwrap
 from sadi.server.schemas import PointView
 from sadi.server.service import SessionService
 from sadi.server.session_points import active_points, analyze
 from sadi.server.ws import GuidancePayload
+from sadi.synthetic.provenance import REAL, DataProvenance
 from sadi.uncertainty.budget import Budget, BudgetRow
 
 _log = get_logger(__name__)
@@ -102,13 +103,36 @@ class DeviceProbe(Protocol):
 
     @property
     def status(self) -> str:
-        """Coarse state: connected, simulated or error."""
+        """Coarse state: connected, simulated, disconnected or error."""
         ...
 
     @property
     def fault(self) -> object | None:
         """The error that stopped the reader, if any."""
         ...
+
+
+#: Opens the board and attaches it to the open session; Err carries the operator hint text.
+Reconnector = Callable[[], Result[None, object]]
+
+#: Status string of a service that exists but has no board attached.
+DISCONNECTED = "disconnected"
+NO_BOARD_HINT = "No instrument attached; plug in the SADI board and press Reconnect."
+
+
+def reconnect_device(reconnect: Reconnector | None) -> Result[None, ApiProblem]:
+    """Run `reconnect` (None when no device is wired) and map a refusal to a 409 problem."""
+    if reconnect is None:
+        _log.warning("reconnect refused: server has no device service")
+        return Err(conflict("no_device", "no device service", "Restart sadi with a device source."))
+    res = reconnect()
+    if res.is_err:
+        err = res.danger_err
+        hint = getattr(err, "hint", "") or getattr(err, "description", "") or "Check the cable."
+        detail = getattr(err, "detail", "") or getattr(err, "description", "") or repr(err)[:200]
+        _log.error("reconnect failed: %s", detail)
+        return Err(conflict("reconnect_failed", detail, hint))
+    return Ok(None)
 
 
 class DeviceView(BaseModel):
@@ -118,6 +142,10 @@ class DeviceView(BaseModel):
     attached: bool
     fault: str | None = None
     hint: str = ""
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    stop_reason: str | None = None
+    acquisition_fault: str | None = None
 
 
 class QuantityProvenance(BaseModel):
@@ -136,6 +164,8 @@ class ResultsView(ResultSet):
     """`ResultSet` plus per-quantity provenance (which settle windows fed each value)."""
 
     provenance: tuple[QuantityProvenance, ...] = ()
+    # Named data_provenance because `provenance` above already means per-quantity sources.
+    data_provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 def provenance_for(
@@ -171,7 +201,7 @@ def _guidance_problem(err: ErrorSet) -> ApiProblem:
 
 
 def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, ApiProblem]:
-    """Recompute the open session's results and their provenance (the lctt recompute is a stub)."""
+    """Recompute the open session's results and their provenance, with pending/notes when a value is unavailable."""
     info = svc.info()
     pts = svc.points()
     if info.is_err or pts.is_err:
@@ -188,16 +218,19 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     analysis = analyze(lab, active)
     values = []
     notes: list[str] = []
+    pending: tuple[str, ...] = ()
     if analysis.is_err and analysis.danger_err.code == ComputeCode.TOO_FEW_POINTS:
         # Not enough captured input yet: an empty live panel with the reason, not a failure.
         _log.info("recompute waiting for inputs for lab %s: %s", lab.id, analysis.danger_err)
-        notes.append(str(analysis.danger_err))
+        notes.append(analysis.danger_err.detail)  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
         quantities: dict[str, Quantity] = {}
     elif analysis.is_err:
         _log.warning("recompute failed for lab %s: %s", lab.id, analysis.danger_err)
         return Err(from_sadi(analysis.danger_err))
     else:
         quantities = analysis.danger_ok.values
+        pending = analysis.danger_ok.pending  # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+        notes.extend(analysis.danger_ok.notes)
     for name, q in quantities.items():
         made = make_result(name, q.value, q.standard_uncertainty, q.unit)
         if made.is_err:
@@ -209,7 +242,14 @@ def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, 
     _log.info("live results: %d values from %d points", len(values), len(active))
     prov = provenance_for(str(lab.id), [v.name for v in values], active)
     return Ok(
-        ResultsView(n_points=len(loads), values=tuple(values), notes=tuple(notes), provenance=prov)
+        ResultsView(
+            n_points=len(loads),
+            values=tuple(values),
+            pending=pending,
+            notes=tuple(notes),
+            provenance=prov,
+            data_provenance=svc.provenance(),
+        )
     )
 
 
@@ -270,6 +310,7 @@ def make_results_router(
     labs: LabRegistry,
     device: DeviceProbe | None = None,
     budgets: BudgetSource | None = None,
+    reconnect: Reconnector | None = None,
 ) -> APIRouter:
     """Build the results/guidance/device router over `svc`; handlers only delegate."""
     r = APIRouter(prefix="/api")
@@ -278,6 +319,14 @@ def make_results_router(
     def results() -> ResultsView:
         """Live recompute of the open session's results."""
         return unwrap(live_results(svc, labs))
+
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    @r.post("/results/finish")
+    def finish_results() -> DeviceView:
+        """Results reached: drain raw blocks to the WAL and stop streaming (session stays open)."""
+        unwrap(svc.info())
+        svc.finish_acquisition()
+        return device_status()
 
     @r.get("/results/budgets")
     def result_budgets() -> list[ResultBudget]:
@@ -297,18 +346,41 @@ def make_results_router(
     @r.get("/device/status")
     def device_status() -> DeviceView:
         """Device status; attached=false (status error) when no device service is configured."""
+        reason, acq_fault = svc.acquisition_state()
         if device is None:
             return DeviceView(
+                stop_reason=reason,
+                acquisition_fault=acq_fault,
                 status="error",
                 attached=False,
                 hint="No device service is configured; start the server with a device source.",
+                provenance=svc.provenance(),
             )
         fault = device.fault
+        status = str(device.status)
+        hint = getattr(fault, "hint", "") if fault is not None else ""
+        if status == DISCONNECTED:
+            hint = NO_BOARD_HINT
+        # frob:ticket 01M727TR8PNCVA3CA5ZAVFBREF
+        # A faulted or errored device is not "attached" in the healthy sense the UI reads.
+        attached = status not in (DISCONNECTED, "error") and fault is None
+        if not attached:
+            _log.info("device status %s fault=%s: reporting attached=false", status, fault is not None)
         return DeviceView(
-            status=device.status,
-            attached=True,
+            status=status,
+            attached=attached,
             fault=None if fault is None else repr(fault)[:300],
-            hint=getattr(fault, "hint", "") if fault is not None else "",
+            hint=hint,
+            provenance=svc.provenance(),
+            stop_reason=reason,
+            acquisition_fault=acq_fault,
         )
+
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    @r.post("/device/reconnect")
+    def device_reconnect() -> DeviceView:
+        """Open the board now (no restart); attaches to the open session, WAL untouched."""
+        unwrap(reconnect_device(reconnect))
+        return device_status()
 
     return r

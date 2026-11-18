@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/design/*", "python/sadi/server/routes/design.py", "python/tests/design/*", "docs/design/*", "web/src/screens/run/*", "python/sadi/server/app.py", "web/src/api/schema.ts", "web/src/components/guidance/GpLoadPanel.test.tsx", "web/src/components/guidance/GpLoadPanel.tsx", "web/src/components/guidance/GuidancePanel.test.tsx"]
+new = ["python/sadi/design/*", "python/sadi/server/routes/design.py", "python/tests/design/*", "docs/design/*", "web/src/screens/run/*", "python/sadi/server/app.py", "web/src/api/schema.ts", "web/src/components/guidance/GpLoadPanel.test.tsx", "web/src/components/guidance/GpLoadPanel.tsx", "web/src/components/guidance/GuidancePanel.test.tsx", "web/src/components/guidance/GuidancePanel.tsx"]
+at = "2026-11-10T12:26:13Z"
+actor = "lognd"
+rev = 1

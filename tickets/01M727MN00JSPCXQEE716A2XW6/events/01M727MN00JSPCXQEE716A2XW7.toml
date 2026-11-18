@@ -1,0 +1,10 @@
+kind = "create"
+title = "Fix test_point_roundtrip 409 NoOpenSession after open_session change (H3 regression)"
+type = "bug"
+category = "todo"
+priority = "medium"
+scope = ["python/tests/api/test_point_roundtrip.py"]
+acceptance = ["python/tests/api/test_point_roundtrip.py::test_record_recover_fit_round_trip passes by opening a session in the test setup, without weakening the NoOpenSession guard"]
+at = "2026-11-10T08:01:53Z"
+actor = "lognd"
+rev = 1

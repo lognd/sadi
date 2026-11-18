@@ -286,6 +286,7 @@ class RunOptions(BaseModel):
     running: bool = False
     open_browser: bool = False  # frob:ticket 01M6WJHVZC0JYPV6W1CCFWSS8S
     data_root: str | None = None
+    probe_device: bool = True  # False: never open or query a serial port (GET /api/doctor)
 
 
 class Summary(BaseModel):

@@ -1,7 +1,7 @@
 // frob:ticket 01M6W7R41EVGYTSV1B72ZQVKAB
 import { useEffect, useRef } from "react";
 import { getLogger } from "../api/log";
-import { isControlTarget, isTextTarget, resolveKey, shouldBlurOnEscape, type KeyAction } from "./keymap";
+import { isControlTarget, isHeldAccept, isTextTarget, resolveKey, shouldBlurOnEscape, type KeyAction } from "./keymap";
 
 const log = getLogger("keys.capture");
 
@@ -23,6 +23,11 @@ export function useKeyCapture(onAction: (a: KeyAction) => void, nudgeActive: boo
       const action = resolveKey(e, { textFocus: isTextTarget(target), nudgeActive, controlFocus: isControlTarget(target) });
       if (action === null) return;
       e.preventDefault();
+      // frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+      if (isHeldAccept(e.repeat, action)) {
+        log.debug("held accept key ignored", { key: e.key });
+        return;
+      }
       log.debug("key action", { key: e.key, action });
       handler.current(action);
     };

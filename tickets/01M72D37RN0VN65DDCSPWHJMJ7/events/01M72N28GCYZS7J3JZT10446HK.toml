@@ -1,0 +1,15 @@
+kind = "evidence"
+captured_at = "2026-11-10T11:27:28Z"
+digest = "993b5e42c97eda18fe023ad3e8415e48fa6f34c9bce8fcdf49707342dcdf1c7a"
+exit_code = 0
+passed = true
+provider = "vitest"
+ref = "web/src/components/guidance/GpLoadPanel.test.tsx web/src/components/instrument/audit1.test.tsx web/src/keys/keymap.test.ts web/src/plots/core/features.test.ts web/src/plots/core/plots.test.ts web/src/screens/export/ExportScreen.test.tsx web/src/screens/run/RunScreen.test.tsx"
+size = 29328
+status = "measured"
+test_count = 92
+tests_digest = "540fdfb48d0242fefe6b919de1176b697ca255eae6c65ea21e1451720b87e322"
+uri = "dir:.git/frob/artifacts/993b5e42c97eda18fe023ad3e8415e48fa6f34c9bce8fcdf49707342dcdf1c7a"
+at = "2026-11-10T11:27:28Z"
+actor = "lognd"
+rev = 1

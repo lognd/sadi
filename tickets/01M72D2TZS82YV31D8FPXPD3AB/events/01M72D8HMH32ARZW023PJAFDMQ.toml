@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [4]
+captured_at = "2026-11-10T09:40:07Z"
+digest = "ea85c03c474ed748d7815b522c2c5ac46d0668ca4ce1ea87e8023411d1df2744"
+exit_code = 0
+head = "c3cf706ba3dc7cce52c7f15fa41bd8c808028b07"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/store/test_spill.py ..                                      [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-924355-0.xml ---------------
+============================== 2 passed in 0.41s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/store/test_spill.py::test_low_space_defers_join_to_fragment python/tests/store/test_spill.py::test_failed_join_writes_marker_and_falls_back_once"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "757052efe5054724971aed2327b8253ed09273fb998edaf9441528a2ce9be3e9"
+at = "2026-11-10T09:40:07Z"
+actor = "lognd"
+rev = 1

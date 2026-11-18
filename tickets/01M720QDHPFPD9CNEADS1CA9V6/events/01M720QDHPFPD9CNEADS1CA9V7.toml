@@ -1,0 +1,11 @@
+kind = "create"
+title = "Audit1 #4 #2 #21: wire Save/WAL indicator to real writer; provenance for --sim; manifest/WAL-based synthetic provenance"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 5
+scope = ["python/sadi/launcher.py", "python/sadi/server/app.py", "python/sadi/store/session.py", "python/tests/server/**", "python/tests/store/**"]
+acceptance = ["Save indicator reflects the real WAL writer (not always Saved); --sim runs are labelled simulated, not real; session_is_synthetic reads manifest/WAL, not only the sidecar; tests prove each"]
+at = "2026-11-10T06:01:04Z"
+actor = "lognd"
+rev = 1

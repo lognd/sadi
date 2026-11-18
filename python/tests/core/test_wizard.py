@@ -53,8 +53,13 @@ def _wiz() -> Wizard:
     return Wizard.create(_specs()).danger_ok
 
 
-def _point(pid: str, phase: str = "calibration") -> PointV1:
-    return PointV1(point_id=pid, phase=phase, window=PointWindow(first_raw_seq=1, last_raw_seq=5))
+def _point(pid: str, phase: str = "calibration", **inputs: float) -> PointV1:
+    return PointV1(
+        point_id=pid,
+        phase=phase,
+        window=PointWindow(first_raw_seq=1, last_raw_seq=5),
+        inputs=dict(inputs),
+    )
 
 
 # frob:tests python/sadi/core/wizard.py::Wizard.create
@@ -142,14 +147,14 @@ def test_undo_redo_point_capture_never_deletes() -> None:
 # frob:tests python/sadi/core/wizard.py::Wizard.redo
 def test_undo_redo_edit_and_window_change() -> None:
     w, log = _wiz(), Log()
-    log.apply(w.capture(log.state, _point("p")))
+    log.apply(w.capture(log.state, _point("p", volts=1.0, height=0.01)))
     log.apply(w.edit(log.state, "p", "set_window", {"last_raw_seq": 9}))
-    log.apply(w.edit(log.state, "p", "override_input", {"x": 1}))
+    log.apply(w.edit(log.state, "p", "override_input", {"volts": 2.0}))
     cur = log.state.view().points[0]
-    assert cur.window.last_raw_seq == 9 and cur.inputs == {"x": 1}
+    assert cur.window.last_raw_seq == 9 and cur.inputs == {"volts": 2.0, "height": 0.01}
     log.apply(w.undo(log.state))
     cur = log.state.view().points[0]
-    assert cur.window.last_raw_seq == 9 and cur.inputs == {}
+    assert cur.window.last_raw_seq == 9 and cur.inputs == {"volts": 1.0, "height": 0.01}
     log.apply(w.undo(log.state))
     assert log.state.view().points[0].window.last_raw_seq == 5
     log.apply(w.redo(log.state))

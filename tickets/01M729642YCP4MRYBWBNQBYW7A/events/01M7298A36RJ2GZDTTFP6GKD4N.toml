@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/NQBYW7A; scope: python/sadi/labs/lctt/export_csv.py, python/sadi/labs/lctt/figure_data.py, python/sadi/server/curve_source.py, python/sadi/labs/lctt/lab.py, python/tests/labs/lctt; ttl 7200s"
+at = "2026-11-10T08:30:02Z"
+actor = "lognd"
+rev = 1

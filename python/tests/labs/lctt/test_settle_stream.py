@@ -153,7 +153,7 @@ def test_force_early_flags_point() -> None:
     r: PointRecord = rec.danger_ok
     assert r.forced_early and not r.settled
     assert r.drift_rate is not None and r.time_since_load == pytest.approx(59.0)
-    assert det.force_early() == Err(StreamError.NoOpenPoint)
+    assert det.status.point_index == 1  # the next point opens automatically
 
 
 # frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector.force_early
@@ -220,4 +220,30 @@ def test_fresh_detector_status_and_records() -> None:
     _stream(det, _clean, 200)
     rec = det.close_point().danger_ok
     assert det.records == (rec,)
-    assert det.status.point_index is None
+    assert det.status.point_index == 1
+
+
+def _step_then_ramp(t: float) -> float:
+    return 0.0 if t < 100 else 0.01 * (t - 100)
+
+
+# frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector.push
+def test_settle_verdict_does_not_latch() -> None:
+    det = _detector()
+    st = _stream(det, _step_then_ramp, 220)
+    assert any(x.state is SettleState.SETTLED for x in st)
+    assert st[-1].state is not SettleState.SETTLED
+    rec = det.close_point().danger_ok
+    assert not rec.settled
+
+
+# frob:tests python/sadi/labs/lctt/settle_stream.py::StreamingSettleDetector.close_point
+def test_point_opens_automatically_after_capture_and_resettles() -> None:
+    det = _detector()
+    _stream(det, _clean, 200)
+    assert det.close_point().danger_ok.settled
+    assert det.status.point_index == 1
+    assert det.status.state is not SettleState.SETTLED
+    r = det.push([200.0 + i for i in range(1, 200)], [0.0] * 199)
+    assert r.danger_ok.state is SettleState.SETTLED
+    assert det.close_point().danger_ok.point_index == 1

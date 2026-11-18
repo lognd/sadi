@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["web/index.html", "web/src/styles.css", "web/src/tokens.css", "web/src/theme.css", "web/src/plots/theme.ts", "web/crunk.toml", "docs/web/design-system.md", "web/src/plots/calibration/__snapshots__/*"]
+new = ["web/index.html", "web/src/styles.css", "web/src/tokens.css", "web/src/theme.css", "web/src/plots/theme.ts", "web/crunk.toml", "docs/web/design-system.md", "web/src/plots/calibration/__snapshots__/*", "web/src/plots/core/__snapshots__/*"]
+at = "2026-11-10T14:31:54Z"
+actor = "lognd"
+rev = 1

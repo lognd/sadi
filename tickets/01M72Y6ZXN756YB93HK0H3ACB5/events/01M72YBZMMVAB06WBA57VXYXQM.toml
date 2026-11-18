@@ -1,0 +1,26 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:39:05Z"
+digest = "43da0015312bdf16f35f0a0c022452cb5f96ec129fbac78182c1ef659e32acb8"
+exit_code = 0
+head = "3adecebbe8bd57fadbee9f7ce62c716d14c19494"
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+ \u{2713} src/plots/live/useContainerSquare.test.ts (5 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  09:39:06
+   Duration  503ms (transform 61ms, setup 0ms, collect 49ms, tests 3ms, environment 0ms, prepare 163ms)
+
+'''
+passed = true
+provider = "command"
+ref = "vitest run --root web src/plots/live/useContainerSquare.test.ts"
+size = 276
+status = "measured"
+at = "2026-11-10T14:39:05Z"
+actor = "lognd"
+rev = 1

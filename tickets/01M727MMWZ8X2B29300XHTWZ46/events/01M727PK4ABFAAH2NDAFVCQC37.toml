@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/XHTWZ46; scope: web/src/components/instrument/StopBanner.tsx, web/src/components/instrument/StopBanner.test.tsx, web/src/api/client.ts; ttl 7200s"
+at = "2026-11-10T08:02:53Z"
+actor = "lognd"
+rev = 1

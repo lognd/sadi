@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:27:49Z"
+digest = "1803d48bfaf3abaf42376b8b5dd634408401cf70f20724935dab022e4d7df482"
+exit_code = 0
+head = "e1186ee735ff19bca0a6b78e594e90d5556e218f"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  08:27:56
+   Duration  380ms (transform 50%, import 25%, tests 21%, worker 3%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/run/SuggestedWeightPanel.test.tsx"
+size = 171
+status = "measured"
+at = "2026-11-10T13:27:49Z"
+actor = "lognd"
+rev = 1

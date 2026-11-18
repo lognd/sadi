@@ -10,3 +10,7 @@ Part of the [usability report](../../../../docs/usability-report.md) (~W5XJBZT).
 - U-05 (sev 2, fixed ~81EQRYA): phase text and a hint beside Mark load change say it is required before Settled.
 - U-06 (sev 2, fixed ~BJVWSNR): a stop shows plain language plus what to do (check cable, open Doctor); with zero points it also says to capture a point first.
 - Timing: about 10 s per point is detector settle time; the UI adds none.
+
+## Device fault
+
+After a `device_fault` stop the status bar and live readout show "Faulted" (never "Connected"), a fault notice is shown and capture is blocked until the next stream hello. The server `simulated` flag follows `DeviceService.is_simulator`, so it survives a fault.

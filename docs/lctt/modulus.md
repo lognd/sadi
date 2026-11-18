@@ -45,3 +45,11 @@ engine). It also returns the ultimate stress (maximum stress point). Errors: `No
 |V| exceeds `SaturationConfig.threshold_v` (default 4.9 V). The three figures differ by
 source: 4.8 V is the mounting guidance, 4.9 V is the warning default, and 5.12 V is the
 ADC full range (Q14, see [open-questions](../open-questions.md)). All are configurable.
+
+## Reported E interval (audit1 #7)
+
+`LcttLab.analyze` adds, in quadrature to the regression standard error, a calibration-slope
+term, a diameter term (stress scales with 1/d^2) and a 3 % creep allowance
+(`CREEP_REL_ALLOWANCE`), because creep biases a fitted E low and the bare OLS SE missed the
+truth in most synthetic seeds. `analyze` also returns `slope` (m/V), `intercept` (m) and
+`tare` (V), and carries `pending`/`notes` from `combine_runs` into `AnalysisResult`.

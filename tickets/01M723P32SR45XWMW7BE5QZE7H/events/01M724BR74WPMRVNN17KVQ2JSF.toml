@@ -1,0 +1,35 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T07:04:30Z"
+digest = "70fe4a4846cbbee70e3d7dd68328f084d781af4239ebdbe8b0b843fc783223d0"
+exit_code = 0
+head = "5db53fc8799e29453e22a7210fa318040f541b13"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 5 items
+
+python/tests/server/test_idle_raw.py .....                               [100%]
+
+=============================== warnings summary ===============================
+python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  <worktree>/python/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------- generated xml file: /tmp/frob-pytest-712021-0.xml ---------------
+========================= 5 passed, 1 warning in 4.97s =========================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_idle_raw.py"
+size = 1003
+status = "measured"
+test_count = 5
+tests_digest = "155e10d6a45bd757d8cf3e19d9795c28ac7140df02dd41092840179dcff9b23a"
+at = "2026-11-10T07:04:30Z"
+actor = "lognd"
+rev = 1

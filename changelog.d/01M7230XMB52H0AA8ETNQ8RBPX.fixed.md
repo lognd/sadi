@@ -1,0 +1,1 @@
+Calibration finish is now blocked on poor fits (r2, slope sign, outliers) and mm-vs-m / g-vs-kg slips are rejected with hints; a blank diameter is required in the UI and otherwise noted as assumed with uncertainty.

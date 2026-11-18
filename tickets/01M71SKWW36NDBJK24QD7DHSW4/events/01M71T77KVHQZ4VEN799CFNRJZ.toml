@@ -1,0 +1,15 @@
+kind = "evidence"
+accepts = [1, 2, 3]
+captured_at = "2026-11-10T04:07:16Z"
+digest = "07a0fcc0b5682f2511c6c796cf9590eaebc88b9d761e883121a87ec5c7cc7f40"
+exit_code = 0
+head = "f72c91400479b4ba87215e9d4b48ce54bd51bfdc"
+passed = true
+provider = "command"
+ref = "npx --prefix web vitest run --root web"
+size = 56292
+status = "measured"
+uri = "dir:.git/frob/artifacts/07a0fcc0b5682f2511c6c796cf9590eaebc88b9d761e883121a87ec5c7cc7f40"
+at = "2026-11-10T04:07:16Z"
+actor = "lognd"
+rev = 1

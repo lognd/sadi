@@ -1,6 +1,6 @@
 // frob:ticket 01M6XAASMZX11EZ5NYC3FNTQ6Z
 import { renderToString } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { App } from "./App";
 
 describe("App", () => {
@@ -13,5 +13,11 @@ describe("App", () => {
     expect(html).toContain('<nav aria-label="Tools">');
     expect(html.indexOf("Doctor")).toBeGreaterThan(-1);
     expect(html.indexOf("Doctor")).toBeLessThan(html.indexOf("backend: "));
+  });
+
+  test("provides the shared live feed to the wizard host without a second subscription", () => {
+    const open = vi.fn();
+    renderToString(<App trace={{ open }} />);
+    expect(open).not.toHaveBeenCalled();
   });
 });

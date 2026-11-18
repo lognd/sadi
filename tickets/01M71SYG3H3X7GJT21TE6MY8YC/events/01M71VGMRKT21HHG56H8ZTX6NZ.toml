@@ -1,0 +1,230 @@
+kind = "evidence"
+captured_at = "2026-11-10T04:27:34Z"
+digest = "cc9707e4e07ee967447a99d04f37d8e9d7e8e496d7bf4bf4ca18bd1cb2e95d89"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/plots/stressstrain/stressstrain.test.ts
+[plots.stressstrain.scene] scene built { points: 10, fits: 2, window: [ 1, 5 ] }
+
+stdout | src/plots/stressstrain/stressstrain.test.ts > window selection > keyboard steps and ignores other keys
+[plots.stressstrain.selection] key step {
+  key: 'ArrowRight',
+  edge: 'last',
+  from: 5,
+  window: { first: 1, last: 6 }
+}
+[plots.stressstrain.selection] key step {
+  key: 'ArrowRight',
+  edge: 'last',
+  from: 5,
+  window: { first: 1, last: 9 }
+}
+[plots.stressstrain.selection] key step { key: 'Home', edge: 'first', from: 1, window: { first: 0, last: 5 } }
+[plots.stressstrain.selection] key step { key: 'End', edge: 'last', from: 5, window: { first: 1, last: 9 } }
+
+stdout | src/plots/calibration/calibration.test.tsx > calibration scenes > maps points, error bars, fit, band and annotation (acceptance 1)
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 338.8, y: 289, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+
+stdout | src/plots/stressstrain/stressstrain.test.ts > scene mapping > is deterministic and renders to SVG (golden)
+[plots.stressstrain.scene] scene built { points: 10, fits: 2, window: [ 1, 5 ] }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 457.08000000000004, y: 363, penalty: 0 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 460,
+  xTicks: 6,
+  yTicks: 5,
+  title: 'Stress-strain',
+  xTitle: 'Strain (mm/mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 79, series: 24 }
+
+stdout | src/plots/calibration/calibration.test.tsx > calibration live update and golden > scene changes after each captured point (acceptance 2)
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.calibration] building calibration scenes { n: 6, errorBars: true }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 338.8, y: 289, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 338.8, y: 289, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 3,
+  yTicks: 4,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 66, series: 1 }
+
+stdout | src/plots/stressstrain/stressstrain.test.ts > scene mapping > omits fit artefacts without a fit
+[plots.stressstrain.scene] scene built { points: 10, fits: 0, window: null }
+
+ \u{2713} src/plots/stressstrain/stressstrain.test.ts (9 tests) 16ms
+stdout | src/plots/calibration/calibration.test.tsx > calibration live update and golden > matches the golden SVG for both panels
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+[plots.place] box placed { id: 'annotation', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 338.8, y: 289, penalty: 0 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 5,
+  yTicks: 6,
+  title: 'LVDT calibration, height versus voltage',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 74, series: 1 }
+[plots.layout] layout computed {
+  width: 640,
+  height: 180,
+  xTicks: 5,
+  yTicks: 5,
+  title: 'Residuals',
+  xTitle: 'Voltage (V)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 44, series: 1 }
+
+stdout | src/plots/calibration/calibration.test.tsx > calibration live update and golden > component renders both canvases, or a status when empty
+[plots.calibration] building calibration scenes { n: 5, errorBars: true }
+
+ \u{2713} src/plots/calibration/calibration.test.tsx (5 tests) 29ms
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > settled stream: readout, motion and signal
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > creeping stream reports a drift rate
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > live derivation from a mocked sim stream > saturation shows in the status bar signal and the warning
+[hooks.markClock] load mark { now: 2, timeSinceLoad: 3, t: -1 }
+[plots.live.window] mark { t: -1, kind: 'load' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture { phase: 'calibration', forced: false }
+[screens.review.api] request { path: '/api/session/points', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > RunView > per-phase plot: stress-strain for elastic, none for tare
+[plots.stressstrain.scene] scene built { points: 0, fits: 0, window: null }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export requested { format: 'lctt-csv' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > fetches the lctt-csv export
+[screens.run.export] export fetched { format: 'lctt-csv', bytes: 8 }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export requested { format: 'x' }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange posts to the route and returns the marker seq
+[screens.run.loadChange] load change marked { seq: 5 }
+
+stdout | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] request { path: '/api/session/load-change', method: 'POST' }
+
+ \u{2713} src/screens/run/RunScreen.test.tsx (21 tests) 51ms
+
+ Test Files  3 passed (3)
+      Tests  35 passed (35)
+   Start at  23:29:58
+   Duration  988ms (transform 559ms, setup 0ms, collect 1.05s, tests 97ms, environment 1ms, prepare 539ms)
+
+JSON report written to /tmp/frob-vitest-106301-1.json
+stderr | src/plots/stressstrain/stressstrain.test.ts > window selection > clamps to bounds and minimum size
+[plots.stressstrain.selection] too few points for a window { n: 2 }
+
+stderr | src/plots/calibration/calibration.test.tsx > calibration scenes > rejects bad payloads without throwing
+[plots.calibration] rejecting calibration payload { kind: 'empty' }
+[plots.calibration] rejecting calibration payload { kind: 'length_mismatch' }
+[plots.calibration] rejecting calibration payload { kind: 'non_finite' }
+[plots.calibration] rejecting calibration payload { kind: 'missing_text' }
+
+stderr | src/plots/calibration/calibration.test.tsx > calibration live update and golden > component renders both canvases, or a status when empty
+[plots.calibration] rejecting calibration payload { kind: 'empty' }
+[plots.calibration.view] calibration plot unavailable { kind: 'empty' }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.review.api] http error { path: '/api/session/points', status: 409 }
+
+stderr | src/screens/run/RunScreen.test.tsx > capture decisions > postCapture posts JSON and surfaces refusals
+[screens.run.capture] capture refused { kind: 'http' }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export http error { format: 'x', status: 404 }
+
+stderr | src/screens/run/RunScreen.test.tsx > run F3 export > reports http and network failures
+[screens.run.export] export network failure { format: 'x', message: 'down' }
+
+stderr | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.review.api] http error { path: '/api/session/load-change', status: 409 }
+
+stderr | src/screens/run/RunScreen.test.tsx > mark load change > postLoadChange surfaces a 409 as an error
+[screens.run.loadChange] load change refused { kind: 'http' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/e2e/lctt-data.spec.ts web/src/plots/calibration/calibration.test.tsx web/src/plots/stressstrain/stressstrain.test.ts web/src/screens/run/RunScreen.test.tsx"
+size = 9498
+status = "measured"
+test_count = 35
+tests_digest = "e103105bcddc959d017c4ad9d455c7c295e6569138f4ea8ade63c5b92efe4a4c"
+at = "2026-11-10T04:27:34Z"
+actor = "lognd"
+rev = 1

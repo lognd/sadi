@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T06:45:49Z"
+digest = "88d0f8e7a5d647c7a6f5bc1b833ca03c31b6a1036a14336d108318b0713f31b5"
+exit_code = 0
+head = "3f3397c8f80ed46d8b87e755a95d1e42bb71c904"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 2 items
+
+python/tests/server/test_export_exclusions.py ..                         [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-655465-0.xml ---------------
+============================== 2 passed in 2.42s ===============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/server/test_export_exclusions.py"
+size = 521
+status = "measured"
+test_count = 2
+tests_digest = "977295aa7890c7bd37854a9776986159fa9472c24e3190d0c86bc528ff1be411"
+at = "2026-11-10T06:45:49Z"
+actor = "lognd"
+rev = 1

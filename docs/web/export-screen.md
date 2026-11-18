@@ -21,3 +21,19 @@ Parent: [web layout](../web-layout.md), next to the [guidance panel](guidance.md
 - Errors are problem+json: `toProblem` reads `title`, `detail` and `hint`; `ProblemAlert`
   shows them with `role="alert"`.
 - Figure JSON carries no theme; the light publication theme is applied before drawing.
+
+See also the [synthetic data banner](synthetic-banner.md) shown above the report and the download list.
+
+## Provenance (Audit1 #36)
+
+The report states the data source (real measurement or SYNTHETIC) in plain words. The provenance table shows a point count (ids in the tooltip), hides empty 0-to-0 sample spans, and uses readable quantity names.
+
+## Download and close (~W5M4P7D)
+
+The Download links fetch the file with `fetch()` instead of following the link. A refusal (for example 422 NotReady) shows the problem detail and hint in the page; success saves the file and shows "Saved a copy in <path>" from the `X-SADI-Saved` header (or a warning when the header is `failed`).
+
+The header of every wizard screen has **Close session**, and the finished screen has **Start another session**. Both ask for confirmation, state that captured data stays saved in the session folder, then POST `/api/session/close` and return to session setup.
+
+## Download a closed session (~VBQ0A3E)
+
+Session setup shows a **Download** button next to Resume for each closed session. It fetches the CSV through the read-only `GET /api/sessions/{name}/export/{format_id}` (no new version, no device needed) and saves it; a refusal shows the problem detail and hint in the page.

@@ -1,9 +1,11 @@
 // frob:ticket 01M6WZCNF9F9XSPWCKB34JHSD9
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { RailItem } from "../components/wizard/types";
 import { App } from "../App";
+import { withLive } from "../state/testLive";
 import { WizardHost, screenFor } from "./WizardHost";
 
 const step = (phase: string, status: RailItem["status"]): RailItem =>
@@ -26,7 +28,7 @@ describe("screenFor", () => {
 
 describe("mounting", () => {
   it("WizardHost renders a loading state until the wizard is fetched", () => {
-    expect(renderToString(<WizardHost />)).toContain("Loading steps");
+    expect(renderToString(withLive(<WizardHost />))).toContain("Loading steps");
   });
 
   it("App mounts the wizard host and keeps the Doctor link reachable", () => {

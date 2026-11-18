@@ -40,6 +40,37 @@ written, `marker_written` is false and a warning is logged.
 The imported version has no `SESSION_START` (the spilled records are only the undurable
 tail); it is a data-bearing version whose lineage is in its manifest.
 
+### Join, overlap, provenance, space (audit-5 M1-M4)
+
+- Join (M1): the spill may overlap the parent, `parent.first_seq <= spill.first_seq <=
+  parent.last_seq + 1` (gap seqs must be SEALs). A failed fsync leaves the batch already written
+  to the parent segment, so overlap is the normal case. Overlapping frames must be identical
+  (type, wall_ns, flags, payload) or the spill is kept as a fragment. The joined WAL is the
+  parent's records plus the spill records beyond the parent's last seq, renumbered densely
+  (SEALs dropped; see the L2 followup: raw-seq references shift after a rotation).
+- Supersede (M2): the new manifest has `spill_import = "joined"` or `"fragment"`.
+  `routes/sessions.py` lets only a `joined` import in state `closed` supersede an incomplete
+  parent; fragment and crashed imports never do.
+- Provenance (M3): the import inherits the parent's synthetic flag/marker. An orphan spill has
+  no provenance: the manifest bool cannot say "unknown", so it stays set (never labelled real)
+  and the setup list shows an orphan (no parent, `spill_import` set) as "Provenance unknown".
+- Space and failure (M4): before joining, free space must cover the parent WAL size plus the
+  spill plus 64 MiB, else the spill is imported as a fragment (WARNING "join deferred"). If the
+  join write fails anyway, the partial dir is kept (state `crashed`), a sidecar
+  `<name>.join-failed.json` names it, the spill is imported as a fragment, and later starts
+  never attempt the join again for that content. Nothing is deleted or overwritten.
+- Verify before close: the joined segment is re-scanned before the version is closed. A failed
+  re-read marks it `crashed` (kept), writes the failed-join marker and imports the fragment.
+  An exclusive `<name>.join-inprogress.json` is created before the join copy, so a join killed
+  mid-copy is also never retried (fragment instead).
+- Failed fragment verify: if the fragment import itself fails re-verification, the crashed copy
+  is kept and an exclusive `<name>.fragment-failed.json` (content hash, crashed dir, reason) is
+  written (WARNING). Later starts see it and skip the spill (`Ok(None)`) instead of making
+  another crashed copy. Nothing is deleted or overwritten.
+- Lineage: `_descendants` does not walk through a non-superseding spill import, so resuming a
+  fragment never marks the full parent as superseded. The setup list labels fragments
+  ("Recovered fragment ...") and joined imports ("Recovered (complete)").
+
 ## Startup
 
 `sadi.server.app._lifespan` calls `import_all_spills` right after the data-root lock is held
@@ -47,3 +78,20 @@ and before the app serves. Each import is logged at WARNING (recovered), already
 spills at INFO. A failed spill is logged at ERROR with the file left intact; startup
 continues and `app.state.spill_failures` holds the failure count. Spills are never deleted
 or overwritten. Without the lock (degraded mode) no import is attempted.
+
+## Per-data-root markers, join cleanup, fragment-failed outcome (audit7 M5, L5, L6)
+
+- The `.imported.json` marker is trusted only when its `version_dir` exists and lies under the
+  data root being imported into. Otherwise it is renamed to `.imported.json.stale-<ns>` (kept,
+  never deleted) and the spill is imported again into this root. Tests isolate the user and temp
+  spill dirs with an autouse fixture in `python/tests/conftest.py`.
+- A join that fails before any segment byte is written (`SpillSession`: version numbering or
+  directory init) renames the in-progress sidecar to `.join-inprogress.json.aborted-<ns>`, so the
+  next start retries the full join.
+- The manifest records `spill_sha256`. If a closed imported version in this root already carries
+  the spill's sha256 (marker lost or a crash after close), the missing marker is written and no
+  duplicate version is created.
+- `import_all_spills` returns `Ok(FragmentFailedSkip(spill, crashed_dirs))` for a spill skipped
+  because of `.fragment-failed.json`; startup logs it at WARNING with the crashed-copy paths
+  instead of "already imported".
+

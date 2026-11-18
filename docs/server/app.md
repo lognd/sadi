@@ -34,7 +34,10 @@ exits non-zero. With `require_root_lock=False` the app starts degraded and
 (any `FailableSeqSource`); the app builds one `SaveIndicator` over it (kept on
 `app.state.save_indicator`) and registers `SaveIndicator.mark_failed` via
 `writer.on_failure`, so a writer failure latches NOT SAVED. With no writer the indicator
-reads Saved with nothing pending.
+follows the open session's real writer: `create_app` hooks session open/close
+(`SessionService.set_hooks`, chained with the live-acquisition hooks), binds the indicator's seq
+source to the new `WriterHandle` and registers `mark_failed` on it, so Saving (pending seqs) and
+NOT SAVED reflect the real WAL. With no session open nothing is pending and it reads Saved.
 
 ## Stress-strain refit
 
@@ -78,3 +81,39 @@ Results, budgets, guidance and device status routes: [results.md](results.md). `
 Per-action state comes from `IncrementalReplay` (docs/store/incremental-replay.md), not a full WAL walk per request, so action latency stays flat as raw data accumulates.
 
 `create_app` builds one `SessionReplayCache` and hands it to the export, plots and curve-source wiring, so all three share one `IncrementalReplay` per session (bounded to a few sessions; eviction only costs a verified full replay).
+
+## Raw streaming lifecycle (audit2 H2b)
+
+`LiveAcquisition` (`sadi/server/live.py`) stops writing raw device blocks to the WAL when it
+should, without ever dropping recorded data: every block already read is drained into the WAL
+before the device is stopped, and the session, writer and WAL stay open and untouched.
+
+- `finish()` / `stop_streaming(reason)`: stop for a finished session (`stop_reason == "finished"`).
+  A later load change is refused (`LiveError.Finished`); resume the session to record again.
+- Idle: a watchdog thread (`WATCH_POLL_S`) pauses streaming after `IDLE_TIMEOUT_S` (600 s) with no
+  load change, no unsettled point update and no result. A new `mark_load_change` restarts the
+  stream on the same writer.
+- Low disk: below `LIVE_MIN_FREE_BYTES` (1 GiB, `sadi.core.device.free_bytes`) the stream stops,
+  `LiveAcquisition.fault` becomes `DriverFault(origin="disk")`, a `PipelineStopped(low_disk)`
+  event goes to the bus, and new capture is refused (`LiveError.LowDisk`). A session opened under
+  the floor starts no stream. Nothing is deleted; the writer's own 512/128 MiB guards still apply
+  (docs/data-safety.md 6.5).
+
+## Reconnect and no-board start (audit2 H8c)
+
+With no board at start the launcher serves an unopened `DeviceService` (status `disconnected`).
+`LiveAcquisition.on_session_open` then sets `stop_reason == "no_device"` (`STOP_NO_DEVICE`) and a
+`DriverFault` instead of raising. `SessionService.set_capture_gate(LiveAcquisition.capture_block_hint)`
+makes `capture` answer 409 `no_device` until a board is attached. `LiveAcquisition.reconnect_device()`
+(behind `POST /api/device/reconnect`) reopens the device and, if a session is open and not finished
+or low on disk, starts a run with a new SETTINGS record; the WAL is only ever appended to. It is a
+no-op while a healthy run is active, and a failed open returns a 409 problem with the session intact.
+
+`SessionService.finish_acquisition()` (wired by `set_acquisition`) calls `LiveAcquisition.finish()` on `POST /api/results/finish` and at close.
+`GET /api/export/{fmt}` does not finish: it is read-only on acquisition and renders from what the WAL already holds.
+`capture_block_hint` also refuses capture (409, plain hint) when `stop_reason` is finished, low_disk, idle or no_device. A finish fault is
+logged and surfaced as `acquisition_fault` on `/api/device/status`; it is never raised and never discards WAL data.
+
+`GET /api/design/next-weight` (`routes/design.py`) is read-only: it builds observations from active settled points and returns the advisory next weight plus the enough-data indicator; see [design/gp-selector.md](../design/gp-selector.md).
+
+`POST /api/session/points` is idempotent per `request_id`. The POINT record stores a digest of the operator-chosen fields (`request_digest`), so after a reopen the replay fallback still compares it: the same id with a different body is a 409 `request_id_reused`, the same body returns "Already saved". Points written before the digest existed carry none and count as a match. The route declares 409 and 503 `ApiProblem` responses, and `DesignIndicator.reasons` is a closed enum (`ReasonCode`) in `openapi.json`.

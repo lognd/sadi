@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/tests/server/test_readonly_export.py"]
+new = ["python/sadi/server/service.py", "python/sadi/server/routes/export.py", "python/tests/server/test_readonly_export.py", "python/sadi/server/ws.py", "python/sadi/server/routes_stress_strain.py", "python/sadi/server/app.py", "docs/synthetic.md"]
+at = "2026-11-10T13:47:29Z"
+actor = "lognd"
+rev = 1

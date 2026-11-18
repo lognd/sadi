@@ -1,0 +1,35 @@
+kind = "evidence"
+captured_at = "2026-11-10T14:01:14Z"
+digest = "02b8ae97a9a7c65fd51e32b595a66dde22ed716f2f8ec50b70c9a18ff1e0c096"
+exit_code = 0
+head = "b26f89ea5f4d4cdb5fb3b74b419d638411628039"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/screens/run/SuggestedWeightPanel.test.tsx > suggested weight > fetches the read-only route
+[screens.run.designAdvice] fetch design advice { phase: 'elastic' }
+[api.client] request { path: '/api/design/next-weight?phase=elastic' }
+
+stdout | web/src/screens/run/SuggestedWeightPanel.test.tsx > suggested weight > fetches the read-only route
+[api.client] response ok { path: '/api/design/next-weight?phase=elastic', status: 200 }
+
+ \u{2713} web/src/screens/run/SuggestedWeightPanel.test.tsx (7 tests) 17ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  09:01:15
+   Duration  650ms (transform 109ms, setup 0ms, collect 138ms, tests 17ms, environment 0ms, prepare 159ms)
+
+JSON report written to /tmp/frob-vitest-1167332-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/screens/run/SuggestedWeightPanel.test.tsx"
+size = 784
+status = "measured"
+test_count = 7
+tests_digest = "92a17111f604929afdb749cb29f33853b75f0f37a4246bf58335bf6651675472"
+at = "2026-11-10T14:01:14Z"
+actor = "lognd"
+rev = 1

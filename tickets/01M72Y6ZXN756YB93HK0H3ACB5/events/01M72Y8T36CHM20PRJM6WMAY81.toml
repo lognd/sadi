@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/0H3ACB5; scope: web/src/plots/live/useContainerSquare.ts, web/src/components/live/TraceCanvas.tsx, web/src/plots/live/**; ttl 7200s"
+at = "2026-11-10T14:37:19Z"
+actor = "lognd"
+rev = 1

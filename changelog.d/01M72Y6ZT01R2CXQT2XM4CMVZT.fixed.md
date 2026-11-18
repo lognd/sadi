@@ -1,0 +1,1 @@
+Session snapshots no longer force a whole-WAL rescan under the service lock after a WAL segment roll or resume; the replay cache follows SEAL into the next segment and resumes its running prefix hash from the snapshot (audit8 H1).

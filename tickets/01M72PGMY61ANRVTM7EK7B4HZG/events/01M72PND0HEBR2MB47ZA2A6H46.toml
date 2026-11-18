@@ -1,0 +1,43 @@
+kind = "evidence"
+captured_at = "2026-11-10T12:24:24Z"
+digest = "c6a10429dcc5e4fbde08d6728a88d7776e01119bca43dca1f170fff45908aede"
+exit_code = 0
+inline = '''
+
+ RUN  v3.2.7 <worktree>/web
+
+stdout | src/plots/core/canvas.test.ts > renderToCanvas sizing > keeps the scene aspect ratio and never fixes a px height
+[plots.layout] layout computed {
+  width: 640,
+  height: 400,
+  xTicks: 4,
+  yTicks: 4,
+  title: 'T',
+  xTitle: 'x (mm)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 41, series: 1 }
+[plots.canvas] scene painted { scale: 2, ops: 41 }
+
+ \u{2713} src/plots/core/canvas.test.ts (1 test) 11ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  07:24:25
+   Duration  792ms (transform 195ms, setup 0ms, collect 234ms, tests 11ms, environment 0ms, prepare 162ms)
+
+JSON report written to /tmp/frob-vitest-1073228-0.json
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/plots/core/canvas.test.ts"
+size = 746
+status = "measured"
+test_count = 1
+tests_digest = "b80ae91ec81f48da0d8804e27c4fc5337a0605faaad07a34188aea1aa37b2c4c"
+at = "2026-11-10T12:24:24Z"
+actor = "lognd"
+rev = 1

@@ -1,10 +1,12 @@
+// frob:ticket 01M720QDN33FYFXX1SZ66Y1FQW
+// frob:ticket 01M72YAFW769RWFJXZ8TBBJ4QS
+// frob:ticket 01M71WYRCBRPNWFTS4PNNYWM9Z
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
 /** Capture decision (accept / forced-early confirmation / blocked) and the POST to /api/session/points. */
-import type { ApiError } from "../../api/client";
 import { getLogger } from "../../api/log";
 import type { Result } from "../../api/result";
 import type { Committed } from "../review/types";
-import { postJson } from "../review/api";
+import { postJson, type PostError } from "../review/api";
 import type { LiveView } from "./live";
 import { PHASES, type RunPhase } from "./phases";
 
@@ -21,15 +23,19 @@ export type Decision =
 export type Confirm = "idle" | "asking";
 
 const WHY = {
+  faulted: "The instrument faulted. Check the device connection; saved data is untouched.",
   disconnected: "The instrument stream is disconnected. Wait for it to reconnect; saved data is untouched.",
   saturated: "The reading is at its limit (saturated). Lower the load, then try again.",
   creeping: "The reading is still moving. Wait for Settled, or press Shift+Space to accept early.",
   unknown: "Not enough data yet. Wait for the reading to appear.",
+  idle: "No live readings are arriving (idle). Start the run or reconnect the instrument; capture is paused.",
 } as const;
 
 /** Decide the outcome of an accept key; saturation and disconnect block even a forced capture. */
 export function decide(view: LiveView, early: boolean, confirm: Confirm): Decision {
   if (view.source === "disconnected") return { kind: "blocked", why: WHY.disconnected };
+  if (view.source === "faulted") return { kind: "blocked", why: WHY.faulted };
+  if (view.idle === true) return { kind: "blocked", why: WHY.idle };
   if (view.signal === "saturated") return { kind: "blocked", why: WHY.saturated };
   if (view.volts === null) return { kind: "blocked", why: WHY.unknown };
   if (!early) {
@@ -47,19 +53,30 @@ export interface CaptureBody {
   readonly settled: boolean;
   readonly forced_early: boolean;
   readonly drift_rate: number | null;
+  /** Idempotency key: a retried accept reuses it so the server never records the point twice. */
+  readonly request_id?: string;
 }
 
+/** A fresh idempotency key for one accept attempt. */
+export function newRequestId(): string {
+  return globalThis.crypto.randomUUID();
+}
+
+/** Hint shown when a second accept arrives before the load was changed. */
+export const WHY_SAME_LOAD = "This load is already recorded. Change the load or gauge block, then click the mark button, before accepting again.";
+
 /** Build the capture body. `rawSeq` is the newest raw seq seen on the stream (see docs gap G1). */
-export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean): CaptureBody {
+export function buildBody(phase: RunPhase, inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, early: boolean, requestId?: string): CaptureBody {
   return {
     phase: PHASES[phase].apiPhase, inputs,
     window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
     settled: !early, forced_early: early, drift_rate: view.driftVps,
+    ...(requestId === undefined ? {} : { request_id: requestId }),
   };
 }
 
 /** POST one capture; returns the committed state or the API error. */
-export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): Promise<Result<Committed, ApiError>> {
+export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): Promise<Result<Committed, PostError>> {
   log.info("capture", { phase: body.phase, forced: body.forced_early });
   const r = await postJson<Committed>("/api/session/points", body, f);
   if (!r.ok) log.warn("capture refused", { kind: r.error.kind });
@@ -67,10 +84,33 @@ export async function postCapture(body: CaptureBody, f: typeof fetch = fetch): P
 }
 
 /** Build the `specimen` point body (geometry entered alongside a phase); same window/settle as the phase point. */
-export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView): CaptureBody {
+export function buildSpecimenBody(inputs: Readonly<Record<string, unknown>>, rawSeq: number, view: LiveView, requestId?: string): CaptureBody {
   return {
     phase: "specimen", inputs,
     window: { first_raw_seq: rawSeq, last_raw_seq: rawSeq },
     settled: true, forced_early: false, drift_rate: view.driftVps,
+    ...(requestId === undefined ? {} : { request_id: requestId }),
   };
+}
+
+/** One accept attempt frozen for retry: the exact bodies (each with its own id) and whether the specimen POST already succeeded. */
+export interface FrozenAttempt {
+  readonly body: CaptureBody;
+  readonly specimen: CaptureBody | null;
+  specimenDone: boolean;
+}
+
+/** True when the server answered "not recorded" (any 4xx, or 503 Backpressure); network errors, 5xx and other 503s stay ambiguous so the frozen body is kept. */
+export function wroteNothing(e: PostError): boolean {
+  if (e.kind !== "http") return false;
+  if (e.status >= 400 && e.status < 500) return true;
+  return e.status === 503 && e.problem !== null && e.problem.type.endsWith("backpressure");
+}
+
+const UUID_RE = /\s*[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+
+/** User-facing "Captured: ..." line from a commit summary, with raw UUIDs removed. */
+export function capturedMessage(summary: string): string {
+  const clean = summary.replace(UUID_RE, "").trim();
+  return clean === "" || clean === "captured" ? "Captured." : `Captured: ${clean}`;
 }

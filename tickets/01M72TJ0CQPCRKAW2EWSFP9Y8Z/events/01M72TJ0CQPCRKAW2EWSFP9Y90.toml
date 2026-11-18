@@ -1,0 +1,11 @@
+kind = "create"
+title = "Provenance 'unknown' source for orphan spill imports (no SYNTHETIC label/filename)"
+type = "bug"
+category = "todo"
+priority = "medium"
+points = 3
+scope = ["python/sadi/synthetic/provenance.py", "python/sadi/store/spill.py", "web/src/api/schema.ts"]
+acceptance = ["Orphan import is neither real nor synthetic; export filename and UI say unknown; openapi and schema.ts regenerated"]
+at = "2026-11-10T13:32:29Z"
+actor = "lognd"
+rev = 1

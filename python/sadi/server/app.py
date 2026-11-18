@@ -13,6 +13,7 @@
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
 
 # frob:ticket 01M6XA16Y0GEC333HA645FY2YX
+# frob:ticket 01M729645YNC58VB5NTJE6Q1RK
 
 from __future__ import annotations
 
@@ -27,6 +28,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sadi.api.save_indicator import FailableSeqSource, SaveIndicator, make_save_indicator_router
 from sadi.core.pipeline import Bus
 from sadi.core.registry import LabRegistry
+from sadi.labs.lctt.guidance import Phase
 from sadi.logging_setup import get_logger
 from sadi.plugins.registry import PluginRegistry
 from sadi.server.curve_source import SessionReplayCache, make_curve_source
@@ -34,6 +36,7 @@ from sadi.server.live import LiveAcquisition
 from sadi.server.results_stream import ResultsStream
 from sadi.server.routes.acquisition import make_acquisition_router
 from sadi.server.routes.clamp import make_clamp_router
+from sadi.server.routes.design import make_design_router
 from sadi.server.routes.export import make_export_router
 from sadi.server.routes.inventory import InventoryProvider, make_inventory_router
 from sadi.server.routes.plots import make_plots_router
@@ -45,15 +48,18 @@ from sadi.server.routes.results import (
     make_results_router,
 )
 from sadi.server.routes.sessions import make_sessions_router
+from sadi.server.routes.weight_plan import make_weight_plan_router
 from sadi.server.routes_doctor import make_doctor_router
 from sadi.server.routes_health import make_health_router
 from sadi.server.routes_plugins import make_plugins_router
 from sadi.server.routes_stress_strain import CurveSource, make_stress_strain_router
+from sadi.server.security import OriginGuard
 from sadi.server.service import SessionService
 from sadi.server.ws import StreamHub, make_ws_router
 from sadi.store.lock import DataRootLock, LockIo, acquire
 from sadi.store.session import RootLockFailed
-from sadi.store.spill import import_all_spills
+from sadi.store.spill import FragmentFailedSkip, SyntheticSkip, import_all_spills
+from sadi.store.writer_thread import WriterHandle
 
 _log = get_logger(__name__)
 
@@ -76,13 +82,35 @@ class AppSettings(BaseModel):
     budgets: BudgetSource | None = None
     inventory: InventoryProvider | None = None
     results: ResultsStream | None = None
+    # Set only by the launcher after the flag + typed phrase; never read from the environment.
+    synthetic: bool = False  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # Extra exact Origins trusted for writes/WS (e.g. a dev server); local same-port is implicit.
+    extra_origins: frozenset[str] = frozenset()
 
 
-class _NoWriter:
-    """Seq source used when no writer is injected: nothing pending, so the header reads Saved."""
+class _SessionWriterSource:
+    """Seq source following the open session's real writer; idle (nothing pending) when none."""
 
-    durable_seq = 0
-    enqueued_seq = 0
+    def __init__(self) -> None:
+        """Start with no writer bound."""
+        self._writer: WriterHandle | None = None
+
+    def bind(self, writer: WriterHandle | None) -> None:
+        """Point at the current session's writer (None once it is closing or closed)."""
+        self._writer = writer
+        _log.info("save indicator %s a session writer", "bound to" if writer else "unbound from")
+
+    @property
+    def durable_seq(self) -> int:
+        """Highest durable seq of the bound writer (0 when none)."""
+        w = self._writer
+        return w.durable_seq if w is not None else 0
+
+    @property
+    def enqueued_seq(self) -> int:
+        """Highest assigned seq of the bound writer (0 when none)."""
+        w = self._writer
+        return w.enqueued_seq if w is not None else 0
 
 
 class RootLockStartupError(RuntimeError):
@@ -113,12 +141,23 @@ def _take_lock(cfg: AppSettings) -> tuple[DataRootLock | None, RootLockFailed | 
 def _import_spills(cfg: AppSettings) -> int:
     """Import emergency spills (lock held); log each, never delete; return the failure count."""
     failures = 0
-    for spill, outcome in import_all_spills(cfg.data_root):
+    for spill, outcome in import_all_spills(cfg.data_root, synthetic=cfg.synthetic):
         if outcome.is_err:
             failures += 1
             _log.error("spill %s NOT imported (file kept intact): %s", spill, outcome.danger_err)
         elif outcome.danger_ok is None:
             _log.info("spill %s already imported", spill)
+        elif isinstance(outcome.danger_ok, SyntheticSkip):
+            # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+            _log.info("spill %s left alone: synthetic data root does not adopt real spills", spill)
+        elif isinstance(outcome.danger_ok, FragmentFailedSkip):
+            # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+            _log.warning(
+                "spill %s NOT recovered: earlier import failed verify; data is in the spill and "
+                "crashed copies %s",
+                spill,
+                [str(p) for p in outcome.danger_ok.crashed_dirs],
+            )
         else:
             rep = outcome.danger_ok
             _log.warning(
@@ -146,10 +185,24 @@ async def _lifespan(app: FastAPI) -> AsyncGenerator[None]:
             _log.info("data-root lock released on shutdown")
 
 
+def _recorded_phase(sessions: SessionService) -> Phase | None:
+    """The run phase recorded in the open session (None when none or unreadable)."""
+    got = sessions.run_phase()
+    return got.danger_ok.phase if got.is_ok else None
+
+
+def _acq_state(live: LiveAcquisition) -> tuple[str | None, str | None]:
+    """(stop_reason, fault text) of `live` for the status API."""
+    # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+    fault = live.fault
+    return live.stop_reason, None if fault is None else f"{fault.origin}: {fault.detail}"[:300]
+
+
 def create_app(settings: AppSettings | None = None) -> FastAPI:
     """Build a fresh FastAPI app (no global state) with all routers mounted."""
     cfg = settings if settings is not None else AppSettings()
     app = FastAPI(title="SADI", lifespan=_lifespan)
+    app.add_middleware(OriginGuard, extra_origins=cfg.extra_origins)
     app.state.settings = cfg
     app.state.root_lock = None
     app.state.root_lock_failure = None
@@ -163,33 +216,76 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             return {"ok": app.state.root_lock is not None}
         return {"ok": False, "kind": type(failure.error).__name__, "hint": failure.hint}
 
-    indicator = SaveIndicator(cfg.writer if cfg.writer is not None else _NoWriter())
+    # frob:ticket 01M720QDHPFPD9CNEADS1CA9V6
+    session_src = _SessionWriterSource()
+    indicator = SaveIndicator(cfg.writer if cfg.writer is not None else session_src)
     if cfg.writer is not None:
         cfg.writer.on_failure(indicator.mark_failed)
     app.state.save_indicator = indicator
 
     app.include_router(make_save_indicator_router(indicator))
-    app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry())
+    app.state.sessions = SessionService(cfg.data_root, cfg.labs or LabRegistry(), cfg.synthetic)
     install_problem_handlers(app)
-    if cfg.live is not None:
-        app.state.sessions.set_hooks(cfg.live.on_session_open, cfg.live.on_session_close)
+    live = cfg.live
+
+    def _on_open(writer: WriterHandle, path: Path) -> None:
+        """Bind the save indicator to the new writer, then run the live-acquisition hook."""
+        if cfg.writer is None:
+            session_src.bind(writer)
+            writer.on_failure(indicator.mark_failed)
+        if live is not None:
+            live.on_session_open(writer, path)
+
+    def _before_close() -> None:
+        """Run the live-acquisition hook; the indicator keeps the writer until it is drained."""
+        if live is not None:
+            live.on_session_close()
+
+    app.state.sessions.set_hooks(_on_open, _before_close)
+    if live is not None:
+        app.state.sessions.set_capture_gate(
+            live.capture_block_hint
+        )  # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+        # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
+        # frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+        # frob:ticket 01M72XJMDHV60KRBV1ANWKHKC9
+        app.state.sessions.set_block_source(live.block_stats)
+        live.set_phase_source(lambda: _recorded_phase(cast(SessionService, app.state.sessions)))
+        app.state.sessions.set_acquisition(live.finish, lambda: _acq_state(live))
     app.include_router(make_sessions_router(app.state.sessions))
     # frob:ticket 01M6XA21KQE5WEXAN39683H4S9
     app.include_router(make_clamp_router(app.state.sessions))
+    app.include_router(make_design_router(app.state.sessions))
+    app.include_router(make_weight_plan_router(app.state.sessions))
     # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
-    app.include_router(make_acquisition_router(cfg.live.mark_load_change if cfg.live else None))
     app.include_router(
-        make_results_router(app.state.sessions, cfg.labs or LabRegistry(), cfg.device, cfg.budgets)
+        make_acquisition_router(
+            cfg.live.mark_load_change if cfg.live else None,
+            cfg.live.resume if cfg.live else None,
+        )
+    )
+    app.include_router(
+        make_results_router(
+            app.state.sessions,
+            cfg.labs or LabRegistry(),
+            cfg.device,
+            cfg.budgets,
+            cfg.live.reconnect_device if cfg.live else None,
+        )
     )
     replays = SessionReplayCache()  # one incremental replayer per session, shared
     app.include_router(make_export_router(app.state.sessions, cfg.labs or LabRegistry(), replays))
     app.include_router(make_plots_router(app.state.sessions, replays))
     app.include_router(make_inventory_router(app.state.sessions, cfg.inventory))
-    app.include_router(make_doctor_router())
+    app.include_router(make_doctor_router(cfg.data_root))
     # frob:ticket 01M6WZZEHBSPSCHA90KQG3RK1T
     _dev = cfg.device
     app.include_router(
-        make_health_router((lambda: _dev.status == "simulated") if _dev is not None else None)
+        make_health_router(
+            (lambda: _dev.is_simulator) if _dev is not None else None,
+            app.state.sessions.provenance(),
+            cfg.data_root,
+        )
     )
     app.include_router(make_plugins_router(cfg.registry))
     if cfg.bus is not None:
@@ -199,11 +295,20 @@ def create_app(settings: AppSettings | None = None) -> FastAPI:
             cfg.bus,
             app.state.sessions,
             app.state.results_stream,
-            simulated=(lambda: device.status == "simulated") if device is not None else None,
+            simulated=(lambda: device.is_simulator) if device is not None else None,
             guidance=make_guidance_provider(app.state.sessions, cfg.labs or LabRegistry()),
+            provenance=app.state.sessions.provenance(),
         )
         app.include_router(make_ws_router(app.state.stream_hub))
-    source = cfg.curve_source or make_curve_source(cfg.data_root, replays)
-    app.include_router(make_stress_strain_router(source))
+    sessions = cast(SessionService, app.state.sessions)
+
+    def _open_path() -> Path | None:
+        """Open session dir from the service, or None when nothing is open."""
+        return sessions.session_path().unwrap_or(None)
+
+    source = cfg.curve_source or make_curve_source(
+        _open_path, replays
+    )  # frob:ticket 01M726PZNXA6BEXH97TQPK3176
+    app.include_router(make_stress_strain_router(source, app.state.sessions.provenance))
     _log.info("app created (data_root=%s, %d plugins)", cfg.data_root, len(cfg.registry.records()))
     return app

@@ -46,12 +46,28 @@ export function figureDataScenes(d: FigureData): NamedScene[] {
   }
   const s = d.stress_strain;
   if (s.strain.length > 0) {
-    const pick = (excluded: boolean) => {
-      const idx = s.strain.map((_, i) => i).filter((i) => (s.excluded[i] ?? false) === excluded);
+    // frob:ticket 01M72D3CTDED2MGDY721RSM8M4
+    // Elastic (long) and plastic (short) rows are different specimens: one series each.
+    const phaseOf = (i: number) => s.phase?.[i] ?? "";
+    const pick = (excluded: boolean, phase: string) => {
+      const idx = s.strain.map((_, i) => i).filter((i) => (s.excluded[i] ?? false) === excluded && phaseOf(i) === phase);
       return { x: idx.map((i) => s.strain[i] ?? 0), y: idx.map((i) => s.stress_mpa[i] ?? 0) };
     };
-    const kept = pick(false);
-    const dropped = pick(true);
+    const phases = [...new Set(s.strain.map((_, i) => phaseOf(i)))];
+    const label = (ph: string) => (ph === "elastic" ? "elastic (long)" : ph === "plastic" ? "plastic (short)" : "included");
+    const markers = ["filled", "ring"] as const;
+    const series = phases.flatMap((ph, k) => {
+      const kept = pick(false, ph);
+      const dropped = pick(true, ph);
+      return [
+        ...(kept.x.length > 0 || dropped.x.length === 0
+          ? [{ id: ph === "" ? "points" : `points-${ph}`, label: label(ph), style: "points" as const, marker: markers[k % markers.length] ?? "filled", ...kept }]
+          : []),
+        ...(dropped.x.length > 0
+          ? [{ id: ph === "" ? "excluded" : `excluded-${ph}`, label: ph === "" ? "excluded" : `excluded ${ph}`, style: "points" as const, marker: "cross" as const, ...dropped }]
+          : []),
+      ];
+    });
     out.push({
       suffix: "stress-strain",
       scene: {
@@ -59,10 +75,7 @@ export function figureDataScenes(d: FigureData): NamedScene[] {
         title: "Stress-strain",
         xAxis: { label: "Strain" },
         yAxis: { label: "Stress", unit: "MPa" },
-        series: [
-          { id: "points", label: "included", style: "points", marker: "filled", ...kept },
-          ...(dropped.x.length > 0 ? [{ id: "excluded", label: "excluded", style: "points" as const, marker: "cross" as const, ...dropped }] : []),
-        ],
+        series,
       },
     });
   }

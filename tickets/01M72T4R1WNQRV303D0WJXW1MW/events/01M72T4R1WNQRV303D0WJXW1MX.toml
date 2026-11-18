@@ -1,0 +1,13 @@
+kind = "create"
+title = "Capture request_id reused for a different point is silently dropped; make replay body-aware"
+type = "bug"
+category = "todo"
+priority = "high"
+points = 3
+labels = ["creates:none"]
+scope = ["python/sadi/server/service.py", "python/tests/server/test_capture_request_id.py", "web/src/screens/run/RunScreen.tsx"]
+acceptance = ["Server stores digest per request_id and returns 409 on mismatch; lookup repeated under lock in _act; client resets attemptId on load change/field edit; replay message plain English; tests"]
+body = "Audit6 M2,L1. Client keeps attemptId after load change; server _existing_capture ignores inputs; lookup and write under separate lock acquisitions."
+at = "2026-11-10T13:25:15Z"
+actor = "lognd"
+rev = 1

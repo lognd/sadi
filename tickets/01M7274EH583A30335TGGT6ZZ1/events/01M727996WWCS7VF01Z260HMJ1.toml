@@ -1,0 +1,38 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T07:55:39Z"
+digest = "75f0143afd34f4e553f31a701ae6b3e390f603c549389cd2a3daf2639f22387e"
+exit_code = 0
+head = "2d17c814d74327d5b604202406dedcda0e7fa899"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > POSTs /api/device/reconnect
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+stdout | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] reconnect requested { path: '/api/device/reconnect' }
+
+ \u{2713} web/src/components/instrument/StopBanner.test.tsx (6 tests) 21ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  02:55:39
+   Duration  988ms (transform 310ms, setup 0ms, collect 426ms, tests 21ms, environment 0ms, prepare 187ms)
+
+JSON report written to /tmp/frob-vitest-769732-0.json
+stderr | web/src/components/instrument/StopBanner.test.tsx > postReconnect > returns an error on network failure
+[api.client] network failure { path: '/api/device/reconnect', message: 'down' }
+
+'''
+passed = true
+provider = "vitest"
+ref = "web/src/components/instrument/StopBanner.test.tsx"
+size = 886
+status = "measured"
+test_count = 6
+tests_digest = "299addcce29ef551dce3e43db456958532f584470bcb8d52a266616efd52e0be"
+at = "2026-11-10T07:55:39Z"
+actor = "lognd"
+rev = 1

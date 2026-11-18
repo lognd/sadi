@@ -10,7 +10,9 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
 | `GET /api/results` | `ResultSet` recomputed live from the open session via the lab's `recompute` |
 | `GET /api/results/budgets` | `ResultBudget[]` (shape of `web/src/components/budget/types.ts`) |
 | `GET /api/results/guidance?phase=&hold=&target=` | `GuidanceState` from `sadi.labs.lctt.guidance.guide` |
-| `GET /api/device/status` | `DeviceView` (`status`, `attached`, `fault`, `hint`) |
+| `GET /api/device/status` | `DeviceView` (`status`, `attached`, `fault`, `hint`, `stop_reason`, `acquisition_fault`); `disconnected` = no board attached; `stop_reason` is finished/idle/low_disk/no_device once raw streaming stopped |
+| `POST /api/results/finish` | Not called by the web UI (it never posts here): `LiveAcquisition.finish()` drains raw blocks into the WAL and stops streaming (idempotent; session stays open, nothing deleted); returns `DeviceView`. Session close calls it too; `GET /api/export/{fmt}` never does (export is read-only on acquisition, even when it fails, so a mid-run export cannot end recording) |
+| `POST /api/device/reconnect` | Reopens the board and resumes recording into the open session; returns `DeviceView`, 409 on failure |
 
 - Results, budgets and guidance need an open session (409 `no_open_session` otherwise).
 - `phase` is `calibrate|elastic|plastic` (default `calibrate`); a bad `phase` or non-positive
@@ -36,7 +38,8 @@ read-only endpoints. Errors are problem+json with a `hint`, like [api.md](api.md
   sees the typed session inputs. For lctt these give a `LoadingContext` (specimen diameter and
   hanger mass, last tare, slope fitted from three or more calibration points), so `values`
   include `strain` and `secant_modulus` once tare and calibration exist; with both elastic and
-  plastic runs captured `combine_runs` adds `E`, `r2` and `yield_stress`. Too few usable points
+  plastic runs captured `combine_runs` adds `E`, `r2` and `yield_stress`. Until then (or if the fit fails) `E`, `r2` and `yield_stress` are listed in
+  `pending` with a `notes` entry saying what is missing. Too few usable points
   is an empty result with a note. The recompute is pure; stored events are never rewritten.
 - Device status reads an injected `AppSettings.device` (a `DeviceService`); without one the
   response is `attached=false, status=error` with a hint.

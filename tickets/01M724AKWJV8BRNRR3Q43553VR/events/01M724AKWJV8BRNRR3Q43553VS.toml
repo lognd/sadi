@@ -1,0 +1,11 @@
+kind = "create"
+title = "Audit2 H8c: working Reconnect and a disconnected status when no board at start"
+type = "bug"
+category = "todo"
+priority = "medium"
+labels = ["creates:python/tests/server/test_reconnect_no_device.py"]
+scope = ["python/sadi/core/device.py", "python/sadi/server/live.py", "python/sadi/server/service.py", "python/tests/server/test_reconnect_no_device.py"]
+acceptance = ["Starting with no board, plugging it in and pressing Reconnect attaches it without restart; status reports disconnected before that; opening a session with no device raises no RuntimeError"]
+at = "2026-11-10T07:03:59Z"
+actor = "lognd"
+rev = 1

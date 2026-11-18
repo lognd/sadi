@@ -1,0 +1,10 @@
+kind = "create"
+title = "L1+L2: results/finish never called by UI and docs claim it; export filename ignores server name and fails silently"
+type = "bug"
+category = "todo"
+priority = "low"
+scope = ["web/src/lib/exportTrace.ts", "docs/server/results.md"]
+acceptance = ["Docs match actual UI behavior; F3 export uses server-provided filename; export failure shows a visible error"]
+at = "2026-11-10T08:07:17Z"
+actor = "lognd"
+rev = 1

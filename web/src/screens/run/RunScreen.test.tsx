@@ -1,4 +1,5 @@
 // frob:ticket 01M6W7RB7ZFKF3DVKWW74FQXWT
+// frob:ticket 01M71RCHHEM9EKV4SAEYTVC4WD
 // frob:accept COV001 because="vitest tests; TypeScript test discovery needs grimble, not installed here"
 import { renderToString as rts } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -8,10 +9,14 @@ import type { ConnState } from "../../ws/client";
 import { decodeFrame } from "../../ws/frame";
 import { parseMessage, type ServerMessage } from "../../ws/messages";
 import { encodeTrace } from "../../ws/testframes";
-import { buildBody, decide, postCapture } from "./capture";
+import { buildBody, decide, newRequestId, postCapture } from "./capture";
 import { postLoadChange } from "./loadChange";
+import { PHASES } from "./phases";
+import { countPhasePoints, finishBlockedWhy } from "./pointCount";
+import type { PointView } from "../review/types";
 import { deriveLive, driftOver, signalOf, type LiveView } from "./live";
-import { RunView, settleText, type RunViewProps } from "./RunView";
+import { RunPlot, RunView, settleText, type RunViewProps } from "./RunView";
+import { guidanceText, GENERIC_GUIDANCE } from "./guidance";
 import { exportErrorText, fetchRunExport } from "./exportTrace";
 import { foldSide, type SideState } from "./useRunLive";
 
@@ -42,7 +47,7 @@ const flat = (n: number, v: number): number[] => Array.from({ length: n }, () =>
 const view = (o: Partial<LiveView> = {}): LiveView =>
   ({ volts: 1.2345, driftVps: 0, signal: "ok", motion: "settled", source: "simulated", stale: false, ...o });
 const props = (o: Partial<RunViewProps> = {}): RunViewProps => ({
-  phase: "calibrate", view: view(), trace: <canvas data-testid="live-canvas" />, plot: null, blockedWhy: null,
+  phase: "calibrate", view: view(), blockedWhy: null,
   confirming: false, message: null, fields: {}, onField: () => undefined, onAccept: () => undefined, onLoadChange: () => undefined, onConfirmEarly: () => undefined, onCancelEarly: () => undefined, ...o,
 });
 
@@ -79,8 +84,21 @@ describe("live derivation from a mocked sim stream", () => {
     expect(d.kind).toBe("blocked");
     const out = html(<RunView {...props({ view: v, blockedWhy: d.kind === "blocked" ? d.why : null })} />);
     expect(out).toContain("disconnect-notice");
-    expect(out).toContain("(stale)");
     expect(out).toContain("disabled");
+  });
+  // frob:ticket 01M72Z8PFGR05PRFMM2SA28CY0
+  it("a device_fault stop reads Faulted, never Connected, and blocks capture; hello clears it", () => {
+    const stopped = parseMessage('{"kind":"stopped","reason":"device_fault","hint":"x"}');
+    const hello = parseMessage('{"kind":"hello","latest":{},"simulated":false}');
+    const s0: SideState = { settle: null, rawSeq: 0, pointIndex: null, driftVps: null, window: null, simulated: false };
+    const s = stopped.ok ? foldSide(s0, stopped.value) : s0;
+    expect(s.faulted).toBe(true);
+    const w = new TraceWindow(5, 0);
+    const v = deriveLive(w.snapshot(100), OPEN, "settled", false, null, null, s.faulted);
+    expect(v.source).toBe("faulted");
+    expect(decide(v, true, "idle").kind).toBe("blocked");
+    expect(html(<RunView {...props({ view: v })} />)).toContain("fault-notice");
+    expect(hello.ok && foldSide(s, hello.value).faulted).toBe(false);
   });
   it("driftOver needs three columns", () => {
     expect(driftOver(new Float64Array([0, 1]), new Float64Array([0, 1]), 0)).toBeNull();
@@ -92,6 +110,11 @@ describe("live derivation from a mocked sim stream", () => {
     expect(s).toMatchObject({ driftVps: 0.25, window: { firstRawSeq: 4, lastRawSeq: 9 }, simulated: true });
     const w = new TraceWindow(5, 0);
     expect(deriveLive(w.snapshot(100), OPEN, s.settle, s.simulated, s.driftVps).driftVps).toBe(0.25);
+  });
+  it("foldSide keeps simulated sticky after a state message omits it (fault)", () => {
+    const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: true };
+    const st = parseMessage('{"kind":"state","raw_seq":2,"simulated":false,"status":{"state":"settled"}}');
+    expect((st.ok ? foldSide(s, st.value) : s).simulated).toBe(true);
   });
   it("foldSide keeps the newest guidance and state messages preserve it", () => {
     const s: SideState = { settle: null, rawSeq: 1, pointIndex: null, driftVps: null, window: null, simulated: false };
@@ -125,6 +148,12 @@ describe("capture decisions", () => {
     expect(b).toMatchObject({ phase: "elastic", settled: false, forced_early: true, drift_rate: 0.01 });
     expect(buildBody("tare", {}, 9, view(), false)).toMatchObject({ phase: "tare", settled: true, forced_early: false });
   });
+  // frob:ticket 01M72D37RN0VN65DDCSPWHJMJ7
+  it("body carries the request_id only when given, and ids are unique", () => {
+    expect(buildBody("tare", {}, 9, view(), false, "abc")).toMatchObject({ request_id: "abc" });
+    expect(buildBody("tare", {}, 9, view(), false)).not.toHaveProperty("request_id");
+    expect(newRequestId()).not.toBe(newRequestId());
+  });
   it("postCapture posts JSON and surfaces refusals", async () => {
     const calls: string[] = [];
     const ok: typeof fetch = (i, init) => { calls.push(`${init?.method ?? "GET"} ${typeof i === "string" ? i : i instanceof URL ? i.href : i.url}`); return Promise.resolve(new Response(JSON.stringify({ seq: 3, summary: "p1" }), { status: 201 })); };
@@ -138,10 +167,10 @@ describe("capture decisions", () => {
 });
 
 describe("RunView", () => {
-  it("shows big readout, trace, accept button and phase wording", () => {
+  it("shows accept button and phase wording; readout and trace live in the front panel", () => {
     const out = html(<RunView {...props()} />);
-    expect(out).toContain("Live V: 1.2345 V [Settled]");
-    expect(out).toContain("live-canvas");
+    expect(out).not.toContain("Live V:");
+    expect(out).not.toContain("live-canvas");
     expect(out).toContain("Accept point (Space)");
     expect(out).not.toContain("saturation-warning");
   });
@@ -152,8 +181,9 @@ describe("RunView", () => {
   });
   it("per-phase plot: stress-strain for elastic, none for tare", () => {
     const data = { points: [], fit: null, yield: null };
-    expect(html(<RunView {...props({ phase: "elastic", plot: { kind: "stress-strain", data } })} />)).toContain("Stress-strain");
-    expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Record tare");
+    expect(html(<RunPlot plot={{ kind: "stress-strain", data }} />)).toContain("Stress-strain");
+    expect(html(<RunPlot plot={null} />)).toBe("");
+    expect(html(<RunView {...props({ phase: "tare" })} />)).toContain("Accept point (Space)");
   });
 });
 
@@ -177,8 +207,10 @@ describe("run F3 export", () => {
 
 describe("mark load change", () => {
   it("RunView renders the Mark load change button", () => {
-    expect(html(<RunView {...props()} />)).toContain("Mark load change");
-    expect(html(<RunView {...props()} />)).toContain("Settled cannot show until you do");
+    expect(html(<RunView {...props()} />)).toContain("I moved to a new gauge block");
+    expect(html(<RunView {...props()} />)).toContain("click it again after every Accept");
+    expect(html(<RunView {...props({ phase: "elastic" })} />)).toContain("I added a weight");
+    expect(html(<RunView {...props()} />)).not.toContain("Mark load change");
   });
   it("postLoadChange posts to the route and returns the marker seq", async () => {
     const calls: string[] = [];
@@ -203,5 +235,61 @@ describe("RunView hotkey hint (U-04)", () => {
     const out = html(<RunView {...props()} />);
     expect(out).toContain('data-testid="hotkey-hint"');
     expect(out).toContain('aria-describedby="hotkey-hint"');
+  });
+});
+
+// regression test for audit1#17 idle readout, audit1#31 guidance text, audit1#6 diameter warning
+describe("audit1 run-screen fixes", () => {
+  it("old frames make the readout idle: no stale volts, drift or saturation", () => {
+    const { w } = simStream(flat(40, 4.99), [state("creeping")]);
+    const v = deriveLive(w.snapshot(100), OPEN, "creeping", false, Number.NaN, 5000);
+    expect(v.idle).toBe(true);
+    expect(v.volts).toBeNull();
+    expect(v.driftVps).toBeNull();
+    expect(v.signal).toBe("ok");
+    expect(v.motion).toBe("unknown");
+    expect(decide(v, false, "idle").kind).toBe("blocked");
+  });
+  it("fresh frames are not idle and NaN drift becomes null", () => {
+    const { w } = simStream(flat(40, 1), [state("settled")]);
+    const v = deriveLive(w.snapshot(100), OPEN, "settled", false, Number.NaN, 100);
+    expect(v.idle).toBeFalsy();
+    expect(v.driftVps).toBeNull();
+  });
+  it("guidanceText replaces a zero-kg hang instruction", () => {
+    expect(guidanceText("Add 0.000 kg of masses to the hanger (the hanger is added for you)")).not.toMatch(/0\.000/);
+    // frob:ticket 01M72TEVXXFP3PZ84SABZEDX7H
+    // single source: any load in guidance is dropped so it cannot disagree with SuggestedWeightPanel
+    expect(guidanceText("Add 0.250 kg of masses to the hanger (the hanger is added for you)")).toBe(GENERIC_GUIDANCE);
+    expect(guidanceText("Add 0.625 kg of masses")).not.toMatch(/0\.625/);
+    expect(guidanceText("Wait for Settled")).toBe("Wait for Settled");
+  });
+  it("RunView warns on an implausible diameter and offers metres", () => {
+    const out = html(<RunView {...props({ phase: "tare", fields: { diameter: "0.2" } })} />);
+    expect(out).toContain('data-testid="plausible-diameter"');
+  });
+});
+
+// frob:ticket 01M7274EKWS410XEGZGFD6HWHK
+describe("capture card vocabulary and Finish gate", () => {
+  it("every phase names its action Accept point and its mark button for the phase", () => {
+    for (const ph of ["calibrate", "tare", "elastic", "plastic"] as const) {
+      const out = html(<RunView {...props({ phase: ph })} />);
+      expect(out).toContain("Accept point (Space)");
+      expect(out).toContain(PHASES[ph].markLabel);
+      expect(PHASES[ph].instruction).toContain(PHASES[ph].markLabel.length > 0 ? "Accept point" : "");
+    }
+  });
+  it("shows the accepted point count against the minimum", () => {
+    expect(html(<RunView {...props({ pointCount: 1 })} />)).toContain("Accepted points: 1 (at least 3 needed");
+  });
+  it("counts only non-excluded points of the phase", () => {
+    const pt = (phase: string, excluded: boolean): PointView => ({ point_id: "x", seq: 1, phase, excluded, inputs: {}, window: {} as PointView["window"], history: [] });
+    expect(countPhasePoints([pt("calibration", false), pt("calibration", true), pt("tare", false)], "calibrate")).toBe(1);
+  });
+  it("Finish is blocked below the minimum and open at or above it or while unknown", () => {
+    expect(finishBlockedWhy("calibrate", 1)).toContain("at least 3 points");
+    expect(finishBlockedWhy("calibrate", 3)).toBeNull();
+    expect(finishBlockedWhy("calibrate", null)).toBeNull();
   });
 });

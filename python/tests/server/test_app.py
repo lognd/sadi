@@ -151,3 +151,19 @@ def test_device_status_uses_injected_device(tmp_path: Path) -> None:
         body = c.get("/api/device/status").json()
     assert body["status"] == "simulated"
     assert body["attached"] is True
+
+
+# frob:ticket 01M72Z8PFGR05PRFMM2SA28CY0
+# frob:tests python/sadi/server/app.py::create_app
+def test_simulated_flag_survives_fault_via_is_simulator(tmp_path: Path) -> None:
+    """The health simulated flag follows is_simulator, not status, so a faulted sim stays simulated."""
+
+    class _FaultedSim:
+        status = "error"
+        fault = None
+        is_simulator = True
+
+    app = create_app(AppSettings(data_root=tmp_path, device=_FaultedSim()))
+    with TestClient(app) as c:
+        body = c.get("/api/health").json()
+    assert body["simulated"] is True

@@ -16,8 +16,10 @@ describe("parseCycle", () => {
     const r = parseCycle({ zeroBefore: "0", zeroAfter: "1e-6", slips: "" });
     expect(r).toEqual({ ok: true, value: { zero_before: 0, zero_after: 1e-6, slip_events: 0 } });
   });
-  it("rejects blank, non-numeric and bad slip counts with a sentence", () => {
-    expect(parseCycle({ zeroBefore: "", zeroAfter: "0", slips: "0" }).ok).toBe(false);
+  // regression test for audit1#24 blank zero readings count as 0
+  it("treats blank zero readings as 0 but rejects non-numeric and bad slip counts", () => {
+    expect(parseCycle({ zeroBefore: "", zeroAfter: "", slips: "" })).toEqual({ ok: true, value: { zero_before: 0, zero_after: 0, slip_events: 0 } });
+    expect(parseCycle({ zeroBefore: "x", zeroAfter: "0", slips: "0" }).ok).toBe(false);
     expect(parseCycle({ zeroBefore: "0", zeroAfter: "x", slips: "0" }).ok).toBe(false);
     expect(parseCycle({ zeroBefore: "0", zeroAfter: "0", slips: "1.5" }).ok).toBe(false);
     expect(parseCycle({ zeroBefore: "0", zeroAfter: "0", slips: "-1" }).ok).toBe(false);

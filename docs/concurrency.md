@@ -768,3 +768,13 @@ coordinator; CC1 does not widen its scope for them):
 5. Whether the streaming analysis stage needs its own thread (section 1)
    is decided by B3's measurement of `stage_ms`; the design allows both
    without changing any interface.
+
+## WebSocket handler is off-loop for hub-locked work (~YNKX6Y1)
+
+`/api/stream` runs every `StreamHub` call that takes the hub lock (`attach`,
+`hello`, `poll`, `next_seq`, `detach`) via `asyncio.to_thread`, so a writer or
+snapshot holding the lock stalls only that handler, never the event loop or
+other clients. `poll` is serialised by a separate `_poll_lock` so concurrent
+off-loop polls cannot reorder events; per-client send order and `seq`
+allocation are unchanged, and no frame is dropped. `detach` is shielded so a
+cancelled handler still releases its client.

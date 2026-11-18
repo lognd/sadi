@@ -1,0 +1,8 @@
+kind = "transition"
+from = "todo"
+to = "done"
+outcome = "duplicate"
+reason = "openapi regenerated in E6MY8YC"
+at = "2026-11-10T04:32:29Z"
+actor = "lognd"
+rev = 1

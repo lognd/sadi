@@ -1,0 +1,1 @@
+Spill import: the imported marker is valid only for a version dir under the current data root (stale markers are set aside, not deleted); a join that fails before writing frees its in-progress sidecar for retry; a closed import of the same spill gets its missing marker instead of a duplicate; fragment-failed skips are logged at WARNING with the crashed-copy paths.

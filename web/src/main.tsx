@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./styles.css";
 import { getLogger } from "./api/log";
+import { watchStickyTop } from "./hooks/useStickyOffset";
 
 const log = getLogger("main");
 const root = document.getElementById("root");
@@ -17,3 +18,5 @@ createRoot(root).render(
     <App />
   </StrictMode>,
 );
+// frob:ticket 01M72855X7J5P97BAN234Z81W4
+watchStickyTop(() => root.querySelector<HTMLElement>(".app-top"));

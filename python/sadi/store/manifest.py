@@ -23,7 +23,9 @@ _log = get_logger(__name__)
 MANIFEST_NAME = "manifest.json"
 MANIFEST_VERSION = 1
 
-SessionState = Literal["open", "closed", "crashed", "corrupt"]
+SessionState = Literal[
+    "open", "closed", "crashed", "corrupt", "incomplete"
+]  # frob:ticket 01M729648PC6N7FK6D2J6H1ETV
 
 
 class SessionPluginRef(BaseModel):
@@ -86,6 +88,18 @@ class Manifest(BaseModel):
     last_seq: int | None = None
     # Optional, backward compatible: absent in old manifests (defaults to empty).
     plugins: tuple[SessionPluginRef, ...] = ()
+    # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+    # Derived mirror of the SYNTHETIC marker file; the marker, not this flag, is authoritative.
+    synthetic: bool = False
+    # frob:ticket 01M72D2TZS82YV31D8FPXPD3AB
+    # Set only by spill import: "joined" (self-contained successor) or "fragment" (spill alone).
+    spill_import: str | None = None
+    # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+    # True when the data's origin was lost (orphan spill import): neither real nor synthetic.
+    provenance_unknown: bool = False
+    # frob:ticket 01M72VM5ZCW15RQ2CH8RS7XR3X
+    # Spill import only: SHA-256 of the spill, so a lost marker is rewritten, not re-imported.
+    spill_sha256: str | None = None
 
 
 class ManifestInvalid(BaseModel):

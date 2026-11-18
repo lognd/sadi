@@ -18,6 +18,7 @@ from sadi.labs.lctt.guidance import (
     LoadRange,
     LoadSuggestion,
     Phase,
+    mass_guidance_text,
 )
 from sadi.logging_setup import get_logger
 
@@ -173,7 +174,7 @@ class GpLoadSuggester:
             return Ok(
                 LoadSuggestion(
                     load_kg=kg,
-                    text=f"Hang a total of {kg:.3f} kg",
+                    text=mass_guidance_text(kg),
                     gp_state=GpState.COLLECTING.value,
                 )
             )
@@ -204,7 +205,7 @@ class GpLoadSuggester:
         return Ok(
             LoadSuggestion(
                 load_kg=kg,
-                text=f"Hang a total of {kg:.3f} kg",
+                text=mass_guidance_text(kg),
                 expected_gain=gain,
                 expected_half_width=float(after[best]),
                 alternatives=alts,

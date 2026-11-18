@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:56:56Z"
+digest = "46a8dbe7bd8a0519995f06a0fe552392f8217ffc5ac97ec0e3a64e3d2e665d00"
+exit_code = 0
+head = "f3e8b2830141258a78127aae7c7df54dc8d1ef1a"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  09:56:57
+   Duration  284ms (transform 60%, import 29%, tests 8%, worker 4%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/run/repeatedReadings.test.ts src/screens/run/RepeatedReadingsPanel.test.tsx"
+size = 170
+status = "measured"
+at = "2026-11-10T14:56:56Z"
+actor = "lognd"
+rev = 1

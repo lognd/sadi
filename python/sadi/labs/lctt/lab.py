@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Any
@@ -24,17 +25,31 @@ from sadi.core.lab import (
 )
 from sadi.core.models import CapturedPoint, Phase, Quantity, RunState
 from sadi.core.point_inputs import (
+    PHASE_CALIBRATION,
+    PHASE_SETUP,
     CalibrationInputs,
+    ClampInputs,
     LoadInputs,
     PointInputs,
     SpecimenInputs,
     TareInputs,
+    parse_inputs,
 )
 from sadi.core.results import ResultValue
 from sadi.labs.lctt.budgets import nominal_budgets
 from sadi.labs.lctt.calibration import MIN_POINTS, fit_calibration
-from sadi.labs.lctt.clamp_check import ClampCheckConfig, setup_subcheck
-from sadi.labs.lctt.export_csv import build_document, render_document
+from sadi.labs.lctt.clamp_check import (
+    ADVICE_RETIGHTEN,
+    ClampCheckConfig,
+    clamp_status,
+    setup_subcheck,
+)
+from sadi.labs.lctt.export_csv import (
+    build_calibration_csv,
+    build_document,
+    render_document,
+    tare_report,
+)
 from sadi.labs.lctt.figure_data import figure_data
 from sadi.labs.lctt.live import (
     CalPoint,
@@ -70,6 +85,11 @@ ELASTIC_RESULTS = ("E", "r2")
 PLASTIC_RESULTS = ("yield_stress",)
 #: Nominal wire diameter (m) used for stress until the specimen geometry is supplied.
 NOMINAL_DIAMETER_M = 0.006
+#: Relative standard uncertainty charged to the assumed diameter (so results never show +/- 0).
+ASSUMED_DIAMETER_REL_UNC = 0.2
+#: Calibration quality-gate thresholds (r^2 floor, outlier residual in standard errors).
+CAL_MIN_R2 = 0.999
+CAL_OUTLIER_K = 3.0
 
 
 class LabError(ErrorSet):
@@ -90,6 +110,75 @@ def _guide(text: str):  # type: ignore[no-untyped-def]  # noqa: ANN202
     return guidance
 
 
+def _worst_calibration_point(
+    volts: list[float], heights: list[float], residuals: Sequence[float]
+) -> int:
+    """Index of the point whose removal gives the best r2 (leave-one-out); residual fallback."""
+    n = len(volts)
+    best, best_r2 = max(range(n), key=lambda i: abs(residuals[i])), -math.inf
+    if n <= MIN_POINTS:
+        return best
+    for i in range(n):
+        sub = fit_calibration(volts[:i] + volts[i + 1 :], heights[:i] + heights[i + 1 :])
+        if sub.is_ok and sub.danger_ok.r2 > best_r2:
+            best, best_r2 = i, sub.danger_ok.r2
+    return best
+
+
+def calibration_gate(points: list[dict[str, Any]]) -> str | None:
+    """Quality gate for the calibrate step: a valid, tight, monotone LVDT fit with no outlier."""
+    # frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
+    volts: list[float] = []
+    heights: list[float] = []
+    for inputs in points:
+        parsed = parse_inputs(PHASE_CALIBRATION, inputs)
+        item = parsed.danger_ok if parsed.is_ok else None
+        if isinstance(item, CalibrationInputs):
+            volts.append(item.volts)
+            heights.append(item.height)
+    fit = fit_calibration(volts, heights)
+    if fit.is_err:
+        return f"Calibration has no valid fit: {fit.danger_err.description}"
+    f = fit.danger_ok
+    worst = _worst_calibration_point(volts, heights, f.residuals)
+    where = (
+        f"point {worst + 1} (volts {volts[worst]:g}, height {heights[worst]:g} m) fits worst; "
+        "exclude or recapture it (a height typed in mm instead of m is the usual cause)"
+    )
+    if f.slope.value <= 0:
+        return f"Calibration slope is not positive ({f.slope.value:g} m/V); {where}"
+    if f.r2 < CAL_MIN_R2:
+        return f"Calibration fit is poor (r2 {f.r2:.4f}, need at least {CAL_MIN_R2}); {where}"
+    if f.se_regression > 0 and abs(f.residuals[worst]) > CAL_OUTLIER_K * f.se_regression:
+        return f"Calibration has an outlier; {where}"
+    return None
+
+
+def clamp_gate(config: ClampCheckConfig | None = None):  # type: ignore[no-untyped-def]  # noqa: ANN202
+    """Build the setup-step gate: the recorded clamp-check cycles must all pass."""
+    # frob:ticket 01M71WYRA3SN64B56Z6G13SHSE
+    cfg = config or ClampCheckConfig()
+
+    def gate(points: list[dict[str, Any]]) -> str | None:
+        """Return a message when the clamp check has not passed, else None."""
+        cycles: list[tuple[float, float, int]] = []
+        for inputs in points:
+            parsed = parse_inputs(PHASE_SETUP, inputs)
+            item = parsed.danger_ok if parsed.is_ok else None
+            if isinstance(item, ClampInputs):
+                cycles.append((item.zero_before, item.zero_after, item.slip_events))
+        status = clamp_status(cycles, cfg)
+        if status.passed is False:
+            return (
+                "The clamp-slip check failed (a cycle slipped or the zero did not return). "
+                f"{ADVICE_RETIGHTEN} Repeat the cycles (exclude the failed ones), "
+                "or skip the step explicitly to proceed without a passing check."
+            )
+        return None
+
+    return gate
+
+
 def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
     """Build the Setup step hosting the clamp-slip sub-check; done after one capture per cycle."""
     # frob:ticket 01M6WJ8R4E0K2Z5K5KZJTJA6QM
@@ -103,6 +192,7 @@ def setup_step(config: ClampCheckConfig | None = None) -> StepSpec:
         capture=CaptureKind.DEVICE_POINTS,
         guidance=_guide(sub.guidance),
         min_points=cfg.cycles,
+        complete_check=clamp_gate(cfg),
     )
 
 
@@ -116,6 +206,7 @@ def lctt_steps() -> list[StepSpec]:
             phase=Phase.CALIBRATION,
             capture=CaptureKind.DEVICE_POINTS,
             guidance=_guide("Step the LVDT through known heights and capture each."),
+            complete_check=calibration_gate,
         ),
         StepSpec(
             id=StepId("tare"),
@@ -214,6 +305,7 @@ def events_from_inputs(
             out.append(
                 LoadPoint(
                     point_id=f"{prefix}-{n_load}",
+                    phase=item.phase,  # frob:ticket 01M729642YCP4MRYBWBNQBYW7A
                     volts=item.volts,
                     u_volts=item.u_volts,
                     volts_sd=item.volts_sd,  # frob:ticket 01M6WX3GGD2VSGEY1GT2X49DSV
@@ -297,6 +389,31 @@ def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeEr
     return Ok(render_document(doc.danger_ok))
 
 
+def _live_events(run: RunState) -> list[Any]:
+    """The raw lctt live events carried on `run`."""
+    return [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
+
+
+# frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render a PARTIAL lctt CSV from whatever has been captured so far (calibration suffices)."""
+    doc = build_document(_live_events(run), date=datetime.now(UTC), partial=True)
+    if isinstance(doc, Err):
+        _log.warning("lctt partial csv export refused: %s", doc.danger_err)
+        return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(doc.danger_err)))
+    return Ok(render_document(doc.danger_ok))
+
+
+# frob:ticket 01M72ZDQGAN0VQRKHM489H28J1
+def _write_calibration_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
+    """Render the standalone calibration CSV (points plus fit) from the session events."""
+    out = build_calibration_csv(_live_events(run), date=datetime.now(UTC))
+    if isinstance(out, Err):
+        _log.warning("lctt calibration csv export refused: %s", out.danger_err)
+        return Err(ComputeError(code=ComputeCode.TOO_FEW_POINTS, detail=str(out.danger_err)))
+    return Ok(out.danger_ok)
+
+
 _LIVE_EVENT_TYPES = (
     CalPoint, TareBlock, SpecimenSetup, LoadPoint, OverridePoint, ExcludePoint, SetWindow
 )  # fmt: skip
@@ -309,6 +426,23 @@ CSV_FORMAT = ExportFormat(
     title="LCTT CSV",
     media_type="text/csv",
     writer=_write_csv,
+)
+
+
+#: Mid-run CSV: labelled PARTIAL, available at any step; each download is a new numbered file.
+PARTIAL_CSV_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-csv-partial"),
+    title="LCTT CSV (PARTIAL, mid-run)",
+    media_type="text/csv",
+    writer=_write_csv_partial,
+)
+
+#: Standalone calibration CSV (points plus fit), like LabVIEW lctt_export_calibration.vi.
+CALIBRATION_CSV_FORMAT = ExportFormat(
+    id=ExportFormatId("lctt-calibration-csv"),
+    title="LCTT calibration CSV",
+    media_type="text/csv",
+    writer=_write_calibration_csv,
 )
 
 
@@ -337,11 +471,12 @@ class LoadingContext(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     diameter_m: float = NOMINAL_DIAMETER_M
-    u_diameter_m: float = 0.0
+    u_diameter_m: float = ASSUMED_DIAMETER_REL_UNC * NOMINAL_DIAMETER_M
     hanger_kg: float = 0.0
     l0_m: float = SHORT_L0_M
     slope_m_per_v: float | None = None
     tare_v: float | None = None
+    u_tare_v: float = 0.0
 
 
 def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
@@ -351,16 +486,25 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
     three or more calibration points a fitted slope, and the last load point's phase the gauge
     length (elastic = long). Anything missing keeps the nominal default or omits strain.
     """
+    # frob:ticket 01M7230XMB52H0AA8ETNQ8RBPX
     ctx: dict[str, Any] = {}
     cal_v: list[float] = []
     cal_h: list[float] = []
+    tares = [i for i in inputs if isinstance(i, TareInputs)]
+    if tares:
+        # The tare is the hand-zeroing residual: one pooled zero offset, same model as the CSV.
+        rep = tare_report([t.mean for t in tares], [t.sd for t in tares], [t.n for t in tares])
+        if isinstance(rep, Ok):
+            ctx["tare_v"], ctx["u_tare_v"] = rep.danger_ok.value, rep.danger_ok.std_unc
+        else:
+            ctx["tare_v"] = tares[-1].mean
     for item in inputs:
         if isinstance(item, SpecimenInputs):
             ctx.update(
                 diameter_m=item.diameter, u_diameter_m=item.u_diameter, hanger_kg=item.hanger_kg
             )
         elif isinstance(item, TareInputs):
-            ctx["tare_v"] = item.mean
+            continue
         elif isinstance(item, CalibrationInputs):
             cal_v.append(item.volts)
             cal_h.append(item.height)
@@ -374,6 +518,15 @@ def context_from_inputs(inputs: Sequence[PointInputs]) -> LoadingContext:
             _log.info("lctt context: calibration fit unavailable: %s", fit.danger_err.name)
     _log.debug("lctt context from %d inputs: keys=%s", len(inputs), sorted(ctx))
     return LoadingContext(**ctx)
+
+
+def diameter_assumed_note() -> str:
+    """Result note stating the nominal diameter was used because none was entered."""
+    return (
+        f"diameter assumed {NOMINAL_DIAMETER_M * 1e3:g} mm "
+        f"(+/- {ASSUMED_DIAMETER_REL_UNC * 100:g} %) because no specimen diameter was entered; "
+        "enter the measured diameter on the Tare step"
+    )
 
 
 def _meas(value: float, unc: float, unit: str) -> Measured | None:
@@ -390,13 +543,96 @@ def _quantity(m: Measured, unit: str) -> Quantity:
     return Quantity(value=m.value, standard_uncertainty=m.std_unc, unit=unit)
 
 
+#: Stated systematic allowance (3 % relative, added in quadrature to the fitted E uncertainty)
+#: for creep / incomplete settling. It is NOT a fitted creep correction: synthetic copper
+#: creeps about 1-4 % of the elastic strain over the loading range, biasing E low, and this
+#: widens the stated interval to cover that until the creep term is modelled explicitly.
+CREEP_REL_ALLOWANCE = 0.03
+
+
+def _calibration_quantities(
+    inputs: Sequence[PointInputs], ctx: LoadingContext
+) -> dict[str, Quantity]:
+    """Calibration slope (m/V), intercept (m) and tare (V) as named results, when available."""
+    # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    out: dict[str, Quantity] = {}
+    cal = [i for i in inputs if isinstance(i, CalibrationInputs)]
+    if len(cal) >= MIN_POINTS:
+        fit = fit_calibration([c.volts for c in cal], [c.height for c in cal])
+        if isinstance(fit, Ok):
+            f = fit.danger_ok
+            out["slope"] = _quantity(f.slope, "m/V")
+            out["intercept"] = _quantity(f.intercept, "m")
+    if ctx.tare_v is not None:
+        tare = [i for i in inputs if isinstance(i, TareInputs)][-1]
+        # frob:ticket 01M725CA43JK1ZDJKF8135RHT0
+        # One tare model shared with the CSV export: pooled mean, standard error Sx/sqrt(N).
+        blocks = [i for i in inputs if isinstance(i, TareInputs)]
+        rep = tare_report([b.mean for b in blocks], [b.sd for b in blocks], [b.n for b in blocks])
+        if isinstance(rep, Ok):
+            out["tare"] = Quantity(
+                value=rep.danger_ok.value, standard_uncertainty=rep.danger_ok.std_unc, unit="V"
+            )
+        else:  # blocks too small to pool: fall back to the last block's sd/sqrt(n)
+            se = tare.sd / math.sqrt(tare.n) if tare.n >= 1 else tare.sd
+            out["tare"] = Quantity(value=tare.mean, standard_uncertainty=se, unit="V")
+    _log.debug("lctt calibration quantities: %s", sorted(out))
+    return out
+
+
+def _with_calibration(res: AnalysisResult, inputs: Sequence[PointInputs]) -> AnalysisResult:
+    """Return `res` plus the calibration/tare quantities derived from `inputs`."""
+    ctx = context_from_inputs(inputs)
+    return res.model_copy(update={"values": {**res.values, **_calibration_quantities(inputs, ctx)}})
+
+
+#: Two-specimen results that need both an elastic and a plastic run.
+_TWO_SPECIMEN_NAMES = ("E", "r2", "yield_stress")
+
+
+def _with_unavailable(res: AnalysisResult, reason: str) -> AnalysisResult:
+    """Return `res` with the two-specimen results marked pending and `reason` as a note."""
+    # frob:ticket 01M720GS24E4C7S5H9H1DPD95G
+    have = tuple(n for n in _TWO_SPECIMEN_NAMES if n not in res.values)
+    return res.model_copy(
+        update={
+            "pending": tuple(dict.fromkeys((*res.pending, *have))),
+            "notes": (*res.notes, reason),
+        }
+    )
+
+
+def _inflate_modulus_unc(
+    value: float, unc: float, inputs: Sequence[PointInputs], ctx: LoadingContext
+) -> float:
+    """Add systematic terms (calibration slope, diameter, creep) to E's regression SE in quadrature.
+
+    The OLS standard error alone ignores everything that scales the whole curve, which made
+    the reported interval miss the truth most of the time.
+    """
+    # frob:ticket 01M71XGHCQP7KZ6HEFPJ2KEMF8
+    rel2 = CREEP_REL_ALLOWANCE**2
+    if ctx.diameter_m > 0:
+        rel2 += (2.0 * ctx.u_diameter_m / ctx.diameter_m) ** 2
+    cal = [i for i in inputs if isinstance(i, CalibrationInputs)]
+    if len(cal) >= MIN_POINTS:
+        fit = fit_calibration([c.volts for c in cal], [c.height for c in cal])
+        if isinstance(fit, Ok) and fit.danger_ok.slope.value != 0:
+            rel2 += (fit.danger_ok.slope.std_unc / abs(fit.danger_ok.slope.value)) ** 2
+    total = math.sqrt(unc**2 + (value * value) * rel2)
+    _log.info("lctt E uncertainty: regression %g -> %g with systematics", unc, total)
+    return total
+
+
 class LcttLab:
     """The LCTT lab: calibration, then an elastic (long) and a plastic (short) specimen run."""
 
     id = LabId("lctt")
     title = "Load-controlled creep/thermal test"
     models: tuple[type[BaseModel], ...] = (SpecimenSpec,)
-    export_formats: tuple[ExportFormat, ...] = (CSV_FORMAT, FIGURE_FORMAT)
+    export_formats: tuple[ExportFormat, ...] = (
+        CSV_FORMAT, PARTIAL_CSV_FORMAT, CALIBRATION_CSV_FORMAT, FIGURE_FORMAT
+    )  # fmt: skip
 
     def __init__(self, context: LoadingContext | None = None) -> None:
         """Hold the loading context (nominal geometry, no calibration unless given)."""
@@ -438,7 +674,7 @@ class LcttLab:
             return Ok(AnalysisResult(values=values))
         slope = _meas(ctx.slope_m_per_v, 0.0, "m/V")
         volts = _meas(last.volts or 0.0, last.volts_sd or 0.0, "V")
-        tare = _meas(ctx.tare_v, 0.0, "V")
+        tare = _meas(ctx.tare_v, ctx.u_tare_v, "V")
         l0 = _meas(ctx.l0_m, 0.0, "m")
         if slope is None or volts is None or tare is None or l0 is None:
             return Err(ComputeError(code=ComputeCode.NOT_FINITE, detail="invalid strain inputs"))
@@ -464,13 +700,31 @@ class LcttLab:
         `yield_stress`; a combine failure is logged and the single-point values still return.
         """
         # frob:ticket 01M6WSH43VHA5WGRPQ20X1NQA9
+        res = self._analyze(points, inputs)
+        if res.is_err or any(isinstance(i, SpecimenInputs) for i in inputs):
+            return res
+        note = diameter_assumed_note()
+        _log.warning("lctt analyze: %s", note)
+        ok = res.danger_ok
+        return Ok(ok.model_copy(update={"notes": (note, *ok.notes)}))
+
+    def _analyze(
+        self, points: tuple[CapturedPoint, ...], inputs: Sequence[PointInputs]
+    ) -> Result[AnalysisResult, ComputeError]:
+        """Analysis body of `analyze`, before the assumed-diameter note is added."""
         base = LcttLab(context_from_inputs(inputs)).recompute(points)
         if isinstance(base, Err):
             return base
         loads = [i for i in inputs if isinstance(i, LoadInputs)]
         by_role = {role: tuple(i for i in loads if i.phase == role.value) for role in SpecimenRole}
-        if not all(by_role.values()):
-            return base
+        missing = [r.value for r in SpecimenRole if not by_role[r]]
+        if missing:
+            return Ok(
+                _with_unavailable(
+                    _with_calibration(base.danger_ok, inputs),
+                    f"yield_stress: needs a {' and a '.join(missing)} run (none captured yet)",
+                )
+            )
         shared = tuple(i for i in inputs if not isinstance(i, LoadInputs))
         combined = combine_runs(
             SpecimenRun(
@@ -483,13 +737,27 @@ class LcttLab:
         )
         if isinstance(combined, Err):
             _log.warning("lctt analyze: combine_runs failed: %s", combined.danger_err)
-            return base
+            return Ok(
+                _with_unavailable(
+                    _with_calibration(base.danger_ok, inputs),
+                    f"yield_stress: two-specimen fit failed ({combined.danger_err})",
+                )
+            )
+        ctx = LcttLab(context_from_inputs(inputs)).context
         values = dict(base.danger_ok.values)
+        values.update(_calibration_quantities(inputs, ctx))
         for sv in combined.danger_ok.values:
             r = sv.result
-            values[r.name] = Quantity(value=r.value, standard_uncertainty=r.std_unc, unit=r.unit)
+            unc = r.std_unc
+            if r.name == "E":
+                unc = _inflate_modulus_unc(r.value, unc, inputs, ctx)
+            values[r.name] = Quantity(value=r.value, standard_uncertainty=unc, unit=r.unit)
         _log.info("lctt analyze: %d values incl. two-specimen results", len(values))
-        return Ok(AnalysisResult(values=values))
+        return Ok(
+            AnalysisResult(
+                values=values, pending=combined.danger_ok.pending, notes=combined.danger_ok.notes
+            )
+        )
 
     def budgets(self) -> list[LabBudget]:
         """Return nominal stress and modulus budgets from the public uncertainty engine."""

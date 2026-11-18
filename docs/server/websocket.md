@@ -75,6 +75,11 @@ Each client has a queue of 8 display frames; when full the oldest is dropped and
 `dropped_frames` is incremented (reported in `stats`; gaps in frame seq show it too).
 JSON messages are queued up to 1024 and are not dropped under normal load. The bus
 subscription itself is drop-oldest and counted. WAL writes are never throttled by clients.
+`state` messages are coalesced to at most `STATE_MAX_HZ` (30 Hz): the hub keeps only the latest
+and releases it on the next poll after the interval. This is display-only; raw data is always
+fully written to the WAL. The `--sim` device is paced to `DEVICE_RATE_HZ` (50 kHz) by
+`DeviceService._pace`, so it no longer runs faster than real time (no blocks are dropped).
+
 A reconnecting client gets `hello` with the latest state and then live frames; missed
 frames are not replayed (the WAL is the record).
 

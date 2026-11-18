@@ -1,0 +1,28 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:35:14Z"
+digest = "5e728fb97d4f7a360ea2b523c66f5d65deee36d6fab765127e93e46fbc2d65ea"
+exit_code = 0
+head = "a779dfbf5310d8818624d9aef2e97bdc5cadc6ec"
+inline = """
+
+ RUN  v5.1.0 <worktree>/web
+
+
+ Test Files  4 passed (4)
+      Tests  60 passed (60)
+   Start at  08:35:20
+   Duration  765ms (transform 69%, import 15%, tests 15%, worker 2%)
+
+8:35:20 AM [vite] warning: `esbuild` option was specified by "vite:react-babel" plugin. This option is deprecated, please use `oxc` instead.
+8:35:20 AM [vite] warning: `optimizeDeps.esbuildOptions` option was specified by "vite:react-babel" plugin. This option is deprecated, please use `optimizeDeps.rolldownOptions` instead.
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic', jsxImportSource: undefined }`
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/run --root web"
+size = 696
+status = "measured"
+at = "2026-11-10T13:35:14Z"
+actor = "lognd"
+rev = 1

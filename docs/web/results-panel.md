@@ -17,3 +17,7 @@ shows the pre-formatted `display` and `confidence` strings verbatim.
 
 Types in `web/src/components/results/types.ts` mirror `python/sadi/core/results.py`. No server
 endpoint is called by the panel; the host screen supplies the `ResultSet`.
+
+## Compact numbers (Audit1 #27)
+
+Uncertainty and 95 % range use `compactNumber` (4 significant figures, exponent form when very large or small); the table scrolls horizontally on narrow screens.

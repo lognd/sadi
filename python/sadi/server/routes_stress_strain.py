@@ -15,6 +15,7 @@ from typani import Err, ErrorSet, Ok, Result
 from sadi.labs.lctt.calibration import fit_calibration
 from sadi.labs.lctt.modulus import CurvePoint, ModulusError, ModulusFit, fit_modulus
 from sadi.logging_setup import get_logger
+from sadi.synthetic.provenance import REAL, DataProvenance
 
 _log = get_logger(__name__)
 
@@ -26,6 +27,7 @@ class RefitError(ErrorSet):
     """Server-side refit failure that is not a ModulusError."""
 
     NoData = "No stress-strain data is available to refit; record or open a session first"
+    NoOpenSession = "no_open_session: open or resume a session before refitting"
     Intercept = "The fit intercept could not be computed for this window"
 
 
@@ -50,6 +52,7 @@ class ModulusFitView(BaseModel):
     eU95Gpa: float  # noqa: N815
     r2: float
     lowR2: bool  # noqa: N815
+    provenance: DataProvenance = REAL  # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 
 
 class ErrorBody(BaseModel):
@@ -99,15 +102,21 @@ def _status(error: ModulusError | RefitError) -> int:
     """HTTP status for a refit error: bad window 422, no data 409, others 422/500."""
     if error is ModulusError.BadWindow:
         return 422
-    if error is RefitError.NoData:
+    if error in (RefitError.NoData, RefitError.NoOpenSession):
         return 409
     if error in (ModulusError.Fit, ModulusError.NoWindow):
         return 422
     return 500
 
 
-def make_stress_strain_router(source: CurveSource | None = None) -> APIRouter:
-    """Build the router; `source` supplies stored curve points (None -> 409 NoData)."""
+def make_stress_strain_router(
+    source: CurveSource | None = None,
+    provenance: DataProvenance | Callable[[], DataProvenance] = REAL,
+) -> APIRouter:
+    """Build the router; `source` supplies stored curve points (None -> 409 NoData).
+
+    `provenance` may be a callable so the stamp follows the open session.
+    """
     router = APIRouter(prefix="/api/stress-strain", tags=["stress-strain"])
 
     def _fail(error: ModulusError | RefitError) -> JSONResponse:
@@ -127,6 +136,7 @@ def make_stress_strain_router(source: CurveSource | None = None) -> APIRouter:
         res = await run_in_threadpool(refit, loaded.value, req.first, req.last)
         if not isinstance(res, Ok):
             return _fail(res.unwrap_err())
-        return res.value
+        stamp = provenance() if callable(provenance) else provenance  # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        return res.value.model_copy(update={"provenance": stamp})
 
     return router

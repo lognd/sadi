@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/design/plan.py", "python/sadi/design/models.py", "python/tests/design/test_plan.py", "docs/design/weight-plan.md"]
+new = ["python/sadi/design/plan.py", "python/sadi/design/models.py", "python/tests/design/test_plan.py", "docs/design/weight-plan.md", "docs/design/gp-selector.md", "changelog.d/*YNKT2ED*"]
+at = "2026-11-10T14:22:01Z"
+actor = "lognd"
+rev = 1

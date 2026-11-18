@@ -1,0 +1,29 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T08:04:21Z"
+digest = "d965ee03fc0e7405ba023ce6443177f3346102c9cf584f0a5973e46347c4fe21"
+exit_code = 0
+head = "b8ebe5dd48bcc69a53e5f9646db113ff7090c0cd"
+inline = """
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
+rootdir: <worktree>/python
+configfile: pyproject.toml
+plugins: platformdirs-4.14.5, hypothesis-6.170.15, anyio-4.16.0
+collected 18 items
+
+python/tests/labs/lctt/test_settle_stream.py ..................          [100%]
+
+-------------- generated xml file: /tmp/frob-pytest-803823-0.xml ---------------
+============================== 18 passed in 1.84s ==============================
+"""
+passed = true
+provider = "pytest"
+ref = "python/tests/labs/lctt/test_settle_stream.py"
+size = 522
+status = "measured"
+test_count = 18
+tests_digest = "d2fb65a94be524c8019df744e2a50334de60051490a423960c47331688ef316e"
+at = "2026-11-10T08:04:21Z"
+actor = "lognd"
+rev = 1

@@ -92,8 +92,9 @@ def test_create_layout_lock_and_manifest(tmp_path: Path) -> None:
 
 
 # frob:tests python/sadi/store/session.py::create_session
-def test_collision_takes_next_version_and_never_touches_existing(tmp_path: Path) -> None:
-    """A pre-existing v001 is left byte-identical; create takes v002 then v003."""
+# frob:tests python/sadi/store/session.py::_free_family
+def test_same_second_same_slug_gets_a_distinct_family(tmp_path: Path) -> None:
+    """Audit1 #34: a same-second collision is a new family at v001, never v002 of the first."""
     first = _new(tmp_path)
     first.close()
     (first.path / "wal" / "sentinel").write_bytes(b"precious")
@@ -101,18 +102,39 @@ def test_collision_takes_next_version_and_never_touches_existing(tmp_path: Path)
     second = _new(tmp_path)
     second.close()
     third = _new(tmp_path)
-    assert second.path.name.endswith(".v002") and third.path.name.endswith(".v003")
+    assert first.manifest.family != second.manifest.family != third.manifest.family
+    assert {first.manifest.version, second.manifest.version, third.manifest.version} == {1}
+    assert second.manifest.parent is None and third.path.name.endswith(".v001")
     assert tree_hash(first.path) == before
     third.close()
 
 
-# frob:tests python/sadi/store/session.py::create_session
+# frob:tests python/sadi/store/names.py::ascii_fold
+# frob:tests python/sadi/store/session.py::_slug
+def test_slug_folds_accents_instead_of_dropping_letters() -> None:
+    """Audit1 #34: accented letters keep their ASCII base in the slug."""
+    assert session._slug("Spa\u00fcces and N\u00efcode") == "spauces-and-nicode"
+    assert session._slug("\u4e2d\u6587") == "session"
+
+
+# frob:tests python/sadi/store/session.py::SessionHandle.close
+def test_clean_close_records_last_seq(tmp_path: Path) -> None:
+    """Audit1 #41: a clean close stores the WAL's last seq and the session reads as not stale."""
+    h = _new(tmp_path)
+    _with_wal(h)
+    h.close()
+    ro = session.open_readonly(h.path).danger_ok
+    assert ro.manifest is not None and ro.manifest.last_seq == ro.scan.last_seq
+    assert not ro.manifest_stale
+
+
+# frob:tests python/sadi/store/session.py::_take_version
 def test_version_exhaustion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """When every version is taken the result is TooManyVersions, nothing is reused."""
+    """When every version of a family is taken the result is TooManyVersions, nothing is reused."""
     monkeypatch.setattr(session, "MAX_VERSION", 2)
-    _new(tmp_path).close()
-    _new(tmp_path).close()
-    r = create_session(tmp_path, META, NOW)
+    (tmp_path / "x.v001").mkdir()
+    (tmp_path / "x.v002").mkdir()
+    r = session._take_version(tmp_path, "x", 1)
     assert r.is_err and isinstance(r.danger_err, TooManyVersions)
 
 

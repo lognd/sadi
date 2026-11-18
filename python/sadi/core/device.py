@@ -7,13 +7,14 @@
 from __future__ import annotations
 
 import queue
+import shutil
 import threading
 import time
 from collections.abc import Callable
 from enum import StrEnum
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typani import Err, Ok, Result
 
 from sadi.core.devfacade import close_quietly, default_adc_mode, to_device_error
@@ -31,6 +32,8 @@ from sadi.core.phases import (
 from sadi.logging_setup import get_logger
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from sadi.core.devfacade import sp
 
 _log = get_logger(__name__)
@@ -41,6 +44,22 @@ FTDI_VID: Final[int] = 0x0403
 #: Deep enough to ride out a slow CI runner or fsync stall.
 DEFAULT_QUEUE_BLOCKS: Final[int] = 4096  # frob:ticket 01M709DXGS91GPWZ3M06FWXJPY
 _JOIN_TIMEOUT_S: Final[float] = 5.0
+#: Device sample rate of the SADI board and simulator, Hz (the simulator is paced to this).
+DEVICE_RATE_HZ: Final[float] = 50_000.0  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+#: Free bytes below which raw streaming into the WAL must not continue (1 GiB).
+LIVE_MIN_FREE_BYTES: Final[int] = 1 << 30  # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+
+
+def free_bytes(path: Path) -> Result[int, OSError]:  # frob:ticket 01M723P32SR45XWMW7BE5QZE7H
+    """Free bytes on the filesystem holding `path` (its nearest existing ancestor)."""
+    probe = path
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    try:
+        return Ok(shutil.disk_usage(probe).free)
+    except OSError as exc:
+        _log.error("free-space probe failed for %s: %s", probe, exc)
+        return Err(exc)
 
 
 class DeviceStatus(StrEnum):
@@ -49,6 +68,9 @@ class DeviceStatus(StrEnum):
     CONNECTED = "connected"
     SIMULATED = "simulated"
     ERROR = "error"
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
+    #: No board is attached (never opened, or closed); Reconnect can open it.
+    DISCONNECTED = "disconnected"
 
 
 class DeviceSource(BaseModel):
@@ -95,6 +117,13 @@ class Backoff(BaseModel):
 DeviceFault = DeviceError | ReaderOverflow
 
 
+# frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+class StopFailed(DeviceError):
+    """A device stop error that still carries the raw blocks already read (never dropped)."""
+
+    blocks: list[Any] = Field(default_factory=list, exclude=True, repr=False)
+
+
 class DeviceService:
     """Owns one device session; reader thread feeds a bounded queue consumed via next_block."""
 
@@ -122,15 +151,19 @@ class DeviceService:
         self._thread: threading.Thread | None = None
         self._errored = False
         self._held: sp.Block | None = None
+        self._salvaged: list[Any] = []
         self._sim_ctl: sp.sim.SimControl | None = None
 
+    # frob:ticket 01M724AKWJV8BRNRR3Q43553VR
     @property
     def status(self) -> DeviceStatus:
-        """connected, simulated (sim source up), or error (open failed or reader faulted)."""
+        """connected, simulated, error (open failed/faulted) or disconnected (not open)."""
         with self._lock:
             idle = self._connected is None and self._streaming is None
-            if self._errored or self._fault is not None or idle:
+            if self._errored or self._fault is not None:
                 return DeviceStatus.ERROR
+            if idle:
+                return DeviceStatus.DISCONNECTED
             return DeviceStatus.SIMULATED if self._source.kind == "sim" else DeviceStatus.CONNECTED
 
     @property
@@ -204,7 +237,10 @@ class DeviceService:
         """Start the device and the reader thread (default ADC mode: DLL-compatible)."""
         with self._lock:
             if self._connected is None:
-                raise RuntimeError("start_streaming requires an open, non-streaming service")
+                _log.warning("start_streaming refused: no open connection")
+                return Err(
+                    DeviceError(code=DeviceCode.NOT_FOUND, detail="no instrument connection")
+                )
             conn = self._connected
             mode = default_adc_mode() if adc_mode is None else Ok(adc_mode)
             if isinstance(mode, Err):
@@ -241,8 +277,19 @@ class DeviceService:
                 return Err(fault)
             return Ok(None)
 
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
+    def take_salvaged(self) -> list[Any]:
+        """Hand over (and forget) blocks a teardown kept instead of discarding; caller ingests."""
+        with self._lock:
+            kept, self._salvaged = self._salvaged, []
+        return kept
+
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
     def stop_streaming(self) -> Result[list[sp.Block], DeviceError]:
-        """Stop the reader and the device; returns blocks still queued plus the trailing block."""
+        """Stop the reader and the device; returns blocks still queued plus the trailing block.
+
+        When the stop command fails the Err is a `StopFailed` carrying the drained blocks.
+        """
         with self._lock:
             streaming = self._streaming
             if streaming is None:
@@ -260,7 +307,13 @@ class DeviceService:
             res = streaming.stop()
             if isinstance(res, Err):
                 self._errored = True
-                return Err(res.danger_err)
+                err = res.danger_err
+                _log.error(
+                    "device stop failed (%s); returning %d drained blocks to the caller",
+                    err.detail,
+                    len(pending),
+                )
+                return Err(StopFailed(code=err.code, detail=err.detail, blocks=pending))
             stopped, tail = res.danger_ok
             self._streaming = None
             pending.append(tail)
@@ -324,6 +377,8 @@ class DeviceService:
 
     def _reader(self, streaming: Streaming) -> None:
         """Reader thread: read blocks into the bounded queue; stop loudly on error or overflow."""
+        paced = self._source.kind == "sim"  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        due = time.monotonic()
         while not self._stop_evt.is_set():
             try:
                 res = streaming.read_block()
@@ -336,6 +391,8 @@ class DeviceService:
                     self._set_fault(err)
                     return
                 case Ok(block):
+                    if paced:
+                        due = self._pace(due, int(block.n_samples))
                     try:
                         self._queue.put_nowait(block)
                     except queue.Full:
@@ -354,6 +411,20 @@ class DeviceService:
                         return
         _log.debug("reader thread exiting on stop request")
 
+    def _pace(self, due: float, n_samples: int) -> float:
+        """Sleep until `n_samples` of device time pass since `due`; return the next due time.
+
+        The simulator generates faster than real time; every block is still delivered (never
+        dropped), only the rate is held to DEVICE_RATE_HZ. A stop request wakes the sleep.
+        """  # frob:ticket 01M7230X8BYK2RJAG749SST7TB
+        due += n_samples / DEVICE_RATE_HZ
+        now = time.monotonic()
+        if due > now:
+            self._stop_evt.wait(due - now)
+        elif now - due > 1.0:
+            return now  # fell far behind (consumer stall): do not burst to catch up
+        return due
+
     def _set_fault(self, fault: DeviceFault) -> None:
         """Record the first fault that ended the reader."""
         with self._lock:
@@ -370,15 +441,23 @@ class DeviceService:
                 _log.error("reader thread did not exit within %.1fs", _JOIN_TIMEOUT_S)
             self._thread = None
 
+    # frob:ticket 01M7279606J0ZW8ZY1RZG2ZHS9
     def _teardown(self) -> None:
         """Stop the reader and close whichever phase object is live."""
         self._join_reader()
+        kept = 0
         while True:
             try:
-                self._queue.get_nowait()
+                self._salvaged.append(self._queue.get_nowait())
+                kept += 1
             except queue.Empty:
                 break
-        self._held = None
+        if self._held is not None:
+            self._salvaged.append(self._held)
+            kept += 1
+            self._held = None
+        if kept:
+            _log.warning("teardown kept %d unsaved blocks for the caller to ingest", kept)
         if self._streaming is not None:
             streaming = self._streaming
             self._streaming = None

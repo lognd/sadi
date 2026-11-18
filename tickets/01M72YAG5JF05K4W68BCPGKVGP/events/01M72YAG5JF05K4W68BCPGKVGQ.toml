@@ -1,0 +1,12 @@
+kind = "create"
+title = "Load points carry voltage uncertainty U=2*sd (parity M1) and operator/description in CSV header (parity L1)"
+type = "story"
+category = "todo"
+priority = "high"
+points = 3
+scope = ["web/src/screens/run/live.ts", "python/sadi/labs/lctt/lab.py"]
+acceptance = ["Load points post volts_sd/u_volts; CSV header has operator and description."]
+body = "See parity.md in scratchpad. Blocked by uncommitted edits to live.ts and lab.py."
+at = "2026-11-10T14:38:18Z"
+actor = "lognd"
+rev = 1

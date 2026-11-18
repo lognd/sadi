@@ -4,6 +4,66 @@
  */
 
 export interface paths {
+    "/api/acquisition/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resume
+         * @description Restart streaming after an idle pause; writes no marker and applies no load.
+         */
+        post: operations["resume_api_acquisition_resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/design/next-weight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Next Weight
+         * @description Advisory next load (kg) or height (m) and the enough-data indicator; never acts.
+         */
+        get: operations["next_weight_api_design_next_weight_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/device/reconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Device Reconnect
+         * @description Open the board now (no restart); attaches to the open session, WAL untouched.
+         */
+        post: operations["device_reconnect_api_device_reconnect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/device/status": {
         parameters: {
             query?: never;
@@ -78,6 +138,26 @@ export interface paths {
         get: operations["list_formats_api_export_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/export/figure/{figure_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Save Figure
+         * @description Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites).
+         */
+        post: operations["save_figure_api_export_figure__figure_id__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -258,6 +338,26 @@ export interface paths {
         get: operations["result_budgets_api_results_budgets_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/results/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish Results
+         * @description Results reached: drain raw blocks to the WAL and stop streaming (session stays open).
+         */
+        post: operations["finish_results_api_results_finish_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -736,6 +836,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sessions/{name}/export/{format_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Closed
+         * @description Download one export of a closed session; read-only, so no copy is kept and nothing is written.
+         */
+        get: operations["export_closed_api_sessions__name__export__format_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/stress-strain/fit": {
         parameters: {
             query?: never;
@@ -750,6 +870,46 @@ export interface paths {
          * @description Recompute E, r^2 and U95 over the window from stored data; read-only.
          */
         post: operations["post_fit_api_stress_strain_fit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weight-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Make Plan
+         * @description Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing.
+         */
+        post: operations["make_plan_api_weight_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/weight-plan/defaults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Defaults
+         * @description The calibration slope used when none is entered, and where it comes from.
+         */
+        get: operations["defaults_api_weight_plan_defaults_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -771,6 +931,40 @@ export interface components {
             label: string;
             /** Ref */
             ref: string;
+        };
+        /**
+         * AltCandidate
+         * @description A runner-up candidate with its expected gain.
+         */
+        AltCandidate: {
+            /** Candidate Id */
+            candidate_id: string;
+            /** Expected Gain */
+            expected_gain: number;
+            /** X */
+            x: number;
+        };
+        /**
+         * ApiProblem
+         * @description RFC 7807 body: stable `type`, human `title`/`detail` and a 'what to do' `hint`.
+         */
+        ApiProblem: {
+            /**
+             * Detail
+             * @default
+             */
+            detail: string;
+            /**
+             * Hint
+             * @default
+             */
+            hint: string;
+            /** Status */
+            status: number;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
         };
         /**
          * BudgetRow
@@ -801,6 +995,21 @@ export interface components {
             value: number;
         };
         /**
+         * CalibrationDefaults
+         * @description The calibration slope the plan would use when none is entered, and where it came from.
+         */
+        CalibrationDefaults: {
+            /** Cal Slope V Per M */
+            cal_slope_v_per_m: number | null;
+            /** Explanation */
+            explanation: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "session" | "none";
+        };
+        /**
          * CalibrationFitView
          * @description Fitted calibration line and its 95% confidence band over the sampled volts.
          */
@@ -828,6 +1037,15 @@ export interface components {
             fit: components["schemas"]["CalibrationFitView"] | null;
             /** Height M */
             height_m: number[];
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Volts */
             volts: number[];
         };
@@ -849,6 +1067,8 @@ export interface components {
             };
             /** Phase */
             phase: string;
+            /** Request Id */
+            request_id?: string | null;
             /**
              * Settled
              * @default false
@@ -991,10 +1211,120 @@ export interface components {
             target_half_width?: number | null;
         };
         /**
+         * ConfidenceIndicator
+         * @description The "confidence is enough" payload (advisory; the user always decides).
+         */
+        ConfidenceIndicator: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /** Consecutive Ok */
+            consecutive_ok: number;
+            current: components["schemas"]["CurrentFit"];
+            /** Job Version */
+            job_version: number;
+            /** N */
+            n: number;
+            /** Patience */
+            patience: number;
+            phase: components["schemas"]["DesignPhase"];
+            /** Ratio */
+            ratio: number | null;
+            /**
+             * Reasons
+             * @default []
+             */
+            reasons: ("cold_start" | "singular" | "no_offset" | "yield_not_reached" | "departure_from_linear" | "diminishing_returns" | "no_elastic_fit" | "no_calibration" | "range_exhausted")[];
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            state: components["schemas"]["GpState"];
+            target: components["schemas"]["TargetSpec"];
+        };
+        /**
+         * Criterion
+         * @description Acquisition criterion; `target` is c-optimal (expected shrink of the target interval).
+         * @enum {string}
+         */
+        Criterion: "target" | "d_opt" | "a_opt";
+        /**
+         * CurrentFit
+         * @description Current estimate of the target quantity; `half_width` is None while it cannot be formed.
+         */
+        CurrentFit: {
+            /** Dof */
+            dof: number;
+            /** Half Width */
+            half_width: number | null;
+            /** Value */
+            value: number | null;
+        };
+        /**
+         * DataProvenance
+         * @description Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped.
+         */
+        DataProvenance: {
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /**
+             * Source
+             * @default real
+             * @enum {string}
+             */
+            source: "real" | "synthetic" | "unknown";
+            /**
+             * Synthetic
+             * @default false
+             */
+            synthetic: boolean;
+            /**
+             * Truth
+             * @description scenario ground truth
+             */
+            truth?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Warning
+             * @default
+             */
+            warning: string;
+        };
+        /**
+         * DesignAdvice
+         * @description REST payload: the suggestion (None when there is nothing to suggest) plus the indicator.
+         */
+        DesignAdvice: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            indicator: components["schemas"]["ConfidenceIndicator"];
+            suggestion: components["schemas"]["NextSuggestion"] | null;
+        };
+        /**
+         * DesignPhase
+         * @description Which model the design uses: LVDT calibration, elastic fit or yield GP.
+         * @enum {string}
+         */
+        DesignPhase: "lvdt_cal" | "elastic" | "yield";
+        /**
          * DeviceView
          * @description Device state for the header: coarse status, whether a service exists, and any fault.
          */
         DeviceView: {
+            /** Acquisition Fault */
+            acquisition_fault?: string | null;
             /** Attached */
             attached: boolean;
             /** Fault */
@@ -1004,8 +1334,19 @@ export interface components {
              * @default
              */
             hint: string;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Status */
             status: string;
+            /** Stop Reason */
+            stop_reason?: string | null;
         };
         /**
          * DoctorReport
@@ -1117,6 +1458,12 @@ export interface components {
             last: number;
         };
         /**
+         * GpState
+         * @description Advisory model state shown in the UI; never gates anything.
+         * @enum {string}
+         */
+        GpState: "collecting" | "enough" | "diminishing" | "unreliable";
+        /**
          * GuidanceState
          * @description Everything the guidance panel shows for one phase after one point.
          */
@@ -1175,10 +1522,54 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * Hang
+         * @description One planned hang: which weights, their total, predicted volts and the gain it buys.
+         */
+        Hang: {
+            /** E Half Width Pa */
+            e_half_width_pa?: number | null;
+            /** Expected Gain */
+            expected_gain: number;
+            /** Order */
+            order: number;
+            /** Predicted Volts */
+            predicted_volts: number;
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+            /** Slope Half Width V Per Kg */
+            slope_half_width_v_per_kg?: number | null;
+            /** Tension N */
+            tension_n: number;
+            /** Total Mass Kg */
+            total_mass_kg: number;
+            /** U Mass Kg */
+            u_mass_kg: number;
+            /** U Predicted Volts */
+            u_predicted_volts: number;
+            /** Weight Ids */
+            weight_ids: string[];
+            /** Yield Half Width Kg */
+            yield_half_width_kg?: number | null;
+        };
+        /**
          * HealthOut
          * @description Health payload consumed by web/src/api/client.ts getHealth.
          */
         HealthOut: {
+            /** Data Root */
+            data_root?: string | null;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Simulated */
             simulated?: boolean | null;
             /**
@@ -1307,6 +1698,15 @@ export interface components {
             lowR2: boolean;
             /** Modulusmpa */
             modulusMpa: number;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** R2 */
             r2: number;
         };
@@ -1316,6 +1716,58 @@ export interface components {
          * @enum {string}
          */
         Mutates: "none" | "process" | "system" | "install" | "data-dir" | "data";
+        /**
+         * NextSuggestion
+         * @description Recommended next candidate with the expected gain; never acts on the machine.
+         */
+        NextSuggestion: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /**
+             * Alternatives
+             * @default []
+             */
+            alternatives: components["schemas"]["AltCandidate"][];
+            /**
+             * Budget Exceeded
+             * @default false
+             */
+            budget_exceeded: boolean;
+            /** Candidate Id */
+            candidate_id: string;
+            /** @default target */
+            criterion: components["schemas"]["Criterion"];
+            /**
+             * Elapsed Ms
+             * @default 0
+             */
+            elapsed_ms: number;
+            /** Expected Gain */
+            expected_gain: number;
+            /** Expected Half Width */
+            expected_half_width: number | null;
+            /** Job Version */
+            job_version: number;
+            phase: components["schemas"]["DesignPhase"];
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            /** Unit */
+            unit: string;
+            /**
+             * Why
+             * @default
+             */
+            why: string;
+            /** X */
+            x: number;
+        };
         /**
          * Os
          * @description Detected host OS; WSL is distinct because its fixes differ.
@@ -1435,6 +1887,23 @@ export interface components {
             kind: "exception" | "timeout" | "tool-missing";
         };
         /**
+         * PropagatedView
+         * @description Propagated uncertainty of the planned run: per-hang stress and strain, E and yield.
+         */
+        PropagatedView: {
+            modulus?: components["schemas"]["QuantityView"] | null;
+            /**
+             * Notes
+             * @default []
+             */
+            notes: string[];
+            /** Strain */
+            strain: components["schemas"]["QuantityView"][];
+            /** Stress */
+            stress: components["schemas"]["QuantityView"][];
+            yield_stress?: components["schemas"]["QuantityView"] | null;
+        };
+        /**
          * QuantityProvenance
          * @description Where one reported quantity came from: its inputs, sample span and algorithm.
          */
@@ -1449,6 +1918,24 @@ export interface components {
             name: string;
             /** Point Ids */
             point_ids: string[];
+        };
+        /**
+         * QuantityView
+         * @description A propagated value with standard uncertainty and its 95 % interval.
+         */
+        QuantityView: {
+            /** High95 */
+            high95: number;
+            /** Low95 */
+            low95: number;
+            /** Name */
+            name: string;
+            /** Std Unc */
+            std_unc: number;
+            /** Unit */
+            unit: string;
+            /** Value */
+            value: number;
         };
         /**
          * RailItem
@@ -1563,6 +2050,15 @@ export interface components {
          */
         ResultsView: {
             /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            data_provenance: components["schemas"]["DataProvenance"];
+            /**
              * N Points
              * @default 0
              */
@@ -1592,6 +2088,14 @@ export interface components {
              * @default []
              */
             values: components["schemas"]["ResultValue"][];
+        };
+        /**
+         * ResumeOut
+         * @description Result of resuming: streaming is running again and nothing was written to the WAL.
+         */
+        ResumeOut: {
+            /** Streaming */
+            streaming: boolean;
         };
         /**
          * RevertBody
@@ -1644,6 +2148,11 @@ export interface components {
             open_browser: boolean;
             /** Port */
             port?: string | null;
+            /**
+             * Probe Device
+             * @default true
+             */
+            probe_device: boolean;
             render_os?: components["schemas"]["Os"] | null;
             /**
              * Running
@@ -1741,10 +2250,24 @@ export interface components {
             lab: string;
             /** Name */
             name: string;
+            /**
+             * Newer Versions
+             * @default []
+             */
+            newer_versions: string[];
             /** Parent */
             parent?: string | null;
             /** Parent Last Seq */
             parent_last_seq?: number | null;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
         };
         /**
          * SessionResume
@@ -1763,10 +2286,28 @@ export interface components {
             family: string;
             /** Lab */
             lab: string;
+            /**
+             * Latest
+             * @default true
+             */
+            latest: boolean;
+            /** Latest Name */
+            latest_name?: string | null;
             /** Name */
             name: string;
             /** Parent */
             parent?: string | null;
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
+            /** Spill Import */
+            spill_import?: string | null;
             /** State */
             state: string;
             /** Version */
@@ -1847,8 +2388,22 @@ export interface components {
         StressStrainPlot: {
             /** Excluded */
             excluded: boolean[];
+            /**
+             * Phase
+             * @default []
+             */
+            phase: string[];
             /** Point Ids */
             point_ids: string[];
+            /**
+             * @default {
+             *       "label": "",
+             *       "source": "real",
+             *       "synthetic": false,
+             *       "warning": ""
+             *     }
+             */
+            provenance: components["schemas"]["DataProvenance"];
             /** Strain */
             strain: number[];
             /** Stress Mpa */
@@ -1872,6 +2427,24 @@ export interface components {
             verdict: "ready" | "degraded" | "blocked";
             worst_severity_failed: components["schemas"]["Severity"] | null;
         };
+        /**
+         * TargetSpec
+         * @description User target half-width of the 95 % interval; relative to the estimate unless stated.
+         */
+        TargetSpec: {
+            /** Half Width */
+            half_width: number;
+            /**
+             * Relative
+             * @default true
+             */
+            relative: boolean;
+            /**
+             * Unit
+             * @default
+             */
+            unit: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -1884,6 +2457,116 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * WeightIn
+         * @description One entered weight: mass in kg, optional uncertainty, optional id (defaults to w1, w2...).
+         */
+        WeightIn: {
+            /** Mass Kg */
+            mass_kg: number;
+            /**
+             * U Mass Kg
+             * @default 0
+             */
+            u_mass_kg: number;
+            /** Weight Id */
+            weight_id?: string | null;
+        };
+        /**
+         * WeightPlan
+         * @description Ordered hangs for the remaining run; advisory only.
+         */
+        WeightPlan: {
+            /**
+             * Advisory
+             * @default true
+             * @constant
+             */
+            advisory: true;
+            /**
+             * Dropped Capacity
+             * @default 0
+             */
+            dropped_capacity: number;
+            /**
+             * Dropped Saturation
+             * @default 0
+             */
+            dropped_saturation: number;
+            /** Hangs */
+            hangs: components["schemas"]["Hang"][];
+            /** N Achievable */
+            n_achievable: number;
+            /** N Inventory */
+            n_inventory: number;
+            /** N Usable */
+            n_usable: number;
+            phase: components["schemas"]["DesignPhase"];
+        };
+        /**
+         * WeightPlanBody
+         * @description Operator inputs: weights, wire geometry and (optionally) the LVDT calibration slope.
+         */
+        WeightPlanBody: {
+            /**
+             * Cal Offset V
+             * @default 0
+             */
+            cal_offset_v: number;
+            /**
+             * Cal Slope V Per M
+             * @description LVDT volts per metre; defaults from the current calibration
+             */
+            cal_slope_v_per_m?: number | null;
+            /**
+             * Diameter M
+             * @default 0.000202
+             */
+            diameter_m: number;
+            /**
+             * Length M
+             * @description gauge length L0
+             * @default 0.08313
+             */
+            length_m: number;
+            /**
+             * U Diameter M
+             * @default 0
+             */
+            u_diameter_m: number;
+            /**
+             * U Length M
+             * @default 0
+             */
+            u_length_m: number;
+            /**
+             * U Volts
+             * @default 0.001
+             */
+            u_volts: number;
+            /** Weights */
+            weights: components["schemas"]["WeightIn"][];
+        };
+        /**
+         * WeightPlanOut
+         * @description The plan, the slope that was used and the propagated uncertainty (when computable).
+         */
+        WeightPlanOut: {
+            /** Cal Slope V Per M */
+            cal_slope_v_per_m: number;
+            /**
+             * Cal Source
+             * @enum {string}
+             */
+            cal_source: "entered" | "session";
+            plan: components["schemas"]["WeightPlan"];
+            propagated?: components["schemas"]["PropagatedView"] | null;
+            /**
+             * Propagation Note
+             * @default
+             */
+            propagation_note: string;
         };
         /**
          * WizardState
@@ -1921,6 +2604,79 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    resume_api_acquisition_resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeOut"];
+                };
+            };
+        };
+    };
+    next_weight_api_design_next_weight_get: {
+        parameters: {
+            query?: {
+                phase?: components["schemas"]["DesignPhase"];
+                target?: number;
+                offset?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DesignAdvice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    device_reconnect_api_device_reconnect_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceView"];
+                };
+            };
+        };
+    };
     device_status_api_device_status_get: {
         parameters: {
             query?: never;
@@ -2008,6 +2764,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExportFormatView"][];
+                };
+            };
+        };
+    };
+    save_figure_api_export_figure__figure_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                figure_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -2210,6 +2999,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResultBudget"][];
+                };
+            };
+        };
+    };
+    finish_results_api_results_finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeviceView"];
                 };
             };
         };
@@ -2552,6 +3361,15 @@ export interface operations {
                     "application/json": components["schemas"]["Committed"];
                 };
             };
+            /** @description request_id_reused, no_device or wizard conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiProblem"];
+                };
+            };
             /** @description Validation Error */
             422: {
                 headers: {
@@ -2559,6 +3377,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description durability wait timed out or backpressure */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiProblem"];
                 };
             };
         };
@@ -2896,6 +3723,38 @@ export interface operations {
             };
         };
     };
+    export_closed_api_sessions__name__export__format_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+                format_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     post_fit_api_stress_strain_fit_post: {
         parameters: {
             query?: never;
@@ -2925,6 +3784,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    make_plan_api_weight_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeightPlanBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightPlanOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    defaults_api_weight_plan_defaults_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalibrationDefaults"];
                 };
             };
         };

@@ -1,0 +1,107 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T14:00:47Z"
+digest = "8a30bec6241b1c19a2a0f3576c1249d89233318fa7d916aadee51a5c1fdff82c"
+exit_code = 1
+head = "b26f89ea5f4d4cdb5fb3b74b419d638411628039"
+inline = '''
+
+ RUN  v3.2.7 <worktree>
+
+stdout | web/src/plots/live/live.test.tsx > TraceWindow > keeps marks until they scroll out
+[plots.live.window] mark { t: 0.001, kind: 'load' }
+
+stdout | web/src/plots/live/live.test.tsx > applyMessage > turns state and result messages into marks
+[hooks.markClock] load mark { now: 5.256, timeSinceLoad: 0.1, t: 5.156000000000001 }
+[plots.live.window] mark { t: 5.156000000000001, kind: 'load' }
+[plots.live.window] mark { t: 5.1, kind: 'settled' }
+[plots.live.window] mark { t: 5.256, kind: 'forced' }
+
+stdout | web/src/plots/live/live.test.tsx > live scene > is titled with unit axes, legend, limits at +-4.9 V and renders (acceptance 1, 3)
+[plots.live.window] mark { t: 0.1, kind: 'load' }
+[plots.place] box placed { id: 'annotation', score: 38 }
+[plots.place] box placed { id: 'marker:mark0', score: 0 }
+[plots.layout] annotation placed { id: 'annotation', x: 349.20000000000005, y: 151, penalty: 38 }
+[plots.layout] layout computed {
+  width: 720,
+  height: 360,
+  xTicks: 5,
+  yTicks: 3,
+  title: 'Live trace',
+  xTitle: 'Time (s)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 1,
+  annotations: 1
+}
+[plots.drawlist] draw list built { ops: 52, series: 1 }
+
+stdout | web/src/plots/live/live.test.tsx > live scene > renders with no data and describes connection states
+[plots.layout] layout computed {
+  width: 720,
+  height: 360,
+  xTicks: 6,
+  yTicks: 3,
+  title: 'Live trace',
+  xTitle: 'Time (s)',
+  xScale: 'linear',
+  yScale: 'linear',
+  labels: 0,
+  annotations: 0
+}
+[plots.drawlist] draw list built { ops: 51, series: 1 }
+
+ \u{2713} web/src/plots/live/live.test.tsx (12 tests) 548ms
+   \u{2713} benchmark: 50 kS/s > decode + window + snapshot stays far under 16 ms per frame  451ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  09:00:47
+   Duration  1.99s (transform 436ms, setup 0ms, collect 633ms, tests 548ms, environment 0ms, prepare 221ms)
+
+JSON report written to /tmp/frob-vitest-1165322-0.json
+stderr | web/src/plots/live/live.test.tsx > TraceWindow > counts dropped frames from seq gaps and tracks stale
+[plots.live.window] frame gap { missing: 3 }
+
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module '<worktree>/web/node_modules/tinypool/dist/entry/process.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v24.22.1
+node:events:1009
+      emitter.removeListener(name, resolver);
+              ^
+
+TypeError: emitter.removeListener is not a function
+    at ChildProcess.errorListener (node:events:1009:15)
+    at ChildProcess.wrapper (node:events:639:12)
+    at ChildProcess.emit (node:events:526:24)
+    at ChildProcess.onUnexpectedExit (file://<worktree>/web/node_modules/tinypool/dist/index.js:118:16)
+    at ChildProcess.emit (node:events:526:24)
+    at ChildProcess._handle.onexit (node:internal/child_process:324:12)
+
+Node.js v24.22.1
+'''
+passed = false
+provider = "vitest"
+ref = "src/plots/live/live.test.tsx"
+size = 3419
+status = "measured"
+test_count = 12
+tests_digest = "7ac5a0e8f9539b78dd79f8a8e00909708c3e368d3aed9fc3366293ed41698732"
+at = "2026-11-10T14:00:47Z"
+actor = "lognd"
+rev = 1

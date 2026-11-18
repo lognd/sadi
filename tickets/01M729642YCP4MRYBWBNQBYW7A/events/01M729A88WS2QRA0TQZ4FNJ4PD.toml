@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/figure_data.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt"]
+new = ["python/sadi/labs/lctt/export_csv.py", "python/sadi/labs/lctt/figure_data.py", "python/sadi/server/curve_source.py", "python/sadi/labs/lctt/lab.py", "python/tests/labs/lctt", "python/sadi/labs/lctt/live.py"]
+at = "2026-11-10T08:31:09Z"
+actor = "lognd"
+rev = 1

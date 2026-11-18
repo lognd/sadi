@@ -1,0 +1,25 @@
+kind = "evidence"
+accepts = [1]
+captured_at = "2026-11-10T13:42:28Z"
+digest = "eb7a169350075f0b91152249e5bb59b72ad7bb602a043b252bde61cfc8f62247"
+exit_code = 0
+head = "9c55b129815e613ad26b4f0f6020fd41adbff3a0"
+inline = """
+
+ RUN  v5.1.0 <worktree>
+
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  08:42:34
+   Duration  678ms (transform 74%, import 17%, tests 8%, worker 1%)
+
+"""
+passed = true
+provider = "command"
+ref = "npx vitest run src/screens/setup src/components/provenance"
+size = 172
+status = "measured"
+at = "2026-11-10T13:42:28Z"
+actor = "lognd"
+rev = 1

@@ -49,3 +49,20 @@ v_c; the score is the information gain 0.5 ln(1 + v_c / s2). The expected half-w
   (noise exceeds signal, or the fallback was used). Empty when no suggestion applies.
 
 `LoadSuggestion` carries the same four optional fields.
+
+## Capture input ranges and the calibration gate
+
+Capture rejects values that look like unit slips and keeps the typed text so nothing is lost.
+Server limits (`python/sadi/core/point_inputs.py`) and the UI `plausible` ranges
+(`web/src/screens/run/inputFields.ts`) agree:
+
+| Field | Range | Hint |
+| --- | --- | --- |
+| Gauge height | -1 mm .. 0.1 m | `1` looks like millimetres; did you mean `0.001`? |
+| Masses (`mass_kg`, `hanger_kg`) | 0 .. 20 kg | `500` looks like grams; did you mean `0.5`? |
+| Specimen diameter | 0.05 mm .. 5 mm | now required on the Tare step |
+
+"Finish LVDT calibration" is blocked unless the fit has r2 >= 0.999, a positive slope and no point
+whose residual exceeds 3 standard errors; the message names the worst point (leave-one-out).
+If no specimen diameter reached the analysis, results use 6 mm +/- 20 % and carry the note
+"diameter assumed 6 mm ...".

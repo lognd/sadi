@@ -24,6 +24,7 @@ from sadi.core.point_inputs import (
 from sadi.labs.lctt.settle import SettleConfig
 from sadi.labs.lctt.settle_stream import StreamConfig
 from sadi.server.app import AppSettings, create_app
+from sadi.server.curve_source import make_curve_source
 from sadi.store.events import recover_state
 from sadi.store.session import SessionMeta, create_session
 from sadi.store.writer_thread import WriterHandle
@@ -76,7 +77,12 @@ def test_record_recover_fit_round_trip(tmp_path: Path) -> None:
     assert all(p.point.phase == "load" for p in state.points[7:])
     for cp, inp in zip(state.points, _inputs(), strict=True):
         assert parse_inputs(cp.point.phase, cp.inputs).danger_ok == inp
-    c = TestClient(create_app(AppSettings(data_root=tmp_path, require_root_lock=False)))
+    # The fit route requires an open session (NoOpenSession -> 409); report the one recorded above
+    # as open so the guard itself stays untouched.  # frob:ticket 01M727MN00JSPCXQEE716A2XW6
+    source = make_curve_source(lambda: sdir)
+    c = TestClient(
+        create_app(AppSettings(data_root=tmp_path, require_root_lock=False, curve_source=source))
+    )
     res = c.post("/api/stress-strain/fit", json={"first": 1, "last": 6})
     assert res.status_code == 200, res.text
     assert res.json()["modulusMpa"] > 0

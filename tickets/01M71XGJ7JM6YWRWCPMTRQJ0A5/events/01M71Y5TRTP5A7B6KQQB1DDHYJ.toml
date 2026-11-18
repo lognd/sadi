@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/routes_doctor.py", "python/sadi/doctor/**", "web/src/App.tsx", "web/src/doctor/**", "web/src/components/instrument/**", "web/src/components/status/**", "web/src/screens/WizardHost.tsx", "web/src/styles.css", "web/src/components/wizard/FrontPanel.tsx", "docs/doctor.md", "docs/web/front-panel.md", "python/sadi/server/app.py"]
+new = ["python/sadi/server/routes_doctor.py", "python/sadi/doctor/**", "web/src/App.tsx", "web/src/doctor/**", "web/src/components/instrument/**", "web/src/components/status/**", "web/src/screens/WizardHost.tsx", "web/src/styles.css", "web/src/components/wizard/FrontPanel.tsx", "docs/doctor.md", "docs/web/front-panel.md", "python/sadi/server/app.py", "python/tests/doctor/**"]
+at = "2026-11-10T05:16:30Z"
+actor = "lognd"
+rev = 1

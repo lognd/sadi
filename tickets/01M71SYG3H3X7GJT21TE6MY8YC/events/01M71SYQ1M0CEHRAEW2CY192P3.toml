@@ -1,0 +1,7 @@
+kind = "transition"
+from = "todo"
+to = "in-progress"
+reason = "lease: lognd in SADI-wt/E6MY8YC; scope: python/sadi/**, python/tests/**, docs/synthetic.md, docs/index.md; ttl 7200s"
+at = "2026-11-10T04:02:38Z"
+actor = "lognd"
+rev = 1

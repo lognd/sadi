@@ -38,6 +38,7 @@ __all__ = [
     "Ad3Source",
     "Reading",
     "Segment",
+    "encode_data_packet",
     "ramp_segments",
 ]
 
@@ -126,6 +127,10 @@ def _encode_data_packet(msg_count: int, codes: NDArray[np.uint16]) -> bytes:
         f[o + 4 : o + _SAMPLE_LEN] = codes[k].astype(">u2").tobytes()
     f[PACKET_LEN - 4 :] = _TAIL
     return bytes(f)
+
+
+# frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
+encode_data_packet = _encode_data_packet  # public name for non-AD3 sources (synthetic specimen)
 
 
 @dataclass

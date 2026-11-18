@@ -1,0 +1,7 @@
+kind = "field"
+field = "scope"
+old = ["python/sadi/server/**,python/sadi/labs/lctt/**", "docs/server/results.md", "python/tests/labs/lctt/test_lab_analyze_e2e.py", "python/tests/synthetic/test_results_pending.py", "python/sadi/labs/lctt/lab.py"]
+new = ["python/sadi/server/**,python/sadi/labs/lctt/**", "docs/server/results.md", "python/tests/labs/lctt/test_lab_analyze_e2e.py", "python/tests/synthetic/test_results_pending.py", "python/sadi/labs/lctt/lab.py", "python/sadi/server/routes/results.py"]
+at = "2026-11-10T06:05:34Z"
+actor = "lognd"
+rev = 1

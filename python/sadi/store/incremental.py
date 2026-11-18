@@ -4,15 +4,17 @@
 writing raw blocks continuously, grows without bound. `IncrementalReplay` does that once (and
 again whenever anything is unexpected) and afterwards reads only the bytes appended past the last
 applied frame. Safety rule: the fast path never guesses. A CRC failure, seq discontinuity, bad
-header, SEAL record or missing segment all fall back to a full verified replay, which is the
-single source of truth for corruption, torn tails and gaps. The result is therefore always
-equal to `recover_state` of the same bytes (property-tested). Not thread-safe; callers lock.
+header, trailing bytes after a SEAL or missing segment all fall back to a full verified
+replay, which is the single source of truth for corruption, torn tails and gaps. The result is
+therefore always equal to `recover_state` of the same bytes (property-tested). Not
+thread-safe; callers lock.
 """
 
 # frob:ticket 01M6X3AVGVT23M1E9V82RWJ137
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from typani import Err, Ok, Result, propagate
 
@@ -33,7 +35,9 @@ from sadi.store.records import (
     Record,
     RecordType,
     decode_payload_check,
+    new_prefix_hash,
     parse_header,
+    prefix_hash_update,
 )
 from sadi.store.wal import (
     SEGMENT_HEADER_LEN,
@@ -69,6 +73,9 @@ class IncrementalReplay:
         self._expected: int | None = None
         self._notes: list[str] = []
         self.rebases = 0
+        # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+        self._hash: Any = None
+        self._hash_seq: int | None = None
 
     def state(self) -> Result[ReplayState, EventsError]:
         """Return the state of the verified WAL as of now (equal to a full replay)."""
@@ -79,6 +86,13 @@ class IncrementalReplay:
                     self._frozen = self._acc.freeze()
                 return Ok(self._frozen)
         return self._rebase()
+
+    # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
+    def prefix_hash_at(self, covers_seq: int) -> str | None:
+        """Return the running section 9.2 prefix hash if exactly at `covers_seq`, else None."""
+        if self._hash is None or self._hash_seq != covers_seq:
+            return None
+        return self._hash.hexdigest()
 
     # frob:ticket 01M6X465ZVYG4B9Y79QAZ8KDXT
     @propagate
@@ -95,12 +109,18 @@ class IncrementalReplay:
         self._acc = None
         self._frozen = None
         self._notes = []
+        self._hash, self._hash_seq = None, None
         base: ReplayState | None = None
-        loaded = snapshot.load_latest_snapshot(self._session_dir)
+        base_hash: Any = None
+        base_notes: list[str] | None = None
+        loaded = snapshot.load_latest_snapshot_hashed(self._session_dir)
         if loaded.is_err:
             _log.warning("snapshot lookup failed (%s); replaying whole WAL", loaded.danger_err)
         elif loaded.danger_ok is not None:
-            base = restore_state(loaded.danger_ok)
+            base = restore_state(loaded.danger_ok[0])
+            if base is not None:
+                base_hash = loaded.danger_ok[1]
+                base_notes = loaded.danger_ok[0].notes
         reader = WalReader(self._wal)
         recs = []
         for item in reader.records(from_seq=(base.covers_seq + 1) if base else 1):
@@ -108,11 +128,20 @@ class IncrementalReplay:
                 _log.error("replay of %s stopped by corruption: %s", self._wal, item.danger_err)
                 return Err(EventsWal(error=item.danger_err))
             recs.append(item.danger_ok)
+        # frob:ticket 01M72Y6ZT01R2CXQT2XM4CMVZT
+        # the hash resumes from the snapshot's running state so _snapshot never rescans the WAL
+        self._hash = base_hash if base is not None else new_prefix_hash()
+        self._hash_seq = base.covers_seq if base is not None else None
+        for rec in recs:
+            if base is not None and rec.seq <= base.covers_seq:
+                continue
+            prefix_hash_update(self._hash, rec)
+            self._hash_seq = rec.seq
         report = reader.report
         seals = report.seal_seqs if report else ()
         folded = replay(recs, base, seals)
         state = folded.unwrap()
-        notes = self._scan_notes(recs, base).unwrap()
+        notes = self._scan_notes(recs, base, base_notes).unwrap()
         if report is None or not report.segments:
             _log.info("no segment position for %s; incremental cache stays cold", self._wal)
             return Ok(state)
@@ -134,36 +163,69 @@ class IncrementalReplay:
         )
         return Ok(state)
 
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
     @propagate
     def _scan_notes(
-        self, recs: list[Record], base: ReplayState | None
+        self, recs: list[Record], base: ReplayState | None, base_notes: list[str] | None
     ) -> Result[list[str], EventsError]:
-        """Collect NOTE payloads; snapshots hold no notes, so a snapshot base needs a full walk."""
-        if base is not None:
-            recs = []
-            for item in WalReader(self._wal).records():
-                recs.append(item.map_err(lambda e: EventsWal(error=e)).unwrap())
-        return Ok([_note_text(r) for r in recs if _is_note(r)])
+        """Collect NOTE payloads; a snapshot carrying notes needs only the post-snapshot tail.
+
+        `recs` are the records after the snapshot. Old snapshots (no stored notes) keep the
+        whole-WAL walk, so the WAL stays the source of truth.
+        """
+        if base is None:
+            return Ok([_note_text(r) for r in recs if _is_note(r)])
+        if base_notes is not None:
+            return Ok([*base_notes, *(_note_text(r) for r in recs if _is_note(r))])
+        _log.info("snapshot at %d has no stored notes; walking the whole WAL", base.covers_seq)
+        walked = []
+        for item in WalReader(self._wal).records():
+            walked.append(item.map_err(lambda e: EventsWal(error=e)).unwrap())
+        return Ok([_note_text(r) for r in walked if _is_note(r)])
+
+    # frob:ticket 01M72YGM028WQQGWVSDX4GTJZ5
+    def notes_at(self, covers_seq: int) -> list[str] | None:
+        """Return the NOTE payloads folded so far if the warm state is exactly at `covers_seq`."""
+        if self._acc is None or self._frozen is None or self._frozen.covers_seq != covers_seq:
+            return None
+        return list(self._notes)
 
     def _advance(self) -> bool:
-        """Apply frames appended since the last call; False means 'fall back to a rebase'."""
+        """Apply frames appended since the last call; False means 'fall back to a rebase'.
+
+        A SEAL is the normal end of a segment: the tail moves to the next segment instead of
+        rebasing. Only a gap, CRC error, bad header or trailing bytes after a SEAL rebase.
+        """
+        assert self._acc is not None
+        while True:
+            sealed = self._advance_segment()
+            if sealed is None:
+                return False
+            if not sealed:
+                return True
+            self._seg += 1
+            self._pos = 0
+
+    def _advance_segment(self) -> bool | None:
+        """Tail one segment: True if it ended in a SEAL, False if still live, None to rebase."""
         acc = self._acc
         assert acc is not None
         path = self._wal / segment_name(self._seg)
         try:
             size = path.stat().st_size
         except FileNotFoundError:
-            return self._seg > 1 and self._pos == 0  # next segment not created yet
+            # next segment not created yet
+            return False if (self._seg > 1 and self._pos == 0) else None
         with path.open("rb") as f:
             if self._pos < SEGMENT_HEADER_LEN or self._expected is None:
                 if size < SEGMENT_HEADER_LEN:
-                    return self._pos == 0
+                    return False if self._pos == 0 else None
                 hdr = decode_segment_header(f.read(SEGMENT_HEADER_LEN), self._seg)
                 if hdr.is_err or hdr.danger_ok.segment_no != self._seg:
-                    return False
+                    return None
                 first = hdr.danger_ok.first_seq
                 if self._pos < SEGMENT_HEADER_LEN and self._expected not in (None, first):
-                    return False
+                    return None
                 self._expected = first if self._expected is None else self._expected
                 self._pos = max(self._pos, SEGMENT_HEADER_LEN)
             f.seek(self._pos)
@@ -171,20 +233,32 @@ class IncrementalReplay:
                 header = f.read(FRAME_HEADER_LEN)
                 parsed = parse_header(header, self._pos)
                 if parsed.is_err:
-                    return False
+                    return None
                 length = parsed.danger_ok[4]
                 end = self._pos + FRAME_HEADER_LEN + length
                 if end > size:
                     break  # frame still being written
                 decoded = decode_payload_check(header, f.read(length), self._pos)
                 if decoded.is_err:
-                    return False
+                    return None
                 rec = decoded.danger_ok
-                if rec.seq != self._expected or rec.type == int(RecordType.SEAL):
-                    return False
+                if rec.seq != self._expected:
+                    return None
+                if rec.type == int(RecordType.SEAL):
+                    # SEAL consumes a seq but is not a data record: no apply, no hash
+                    self._expected = rec.seq + 1
+                    self._pos = end
+                    if end != size:
+                        _log.warning("bytes after SEAL in %s; rebasing", path)
+                        return None
+                    _log.info("segment %d sealed at seq %d; tailing next", self._seg, rec.seq)
+                    return True
                 _apply(acc, rec)
+                if self._hash is not None:
+                    prefix_hash_update(self._hash, rec)
+                    self._hash_seq = rec.seq
                 if _is_note(rec):
                     self._notes.append(_note_text(rec))
                 self._expected = rec.seq + 1
                 self._pos = end
-        return True
+        return False

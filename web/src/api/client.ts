@@ -1,5 +1,7 @@
+// frob:ticket 01M7274EH583A30335TGGT6ZZ1
 import { getLogger } from "./log";
 import { err, ok, type Result } from "./result";
+import type { components } from "./schema";
 import type { CheckResult, DoctorReport } from "../doctor/types";
 
 const log = getLogger("api.client");
@@ -13,6 +15,10 @@ export type ApiError =
 export interface Health {
   status: string;
   version: string;
+  /** Data folder the server resolved (cheap; replaces the doctor host lookup); absent on older backends. */
+  data_root?: string | null;
+  /** Data provenance stamp; absent on older backends (treated as real). */
+  provenance?: components["schemas"]["DataProvenance"];
 }
 
 /** Fetch JSON from an API path, returning a Result instead of throwing. */
@@ -68,4 +74,51 @@ export async function runDoctorCheck(
     return err({ kind: "http", status: res.status, body: await res.text() });
   }
   return ok((await res.json()) as CheckResult);
+}
+
+/** Reconnect outcome: the refreshed device view from POST /api/device/reconnect. */
+export type ReconnectView = components["schemas"]["DeviceView"];
+
+/** Ask the backend to open the board now (POST /api/device/reconnect); the open session and its WAL are untouched. */
+export async function postReconnect(fetchImpl: typeof fetch = fetch): Promise<Result<ReconnectView, ApiError>> {
+  const path = "/api/device/reconnect";
+  log.info("reconnect requested", { path });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    log.warn("http error", { path, status: res.status });
+    return err({ kind: "http", status: res.status, body: await res.text() });
+  }
+  return ok((await res.json()) as ReconnectView);
+}
+
+/** Body of a successful POST /api/acquisition/resume (mirrors the backend ResumeOut model). */
+export interface ResumeView {
+  readonly streaming: boolean;
+}
+
+// frob:ticket 01M727MMWZ8X2B29300XHTWZ46
+/** Restart live readings after an idle pause (POST /api/acquisition/resume); writes nothing to the session log. */
+export async function postResume(fetchImpl: typeof fetch = fetch): Promise<Result<ResumeView, ApiError>> {
+  const path = "/api/acquisition/resume";
+  log.info("resume requested", { path });
+  let res: Response;
+  try {
+    res = await fetchImpl(path, { method: "POST", headers: { Accept: "application/json" } });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    log.error("network failure", { path, message });
+    return err({ kind: "network", message });
+  }
+  if (!res.ok) {
+    log.warn("http error", { path, status: res.status });
+    return err({ kind: "http", status: res.status, body: await res.text() });
+  }
+  return ok((await res.json()) as ResumeView);
 }

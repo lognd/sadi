@@ -1,0 +1,11 @@
+kind = "create"
+title = "M1+M2: show stop_reason banner and add Reconnect button in instrument bar"
+type = "bug"
+category = "todo"
+priority = "medium"
+labels = ["creates:web/src/components/instrument/StopBanner.tsx", "creates:web/src/components/instrument/StopBanner.test.tsx"]
+scope = ["web/src/components/instrument/", "web/src/api/"]
+acceptance = ["Banner from device.stop_reason/acquisition_fault shown regardless of source, per-reason plain-language next steps; Reconnect button POSTs /api/device/reconnect when status disconnected/error, disables while pending, shows hint; signal shows No data when frameAgeMs null; vitest tests; no data loss"]
+at = "2026-11-10T07:53:02Z"
+actor = "lognd"
+rev = 1

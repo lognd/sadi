@@ -58,7 +58,7 @@ Run screen's replanning and does not write inventory events.
 
 ## Hang count and units
 
-`PlanConfig.max_hangs` (1-12) requests exactly that many hangs. The planner enumerates subset sums of the
+`PlanConfig.max_hangs` (any count >= 1) requests exactly that many hangs. The planner enumerates subset sums of the
 inventory, drops what the wire cannot carry or the LVDT would saturate, then picks the loads nearest to
 evenly spaced targets between the lightest and heaviest usable load, so combinations of many weights
 (for example 3 to 4 of 2 N each for 6 to 8 N) are chosen. With fewer usable loads, all are returned.

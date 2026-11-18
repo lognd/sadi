@@ -56,7 +56,7 @@ points you have already captured to replan.</p>
 <label>Weights (newtons, N, comma separated; repeat a value for duplicate weights, max 12)<br>
 <textarea name="weights" required>0.2,0.5,0.5,1,1,2,0.1,0.3</textarea></label>
 <label>Force uncertainty per weight, N <input type="text" name="u_mass" value="0.001"></label>
-<label>Number of hangs (1-12) <input type="text" name="hangs" value="5"></label>
+<label>Number of hangs <input type="text" name="hangs" value="5"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
 <label>Diameter, m <input type="text" name="diameter" value="0.0002019" required></label>
@@ -158,8 +158,8 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
         nums[key] = got.value
     hangs = None
     if nums["hangs"] is not None:
-        if nums["hangs"] != int(nums["hangs"]) or not 1 <= nums["hangs"] <= 12:
-            return {"ok": False, "error": "hangs must be a whole number from 1 to 12"}
+        if nums["hangs"] != int(nums["hangs"]) or nums["hangs"] < 1:
+            return {"ok": False, "error": "hangs must be a whole number of at least 1"}
         hangs = int(nums["hangs"])
     # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
     cal = resolve_calibration(str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0)

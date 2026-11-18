@@ -104,7 +104,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--cal-offset", type=float, default=0.0, help="OVERRIDE offset, V (with --cal-slope only)")
     ap.add_argument("--saturation", type=float, default=None, help="saturation limit, V")
     ap.add_argument("--captured", default="", help="already-hung points to replan from: N:volts,N:volts")
-    ap.add_argument("--hangs", type=int, default=None, help="number of hangs wanted (1-12); omit for the advisory early stop")
+    ap.add_argument("--hangs", type=int, default=None, help="number of hangs wanted; omit for the advisory early stop")
     args = ap.parse_args(argv)
     logging.getLogger("sadi").setLevel(logging.WARNING)  # keep the table readable; errors still show
     logging.getLogger("plan").setLevel(logging.WARNING)

@@ -89,7 +89,7 @@ def test_http_errors(server):
 def test_hangs_field_honoured_and_validated():
     out = plan_from_form({**FORM, "hangs": "3"})
     assert out["ok"] and len(out["hangs"]) == 3
-    assert not plan_from_form({**FORM, "hangs": "13"})["ok"]
+    assert not plan_from_form({**FORM, "hangs": "0"})["ok"]
     assert not plan_from_form({**FORM, "hangs": "2.5"})["ok"]
 
 

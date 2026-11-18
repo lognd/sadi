@@ -39,7 +39,6 @@ export interface CalDefaults { readonly cal_slope_v_per_m: number | null; readon
 /** Raw form strings exactly as typed. */
 export interface PlanForm {
   readonly weights: string;
-  readonly unit: "g" | "kg";
   readonly diameter_mm: string;
   readonly u_diameter_mm: string;
   readonly length_mm: string;
@@ -48,7 +47,7 @@ export interface PlanForm {
 }
 
 /** Empty-ish starting form: 8 blank lines are not forced; lab values are typical. */
-export const EMPTY_FORM: PlanForm = { weights: "", unit: "g", diameter_mm: "0.202", u_diameter_mm: "0.002", length_mm: "83.13", u_length_mm: "0.5", slope: "" };
+export const EMPTY_FORM: PlanForm = { weights: "", diameter_mm: "0.202", u_diameter_mm: "0.002", length_mm: "83.13", u_length_mm: "0.5", slope: "" };
 
 /** Request body for POST /api/weight-plan. */
 export interface PlanBody {
@@ -60,13 +59,16 @@ export interface PlanBody {
   readonly cal_slope_v_per_m?: number;
 }
 
+/** Standard gravity (m/s^2): the weights are entered in newtons and the API wants kilograms. */
+const STANDARD_G = 9.80665;
+
 const num = (s: string): number => (s.trim() === "" ? Number.NaN : Number(s));
 
 /** Parse the form into a request; Err is a sentence saying what to fix. Slope blank means "use the current calibration". */
 export function parsePlanForm(f: PlanForm): Result<PlanBody, string> {
-  const scale = f.unit === "g" ? 1e-3 : 1;
+  const scale = 1 / STANDARD_G;
   const lines = f.weights.split("\n").map((l) => l.trim()).filter((l) => l !== "");
-  if (lines.length === 0) return err("Enter your weights, one per line (mass, then an optional uncertainty).");
+  if (lines.length === 0) return err("Enter your weights, one per line (force in newtons, then an optional uncertainty).");
   if (lines.length > 12) return err("Enter at most 12 weights.");
   const weights: { mass_kg: number; u_mass_kg: number }[] = [];
   for (const [i, l] of lines.entries()) {
@@ -74,7 +76,7 @@ export function parsePlanForm(f: PlanForm): Result<PlanBody, string> {
     const m = Number(parts[0]);
     const u = parts.length > 1 ? Number(parts[1]) : 0;
     if (parts.length > 2 || !Number.isFinite(m) || m <= 0 || !Number.isFinite(u) || u < 0) {
-      return err(`Weight line ${String(i + 1)} ("${l}") should be a positive mass, then an optional uncertainty.`);
+      return err(`Weight line ${String(i + 1)} ("${l}") should be a positive force in newtons, then an optional uncertainty.`);
     }
     weights.push({ mass_kg: m * scale, u_mass_kg: u * scale });
   }
@@ -102,13 +104,13 @@ export function PlanResult({ reply }: { readonly reply: PlanReply }): React.JSX.
       <h3>Planned hangs</h3>
       <p>Hang them in this order. Calibration slope used: {reply.cal_slope_v_per_m.toPrecision(4)} V/m ({reply.cal_source === "entered" ? "entered" : "from this session's calibration"}).</p>
       <table>
-        <thead><tr><th>Hang</th><th>Weights</th><th>Total (kg)</th><th>Tension (N)</th><th>Predicted (V)</th><th>Why</th></tr></thead>
+        <thead><tr><th>Hang</th><th>Weights (how many)</th><th>Total (N)</th><th>Tension (N)</th><th>Predicted (V)</th><th>Why</th></tr></thead>
         <tbody>
           {hangs.map((h) => (
             <tr key={h.order}>
               <td>#{h.order}</td>
-              <td>{h.weight_ids.join(" + ")}</td>
-              <td>{pm(h.total_mass_kg, h.u_mass_kg)}</td>
+              <td>{h.weight_ids.join(" + ")} ({String(h.weight_ids.length)})</td>
+              <td>{pm(h.total_mass_kg * STANDARD_G, h.u_mass_kg * STANDARD_G)}</td>
               <td>{h.tension_n.toPrecision(4)}</td>
               <td>{h.predicted_volts.toPrecision(4)}</td>
               <td>{h.reason}</td>
@@ -168,10 +170,9 @@ export function WeightPlanPanel({ fetchImpl }: { readonly fetchImpl?: typeof fet
       <h2>Weight plan</h2>
       <p>Enter the weights you have and the wire measurements. This needs no lab connection.</p>
       <form aria-label="Weight plan inputs" onSubmit={(e) => { e.preventDefault(); if (!busy) submit(); }}>
-        <label>Weights, one per line: mass, then an optional uncertainty (same unit)<br />
+        <label>Weights in newtons (N), one per line: force, then an optional uncertainty (N)<br />
           <textarea rows={8} value={form.weights} onChange={(e) => { set("weights", e.target.value); }} />
         </label>{" "}
-        <label>Unit <select value={form.unit} onChange={(e) => { set("unit", e.target.value); }}><option value="g">g</option><option value="kg">kg</option></select></label>
         <p>
           <label>Wire diameter (mm) <input value={form.diameter_mm} inputMode="decimal" onChange={(e) => { set("diameter_mm", e.target.value); }} /></label>{" "}
           <label>+/- <input value={form.u_diameter_mm} inputMode="decimal" onChange={(e) => { set("u_diameter_mm", e.target.value); }} /></label>{" "}

@@ -18,11 +18,13 @@ the URL and opens it with `webbrowser`. `GET /` serves one self-contained page (
 network assets, no node, no tkinter). `POST /plan` takes the form as JSON and replies
 `{"ok": true, phase, counts, hangs[]}` or `{"ok": false, "error": msg}`.
 
-Form: weights in kg (duplicates allowed, max 12), mass uncertainty, wire diameter and its uncertainty,
+Form: weights in newtons, N (duplicates allowed, max 12), number of hangs (1-12, default 5), mass
+uncertainty (N), wire diameter and its uncertainty,
 L0 and its uncertainty, an editable table of LVDT calibration points (height m / volts, with Add row),
-saturation limit, and already captured points as `kg:volts`. The page joins the table into
-`cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (weights, total kg, tension N, predicted V,
-+/- V, reason) and the phase and dropped counts.
+saturation limit, and already captured points as `N:volts`. The page joins the table into
+`cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (which weights, how many,
+total N, predicted V, +/- V, reason) and the phase and dropped counts. Newtons are converted to kg
+internally (`/ 9.80665`).
 
 ## Calibration (derived, not typed)
 
@@ -45,6 +47,6 @@ error. Diameter and L0 are REQUIRED: a blank field is an error, never a silent d
 
 ## CLI
 
-    python -m sadi.design.cli --weights 0.1,0.1,0.2,0.5 --length 0.083 --cal-points 0.001:0.1,0.002:0.21,0.003:0.29 [--captured kg:V,...]
+    python -m sadi.design.cli --weights 1,1,2,5 --length 0.083 --cal-points 0.001:0.1,0.002:0.21,0.003:0.29 [--hangs N] [--captured N:V,...]
 
 Prints the same table to stdout; exit code 1 when no plan exists.

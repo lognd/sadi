@@ -5,11 +5,13 @@ import { describe, expect, it } from "vitest";
 import { EMPTY_FORM, PlanResult, WeightPlanPanel, parsePlanForm, type PlanReply } from "./WeightPlanPanel";
 
 describe("parsePlanForm", () => {
-  it("converts grams and mm to SI and leaves slope unset", () => {
-    const r = parsePlanForm({ ...EMPTY_FORM, weights: "10 0.1\n20" });
+  it("converts newtons to kg and mm to SI and leaves slope unset", () => {
+    const r = parsePlanForm({ ...EMPTY_FORM, weights: "9.80665 0.0980665\n19.6133" });
     expect(r.ok).toBe(true);
     if (r.ok) {
-      expect(r.value.weights).toEqual([{ mass_kg: 0.01, u_mass_kg: 0.0001 }, { mass_kg: 0.02, u_mass_kg: 0 }]);
+      expect(r.value.weights[0]?.mass_kg).toBeCloseTo(1);
+      expect(r.value.weights[0]?.u_mass_kg).toBeCloseTo(0.01);
+      expect(r.value.weights[1]?.mass_kg).toBeCloseTo(2);
       expect(r.value.length_m).toBeCloseTo(0.08313);
       expect(r.value.cal_slope_v_per_m).toBeUndefined();
     }

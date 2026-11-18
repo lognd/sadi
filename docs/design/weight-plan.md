@@ -26,7 +26,7 @@ with the uncertainty of each hang (front ends: [planner-gui.md](planner-gui.md))
    (`sqrt(sum u_i^2)`), tension, predicted volts and its uncertainty, the expected gain, and the
    slope half-width after it. The modulus half-width adds the geometry in quadrature (coverage k=2,
    diameter counted twice because A ~ d^2): `E * sqrt(rel_slope^2 + (4 u_d/d)^2 + (2 u_L0/L0)^2)`.
-   In the yield phase the half-width is of the yield load (kg).
+   In the yield phase the half-width is of the yield load (N).
 
 ## Replanning
 
@@ -38,7 +38,7 @@ heavier loads are planned.
 `PlanError`: `NoWeights`, `TooManyWeights`, `DuplicateIds`, `NonFinite`, `NoUsableHang`,
 `SelectorFailed`.
 
-Note: a 32 AWG copper wire breaks near 4.2 N (about 0.43 kg), so heavy inventory weights are dropped
+Note: a 32 AWG copper wire breaks near 4.2 N, so heavy inventory weights are dropped
 by the capacity rule.
 
 ## Route and UI
@@ -52,6 +52,15 @@ ordered hangs and the uncertainty from `sadi.labs.lctt.propagate` (stress per ha
 the elastic plan. Planner refusals (`PlanError`) are 422 problems.
 
 The "Weight plan" button in the app header opens `WeightPlanPanel` (web/src/screens/setup), which
-accepts weights one per line (g or kg), keeps the form in the browser's localStorage, and shows each
+accepts weights one per line (newtons, N), keeps the form in the browser's localStorage, and shows each
 hang with total mass, tension, predicted volts and the planner's reason. It is not yet wired into the
 Run screen's replanning and does not write inventory events.
+
+## Hang count and units
+
+`PlanConfig.max_hangs` (1-12) requests exactly that many hangs. The planner enumerates subset sums of the
+inventory, drops what the wire cannot carry or the LVDT would saturate, then picks the loads nearest to
+evenly spaced targets between the lightest and heaviest usable load, so combinations of many weights
+(for example 3 to 4 of 2 N each for 6 to 8 N) are chosen. With fewer usable loads, all are returned.
+Without `max_hangs` the advisory selector stops early. User-facing weights are newtons; the model stores
+kg (`mass_kg = N / 9.80665`) and the API (`mass_kg`) is unchanged.

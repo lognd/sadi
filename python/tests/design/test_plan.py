@@ -8,7 +8,9 @@ import math
 
 from typani import Err
 
-from sadi.design.models import CapturedPoint, DesignPhase, PlanRequest, Weight
+import pytest
+
+from sadi.design.models import CapturedPoint, DesignPhase, PlanConfig, PlanRequest, Weight
 from sadi.design.plan import MAX_WEIGHTS, PlanError, plan
 from sadi.labs.lctt.loading import STANDARD_G
 from sadi.labs.lctt.saturation import DEFAULT_SATURATION_V
@@ -124,3 +126,27 @@ def test_replan_from_captured_points() -> None:
     floor = max(c.mass_kg for c in cap)
     assert again.hangs and all(h.total_mass_kg > floor for h in again.hangs)
     assert again.hangs[0].slope_half_width_v_per_kg is not None
+
+
+# frob:tests python/sadi/design/plan.py::plan
+def test_requested_hang_count_and_multiweight_combos() -> None:
+    """Ten 2 N weights on a thick wire: N hangs requested gives N hangs, spanning 6-8 N with >=4 weights."""
+    n = 2.0 / STANDARD_G
+    req = _req(
+        masses=(n,) * 10, diameter_m=1e-3, u_diameter_m=1e-5, config=PlanConfig(max_hangs=6)
+    )
+    p = plan(req).unwrap()
+    assert len(p.hangs) == 6
+    assert [h.order for h in p.hangs] == list(range(1, 7))
+    assert [round(h.tension_n, 6) for h in p.hangs] == sorted(round(h.tension_n, 6) for h in p.hangs)
+    big = [h for h in p.hangs if len(h.weight_ids) >= 4]
+    assert big and any(6.0 - 1e-9 <= h.tension_n <= 20.0 for h in big)
+    for h in p.hangs:
+        assert h.tension_n == pytest.approx(2.0 * len(h.weight_ids))
+
+
+# frob:tests python/sadi/design/plan.py::plan
+def test_fewer_loads_than_requested_returns_all_usable() -> None:
+    n = 2.0 / STANDARD_G
+    p = plan(_req(masses=(n,) * 3, diameter_m=1e-3, config=PlanConfig(max_hangs=12))).unwrap()
+    assert len(p.hangs) == 3

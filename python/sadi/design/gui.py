@@ -53,9 +53,10 @@ Nothing is saved or sent anywhere; it does not talk to the LVDT or to LabVIEW. R
 points you have already captured to replan.</p>
 <form id="f">
 <fieldset><legend>Weights</legend>
-<label>Weights (kg, comma separated; repeat a value for duplicate weights, max 12)<br>
-<textarea name="weights" required>0.02,0.05,0.05,0.1,0.1,0.2,0.01,0.03</textarea></label>
-<label>Mass uncertainty per weight, kg <input type="text" name="u_mass" value="0.0001"></label>
+<label>Weights (newtons, N, comma separated; repeat a value for duplicate weights, max 12)<br>
+<textarea name="weights" required>0.2,0.5,0.5,1,1,2,0.1,0.3</textarea></label>
+<label>Force uncertainty per weight, N <input type="text" name="u_mass" value="0.001"></label>
+<label>Number of hangs (1-12) <input type="text" name="hangs" value="5"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
 <label>Diameter, m <input type="text" name="diameter" value="0.0002019" required></label>
@@ -75,7 +76,7 @@ points you have already captured to replan.</p>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>Already captured</legend>
-<label>Points as kg:volts, comma separated (blank = none)<br>
+<label>Points as N:volts, comma separated (blank = none)<br>
 <textarea name="captured"></textarea></label>
 </fieldset>
 <button type="submit">Plan</button>
@@ -113,10 +114,10 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
   const t = document.createElement("table");
   const hr = t.insertRow();
-  for (const h of ["#", "Hang (weights)", "Total kg", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
+  for (const h of ["#", "Hang (which weights)", "How many", "Total N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
   for (const h of data.hangs) {
     const r = t.insertRow();
-    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.total_kg));
+    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.n_weights));
     r.appendChild(cell(h.tension_n)); r.appendChild(cell(h.predicted_volts)); r.appendChild(cell(h.u_volts));
     r.appendChild(cell(h.reason, "l"));
   }
@@ -146,7 +147,7 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}."""
     nums: dict[str, float | None] = {}
     spec = {
-        "u_mass": (False, 0.0), "diameter": (True, None), "u_diameter": (False, 0.0),
+        "u_mass": (False, 0.0), "hangs": (False, None), "diameter": (True, None), "u_diameter": (False, 0.0),
         "length": (True, None), "u_length": (False, 0.0), "cal_slope": (False, None),
         "cal_offset": (False, 0.0), "saturation": (False, None),
     }
@@ -155,6 +156,11 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}
         nums[key] = got.value
+    hangs = None
+    if nums["hangs"] is not None:
+        if nums["hangs"] != int(nums["hangs"]) or not 1 <= nums["hangs"] <= 12:
+            return {"ok": False, "error": "hangs must be a whole number from 1 to 12"}
+        hangs = int(nums["hangs"])
     # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
     cal = resolve_calibration(str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0)
     if isinstance(cal, Err):
@@ -165,6 +171,7 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
         length=nums["length"] or 0.0, u_length=nums["u_length"] or 0.0,
         cal=cal.value,
         saturation=nums["saturation"], captured=str(form.get("captured", "")),
+        max_hangs=hangs,
     )
     if isinstance(built, Err):
         return {"ok": False, "error": built.error}
@@ -188,7 +195,7 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
             {
                 "order": h.order,
                 "weights": "+".join(h.weight_ids),
-                "total_kg": round(h.total_mass_kg, 4),
+                "n_weights": len(h.weight_ids),
                 "tension_n": round(h.tension_n, 3),
                 "predicted_volts": round(h.predicted_volts, 3),
                 "u_volts": round(h.u_predicted_volts, 3),

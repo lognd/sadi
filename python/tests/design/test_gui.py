@@ -15,7 +15,7 @@ import pytest
 from sadi.design.gui import HOST, PAGE, make_server, plan_from_form
 
 FORM = {
-    "weights": "0.02,0.05,0.05,0.1,0.1,0.2,0.01,0.03", "u_mass": "0.0001", "diameter": "0.0002019",
+    "weights": "0.2,0.5,0.5,1,1,2,0.1,0.3", "u_mass": "0.001", "diameter": "0.0002019",
     "u_diameter": "0", "length": "0.08313", "u_length": "0", "cal_slope": "12", "cal_offset": "0",
     "saturation": "", "captured": "",
 }
@@ -35,7 +35,7 @@ def test_plan_from_form_orders_hangs():
     out = plan_from_form(FORM)
     assert out["ok"] and out["advisory"]
     assert out["hangs"] and [h["order"] for h in out["hangs"]] == list(range(1, len(out["hangs"]) + 1))
-    assert {"weights", "total_kg", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(out["hangs"][0])
+    assert {"weights", "n_weights", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(out["hangs"][0])
 
 
 @pytest.mark.parametrize("missing", ["diameter", "length"])
@@ -84,3 +84,14 @@ def test_http_errors(server):
     with pytest.raises(urllib.error.HTTPError) as e2:
         urllib.request.urlopen(bad)
     assert e2.value.code == 400
+
+
+def test_hangs_field_honoured_and_validated():
+    out = plan_from_form({**FORM, "hangs": "3"})
+    assert out["ok"] and len(out["hangs"]) == 3
+    assert not plan_from_form({**FORM, "hangs": "13"})["ok"]
+    assert not plan_from_form({**FORM, "hangs": "2.5"})["ok"]
+
+
+def test_page_is_in_newtons_with_hangs_field():
+    assert 'name="hangs"' in PAGE and "newtons" in PAGE and "kilogram" not in PAGE and "(kg" not in PAGE and "Total kg" not in PAGE

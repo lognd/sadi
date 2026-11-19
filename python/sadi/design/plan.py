@@ -273,24 +273,17 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     chosen: list[tuple[_Load, float, str]] = []
     if cfg.max_hangs:
         # An explicit count is honoured: N loads spread over the usable range (or all of them).
-        for k, ld in enumerate(_spread(usable, cfg.max_hangs)):
+        for ld in _spread(usable, cfg.max_hangs):
             v = _predict(req, ld.mass, phase)
             obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
-            why = f"{len(ld.ids)} weight(s) give {ld.mass * STANDARD_G:.4g} N, spaced across the range."
+            why = (
+                f"{len(ld.ids)} weight(s) give {ld.mass * STANDARD_G:.4g} N, "
+                "spaced across the range."
+            )
             chosen.append((ld, 0.0, why))
     else:
         if isinstance(_advisory(req, phase, usable, obs, sel, chosen), Err):
             return Err(PlanError.SelectorFailed)
-        adv = got.unwrap()
-        if chosen and cfg.max_hangs is None and adv.indicator.state is GpState.ENOUGH:
-            break
-        sug = adv.suggestion
-        assert sug is not None  # noqa: S101 - select_next always suggests when candidates exist
-        ld = by_id[sug.candidate_id]
-        v = _predict(req, ld.mass, phase)
-        obs.append(Obs(x=ld.mass, y=v, u=abs(_volts_per_kg(req)) * ld.u_mass))
-        chosen.append((ld, sug.expected_gain, sug.why))
-        remaining = [r for r in remaining if r.mass > ld.mass + cfg.mass_resolution_kg]
 
     halves = _halves(req, phase, obs, n_cap_pts + 1)
     hangs = tuple(

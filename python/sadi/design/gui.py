@@ -76,8 +76,8 @@ points you have already captured to replan.</p>
 <fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
 <table id="wts"><thead><tr><th>Weight, N</th><th>Uncertainty, N</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
-<label>Number of hangs wanted (blank = let the GP decide) <input type="text" name="n_hangs" value=""></label>
-<label>Total weight range, N: min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
+<label>Number of hangs wanted (blank = let the GP decide) <input type="text" name="hangs" value=""></label>
+<label>Total weight range, newtons (N): min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
 <small>Change a count or range and press Plan again to regenerate. Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
 <label>Default weight uncertainty, N <input type="text" name="u_mass" value="0.1"></label>
 </fieldset>
@@ -117,8 +117,8 @@ function addHeight(h, u){
 }
 for (let k = 0; k < 4; k++) addHeight("", "");
 document.getElementById("addheight").addEventListener("click", () => addHeight("", ""));
-// Operators type newtons and millimetres; the server works in SI (kg, m), so convert on the way in and out.
-const N_TO_KG = 1 / __STANDARD_G__, MM_TO_M = 1e-3;
+// Operators type newtons (the server converts with standard gravity) and millimetres (-> m).
+const MM_TO_M = 1e-3;
 const fix = (x) => Number(Number(x).toPrecision(10));
 function scaleNum(t, k){ const x = Number(t); return Number.isFinite(x) && String(t).trim() !== "" ? String(fix(x * k)) : t; }
 // "a:b,c" -> scale the first field of each item (and the second too when both is set)
@@ -130,16 +130,14 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
-  body.u_mass = scaleNum(body.u_mass, N_TO_KG);
   body.u_height_default = scaleNum(body.u_height_default, MM_TO_M);
   for (const k of ["min_height", "max_height"]) body[k] = scaleNum(body[k], MM_TO_M);
-  for (const k of ["min_mass", "max_mass"]) body[k] = scaleNum(body[k], N_TO_KG);
-  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), N_TO_KG, false) : "";
+  body.captured = (body.captured || "").trim() ? body.captured.replace(/[\\n]+/g, ",") : "";
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
   body.cal_points = pts.join(",");
   const wts = [];
-  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? scaleNum(m, N_TO_KG) + ":" + scaleNum(u, N_TO_KG) : scaleNum(m, N_TO_KG)); }
+  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? m + ":" + u : m); }
   body.weights = wts.join(",");
   const hts = [];
   for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? scaleNum(h, MM_TO_M) + ":" + scaleNum(u, MM_TO_M) : scaleNum(h, MM_TO_M)); }
@@ -174,10 +172,10 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
   const t = document.createElement("table");
   const hr = t.insertRow();
-  for (const h of ["#", "Hang (weights)", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
+  for (const h of ["#", "Hang (which weights)", "How many", "Total N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
   for (const h of data.hangs) {
     const r = t.insertRow();
-    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.tension_n));
+    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.n_weights)); r.appendChild(cell(h.tension_n));
     r.appendChild(cell(h.predicted_volts ?? "-")); r.appendChild(cell(h.u_volts ?? "-"));
     r.appendChild(cell(h.reason, "l"));
   }
@@ -185,8 +183,6 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
 });
 </script></body></html>
 """
-
-PAGE = PAGE.replace("__STANDARD_G__", repr(STANDARD_G))  # one source of truth for g
 
 
 def _num(
@@ -271,7 +267,7 @@ def _count(form: dict[str, Any], key: str) -> Result[int | None, str]:
 def _range(
     form: dict[str, Any], lo: str, hi: str
 ) -> Result[tuple[float | None, float | None], str]:
-    """Optional min/max pair (SI); blank means unbounded, min must be below max."""
+    """Optional min/max pair; blank means unbounded, min must be below max."""
     a = _num(form, lo, required=False, default=None)
     b = _num(form, hi, required=False, default=None)
     for got in (a, b):
@@ -339,11 +335,6 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}
         nums[key] = got.value
-    hangs = None
-    if nums["hangs"] is not None:
-        if nums["hangs"] != int(nums["hangs"]) or nums["hangs"] < 1:
-            return {"ok": False, "error": "hangs must be a whole number of at least 1"}
-        hangs = int(nums["hangs"])
     # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
     uncal = not _has_cal(form)
     if uncal:
@@ -370,7 +361,10 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
             cal_v.se_offset,
         )
     rng = _range(form, "min_mass", "max_mass")
-    cnt = _count(form, "n_hangs")
+    if isinstance(rng, Ok):  # forces typed in N; the planner works in kg
+        lo, hi = rng.value
+        rng = Ok((lo and lo / STANDARD_G, hi and hi / STANDARD_G))
+    cnt = _count(form, "hangs")
     for got in (rng, cnt):
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}

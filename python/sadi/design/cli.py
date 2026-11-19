@@ -1,7 +1,8 @@
 """Command-line weight planner: type your weights and wire, get the hang order (advisory)."""
 
 # Usage: python -m sadi.design.cli --weights 1,1,2,2,5 --diameter 2.019e-4 \
-#   --length 0.5 --cal-points 0.001:0.05,0.002:0.11,... [--u-mass 0.01] [--captured 1:0.5,3:1.4] [--hangs 5]
+#   --length 0.5 --cal-points 0.001:0.05,0.002:0.11,... [--u-mass 0.01] \
+#   [--captured 1:0.5,3:1.4] [--hangs 5]
 
 # frob:ticket 01M72ZGDCC7C75SMXSJRH6VBAE
 
@@ -26,21 +27,30 @@ __all__ = ["build_request", "format_height_plan", "main", "parse_captured", "par
 _log = get_logger(__name__)
 
 
-def parse_weights(text: str, u_mass: float) -> Result[list[Weight], str]:
-    """Parse 'kg' or 'kg:u' items into weights w1, w2, ...; a missing u falls back to u_mass;
-    duplicates stay distinct."""
+def parse_weights(text: str, u_force_n: float) -> Result[list[Weight], str]:
+    """Parse 'N' or 'N:u' items (newtons) into weights w1, w2, ...; duplicates stay distinct.
+
+    A missing u falls back to u_force_n. The planner works in kg internally, so each force is
+    divided by standard gravity here and a hang's tension equals the entered newton total.
+    """
     parts = [t.strip() for t in text.replace(";", ",").replace("\n", ",").split(",")]
     out: list[Weight] = []
     for i, part in enumerate(p for p in parts if p):
         try:
             f = part.split(":")
             if len(f) not in (1, 2):
-                raise ValueError("expected kg or kg:uncertainty")
-            u = float(f[1]) if len(f) == 2 and f[1].strip() else u_mass
-            out.append(Weight(weight_id=f"w{i + 1}", mass_kg=float(f[0]), u_mass_kg=u))
+                raise ValueError("expected N or N:uncertainty")
+            u = float(f[1]) if len(f) == 2 and f[1].strip() else u_force_n
+            out.append(
+                Weight(
+                    weight_id=f"w{i + 1}",
+                    mass_kg=float(f[0]) / STANDARD_G,
+                    u_mass_kg=u / STANDARD_G,
+                )
+            )
         except (ValueError, ValidationError) as exc:
             _log.warning("bad weight %r: %s", part, exc)
-            return Err(f"Could not read weight {part!r} (use kg or kg:u_kg): {exc}")
+            return Err(f"Could not read weight {part!r} (use N or N:u_N): {exc}")
     return Ok(out)
 
 
@@ -156,9 +166,10 @@ def main(argv: list[str] | None = None) -> int:
         help="uncertainty for heights entered without one, m (default 1e-4 = 0.1 mm)",
     )
     ap.add_argument(
-        "--weights", default="", help="comma list of weight masses in kg, e.g. 0.1,0.1,0.2"
+        "--weights", default="", help="comma list of weights in newtons, e.g. 1,1,2 or 1:0.01,2"
     )
-    ap.add_argument("--u-mass", type=float, default=0.0, help="mass uncertainty per weight, kg")
+    ap.add_argument("--u-mass", type=float, default=0.0, help="force uncertainty per weight, N")
+    ap.add_argument("--hangs", type=int, default=None, help="number of hangs wanted (default: all)")
     ap.add_argument("--diameter", type=float, default=2.019e-4, help="wire diameter, m")
     ap.add_argument("--u-diameter", type=float, default=0.0, help="diameter uncertainty, m")
     ap.add_argument("--length", type=float, default=None, help="gauge length L0, m")
@@ -177,7 +188,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--saturation", type=float, default=None, help="saturation limit, V")
     ap.add_argument(
-        "--captured", default="", help="already-hung points to replan from: kg:volts,kg:volts"
+        "--captured", default="", help="already-hung points to replan from: N:volts,N:volts"
     )
     args = ap.parse_args(argv)
     logging.getLogger("sadi").setLevel(
@@ -222,6 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         cal=cal_v,
         saturation=args.saturation,
         captured=args.captured,
+        config=None if args.hangs is None else PlanConfig(max_hangs=args.hangs),
     )
     if isinstance(built, Err):
         sys.stdout.write(f"No plan: {built.error}\n")
@@ -241,7 +253,7 @@ def main(argv: list[str] | None = None) -> int:
     sys.stdout.write("#  n  hang (weights)            tension_N  pred_V   +/-V     reason\n")
     for h in p.hangs:
         sys.stdout.write(
-            f"{h.order:<2} {'+'.join(h.weight_ids):<24} {h.total_mass_kg:8.4f}  "
+            f"{h.order:<2} {len(h.weight_ids):<2} {'+'.join(h.weight_ids):<24} "
             f"{h.tension_n:8.3f}  "
             f"{h.predicted_volts:7.3f}  {h.u_predicted_volts:6.3f}  {h.reason}\n"
         )

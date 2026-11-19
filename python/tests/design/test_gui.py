@@ -13,6 +13,7 @@ import urllib.request
 import pytest
 
 from sadi.design.gui import HOST, PAGE, make_server, plan_from_form
+from sadi.labs.lctt.loading import STANDARD_G
 
 FORM = {
     "weights": "0.02,0.05,0.05,0.1,0.1,0.2,0.01,0.03",
@@ -44,7 +45,7 @@ def test_plan_from_form_orders_hangs():
     assert out["hangs"] and [h["order"] for h in out["hangs"]] == list(
         range(1, len(out["hangs"]) + 1)
     )
-    assert {"weights", "total_kg", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(
+    assert {"weights", "n_weights", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(
         out["hangs"][0]
     )
 
@@ -100,8 +101,8 @@ def test_http_errors(server):
 def test_per_weight_uncertainty_is_parsed():
     from sadi.design.cli import parse_weights
 
-    ws = parse_weights("0.1:0.001,0.2", 0.0005).unwrap()
-    assert [w.u_mass_kg for w in ws] == [0.001, 0.0005]
+    ws = parse_weights("1:0.01,2", 0.005).unwrap()
+    assert [w.u_mass_kg * STANDARD_G for w in ws] == pytest.approx([0.01, 0.005])
     assert not isinstance(parse_weights("0.1:x", 0.0), type(ws))
 
 
@@ -138,7 +139,7 @@ def test_page_uses_newtons_and_millimetres():
         and "Mass, kg" not in PAGE
         and "Height, m<" not in PAGE
     )
-    assert "N_TO_KG" in PAGE and "MM_TO_M" in PAGE
+    assert "N_TO_KG" not in PAGE and "MM_TO_M" in PAGE
 
 
 def test_page_script_has_no_raw_newline_in_regex():
@@ -191,11 +192,10 @@ def test_height_plan_offers_stacked_combinations():
 
 def test_count_and_range_limit_hangs():
     base = plan_from_form(FORM)
-    out = plan_from_form({**FORM, "n_hangs": "3", "min_mass": "0.05", "max_mass": "0.3"})
-    assert out["ok"] and len(out["hangs"]) == 3
-    assert all(0.05 <= h["total_kg"] <= 0.3 for h in out["hangs"])
-    assert len(base["hangs"]) != 3 or True
-    assert not plan_from_form({**FORM, "n_hangs": "0"})["ok"]
+    out = plan_from_form({**FORM, "hangs": "3", "min_mass": "0.5", "max_mass": "3"})
+    assert base["ok"] and out["ok"] and len(out["hangs"]) == 3
+    assert all(0.5 - 1e-9 <= h["tension_n"] <= 3 + 1e-9 for h in out["hangs"])
+    assert not plan_from_form({**FORM, "hangs": "0"})["ok"]
     assert not plan_from_form({**FORM, "min_mass": "1", "max_mass": "0.5"})["ok"]
 
 

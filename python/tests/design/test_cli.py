@@ -5,9 +5,8 @@
 
 from __future__ import annotations
 
-from typani import Err, Ok
-
 import pytest
+from typani import Err, Ok
 
 from sadi.design.cal_fit import Calibration
 from sadi.design.cli import build_request, main, parse_captured, parse_weights
@@ -29,10 +28,10 @@ def test_parse_weights_rejects_garbage():
 
 
 def test_parse_captured_roundtrip_and_errors():
-    res = parse_captured("0.1:0.5,0.3:1.4")
-    assert isinstance(res, Ok) and [(c.mass_kg, c.volts) for c in res.value] == [
-        (0.1, 0.5),
-        (0.3, 1.4),
+    res = parse_captured("1:0.5,3:1.4")
+    assert isinstance(res, Ok) and [(c.mass_kg * STANDARD_G, c.volts) for c in res.value] == [
+        pytest.approx((1.0, 0.5)),
+        pytest.approx((3.0, 1.4)),
     ]
     assert isinstance(parse_captured("0.1"), Err)
     assert parse_captured("") == Ok([])
@@ -70,8 +69,18 @@ def test_main_requires_some_calibration(capsys):
 
 
 def test_hangs_flag_sets_count(capsys):
-    argv = ["--weights", "2,2,2,2,2,2,2,2,2,2", "--diameter", "0.001", "--length", "0.083",
-            "--cal-slope", "12.0", "--hangs", "4"]
+    argv = [
+        "--weights",
+        "2,2,2,2,2,2,2,2,2,2",
+        "--diameter",
+        "0.001",
+        "--length",
+        "0.083",
+        "--cal-slope",
+        "12.0",
+        "--hangs",
+        "4",
+    ]
     assert main(argv) == 0
     out = capsys.readouterr().out
     assert sum(1 for ln in out.splitlines() if ln.strip()[:1].isdigit()) >= 4

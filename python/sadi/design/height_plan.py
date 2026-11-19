@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.design.combos import MAX_INVENTORY, max_combo_size
 from sadi.design.models import Candidate, DesignPhase, GpState, Obs, SelectorConfig, TargetSpec
 from sadi.design.selector import select_next
 from sadi.labs.lctt.saturation import DEFAULT_SATURATION_V
@@ -29,7 +30,7 @@ __all__ = [
 _log = get_logger(__name__)
 
 #: Hard limit on the height inventory, matching the weight inventory.
-MAX_HEIGHTS = 12
+MAX_HEIGHTS = MAX_INVENTORY
 #: Height uncertainty (m) used for any height entered without one: 0.1 mm.
 DEFAULT_U_HEIGHT_M = 1e-4
 #: Most heights stacked into one gauge height (h1+h2+h3); keeps the candidate list small.
@@ -42,7 +43,7 @@ class HeightPlanError(ErrorSet):
     """Why no height plan could be made; the description says what to fix."""
 
     TooFew = "Need at least 2 distinct usable heights to calibrate the LVDT"
-    TooMany = "The inventory has more than 12 heights; enter at most 12"
+    TooMany = f"The inventory has more than {MAX_INVENTORY} heights"
     NonFinite = "A height, uncertainty or nominal calibration value is not a finite number"
     ZeroSlope = "The nominal LVDT slope is zero, so heights cannot be told apart"
     SelectorFailed = "The design model could not rank the heights"
@@ -115,7 +116,7 @@ def stack_heights(heights: list[Height], max_stack: int = MAX_STACK) -> list[Hei
     """All stackings of up to max_stack heights as 'h1+h2' candidates; u adds in quadrature, equal
     totals keep the lowest ids."""
     seen: dict[float, Height] = {}
-    for k in range(1, min(max_stack, len(heights)) + 1):
+    for k in range(1, max_combo_size(len(heights), max_stack) + 1):
         for combo in itertools.combinations(heights, k):
             total = math.fsum(h.height_m for h in combo)
             key = round(total, 9)

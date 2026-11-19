@@ -12,7 +12,7 @@ from typani import Err, Ok
 
 from sadi.design.cli import format_height_plan, main
 from sadi.design.gui import plan_from_form
-from sadi.design.height_plan import HeightPlanError, parse_heights, plan_heights
+from sadi.design.height_plan import MAX_HEIGHTS, HeightPlanError, parse_heights, plan_heights
 
 INV = "0.001:1e-5,0.002:1e-5,0.002:2e-5,0.003:1e-5,0.004:1e-5"
 
@@ -58,7 +58,7 @@ def test_duplicates_distinct_and_too_few_errors() -> None:
     assert plan_heights(sat, nominal_slope_v_per_m=0.0) == Err(HeightPlanError.ZeroSlope)
     three = parse_heights("0.001,0.002,0.003").unwrap()
     assert isinstance(plan_heights(three, nominal_slope_v_per_m=float("nan")), Err)
-    many = parse_heights(",".join(str(0.001 * (i + 1)) for i in range(13))).unwrap()
+    many = parse_heights(",".join(str(0.001 * (i + 1)) for i in range(MAX_HEIGHTS + 1))).unwrap()
     assert plan_heights(many, nominal_slope_v_per_m=-100.0) == Err(HeightPlanError.TooMany)
 
 

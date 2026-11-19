@@ -228,8 +228,11 @@ class PlanConfig(BaseModel):
     copper: CopperSpec = CopperSpec()
     target: TargetSpec = TargetSpec(half_width=0.05)
     selector: SelectorConfig = SelectorConfig()
-    #: Largest allowed tension as a fraction of the wire's ultimate load.
-    capacity_fraction: float = Field(default=0.95, gt=0, le=1)
+    #: Stress at which the real wire broke (8 N on the 0.2019 mm wire, about 250 MPa); the
+    #: synthetic model's 132 MPa Voce saturation is not a break stress and would be far too tight.
+    break_stress_pa: float = Field(default=250e6, gt=0)
+    #: Largest allowed tension as a fraction of the wire's break load (1.0 = the observed break).
+    capacity_fraction: float = Field(default=1.0, gt=0, le=1)
     #: Cap on the number of hangs reported; None means as many as there are usable loads.
     max_hangs: int | None = Field(default=None, ge=1)
     #: Only hangs with total mass inside [min_mass_kg, max_mass_kg] are considered.
@@ -295,4 +298,6 @@ class WeightPlan(BaseModel):
     n_usable: int
     dropped_saturation: int = 0
     dropped_capacity: int = 0
+    #: Non-fatal cautions (e.g. loads above the expected wire capacity); never block a plan.
+    warnings: tuple[str, ...] = ()
     advisory: Literal[True] = True

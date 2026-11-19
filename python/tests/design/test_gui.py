@@ -207,3 +207,37 @@ def test_count_and_range_limit_heights():
     assert out["ok"] and len(out["height_steps"]) == 4
     assert all(0.002 <= s["height_m"] <= 0.01 for s in out["height_steps"])
     assert not plan_from_form({"heights": hs, "min_height": "0.01", "max_height": "0.002"})["ok"]
+
+
+def test_over_capacity_warns_but_still_plans():
+    out = plan_from_form({**FORM, "weights": "30,40,50", "cal_slope": ""})
+    assert out["ok"] and out["hangs"] and any("expected to hold" in w for w in out["warnings"])
+
+
+def test_user_window_overrides_wire_capacity():
+    out = plan_from_form({**FORM, "weights": "5,10,20", "min_mass": "5", "max_mass": "30"})
+    assert out["ok"] and any(h["tension_n"] > 8 for h in out["hangs"])
+    assert any("Your window allows" in w for w in out["warnings"])
+
+
+def test_bad_weights_do_not_block_the_height_plan():
+    out = plan_from_form({**FORM, "weights": "0.1,zz", "heights": "0.001,0.002,0.004,0.006"})
+    assert out["ok"] and out["height_steps"] and "zz" in out["weights_error"]
+
+
+def test_bad_heights_do_not_block_the_weight_plan():
+    out = plan_from_form({**FORM, "heights": "0.001,zz"})
+    assert out["ok"] and out["hangs"] and out["heights_error"]
+
+
+def test_large_inventory_plans_instead_of_refusing():
+    ws = ",".join(str(0.05 + 0.01 * i) for i in range(100))
+    out = plan_from_form({**FORM, "weights": ws, "hangs": "5"})
+    assert out["ok"] and len(out["hangs"]) == 5 and out["warnings"]
+    hs = ",".join(str(0.001 * (i + 1)) for i in range(100))
+    hp = plan_from_form({"heights": hs})
+    assert hp["ok"] and hp["height_steps"]
+
+
+def test_page_limits_rows_and_allows_removal():
+    assert "const MAX_ROWS = 120;" in PAGE and "Remove" in PAGE and "__MAX__" not in PAGE

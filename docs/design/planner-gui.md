@@ -25,7 +25,7 @@ the height plan's design slope/offset uncertainty (`se_slope_v_per_m`, `se_offse
 With heights only, the reply is the height plan alone. The CLI does the same with `--heights` and
 `--weights` together (heights printed first, then the recommended weights).
 
-Form: a weight inventory table (mass and its own uncertainty per row, same as the height table; duplicates allowed, max 12; CLI `--weights kg:u,...`), a default mass uncertainty for blank rows, wire diameter and its uncertainty,
+Form: a weight inventory table (mass and its own uncertainty per row, same as the height table; duplicates allowed, up to 120, each table row has a Remove button and Add row stops at the limit; hangs of large inventories combine fewer weights at a time, with a warning; CLI `--weights N:u,...`), a default mass uncertainty for blank rows, wire diameter and its uncertainty,
 L0 and its uncertainty, an editable table of LVDT calibration points (height mm / volts, with Add row),
 saturation limit, and already captured points as `grams:volts`. The page joins the table into
 `cal_points` (`h:v,h:v`) for `POST /plan`. Output: the ordered hang table (weights, total g, tension N, predicted V,

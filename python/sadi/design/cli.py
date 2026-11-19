@@ -250,6 +250,8 @@ def main(argv: list[str] | None = None) -> int:
         f"usable={p.n_usable} "
         f"dropped(sat={p.dropped_saturation}, capacity={p.dropped_capacity})\n"
     )
+    for w in p.warnings:
+        sys.stdout.write(f"Warning: {w}\n")
     sys.stdout.write("#  n  hang (weights)            tension_N  pred_V   +/-V     reason\n")
     for h in p.hangs:
         sys.stdout.write(

@@ -20,7 +20,13 @@ from typani import Err, Ok, Result
 
 from sadi.design.cal_fit import Calibration, resolve_calibration
 from sadi.design.cli import build_request
-from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, parse_heights, plan_heights
+from sadi.design.combos import MAX_INVENTORY, max_combo_size
+from sadi.design.height_plan import (
+    DEFAULT_U_HEIGHT_M,
+    MAX_STACK,
+    parse_heights,
+    plan_heights,
+)
 from sadi.design.models import PlanConfig
 from sadi.design.plan import plan
 from sadi.labs.lctt.loading import STANDARD_G
@@ -34,7 +40,7 @@ _log = get_logger(__name__)
 HOST = "127.0.0.1"
 _MAX_BODY = 64 * 1024
 
-PAGE = """<!doctype html>
+_PAGE_TEMPLATE = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>SADI weight planner</title>
 <style>
 body{font-family:sans-serif;margin:1.5em;max-width:60em}
@@ -56,7 +62,7 @@ Nothing is saved or sent anywhere; it does not talk to the LVDT or to LabVIEW. R
 points you have already captured to replan.</p>
 <form id="f">
 <fieldset><legend>1. Height inventory (which heights you have)</legend>
-<table id="hts"><thead><tr><th>Height, mm</th><th>Uncertainty, mm</th></tr></thead><tbody></tbody></table>
+<table id="hts"><thead><tr><th>Height, mm</th><th>Uncertainty, mm</th><th></th></tr></thead><tbody></tbody></table>
 <button type="button" id="addheight">Add row</button>
 <label>Default height uncertainty, mm <input type="text" name="u_height_default" value="0.1"></label>
 <label>Number of heights wanted (blank = let the GP decide) <input type="text" name="n_heights" value=""></label>
@@ -68,17 +74,17 @@ points you have already captured to replan.</p>
 <input type="text" name="cal_slope" value="" placeholder="blank = fit from the points below"></label>
 <label>LVDT offset, V <input type="text" name="cal_offset" value="0"></label>
 <small>A typed slope is used as given (no uncertainty); the height plan does not need it. Or leave it blank and fit from points:</small>
-<table id="cal"><thead><tr><th>Height, mm</th><th>Volts, V</th></tr></thead><tbody></tbody></table>
+<table id="cal"><thead><tr><th>Height, mm</th><th>Volts, V</th><th></th></tr></thead><tbody></tbody></table>
 <button type="button" id="addrow">Add row</button>
 <small>Enter at least 3 points at 2 or more distinct heights; slope, intercept and their uncertainty are fitted. No default is assumed.</small>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
-<table id="wts"><thead><tr><th>Weight, N</th><th>Uncertainty, N</th></tr></thead><tbody></tbody></table>
+<table id="wts"><thead><tr><th>Weight, N</th><th>Uncertainty, N</th><th></th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
 <label>Number of hangs wanted (blank = let the GP decide) <input type="text" name="hangs" value=""></label>
 <label>Total weight range, newtons (N): min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
-<small>Change a count or range and press Plan again to regenerate. Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
+<small>Change a count or range and press Plan again to regenerate. Enter each weight and its uncertainty; repeat a mass for duplicate weights (up to __MAX__). A blank uncertainty uses the default below.</small>
 <label>Default weight uncertainty, N <input type="text" name="u_mass" value="0.1"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
@@ -96,27 +102,26 @@ points you have already captured to replan.</p>
 <div id="out"></div>
 <script>
 const out = document.getElementById("out");
-const calBody = document.querySelector("#cal tbody");
-function addRow(h, v){
-  const tr = calBody.insertRow();
-  for (const val of [h, v]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
+const MAX_ROWS = __MAX__;
+function rowAdder(tbodySel, btnId, vals0, cols){
+  const body = document.querySelector(tbodySel), btn = document.getElementById(btnId);
+  function sync(){ btn.disabled = body.rows.length >= MAX_ROWS; btn.title = btn.disabled ? "Limit of " + MAX_ROWS + " rows reached" : ""; }
+  function add(vals){
+    if (body.rows.length >= MAX_ROWS) return;
+    const tr = body.insertRow();
+    for (let k = 0; k < cols; k++) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = vals[k] ?? ""; td.appendChild(i); }
+    const rm = document.createElement("button"); rm.type = "button"; rm.textContent = "Remove"; rm.title = "Remove this row";
+    rm.addEventListener("click", () => { tr.remove(); sync(); });
+    tr.insertCell().appendChild(rm);
+    sync();
+  }
+  btn.addEventListener("click", () => add([]));
+  for (const v of vals0) add(v);
+  return body;
 }
-for (let k = 0; k < 4; k++) addRow("", "");
-document.getElementById("addrow").addEventListener("click", () => addRow("", ""));
-const wtsBody = document.querySelector("#wts tbody");
-function addWeight(m, u){
-  const tr = wtsBody.insertRow();
-  for (const val of [m, u]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
-}
-for (const m of ["20","50","50","100","100","200","10","30"]) addWeight(m, "");
-document.getElementById("addweight").addEventListener("click", () => addWeight("", ""));
-const htsBody = document.querySelector("#hts tbody");
-function addHeight(h, u){
-  const tr = htsBody.insertRow();
-  for (const val of [h, u]) { const td = tr.insertCell(); const i = document.createElement("input"); i.type = "text"; i.value = val; td.appendChild(i); }
-}
-for (let k = 0; k < 4; k++) addHeight("", "");
-document.getElementById("addheight").addEventListener("click", () => addHeight("", ""));
+const calBody = rowAdder("#cal tbody", "addrow", [[], [], [], []], 2);
+const wtsBody = rowAdder("#wts tbody", "addweight", [[], [], [], []], 2);
+const htsBody = rowAdder("#hts tbody", "addheight", [[], [], [], []], 2);
 // Operators type newtons (the server converts with standard gravity) and millimetres (-> m).
 const MM_TO_M = 1e-3;
 const fix = (x) => Number(Number(x).toPrecision(10));
@@ -163,7 +168,9 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
       for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, hp.slope_known ? h.se_slope_v_per_m : (h.rel_se_slope === null ? null : (h.rel_se_slope * 100).toPrecision(3) + " %"), h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
-      if (data.height_steps) return;
+    if (data.heights_error) { const he = document.createElement("p"); he.className = "err"; he.textContent = "No height plan: " + data.heights_error; out.appendChild(he); }
+    if (data.weights_error) { const we = document.createElement("p"); we.className = "err"; we.textContent = "No weight plan: " + data.weights_error; out.appendChild(we); }
+    if (data.height_steps) return;
   }
   const s = document.createElement("p");
   s.textContent = (hp ? "2. Recommended weights (GP selection, minimising error). " : "") + "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
@@ -179,10 +186,12 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
     r.appendChild(cell(h.predicted_volts ?? "-")); r.appendChild(cell(h.u_volts ?? "-"));
     r.appendChild(cell(h.reason, "l"));
   }
+  for (const w of data.warnings || []) { const q = document.createElement("p"); q.className = "err"; q.textContent = "Warning: " + w; out.appendChild(q); }
   out.appendChild(t);
 });
 </script></body></html>
 """
+PAGE = _PAGE_TEMPLATE.replace("__MAX__", str(MAX_INVENTORY))
 
 
 def _num(
@@ -251,7 +260,16 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
         "n_usable": p.n_usable,
         "dropped_saturation": p.dropped_saturation,
         "height_steps": [s.model_dump() for s in p.steps],
+        "warnings": _stack_warnings(len(hs.value)),
     }
+
+
+def _stack_warnings(n: int) -> list[str]:
+    """Note when a large height inventory is stacked fewer-at-a-time to stay plannable."""
+    k = max_combo_size(n, MAX_STACK)
+    if k < min(MAX_STACK, n):
+        return [f"With {n} heights, stacks combine at most {k} height(s) at a time."]
+    return []
 
 
 def _count(form: dict[str, Any], key: str) -> Result[int | None, str]:
@@ -305,14 +323,26 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
     weight plan.
     """
     heights: dict[str, Any] | None = None
+    has_weights = bool(str(form.get("weights", "")).strip())
     if str(form.get("heights", "")).strip():
         heights = _heights_reply(form)
         if not heights["ok"]:
-            return heights
-        if not str(form.get("weights", "")).strip():
+            if not has_weights:
+                return heights
+            # A bad height inventory must not stop the weight plan.
+            _log.info("height plan failed, planning weights anyway: %s", heights["error"])
+            reply = _weights_reply(form, None)
+            if reply["ok"]:
+                reply["heights_error"] = heights["error"]
+            return reply
+        if not has_weights:
             return heights
     reply = _weights_reply(form, heights)
-    if heights is not None and reply["ok"]:
+    if heights is not None and not reply["ok"]:
+        # A bad weight inventory must not stop the height plan: show heights plus the reason.
+        _log.info("weight plan failed, returning height plan anyway: %s", reply["error"])
+        return {**heights, "weights_error": reply["error"]}
+    if heights is not None:
         reply["heights_plan"] = heights
     return reply
 
@@ -399,6 +429,7 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
         "n_usable": p.n_usable,
         "dropped_saturation": p.dropped_saturation,
         "dropped_capacity": p.dropped_capacity,
+        "warnings": list(p.warnings),
         "hangs": [
             {
                 "order": h.order,

@@ -9,6 +9,7 @@ import math
 
 from typani import Err, ErrorSet, Ok, Result
 
+from sadi.design.combos import MAX_INVENTORY, max_combo_size
 from sadi.design.models import (
     Candidate,
     DesignPhase,
@@ -26,12 +27,13 @@ from sadi.labs.lctt.saturation import DEFAULT_SATURATION_V
 from sadi.logging_setup import get_logger
 from sadi.synthetic.specimen import OFFSET_STRAIN
 
-__all__ = ["MAX_WEIGHTS", "PlanError", "plan"]
+__all__ = ["MAX_WEIGHTS", "PlanError", "plan", "wire_capacity_n"]
 
 _log = get_logger(__name__)
 
-#: Hard limit on the inventory size (2^12 subsets is still instant); the lab has 8.
-MAX_WEIGHTS = 12
+#: Hard limit on the inventory size; the page stops adding rows here. Bigger inventories use
+#: smaller combinations per hang (see combos.max_combo_size) rather than being refused.
+MAX_WEIGHTS = MAX_INVENTORY
 #: Coverage factor applied to the standard uncertainties of the geometry in the E half-width.
 _K_GEOM = 2.0
 
@@ -40,13 +42,9 @@ class PlanError(ErrorSet):
     """Why no plan could be made; the description says what to fix."""
 
     NoWeights = "The inventory has no weights to plan with"
-    TooManyWeights = "The inventory has more than 12 weights; enter at most 12"
+    TooManyWeights = f"The inventory has more than {MAX_INVENTORY} weights"
     DuplicateIds = "Two weights share an id; give every weight its own id"
     NoUsableHang = "No combination of weights stays under saturation and wire capacity"
-    OverCapacity = (
-        "Every combination of weights exceeds the wire capacity; use lighter weights "
-        "or a thicker wire diameter"
-    )
     Saturates = (
         "Every combination of weights saturates the LVDT; use lighter weights or "
         "raise the saturation limit"
@@ -72,7 +70,7 @@ def _subsets(weights: tuple[Weight, ...], res: float) -> list[_Load]:
     """Enumerate non-empty subset sums, deduped by total mass keeping the lowest ids."""
     ordered = sorted(weights, key=lambda w: w.weight_id)
     best: dict[int, _Load] = {}
-    for k in range(1, len(ordered) + 1):
+    for k in range(1, max_combo_size(len(ordered)) + 1):
         for combo in itertools.combinations(ordered, k):
             mass = math.fsum(w.mass_kg for w in combo)
             ids = tuple(w.weight_id for w in combo)
@@ -146,12 +144,16 @@ def _reason(order: int, phase: DesignPhase, gain: float, why: str) -> str:
     return base
 
 
+def wire_capacity_n(req: PlanRequest) -> float:
+    """Largest allowed tension for the request's wire, in newtons (of the observed break load)."""
+    cap = req.config.capacity_fraction * req.config.break_stress_pa
+    return cap * math.pi * req.diameter_m**2 / 4.0
+
+
 def _usable(
-    req: PlanRequest, loads: list[_Load], phase: DesignPhase, sat_v: float
+    req: PlanRequest, loads: list[_Load], phase: DesignPhase, sat_v: float, cap_n: float
 ) -> tuple[list[_Load], int, int]:
-    """Drop loads that saturate the LVDT or exceed the wire capacity; return counts dropped."""
-    cap_n = req.config.capacity_fraction * req.config.copper.ultimate_pa
-    cap_n *= math.pi * req.diameter_m**2 / 4.0
+    """Drop loads that saturate the LVDT or exceed cap_n newtons; return counts dropped."""
     keep: list[_Load] = []
     n_sat = n_cap = 0
     for ld in loads:
@@ -240,10 +242,33 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     loads = _subsets(req.weights, cfg.mass_resolution_kg)
     n_in = 0
     floor = max((c.mass_kg for c in req.captured), default=0.0)
-    usable, n_sat, n_cap = _usable(req, loads, phase, sat_v)
+    # Wire capacity is advisory: a user-set window overrides it, and if it would rule out every
+    # load we plan anyway and warn, so it never stops the operator from getting a plan.
+    warnings: list[str] = []
+    k_max = max_combo_size(len(ids))
+    if k_max < len(ids):
+        warnings.append(
+            f"With {len(ids)} weights, hangs combine at most {k_max} weight(s) at a time."
+        )
+    cap_n = wire_capacity_n(req)
+    if cfg.max_mass_kg is not None:
+        if cfg.max_mass_kg * STANDARD_G > cap_n:
+            warnings.append(
+                f"Your window allows up to {cfg.max_mass_kg * STANDARD_G:.2f} N, above the "
+                f"{cap_n:.2f} N this wire is expected to hold."
+            )
+        cap_n = math.inf
+    usable, n_sat, n_cap = _usable(req, loads, phase, sat_v, cap_n)
+    if not usable and n_cap and not n_sat:
+        warnings.append(
+            f"Every combination exceeds the {cap_n:.2f} N this wire is expected to hold; "
+            "planning anyway. Set a weight range to choose your own limit."
+        )
+        _log.warning("capacity overridden: all %d loads exceed %.3f N", n_cap, cap_n)
+        usable, n_sat, n_cap = _usable(req, loads, phase, sat_v, math.inf)
     if not usable and loads:
         # Name the real cause: saturation can only drop loads when a calibration slope exists.
-        err = PlanError.OverCapacity if n_sat == 0 else PlanError.NoUsableHang
+        err = PlanError.NoUsableHang
         if n_cap == 0:
             err = PlanError.Saturates
         _log.info("no usable hang: sat=%d cap=%d -> %s", n_sat, n_cap, err.name)
@@ -299,6 +324,7 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
             n_usable=len(usable),
             dropped_saturation=n_sat,
             dropped_capacity=n_cap,
+            warnings=tuple(warnings),
         )
     )
 

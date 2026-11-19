@@ -10,11 +10,14 @@ with the uncertainty of each hang (front ends: [planner-gui.md](planner-gui.md))
 
 ## Method
 
-1. Enumerate the 2^n - 1 non-empty subset sums (more than 12 weights is a `TooManyWeights` error).
+1. Enumerate the 2^n - 1 non-empty subset sums (more than 120 weights is a `TooManyWeights` error).
    Duplicate weights are distinct ids. Subsets with equal total mass collapse to one load that keeps
    the lowest ids, so the plan is deterministic.
 2. Drop loads whose predicted |V| exceeds the saturation threshold (`DEFAULT_SATURATION_V`, or the
-   request override) or whose tension exceeds `capacity_fraction` (0.95) of the wire's ultimate load.
+   request override) or whose tension exceeds `capacity_fraction` (1.0) of the wire's break load
+   (`break_stress_pa` = 250 MPa; a real wire broke just above 8 N at 0.2019 mm). Capacity is
+   advisory: a user-set max weight overrides it, and if it would drop every load the planner
+   plans anyway and returns a `warnings` entry. It never blocks a plan.
    The material prior is `CopperSpec` (modulus, onset, ultimate); nothing is duplicated.
 3. Predicted volts: `offset + cal_slope * F * L0 / (A * E_prior)` in the elastic phase; the copper
    curve (`CopperSpec.strain`) in the yield phase. The yield phase is used when at least `n_min_yield`

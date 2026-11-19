@@ -73,10 +73,10 @@ def test_saturation_clipping() -> None:
 
 # frob:tests python/sadi/design/plan.py::plan
 def test_capacity_clipping() -> None:
-    """Tension stays under the capacity fraction of the ultimate load."""
+    """Tension stays under the capacity fraction of the observed break load."""
     p = plan(_req((0.1, 0.2, 0.5, 1.0))).unwrap()
     assert p.dropped_capacity > 0
-    assert all(h.tension_n <= 0.95 * 132e6 * AREA for h in p.hangs)
+    assert all(h.tension_n <= 250e6 * AREA for h in p.hangs)
     assert all(h.tension_n == h.total_mass_kg * STANDARD_G for h in p.hangs)
 
 
@@ -85,7 +85,7 @@ def test_fewer_usable_weights_than_eight() -> None:
     """With a few small weights the planner still returns a (shorter) plan."""
     p = plan(_req((0.05, 0.1))).unwrap()
     assert 1 <= len(p.hangs) <= 3 and p.n_inventory == 2
-    assert plan(_req((0.5,))).unwrap_err() in (PlanError.OverCapacity, PlanError.NoUsableHang)
+    assert plan(_req((1.0,))).unwrap().warnings
 
 
 # frob:tests python/sadi/design/plan.py::plan

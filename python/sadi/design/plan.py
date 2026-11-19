@@ -43,6 +43,18 @@ class PlanError(ErrorSet):
     TooManyWeights = "The inventory has more than 12 weights; enter at most 12"
     DuplicateIds = "Two weights share an id; give every weight its own id"
     NoUsableHang = "No combination of weights stays under saturation and wire capacity"
+    OverCapacity = (
+        "Every combination of weights exceeds the wire capacity; use lighter weights "
+        "or a thicker wire diameter"
+    )
+    Saturates = (
+        "Every combination of weights saturates the LVDT; use lighter weights or "
+        "raise the saturation limit"
+    )
+    OutsideLimits = (
+        "No combination of weights falls inside the total weight range and above "
+        "the already-captured loads; widen the range or clear the captured points"
+    )
     NonFinite = "A weight, geometry or calibration value is not a finite number"
     SelectorFailed = "The design model could not rank the loads"
 
@@ -226,8 +238,17 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
     phase = _phase(req)
     sat_v = req.saturation_v if req.saturation_v is not None else DEFAULT_SATURATION_V
     loads = _subsets(req.weights, cfg.mass_resolution_kg)
+    n_in = 0
     floor = max((c.mass_kg for c in req.captured), default=0.0)
     usable, n_sat, n_cap = _usable(req, loads, phase, sat_v)
+    if not usable and loads:
+        # Name the real cause: saturation can only drop loads when a calibration slope exists.
+        err = PlanError.OverCapacity if n_sat == 0 else PlanError.NoUsableHang
+        if n_cap == 0:
+            err = PlanError.Saturates
+        _log.info("no usable hang: sat=%d cap=%d -> %s", n_sat, n_cap, err.name)
+        return Err(err)
+    n_in = len(usable)
     usable = [ld for ld in usable if ld.mass > floor + cfg.mass_resolution_kg]
     if cfg.min_mass_kg is not None:
         usable = [ld for ld in usable if ld.mass >= cfg.min_mass_kg]
@@ -243,7 +264,8 @@ def plan(req: PlanRequest) -> Result[WeightPlan, PlanError]:
         n_cap,
     )
     if not usable:
-        return Err(PlanError.NoUsableHang)
+        _log.info("no usable hang: all %d capacity-safe loads fall outside the limits", n_in)
+        return Err(PlanError.OutsideLimits)
 
     obs = [Obs(x=c.mass_kg, y=c.volts, u=c.u_volts) for c in req.captured]
     n_cap_pts = len(obs)

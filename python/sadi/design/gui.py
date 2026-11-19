@@ -18,11 +18,12 @@ from typing import Any
 
 from typani import Err, Ok, Result
 
-from sadi.design.cal_fit import resolve_calibration
+from sadi.design.cal_fit import Calibration, resolve_calibration
 from sadi.design.cli import build_request
 from sadi.design.height_plan import DEFAULT_U_HEIGHT_M, parse_heights, plan_heights
 from sadi.design.models import PlanConfig
 from sadi.design.plan import plan
+from sadi.labs.lctt.loading import STANDARD_G
 from sadi.logging_setup import get_logger
 
 __all__ = ["HOST", "PAGE", "main", "make_server", "plan_from_form"]
@@ -73,12 +74,12 @@ points you have already captured to replan.</p>
 <label>Saturation limit, V (blank = built-in default) <input type="text" name="saturation" value=""></label>
 </fieldset>
 <fieldset><legend>3. Weight inventory (which weights you have; the recommended weights come from this plus the heights)</legend>
-<table id="wts"><thead><tr><th>Mass, g</th><th>Uncertainty, g</th></tr></thead><tbody></tbody></table>
+<table id="wts"><thead><tr><th>Weight, N</th><th>Uncertainty, N</th></tr></thead><tbody></tbody></table>
 <button type="button" id="addweight">Add row</button>
 <label>Number of hangs wanted (blank = let the GP decide) <input type="text" name="n_hangs" value=""></label>
-<label>Total mass range, g: min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
+<label>Total weight range, N: min <input type="text" name="min_mass" value=""> max <input type="text" name="max_mass" value=""></label>
 <small>Change a count or range and press Plan again to regenerate. Enter each weight and its uncertainty; repeat a mass for duplicate weights (max 12). A blank uncertainty uses the default below.</small>
-<label>Default mass uncertainty, g <input type="text" name="u_mass" value="0.1"></label>
+<label>Default weight uncertainty, N <input type="text" name="u_mass" value="0.1"></label>
 </fieldset>
 <fieldset><legend>Wire</legend>
 <label>Diameter, m <input type="text" name="diameter" value="0.0002019" required></label>
@@ -87,7 +88,7 @@ points you have already captured to replan.</p>
 <label>L0 uncertainty, m <input type="text" name="u_length" value="0"></label>
 </fieldset>
 <fieldset><legend>Already captured</legend>
-<label>Points as grams:volts, comma separated (blank = none)<br>
+<label>Points as newtons:volts, comma separated (blank = none)<br>
 <textarea name="captured"></textarea></label>
 </fieldset>
 <button type="submit">Plan</button>
@@ -116,8 +117,8 @@ function addHeight(h, u){
 }
 for (let k = 0; k < 4; k++) addHeight("", "");
 document.getElementById("addheight").addEventListener("click", () => addHeight("", ""));
-// Operators type grams and millimetres; the server works in SI (kg, m), so convert on the way in and out.
-const G_TO_KG = 1e-3, MM_TO_M = 1e-3;
+// Operators type newtons and millimetres; the server works in SI (kg, m), so convert on the way in and out.
+const N_TO_KG = 1 / __STANDARD_G__, MM_TO_M = 1e-3;
 const fix = (x) => Number(Number(x).toPrecision(10));
 function scaleNum(t, k){ const x = Number(t); return Number.isFinite(x) && String(t).trim() !== "" ? String(fix(x * k)) : t; }
 // "a:b,c" -> scale the first field of each item (and the second too when both is set)
@@ -129,16 +130,16 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const body = {};
   for (const [k, v] of new FormData(ev.target).entries()) body[k] = v;
-  body.u_mass = scaleNum(body.u_mass, G_TO_KG);
+  body.u_mass = scaleNum(body.u_mass, N_TO_KG);
   body.u_height_default = scaleNum(body.u_height_default, MM_TO_M);
   for (const k of ["min_height", "max_height"]) body[k] = scaleNum(body[k], MM_TO_M);
-  for (const k of ["min_mass", "max_mass"]) body[k] = scaleNum(body[k], G_TO_KG);
-  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), G_TO_KG, false) : "";
+  for (const k of ["min_mass", "max_mass"]) body[k] = scaleNum(body[k], N_TO_KG);
+  body.captured = (body.captured || "").trim() ? scaleList(body.captured.replace(/[\\n]+/g, ","), N_TO_KG, false) : "";
   const pts = [];
   for (const tr of calBody.rows) { const [h, v] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h || v) pts.push(scaleNum(h, MM_TO_M) + ":" + v); }
   body.cal_points = pts.join(",");
   const wts = [];
-  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? scaleNum(m, G_TO_KG) + ":" + scaleNum(u, G_TO_KG) : scaleNum(m, G_TO_KG)); }
+  for (const tr of wtsBody.rows) { const [m, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (m) wts.push(u ? scaleNum(m, N_TO_KG) + ":" + scaleNum(u, N_TO_KG) : scaleNum(m, N_TO_KG)); }
   body.weights = wts.join(",");
   const hts = [];
   for (const tr of htsBody.rows) { const [h, u] = [...tr.querySelectorAll("input")].map(i => i.value.trim()); if (h) hts.push(u ? scaleNum(h, MM_TO_M) + ":" + scaleNum(u, MM_TO_M) : scaleNum(h, MM_TO_M)); }
@@ -164,8 +165,7 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
       for (const v of [h.order, h.height_id, fix(h.height_m / MM_TO_M), fix(h.u_height_m / MM_TO_M), h.predicted_volts, hp.slope_known ? h.se_slope_v_per_m : (h.rel_se_slope === null ? null : (h.rel_se_slope * 100).toPrecision(3) + " %"), h.se_offset_v]) r.appendChild(cell(v === null ? "-" : v));
     }
     out.appendChild(t0);
-    if (data.weights_note) { const n = document.createElement("p"); n.textContent = data.weights_note; out.appendChild(n); }
-    if (data.height_steps) return;
+      if (data.height_steps) return;
   }
   const s = document.createElement("p");
   s.textContent = (hp ? "2. Recommended weights (GP selection, minimising error). " : "") + "Phase: " + data.phase + ". Inventory loads " + data.n_inventory + ", achievable " + data.n_achievable +
@@ -174,11 +174,11 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
   const c = document.createElement("p"); c.textContent = data.calibration; out.appendChild(c);
   const t = document.createElement("table");
   const hr = t.insertRow();
-  for (const h of ["#", "Hang (weights)", "Total g", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
+  for (const h of ["#", "Hang (weights)", "Tension N", "Predicted V", "+/- V", "Reason"]) { const th = document.createElement("th"); th.textContent = h; hr.appendChild(th); }
   for (const h of data.hangs) {
     const r = t.insertRow();
-    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(fix(h.total_kg / G_TO_KG)));
-    r.appendChild(cell(h.tension_n)); r.appendChild(cell(h.predicted_volts)); r.appendChild(cell(h.u_volts));
+    r.appendChild(cell(h.order)); r.appendChild(cell(h.weights, "l")); r.appendChild(cell(h.tension_n));
+    r.appendChild(cell(h.predicted_volts ?? "-")); r.appendChild(cell(h.u_volts ?? "-"));
     r.appendChild(cell(h.reason, "l"));
   }
   out.appendChild(t);
@@ -186,8 +186,12 @@ document.getElementById("f").addEventListener("submit", async (ev) => {
 </script></body></html>
 """
 
+PAGE = PAGE.replace("__STANDARD_G__", repr(STANDARD_G))  # one source of truth for g
 
-def _num(form: dict[str, Any], key: str, *, required: bool, default: float | None) -> Result[float | None, str]:
+
+def _num(
+    form: dict[str, Any], key: str, *, required: bool, default: float | None
+) -> Result[float | None, str]:
     """Read one numeric form field; a required field with no value is an error, never defaulted."""
     raw = str(form.get(key, "")).strip()
     if not raw:
@@ -221,22 +225,35 @@ def _heights_reply(form: dict[str, Any]) -> dict[str, Any]:
     cnt = _count(form, "n_heights")
     if isinstance(cnt, Err):
         return {"ok": False, "error": cnt.error}
-    hs = parse_heights(str(form["heights"]), du.value if du.value is not None else DEFAULT_U_HEIGHT_M)
+    hs = parse_heights(
+        str(form["heights"]), du.value if du.value is not None else DEFAULT_U_HEIGHT_M
+    )
     if isinstance(hs, Err):
         return {"ok": False, "error": hs.error}
     res = plan_heights(
-        hs.value, nominal_slope_v_per_m=slope.value, nominal_offset_v=off.value or 0.0,
-        saturation_v=sat.value, min_m=rng.value[0], max_m=rng.value[1], n_points=cnt.value,
+        hs.value,
+        nominal_slope_v_per_m=slope.value,
+        nominal_offset_v=off.value or 0.0,
+        saturation_v=sat.value,
+        min_m=rng.value[0],
+        max_m=rng.value[1],
+        n_points=cnt.value,
     )
     if isinstance(res, Err):
         _log.info("no height plan: %s", res.error)
         return {"ok": False, "error": str(res.error)}
     p = res.value
     return {
-        "ok": True, "advisory": True, "calibration": "heights plan (design estimate)",
-        "se_slope_v_per_m": p.se_slope_v_per_m, "se_offset_v": p.se_offset_v,
-        "rel_se_slope": p.rel_se_slope, "slope_known": p.slope_known,
-        "n_inventory": p.n_inventory, "n_usable": p.n_usable, "dropped_saturation": p.dropped_saturation,
+        "ok": True,
+        "advisory": True,
+        "calibration": "heights plan (design estimate)",
+        "se_slope_v_per_m": p.se_slope_v_per_m,
+        "se_offset_v": p.se_offset_v,
+        "rel_se_slope": p.rel_se_slope,
+        "slope_known": p.slope_known,
+        "n_inventory": p.n_inventory,
+        "n_usable": p.n_usable,
+        "dropped_saturation": p.dropped_saturation,
         "height_steps": [s.model_dump() for s in p.steps],
     }
 
@@ -251,7 +268,9 @@ def _count(form: dict[str, Any], key: str) -> Result[int | None, str]:
     return Ok(int(raw))
 
 
-def _range(form: dict[str, Any], lo: str, hi: str) -> Result[tuple[float | None, float | None], str]:
+def _range(
+    form: dict[str, Any], lo: str, hi: str
+) -> Result[tuple[float | None, float | None], str]:
     """Optional min/max pair (SI); blank means unbounded, min must be below max."""
     a = _num(form, lo, required=False, default=None)
     b = _num(form, hi, required=False, default=None)
@@ -263,16 +282,31 @@ def _range(form: dict[str, Any], lo: str, hi: str) -> Result[tuple[float | None,
     return Ok((a.value, b.value))
 
 
-WEIGHTS_NEED_CAL = (
-    "Weights not planned yet: they need the LVDT calibration. Hang the heights above, record height/volts, "
-    "enter those points (or a typed slope) under LVDT calibration, then plan again."
+#: Placeholder LVDT slope (V/m) when no calibration is entered: selection depends only on load
+#: spacing, so any nonzero slope orders hangs the same; volts are then not reported.
+UNCAL_SLOPE_V_PER_M = 1.0
+
+#: Saturation limit used without a calibration (volts are meaningless, so nothing saturates).
+UNCAL_SATURATION_V = 1e12
+
+UNCAL_NOTE = (
+    "No LVDT calibration entered: hangs are chosen from load spacing alone, with no saturation "
+    "check, and predicted volts are not shown. Enter a calibration for volts and saturation."
 )
 
 
-def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
-    """Turn a submitted form into the JSON reply: {'ok': True, ...plan} or {'ok': False, 'error': msg}.
+def _has_cal(form: dict[str, Any]) -> bool:
+    """True when the form carries calibration points or a typed slope."""
+    return bool(str(form.get("cal_points", "")).strip() or str(form.get("cal_slope", "")).strip())
 
-    The height inventory is planned first; its design slope/offset uncertainty then feeds the weight plan.
+
+def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
+    """Turn a submitted form into the JSON reply.
+
+    Returns {'ok': True, ...plan} or {'ok': False, 'error': msg}.
+
+    The height inventory is planned first; its design slope/offset uncertainty then feeds the
+    weight plan.
     """
     heights: dict[str, Any] | None = None
     if str(form.get("heights", "")).strip():
@@ -281,9 +315,6 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
             return heights
         if not str(form.get("weights", "")).strip():
             return heights
-        if not str(form.get("cal_points", "")).strip() and not str(form.get("cal_slope", "")).strip():
-            _log.info("weights pending: no LVDT calibration yet; returning the height plan only")
-            return {**heights, "weights_note": WEIGHTS_NEED_CAL}
     reply = _weights_reply(form, heights)
     if heights is not None and reply["ok"]:
         reply["heights_plan"] = heights
@@ -291,12 +322,17 @@ def plan_from_form(form: dict[str, Any]) -> dict[str, Any]:
 
 
 def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict[str, Any]:
-    """Plan the weights; with a height plan, a typed slope carries that plan's design uncertainty."""
+    """Plan the weights; with a height plan, a typed slope carries its design uncertainty."""
     nums: dict[str, float | None] = {}
     spec = {
-        "u_mass": (False, 0.0), "hangs": (False, None), "diameter": (True, None), "u_diameter": (False, 0.0),
-        "length": (True, None), "u_length": (False, 0.0), "cal_slope": (False, None),
-        "cal_offset": (False, 0.0), "saturation": (False, None),
+        "u_mass": (False, 0.0),
+        "diameter": (True, None),
+        "u_diameter": (False, 0.0),
+        "length": (True, None),
+        "u_length": (False, 0.0),
+        "cal_slope": (False, None),
+        "cal_offset": (False, 0.0),
+        "saturation": (False, None),
     }
     for key, (required, default) in spec.items():
         got = _num(form, key, required=required, default=default)
@@ -309,26 +345,45 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
             return {"ok": False, "error": "hangs must be a whole number of at least 1"}
         hangs = int(nums["hangs"])
     # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
-    cal = resolve_calibration(str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0)
-    if isinstance(cal, Err):
-        return {"ok": False, "error": cal.error}
-    cal_v = cal.value
-    if heights is not None and cal_v.source == "override":
-        cal_v = cal_v.model_copy(update={
-            "se_slope": float(heights["se_slope_v_per_m"] or 0.0), "se_offset": float(heights["se_offset_v"] or 0.0),
-        })
-        _log.info("weight plan uses height-plan design uncertainty slope=%g offset=%g", cal_v.se_slope, cal_v.se_offset)
+    uncal = not _has_cal(form)
+    if uncal:
+        _log.info("weight plan without calibration: placeholder slope, no saturation, no volts")
+        cal_v = Calibration(slope_v_per_m=UNCAL_SLOPE_V_PER_M, offset_v=0.0, source="override")
+        nums["saturation"] = UNCAL_SATURATION_V
+    else:
+        cal = resolve_calibration(
+            str(form.get("cal_points", "")), nums["cal_slope"], nums["cal_offset"] or 0.0
+        )
+        if isinstance(cal, Err):
+            return {"ok": False, "error": cal.error}
+        cal_v = cal.value
+    if heights is not None and not uncal and cal_v.source == "override":
+        cal_v = cal_v.model_copy(
+            update={
+                "se_slope": float(heights["se_slope_v_per_m"] or 0.0),
+                "se_offset": float(heights["se_offset_v"] or 0.0),
+            }
+        )
+        _log.info(
+            "weight plan uses height-plan design uncertainty slope=%g offset=%g",
+            cal_v.se_slope,
+            cal_v.se_offset,
+        )
     rng = _range(form, "min_mass", "max_mass")
     cnt = _count(form, "n_hangs")
     for got in (rng, cnt):
         if isinstance(got, Err):
             return {"ok": False, "error": got.error}
     built = build_request(
-        weights=str(form.get("weights", "")), u_mass=nums["u_mass"] or 0.0,
-        diameter=nums["diameter"] or 0.0, u_diameter=nums["u_diameter"] or 0.0,
-        length=nums["length"] or 0.0, u_length=nums["u_length"] or 0.0,
+        weights=str(form.get("weights", "")),
+        u_mass=nums["u_mass"] or 0.0,
+        diameter=nums["diameter"] or 0.0,
+        u_diameter=nums["u_diameter"] or 0.0,
+        length=nums["length"] or 0.0,
+        u_length=nums["u_length"] or 0.0,
         cal=cal_v,
-        saturation=nums["saturation"], captured=str(form.get("captured", "")),
+        saturation=nums["saturation"],
+        captured=str(form.get("captured", "")),
         config=PlanConfig(min_mass_kg=rng.value[0], max_mass_kg=rng.value[1], max_hangs=cnt.value),
     )
     if isinstance(built, Err):
@@ -341,7 +396,8 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
     return {
         "ok": True,
         "advisory": True,
-        "calibration": cal_v.summary(),
+        "calibration": UNCAL_NOTE if uncal else cal_v.summary(),
+        "uncalibrated": uncal,
         "cal": cal_v.model_dump(),
         "phase": p.phase.value,
         "n_inventory": p.n_inventory,
@@ -355,8 +411,8 @@ def _weights_reply(form: dict[str, Any], heights: dict[str, Any] | None) -> dict
                 "weights": "+".join(h.weight_ids),
                 "n_weights": len(h.weight_ids),
                 "tension_n": round(h.tension_n, 3),
-                "predicted_volts": round(h.predicted_volts, 3),
-                "u_volts": round(h.u_predicted_volts, 3),
+                "predicted_volts": None if uncal else round(h.predicted_volts, 3),
+                "u_volts": None if uncal else round(h.u_predicted_volts, 3),
                 "reason": h.reason,
             }
             for h in p.hangs
@@ -400,7 +456,9 @@ class _Handler(BaseHTTPRequestHandler):
                 raise ValueError("body must be a JSON object")
         except ValueError as exc:
             _log.warning("bad /plan body: %s", exc)
-            self._send(400, "application/json", json.dumps({"ok": False, "error": str(exc)}).encode())
+            self._send(
+                400, "application/json", json.dumps({"ok": False, "error": str(exc)}).encode()
+            )
             return
         self._send(200, "application/json", json.dumps(plan_from_form(form)).encode())
 
@@ -419,7 +477,9 @@ def make_server(port: int = 0) -> HTTPServer:
 def main(argv: list[str] | None = None) -> int:
     """Start the planner server, open the browser and serve until interrupted."""
     ap = argparse.ArgumentParser(description="Browser weight planner (advisory; saves nothing).")
-    ap.add_argument("--port", type=int, default=0, help="port to bind on 127.0.0.1 (default: a free one)")
+    ap.add_argument(
+        "--port", type=int, default=0, help="port to bind on 127.0.0.1 (default: a free one)"
+    )
     ap.add_argument("--no-browser", action="store_true", help="only print the URL")
     args = ap.parse_args(argv)
     logging.getLogger("sadi").setLevel(logging.WARNING)

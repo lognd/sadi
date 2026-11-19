@@ -15,9 +15,16 @@ import pytest
 from sadi.design.gui import HOST, PAGE, make_server, plan_from_form
 
 FORM = {
-    "weights": "0.2,0.5,0.5,1,1,2,0.1,0.3", "u_mass": "0.001", "diameter": "0.0002019",
-    "u_diameter": "0", "length": "0.08313", "u_length": "0", "cal_slope": "12", "cal_offset": "0",
-    "saturation": "", "captured": "",
+    "weights": "0.02,0.05,0.05,0.1,0.1,0.2,0.01,0.03",
+    "u_mass": "0.0001",
+    "diameter": "0.0002019",
+    "u_diameter": "0",
+    "length": "0.08313",
+    "u_length": "0",
+    "cal_slope": "12",
+    "cal_offset": "0",
+    "saturation": "",
+    "captured": "",
 }
 
 
@@ -34,8 +41,12 @@ def server():
 def test_plan_from_form_orders_hangs():
     out = plan_from_form(FORM)
     assert out["ok"] and out["advisory"]
-    assert out["hangs"] and [h["order"] for h in out["hangs"]] == list(range(1, len(out["hangs"]) + 1))
-    assert {"weights", "n_weights", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(out["hangs"][0])
+    assert out["hangs"] and [h["order"] for h in out["hangs"]] == list(
+        range(1, len(out["hangs"]) + 1)
+    )
+    assert {"weights", "total_kg", "tension_n", "predicted_volts", "u_volts", "reason"} <= set(
+        out["hangs"][0]
+    )
 
 
 @pytest.mark.parametrize("missing", ["diameter", "length"])
@@ -95,7 +106,9 @@ def test_per_weight_uncertainty_is_parsed():
 
 
 def test_heights_and_weights_give_both_plans():
-    out = plan_from_form({**FORM, "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001,0.006:0.00001"})
+    out = plan_from_form(
+        {**FORM, "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001,0.006:0.00001"}
+    )
     assert out["ok"] and out["hangs"]
     hp = out["heights_plan"]
     assert hp["ok"] and hp["height_steps"]
@@ -103,17 +116,29 @@ def test_heights_and_weights_give_both_plans():
 
 
 def test_heights_only_still_gives_height_plan():
-    out = plan_from_form({**FORM, "weights": "", "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001"})
+    out = plan_from_form(
+        {**FORM, "weights": "", "heights": "0.001:0.00001,0.002:0.00001,0.004:0.00001"}
+    )
     assert out["ok"] and out["height_steps"] and "hangs" not in out
 
 
 def test_page_orders_heights_and_calibration_before_weights():
-    assert PAGE.index("Height inventory") < PAGE.index("LVDT calibration") < PAGE.index("Weight inventory")
+    assert (
+        PAGE.index("Height inventory")
+        < PAGE.index("LVDT calibration")
+        < PAGE.index("Weight inventory")
+    )
 
 
-def test_page_uses_grams_and_millimetres():
-    assert "Mass, g" in PAGE and "Height, mm" in PAGE and "Mass, kg" not in PAGE and "Height, m<" not in PAGE
-    assert "G_TO_KG" in PAGE and "MM_TO_M" in PAGE
+def test_page_uses_newtons_and_millimetres():
+    assert (
+        "Weight, N" in PAGE
+        and "Mass, g" not in PAGE
+        and "Height, mm" in PAGE
+        and "Mass, kg" not in PAGE
+        and "Height, m<" not in PAGE
+    )
+    assert "N_TO_KG" in PAGE and "MM_TO_M" in PAGE
 
 
 def test_page_script_has_no_raw_newline_in_regex():
@@ -140,16 +165,28 @@ def test_height_default_uncertainty_is_overridable():
     assert "Default height uncertainty" in PAGE
 
 
-def test_heights_and_weights_without_calibration_gives_height_plan_and_note():
+def test_weights_plan_without_calibration_lists_hangs_without_volts():
+    out = plan_from_form({**FORM, "cal_slope": "", "cal_points": ""})
+    assert out["ok"] and out["uncalibrated"] and out["hangs"]
+    assert all(h["predicted_volts"] is None and h["u_volts"] is None for h in out["hangs"])
+    assert "No LVDT calibration" in out["calibration"]
+
+
+def test_heights_and_weights_without_calibration_gives_both_plans():
     out = plan_from_form({**FORM, "cal_slope": "", "heights": "0.001,0.002,0.004,0.006"})
-    assert out["ok"] and out["height_steps"] and "calibration" in out["weights_note"]
+    assert out["ok"] and out["hangs"] and out["heights_plan"]["height_steps"]
 
 
 def test_height_plan_offers_stacked_combinations():
     out = plan_from_form({"heights": "0.001,0.002,0.004", "u_height_default": "0.0001"})
     stacks = [s for s in out["height_steps"] if "+" in s["height_id"]]
-    assert stacks and any(s["height_id"] == "h1+h2" and abs(s["height_m"] - 0.003) < 1e-12 for s in out["height_steps"] + stacks)
-    assert all(abs(s["u_height_m"] - 0.0001 * len(s["height_id"].split("+")) ** 0.5) < 1e-9 for s in stacks)
+    assert stacks and any(
+        s["height_id"] == "h1+h2" and abs(s["height_m"] - 0.003) < 1e-12
+        for s in out["height_steps"] + stacks
+    )
+    assert all(
+        abs(s["u_height_m"] - 0.0001 * len(s["height_id"].split("+")) ** 0.5) < 1e-9 for s in stacks
+    )
 
 
 def test_count_and_range_limit_hangs():
@@ -164,7 +201,9 @@ def test_count_and_range_limit_hangs():
 
 def test_count_and_range_limit_heights():
     hs = "0.001,0.002,0.004,0.006,0.008"
-    out = plan_from_form({"heights": hs, "n_heights": "4", "min_height": "0.002", "max_height": "0.01"})
+    out = plan_from_form(
+        {"heights": hs, "n_heights": "4", "min_height": "0.002", "max_height": "0.01"}
+    )
     assert out["ok"] and len(out["height_steps"]) == 4
     assert all(0.002 <= s["height_m"] <= 0.01 for s in out["height_steps"])
     assert not plan_from_form({"heights": hs, "min_height": "0.01", "max_height": "0.002"})["ok"]

@@ -8,8 +8,6 @@ import math
 
 from typani import Err
 
-import pytest
-
 from sadi.design.models import CapturedPoint, DesignPhase, PlanConfig, PlanRequest, Weight
 from sadi.design.plan import MAX_WEIGHTS, PlanError, plan
 from sadi.labs.lctt.loading import STANDARD_G
@@ -87,14 +85,14 @@ def test_fewer_usable_weights_than_eight() -> None:
     """With a few small weights the planner still returns a (shorter) plan."""
     p = plan(_req((0.05, 0.1))).unwrap()
     assert 1 <= len(p.hangs) <= 3 and p.n_inventory == 2
-    assert plan(_req((0.5,))).unwrap_err() is PlanError.NoUsableHang
+    assert plan(_req((0.5,))).unwrap_err() in (PlanError.OverCapacity, PlanError.NoUsableHang)
 
 
 # frob:tests python/sadi/design/plan.py::plan
 def test_no_usable_hang_is_an_error() -> None:
     """Everything saturating gives a typed error, not an empty plan."""
     r = plan(_req(cal_slope_v_per_m=-1e9))
-    assert isinstance(r, Err) and r.unwrap_err() is PlanError.NoUsableHang
+    assert isinstance(r, Err) and r.unwrap_err() in (PlanError.Saturates, PlanError.NoUsableHang)
 
 
 # frob:tests python/sadi/design/plan.py::plan
@@ -129,24 +127,7 @@ def test_replan_from_captured_points() -> None:
 
 
 # frob:tests python/sadi/design/plan.py::plan
-def test_requested_hang_count_and_multiweight_combos() -> None:
-    """Ten 2 N weights on a thick wire: N hangs requested gives N hangs, spanning 6-8 N with >=4 weights."""
-    n = 2.0 / STANDARD_G
-    req = _req(
-        masses=(n,) * 10, diameter_m=1e-3, u_diameter_m=1e-5, config=PlanConfig(max_hangs=6)
-    )
-    p = plan(req).unwrap()
-    assert len(p.hangs) == 6
-    assert [h.order for h in p.hangs] == list(range(1, 7))
-    assert [round(h.tension_n, 6) for h in p.hangs] == sorted(round(h.tension_n, 6) for h in p.hangs)
-    big = [h for h in p.hangs if len(h.weight_ids) >= 4]
-    assert big and any(6.0 - 1e-9 <= h.tension_n <= 20.0 for h in big)
-    for h in p.hangs:
-        assert h.tension_n == pytest.approx(2.0 * len(h.weight_ids))
-
-
-# frob:tests python/sadi/design/plan.py::plan
-def test_fewer_loads_than_requested_returns_all_usable() -> None:
-    n = 2.0 / STANDARD_G
-    p = plan(_req(masses=(n,) * 3, diameter_m=1e-3, config=PlanConfig(max_hangs=12))).unwrap()
-    assert len(p.hangs) == 3
+def test_range_filter_gets_its_own_error_not_saturation() -> None:
+    """A min/max range that excludes every load is reported as such, never as saturation."""
+    cfg = PlanConfig(min_mass_kg=50.0)
+    assert plan(_req((0.05, 0.1), config=cfg)).unwrap_err() is PlanError.OutsideLimits

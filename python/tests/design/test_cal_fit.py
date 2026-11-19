@@ -15,8 +15,13 @@ from sadi.design.gui import plan_from_form
 PTS = "0.001:0.1,0.002:0.21,0.003:0.29,0.004:0.41"
 _WIRE = ["--weights", "0.1,0.2,0.5", "--length", "0.083"]
 FORM = {
-    "weights": "0.1,0.2,0.5", "u_mass": "0", "diameter": "0.0002019", "length": "0.08313",
-    "cal_points": PTS, "cal_slope": "", "cal_offset": "0",
+    "weights": "0.1,0.2,0.5",
+    "u_mass": "0",
+    "diameter": "0.0002019",
+    "length": "0.08313",
+    "cal_points": PTS,
+    "cal_slope": "",
+    "cal_offset": "0",
 }
 
 
@@ -52,7 +57,9 @@ def test_degenerate_points_are_clear_errors(pts):
 # frob:tests python/sadi/design/cal_fit.py::Calibration.summary
 def test_override_is_labelled_and_exclusive():
     res = resolve_calibration("", 12.0, 0.5)
-    assert isinstance(res, Ok) and res.value.source == "override" and "OVERRIDE" in res.value.summary()
+    assert (
+        isinstance(res, Ok) and res.value.source == "override" and "OVERRIDE" in res.value.summary()
+    )
     assert isinstance(resolve_calibration(PTS, 12.0), Err)
 
 
@@ -82,16 +89,18 @@ def test_gui_fit_and_uncertainty_propagates():
     assert all(h["u_volts"] == 0 for h in ovr["hangs"])
 
 
-def test_gui_no_calibration_is_error():
+def test_gui_no_calibration_still_plans_without_volts():
     out = plan_from_form({**FORM, "cal_points": ""})
-    assert not out["ok"] and "calibration" in out["error"]
+    assert out["ok"] and out["uncalibrated"]
 
 
 # frob:tests python/sadi/design/cal_fit.py::parse_cal_points
 def test_height_uncertainty_parsed_and_weighted():
     assert parse_cal_points("0.1:1:0.001,0.2:2") == Ok([(0.1, 1.0, 0.001), (0.2, 2.0, None)])
     plain = resolve_calibration(PTS, None)
-    wtd = resolve_calibration("0.001:0.1:0.0001,0.002:0.21:0.0001,0.003:0.29:0.0002,0.004:0.41:0.0001", None)
+    wtd = resolve_calibration(
+        "0.001:0.1:0.0001,0.002:0.21:0.0001,0.003:0.29:0.0002,0.004:0.41:0.0001", None
+    )
     assert isinstance(plain, Ok) and isinstance(wtd, Ok)
     assert wtd.value.se_slope != plain.value.se_slope and wtd.value.se_slope > 0
     mixed = resolve_calibration("0.001:0.1:0.0001,0.002:0.21,0.003:0.29,0.004:0.41", None)

@@ -385,8 +385,10 @@ def _write_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeEr
     """Render the 49-column lctt CSV from the raw session events carried on `run` (in memory)."""
     events = [e for e in run.events if isinstance(e, _LIVE_EVENT_TYPES)]
     doc = build_document(
-        events, date=datetime.now(UTC),
-        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+        events,
+        date=datetime.now(UTC),
+        operator=run.meta.get("operator", ""),
+        description=run.meta.get("description", ""),
     )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(doc, Err):
         _log.warning("lctt csv export refused: %s", doc.danger_err)
@@ -403,8 +405,11 @@ def _live_events(run: RunState) -> list[Any]:
 def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
     """Render a PARTIAL lctt CSV from whatever has been captured so far (calibration suffices)."""
     doc = build_document(
-        _live_events(run), date=datetime.now(UTC), partial=True,
-        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+        _live_events(run),
+        date=datetime.now(UTC),
+        partial=True,
+        operator=run.meta.get("operator", ""),
+        description=run.meta.get("description", ""),
     )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(doc, Err):
         _log.warning("lctt partial csv export refused: %s", doc.danger_err)
@@ -416,8 +421,10 @@ def _write_csv_partial(run: RunState, result: AnalysisResult) -> Result[bytes, C
 def _write_calibration_csv(run: RunState, result: AnalysisResult) -> Result[bytes, ComputeError]:
     """Render the standalone calibration CSV (points plus fit) from the session events."""
     out = build_calibration_csv(
-        _live_events(run), date=datetime.now(UTC),
-        operator=run.meta.get("operator", ""), description=run.meta.get("description", ""),
+        _live_events(run),
+        date=datetime.now(UTC),
+        operator=run.meta.get("operator", ""),
+        description=run.meta.get("description", ""),
     )  # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
     if isinstance(out, Err):
         _log.warning("lctt calibration csv export refused: %s", out.danger_err)

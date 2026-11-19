@@ -15,8 +15,16 @@ from sadi.server import device_open
 
 
 def _argv(root: Path, *extra: str) -> list[str]:
-    return ["serve", "--skip-preflight", "--no-browser", "--port", "0", "--data-root",
-            str(root), *extra]
+    return [
+        "serve",
+        "--skip-preflight",
+        "--no-browser",
+        "--port",
+        "0",
+        "--data-root",
+        str(root),
+        *extra,
+    ]
 
 
 # frob:tests python/sadi/launcher.py::_serve
@@ -45,9 +53,7 @@ def test_no_board_serves_disconnected_and_writes_nothing(
 
 
 # frob:tests python/sadi/launcher.py::_serve
-def test_unwritable_data_root_still_exits(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_unwritable_data_root_still_exits(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The no-device fallback never masks a data-root failure."""
     monkeypatch.setattr(device_open, "open_real_device", lambda _p: Err("board missing"))
     monkeypatch.setattr(launcher, "data_root_unwritable_hint", lambda _r: "read-only")

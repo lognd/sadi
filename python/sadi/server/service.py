@@ -23,7 +23,6 @@ from pydantic import BaseModel
 from typani import Err, Ok, Result, propagate
 
 from sadi.core.lab import LabId, LabModule, StepId
-from sadi.labs.lctt.capture import BlockError, BlockStats
 from sadi.core.point_inputs import (
     PHASE_CALIBRATION,
     PHASE_SETUP,
@@ -37,6 +36,7 @@ from sadi.core.point_inputs import (
 )
 from sadi.core.registry import LabRegistry
 from sadi.core.wizard import Command, History, Wizard, WizardError, WizardState
+from sadi.labs.lctt.capture import BlockError, BlockStats
 from sadi.labs.lctt.guidance import Phase
 from sadi.logging_setup import get_logger
 from sadi.server.routes.problem import (
@@ -81,7 +81,8 @@ from sadi.synthetic.provenance import REAL, SYNTHETIC, UNKNOWN, DataProvenance
 
 _log = get_logger(__name__)
 
-#: Coverage factor k of the load-point voltage uncertainty U_V = k * sd (95 %, loading.py TWO_S rule).
+#: Coverage factor k of the load-point voltage uncertainty U_V = k * sd (95 %, loading.py TWO_S
+#: rule).
 LOAD_VOLTS_K = 2.0
 
 #: Seconds a write waits for fsync before the request fails (data stays queued, not lost).
@@ -107,7 +108,8 @@ _LIVE_INPUT_KEYS = frozenset({"volts", "mean", "sd", "n", "volts_sd", "u_volts"}
 
 
 def _capture_digest(body: CaptureBody) -> str:
-    """Stable digest of what the operator chose (phase, typed inputs, forced_early), not live data."""
+    """Stable digest of what the operator chose (phase, typed inputs, forced_early), not live
+    data."""
     # frob:ticket 01M72VM5RSJM7EMREPXDYDN79W
     chosen = {k: v for k, v in body.inputs.items() if k not in _LIVE_INPUT_KEYS}
     keyed = {"phase": body.phase, "inputs": chosen, "forced_early": body.forced_early}
@@ -243,7 +245,8 @@ class SessionService:
         self._acq_state: Callable[[], tuple[str | None, str | None]] | None = None
 
     def provenance(self) -> DataProvenance:
-        """Provenance of the open session (synthetic, else unknown, else real); process default when none."""
+        """Provenance of the open session (synthetic, else unknown, else real); process default when
+        none."""
         # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
         if self._synthetic:
             return SYNTHETIC
@@ -273,7 +276,8 @@ class SessionService:
         self._block_source = source
 
     def _apply_block(self, body: CaptureBody) -> Result[dict[str, Any], ApiProblem]:
-        """Inputs with tare mean/sd/n, calibration volts or load volts/sd/U replaced by raw block stats."""
+        """Inputs with tare mean/sd/n, calibration volts or load volts/sd/U replaced by raw block
+        stats."""
         inputs = dict(body.inputs)
         # frob:ticket 01M72YAG5JF05K4W68BCPGKVGP
         if self._block_source is None or body.phase in (PHASE_SPECIMEN, PHASE_SETUP):
@@ -306,7 +310,8 @@ class SessionService:
 
     # frob:ticket 01M724E09H9X4DDW9ATK14JQ5C
     def finish_acquisition(self) -> bool:
-        """Drain raw blocks into the WAL and stop streaming; True when it ended cleanly or is unwired.
+        """Drain raw blocks into the WAL and stop streaming; True when it ended cleanly or is
+        unwired.
 
         Idempotent and data-safe: nothing is deleted or truncated, the session stays open, and a
         fault is logged and kept for the status API, never raised into the request.
@@ -366,7 +371,8 @@ class SessionService:
         """Read session `name` from disk without a writer, lock, version, WAL append or device.
 
         Refuses the session this service has open and one whose writer is alive elsewhere;
-        a corrupt log is a problem too, but a torn tail (crash) exports the verified prefix. Nothing under the session directory is modified.
+        a corrupt log is a problem too, but a torn tail (crash) exports the verified prefix. Nothing
+        under the session directory is modified.
         """
         with self._lock:
             if self._open is not None and self._open.handle.path.name == name:
@@ -851,7 +857,8 @@ class SessionService:
 
     # frob:ticket 01M71YY12XP2ZDM402A00A7RJW
     def _snapshot(self, cur: _Open, forced: bool) -> None:
-        """Best-effort atomic snapshot of the live state (no SNAPSHOT_REF); failures are only logged."""
+        """Best-effort atomic snapshot of the live state (no SNAPSHOT_REF); failures are only
+        logged."""
         replayed = cur.replayer.state()
         if replayed.is_err:
             _log.warning("snapshot skipped, replay failed: %s", replayed.danger_err)

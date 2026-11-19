@@ -36,11 +36,13 @@ def test_load_point_gets_block_sd_and_two_sd_uncertainty(tmp_path) -> None:  # t
     buf.extend([2.0, 4.0] * 500)
     svc.set_block_source(buf.stats)
     try:
-        body = CaptureBody.model_validate({
-            "phase": "elastic",
-            "inputs": {"volts": 9.0, "mass_kg": 0.5, "volts_sd": 7.0, "u_volts": 7.0},
-            "window": {"first_raw_seq": 1, "last_raw_seq": 5},
-        })
+        body = CaptureBody.model_validate(
+            {
+                "phase": "elastic",
+                "inputs": {"volts": 9.0, "mass_kg": 0.5, "volts_sd": 7.0, "u_volts": 7.0},
+                "window": {"first_raw_seq": 1, "last_raw_seq": 5},
+            }
+        )
         inputs = svc._apply_block(body).unwrap()  # noqa: SLF001
         sd = buf.stats().unwrap().sd
         assert inputs["volts"] == 3.0
@@ -55,8 +57,11 @@ def test_csv_header_carries_operator_and_description() -> None:
     """RunState.meta operator/description reach the CSV metadata rows."""
     run = RunState(
         session_id="s",
-        events=(CalPoint(volts=1.0, height=0.01), CalPoint(volts=2.0, height=0.02),
-                CalPoint(volts=3.1, height=0.03)),
+        events=(
+            CalPoint(volts=1.0, height=0.01),
+            CalPoint(volts=2.0, height=0.02),
+            CalPoint(volts=3.1, height=0.03),
+        ),
         meta={"operator": "Ada", "description": "cu wire 1"},
     )
     out = _write_csv_partial(run, None).unwrap()  # type: ignore[arg-type]

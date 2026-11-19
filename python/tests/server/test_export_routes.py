@@ -163,7 +163,8 @@ def test_real_lctt_lab_lists_csv_and_refuses_empty_session(tmp_path: Path) -> No
 
 # frob:tests python/sadi/server/routes/export.py::_save_copy
 def test_download_is_also_kept_in_session_folder(client: TestClient, tmp_path: Path) -> None:
-    """Audit1 #22: a download is written atomically under exports/ with a sidecar; never overwritten."""
+    """Audit1 #22: a download is written atomically under exports/ with a sidecar; never
+    overwritten."""
     _open(client)
     first = client.get("/api/export/points")
     second = client.get("/api/export/points")

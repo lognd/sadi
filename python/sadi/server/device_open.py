@@ -23,7 +23,8 @@ POSIX_DEFAULT_PORT: Final[str] = "/dev/ttyUSB0"
 
 
 def resolve_device_port(flag: str | None, env: Mapping[str, str] | None = None) -> str | None:
-    """Pick the serial port: the flag, else SADI_PORT, else /dev/ttyUSB0 on POSIX (None = auto-detect)."""
+    """Pick the serial port: the flag, else SADI_PORT, else /dev/ttyUSB0 on POSIX (None = auto-
+    detect)."""
     values = os.environ if env is None else env
     chosen = flag or values.get(PORT_ENV, "").strip()
     if chosen:

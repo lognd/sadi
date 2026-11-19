@@ -513,7 +513,9 @@ def test_app_logs_fragment_failed_skip_at_warning(
 
     crashed = tmp_path / "crashed.v001"
     skip = spill.FragmentFailedSkip(spill=tmp_path / "s.wal", crashed_dirs=(crashed,))
-    monkeypatch.setattr(app_mod, "import_all_spills", lambda _root, **_kw: [(skip.spill, spill.Ok(skip))])
+    monkeypatch.setattr(
+        app_mod, "import_all_spills", lambda _root, **_kw: [(skip.spill, spill.Ok(skip))]
+    )
     cfg = type("C", (), {"data_root": tmp_path, "synthetic": False})()
     with caplog.at_level("INFO"):
         assert app_mod._import_spills(cfg) == 0  # type: ignore[arg-type]

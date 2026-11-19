@@ -27,7 +27,8 @@ _log = get_logger(__name__)
 
 
 def parse_weights(text: str, u_mass: float) -> Result[list[Weight], str]:
-    """Parse 'kg' or 'kg:u' items into weights w1, w2, ...; a missing u falls back to u_mass; duplicates stay distinct."""
+    """Parse 'kg' or 'kg:u' items into weights w1, w2, ...; a missing u falls back to u_mass;
+    duplicates stay distinct."""
     parts = [t.strip() for t in text.replace(";", ",").replace("\n", ",").split(",")]
     out: list[Weight] = []
     for i, part in enumerate(p for p in parts if p):
@@ -79,11 +80,18 @@ def build_request(
     try:
         return Ok(
             PlanRequest(
-                weights=tuple(ws.value), diameter_m=diameter, u_diameter_m=u_diameter,
-                length_m=length, u_length_m=u_length,
-                cal_slope_v_per_m=cal.slope_v_per_m, cal_offset_v=cal.offset_v,
-                u_cal_slope_v_per_m=cal.se_slope, u_cal_offset_v=cal.se_offset, cal_cov=cal.cov,
-                saturation_v=saturation, captured=tuple(cs.value),
+                weights=tuple(ws.value),
+                diameter_m=diameter,
+                u_diameter_m=u_diameter,
+                length_m=length,
+                u_length_m=u_length,
+                cal_slope_v_per_m=cal.slope_v_per_m,
+                cal_offset_v=cal.offset_v,
+                u_cal_slope_v_per_m=cal.se_slope,
+                u_cal_offset_v=cal.se_offset,
+                cal_cov=cal.cov,
+                saturation_v=saturation,
+                captured=tuple(cs.value),
                 **({} if config is None else {"config": config}),
             )
         )
@@ -120,7 +128,9 @@ def _run_heights(args: argparse.Namespace) -> HeightPlan | None:
         sys.stdout.write(f"No plan: {hs.error}\n")
         return None
     res = plan_heights(
-        hs.value, nominal_slope_v_per_m=args.cal_slope, nominal_offset_v=args.cal_offset,
+        hs.value,
+        nominal_slope_v_per_m=args.cal_slope,
+        nominal_offset_v=args.cal_offset,
         saturation_v=args.saturation,
     )
     if isinstance(res, Err):
@@ -133,25 +143,46 @@ def _run_heights(args: argparse.Namespace) -> HeightPlan | None:
 def main(argv: list[str] | None = None) -> int:
     """Print the planned hang order as a table; non-zero exit when no plan exists."""
     ap = argparse.ArgumentParser(description="Plan which weights to hang, in order.")
-    ap.add_argument("--heights", default="",
-                    help="height inventory h:u,... (m); plans which heights to calibrate with (--cal-slope optional)")
-    ap.add_argument("--u-height", type=float, default=DEFAULT_U_HEIGHT_M,
-                    help="uncertainty for heights entered without one, m (default 1e-4 = 0.1 mm)")
-    ap.add_argument("--weights", default="", help="comma list of weight masses in kg, e.g. 0.1,0.1,0.2")
+    ap.add_argument(
+        "--heights",
+        default="",
+        help="height inventory h:u,... (m); plans which heights to calibrate with "
+        "(--cal-slope optional)",
+    )
+    ap.add_argument(
+        "--u-height",
+        type=float,
+        default=DEFAULT_U_HEIGHT_M,
+        help="uncertainty for heights entered without one, m (default 1e-4 = 0.1 mm)",
+    )
+    ap.add_argument(
+        "--weights", default="", help="comma list of weight masses in kg, e.g. 0.1,0.1,0.2"
+    )
     ap.add_argument("--u-mass", type=float, default=0.0, help="mass uncertainty per weight, kg")
     ap.add_argument("--diameter", type=float, default=2.019e-4, help="wire diameter, m")
     ap.add_argument("--u-diameter", type=float, default=0.0, help="diameter uncertainty, m")
     ap.add_argument("--length", type=float, default=None, help="gauge length L0, m")
     ap.add_argument("--u-length", type=float, default=0.0, help="L0 uncertainty, m")
-    ap.add_argument("--cal-points", default="", help="calibration points height_m:volts,... (>= 3; fitted)")
-    ap.add_argument("--cal-slope", type=float, default=None,
-                    help="OVERRIDE: typed LVDT slope, V per m (skips the fit; no uncertainty)")
-    ap.add_argument("--cal-offset", type=float, default=0.0, help="OVERRIDE offset, V (with --cal-slope only)")
+    ap.add_argument(
+        "--cal-points", default="", help="calibration points height_m:volts,... (>= 3; fitted)"
+    )
+    ap.add_argument(
+        "--cal-slope",
+        type=float,
+        default=None,
+        help="OVERRIDE: typed LVDT slope, V per m (skips the fit; no uncertainty)",
+    )
+    ap.add_argument(
+        "--cal-offset", type=float, default=0.0, help="OVERRIDE offset, V (with --cal-slope only)"
+    )
     ap.add_argument("--saturation", type=float, default=None, help="saturation limit, V")
-    ap.add_argument("--captured", default="", help="already-hung points to replan from: N:volts,N:volts")
-    ap.add_argument("--hangs", type=int, default=None, help="number of hangs wanted; omit for the advisory early stop")
+    ap.add_argument(
+        "--captured", default="", help="already-hung points to replan from: kg:volts,kg:volts"
+    )
     args = ap.parse_args(argv)
-    logging.getLogger("sadi").setLevel(logging.WARNING)  # keep the table readable; errors still show
+    logging.getLogger("sadi").setLevel(
+        logging.WARNING
+    )  # keep the table readable; errors still show
     logging.getLogger("plan").setLevel(logging.WARNING)
     logging.getLogger("design").setLevel(logging.WARNING)
     hplan: HeightPlan | None = None
@@ -172,13 +203,25 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     cal_v = cal.value
     if hplan is not None and cal_v.source == "override":
-        cal_v = cal_v.model_copy(update={"se_slope": hplan.se_slope_v_per_m or 0.0, "se_offset": hplan.se_offset_v or 0.0})
+        cal_v = cal_v.model_copy(
+            update={
+                "se_slope": hplan.se_slope_v_per_m or 0.0,
+                "se_offset": hplan.se_offset_v or 0.0,
+            }
+        )
         _log.info("weight plan uses height-plan design uncertainty")
         sys.stdout.write("note: the slope uncertainty below is the height plan's design estimate\n")
     sys.stdout.write(cal_v.summary() + "\n")
     built = build_request(
-        weights=args.weights, u_mass=args.u_mass, diameter=args.diameter, u_diameter=args.u_diameter,
-        length=args.length, u_length=args.u_length, cal=cal_v, saturation=args.saturation, captured=args.captured,
+        weights=args.weights,
+        u_mass=args.u_mass,
+        diameter=args.diameter,
+        u_diameter=args.u_diameter,
+        length=args.length,
+        u_length=args.u_length,
+        cal=cal_v,
+        saturation=args.saturation,
+        captured=args.captured,
     )
     if isinstance(built, Err):
         sys.stdout.write(f"No plan: {built.error}\n")
@@ -191,13 +234,15 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     p = res.value
     sys.stdout.write(
-        f"phase={p.phase} inventory={p.n_inventory} achievable={p.n_achievable} usable={p.n_usable} "
+        f"phase={p.phase} inventory={p.n_inventory} achievable={p.n_achievable} "
+        f"usable={p.n_usable} "
         f"dropped(sat={p.dropped_saturation}, capacity={p.dropped_capacity})\n"
     )
     sys.stdout.write("#  n  hang (weights)            tension_N  pred_V   +/-V     reason\n")
     for h in p.hangs:
         sys.stdout.write(
-            f"{h.order:<2} {len(h.weight_ids):<2} {'+'.join(h.weight_ids):<24} {h.tension_n:9.3f}  "
+            f"{h.order:<2} {'+'.join(h.weight_ids):<24} {h.total_mass_kg:8.4f}  "
+            f"{h.tension_n:8.3f}  "
             f"{h.predicted_volts:7.3f}  {h.u_predicted_volts:6.3f}  {h.reason}\n"
         )
     return 0

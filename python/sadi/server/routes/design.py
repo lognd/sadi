@@ -55,7 +55,8 @@ MIN_ELASTIC = 3
 
 
 def offset_volts(views: list[PointView]) -> tuple[float, None] | tuple[None, ReasonCode]:
-    """0.2 % offset in volts from the recorded calibration; (None, reason) when it is not derivable."""
+    """0.2 % offset in volts from the recorded calibration; (None, reason) when it is not
+    derivable."""
     if len(design_obs(views, DesignPhase.ELASTIC)) < MIN_ELASTIC:
         return None, "no_elastic_fit"
     cal = design_obs(views, DesignPhase.LVDT_CAL)

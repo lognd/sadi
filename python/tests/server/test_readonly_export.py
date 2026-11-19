@@ -1,4 +1,5 @@
-"""Read-only export of a closed session: no writer, version, WAL append or device; files untouched."""
+"""Read-only export of a closed session: no writer, version, WAL append or device; files
+untouched."""
 
 # frob:ticket 01M724AKTJNNRY06637VBQ0A3E
 
@@ -148,7 +149,8 @@ def test_corrupt_session_is_refused_and_untouched(client: TestClient, tmp_path: 
 # frob:tests python/sadi/server/service.py::SessionService.read_closed
 # frob:tests python/sadi/server/routes/export.py::make_export_router
 def test_torn_tail_exports_verified_prefix_with_header(client: TestClient, tmp_path: Path) -> None:
-    """A crash-style torn tail still downloads the verified prefix, flagged by a header, untouched."""
+    """A crash-style torn tail still downloads the verified prefix, flagged by a header,
+    untouched."""
     name = _closed(client)
     sdir = tmp_path / "sessions" / name
     seg = sorted((sdir / "wal").iterdir())[-1]

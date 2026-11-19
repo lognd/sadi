@@ -136,7 +136,9 @@ def make_stress_strain_router(
         res = await run_in_threadpool(refit, loaded.value, req.first, req.last)
         if not isinstance(res, Ok):
             return _fail(res.unwrap_err())
-        stamp = provenance() if callable(provenance) else provenance  # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
+        stamp = (
+            provenance() if callable(provenance) else provenance
+        )  # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
         return res.value.model_copy(update={"provenance": stamp})
 
     return router

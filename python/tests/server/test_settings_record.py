@@ -60,4 +60,3 @@ def test_fresh_session_wal_has_settings_before_raw(tmp_path: Path) -> None:
             s = SettingsV1.model_validate_json(r.danger_ok.payload)
             keys.add(f"{s.scope}/{s.key}")
     assert {"device/adc_full_scale_v", "acquisition/decimation", "device/kind"} <= keys
-

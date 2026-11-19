@@ -29,18 +29,26 @@ def test_parse_weights_rejects_garbage():
 
 
 def test_parse_captured_roundtrip_and_errors():
-    res = parse_captured("1:0.5,3:1.4")  # newtons:volts
-    assert isinstance(res, Ok)
-    assert [c.mass_kg * STANDARD_G for c in res.value] == pytest.approx([1.0, 3.0])
-    assert [c.volts for c in res.value] == [0.5, 1.4]
+    res = parse_captured("0.1:0.5,0.3:1.4")
+    assert isinstance(res, Ok) and [(c.mass_kg, c.volts) for c in res.value] == [
+        (0.1, 0.5),
+        (0.3, 1.4),
+    ]
     assert isinstance(parse_captured("0.1"), Err)
     assert parse_captured("") == Ok([])
 
 
 def test_build_request_reports_invalid_geometry():
     res = build_request(
-        weights="0.1", u_mass=0.0, diameter=-1.0, u_diameter=0.0, length=0.1, u_length=0.0,
-        cal=Calibration(slope_v_per_m=1.0, offset_v=0.0, source="override"), saturation=None, captured="",
+        weights="0.1",
+        u_mass=0.0,
+        diameter=-1.0,
+        u_diameter=0.0,
+        length=0.1,
+        u_length=0.0,
+        cal=Calibration(slope_v_per_m=1.0, offset_v=0.0, source="override"),
+        saturation=None,
+        captured="",
     )
     assert isinstance(res, Err)
 

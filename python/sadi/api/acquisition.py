@@ -137,7 +137,8 @@ class AcquisitionDriver:
         return Ok(None)
 
     def stop(self) -> Result[int, AcquisitionError | DriverFault]:
-        """Stop the loops, ingest the device's trailing blocks (even if its stop failed), drain the pipeline.
+        """Stop the loops, ingest the device's trailing blocks (even if its stop failed), drain the
+        pipeline.
 
         Returns the number of trailing blocks ingested; a device stop error is returned as a
         `DriverFault` (blocks already ingested stay saved).

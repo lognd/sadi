@@ -33,9 +33,7 @@ def test_mass_in_grams_is_rejected_with_gram_hint() -> None:
 # frob:tests python/sadi/labs/lctt/lab.py::calibration_gate
 def test_gate_blocks_mm_slip_and_names_worst_point() -> None:
     """Heights 1, .002, .003, .004 give a poor fit; the message names the worst point."""
-    pts = [
-        {"volts": 0.1 * (i + 1), "height": h} for i, h in enumerate([1.0, 0.002, 0.003, 0.004])
-    ]
+    pts = [{"volts": 0.1 * (i + 1), "height": h} for i, h in enumerate([1.0, 0.002, 0.003, 0.004])]
     why = calibration_gate(pts)
     assert why is not None and "point 1" in why
 

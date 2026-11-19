@@ -112,8 +112,14 @@ def test_reconnect_failure_is_a_409_with_hint(tmp_path: Path) -> None:
     dev = DeviceService(DeviceSource(kind="serial", port="/dev/does-not-exist"))
     live = LiveAcquisition(dev, Bus(), watch_poll_s=3600.0)
     app = create_app(
-        AppSettings(data_root=tmp_path, labs=labs, device=dev, bus=live.bus, live=live,
-                    require_root_lock=False)
+        AppSettings(
+            data_root=tmp_path,
+            labs=labs,
+            device=dev,
+            bus=live.bus,
+            live=live,
+            require_root_lock=False,
+        )
     )
     with TestClient(app) as c:
         got = c.post("/api/device/reconnect")

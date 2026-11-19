@@ -226,7 +226,8 @@ class StreamHub:
         return self._simulated is not None and self._simulated()
 
     def _current_provenance(self) -> DataProvenance:
-        """Provenance of the open session when a service is attached, else the constructor default."""
+        """Provenance of the open session when a service is attached, else the constructor
+        default."""
         # frob:ticket 01M72V8SNA08E3QD12A1TSFDV3
         return self._sessions.provenance() if self._sessions is not None else self._provenance
 
@@ -353,7 +354,11 @@ def make_ws_router(hub: StreamHub) -> APIRouter:
                     await ws.send_text(json.dumps(client.msgs.popleft()))
                     busy = True
                 while client.envelopes:
-                    await ws.send_bytes(encode_result(await asyncio.to_thread(hub.next_seq), client.envelopes.popleft()))
+                    await ws.send_bytes(
+                        encode_result(
+                            await asyncio.to_thread(hub.next_seq), client.envelopes.popleft()
+                        )
+                    )
                     busy = True
                 while client.frames:
                     seq, f = client.frames.popleft()

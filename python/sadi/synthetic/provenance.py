@@ -1,4 +1,5 @@
-"""Data provenance stamp: real, synthetic or unknown, carried on every session, export and payload."""
+"""Data provenance stamp: real, synthetic or unknown, carried on every session, export and
+payload."""
 
 # frob:ticket 01M71SYG3H3X7GJT21TE6MY8YC
 from __future__ import annotations
@@ -49,7 +50,8 @@ PROVENANCE_HEADER: Final = "X-Sadi-Provenance"
 
 
 class DataProvenance(BaseModel):
-    """Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the stamp cannot be dropped."""
+    """Where data came from (real, synthetic or unknown); `synthetic` is locked to `source` so the
+    stamp cannot be dropped."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -77,9 +79,7 @@ REAL: Final = DataProvenance()
 SYNTHETIC: Final = DataProvenance(
     source="synthetic", synthetic=True, label=SYNTHETIC_LABEL, warning=SYNTHETIC_WARNING
 )
-UNKNOWN: Final = DataProvenance(
-    source="unknown", label=UNKNOWN_LABEL, warning=UNKNOWN_WARNING
-)
+UNKNOWN: Final = DataProvenance(source="unknown", label=UNKNOWN_LABEL, warning=UNKNOWN_WARNING)
 
 
 def stamp_export(body: bytes, media_type: str, prov: DataProvenance) -> bytes:

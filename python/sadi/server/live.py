@@ -124,7 +124,9 @@ class _Decimated:
 class _DecimatingSource:
     """Block source adapter handing the driver decimated views of the device's blocks."""
 
-    def __init__(self, device: DeviceService, step: int, block: RawBlockBuffer | None = None) -> None:
+    def __init__(
+        self, device: DeviceService, step: int, block: RawBlockBuffer | None = None
+    ) -> None:
         """Adapt `device`, decimating by `step`; undecimated volts also feed `block`."""
         self._device = device
         self._step = step
@@ -548,7 +550,8 @@ class LiveAcquisition:
 
     @property
     def firmware(self) -> str:
-        """Firmware string reported by the device, or "unknown" (frob:ticket 01M71T683VDS38T2GYYW9SXT5B)."""
+        """Firmware string reported by the device, or "unknown" (frob:ticket
+        01M71T683VDS38T2GYYW9SXT5B)."""
         return getattr(self._device, "firmware", None) or "unknown"
 
     @property

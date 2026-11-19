@@ -46,6 +46,7 @@ def test_indicator_tracks_open_session_writer(tmp_path: Path) -> None:
 # frob:tests python/sadi/launcher.py::_serve_app
 def test_sim_device_serves_synthetic_provenance(tmp_path: Path) -> None:
     """A simulated device makes /api/health and sessions report synthetic, not real."""
+
     class Dev:
         status = "simulated"
         fault = None
@@ -59,9 +60,7 @@ def test_sim_device_serves_synthetic_provenance(tmp_path: Path) -> None:
         with TestClient(app) as c:
             seen["health"] = c.get("/api/health").json()
 
-    args = argparse.Namespace(
-        recover_stale=False, web_dist=None, host="127.0.0.1", no_browser=True
-    )
+    args = argparse.Namespace(recover_stale=False, web_dist=None, host="127.0.0.1", no_browser=True)
     code = launcher._serve_app(args, serve, tmp_path, 8000, Dev(), False)  # type: ignore[arg-type]
     assert code == 0
     assert seen["health"]["provenance"]["synthetic"] is True

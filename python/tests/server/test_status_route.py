@@ -30,7 +30,11 @@ def _client(root: Path, src: _Src | None) -> TestClient:
 def test_status_reports_live_values(tmp_path: Path) -> None:
     """Firmware, rate and the given root are returned."""
     body = _client(tmp_path, _Src()).get("/api/status").json()
-    assert body == {"firmware": "fw-1.2", "sample_rate_hz": 250.0, "data_root": str(tmp_path.resolve())}
+    assert body == {
+        "firmware": "fw-1.2",
+        "sample_rate_hz": 250.0,
+        "data_root": str(tmp_path.resolve()),
+    }
 
 
 def test_status_without_live_is_null(tmp_path: Path) -> None:

@@ -49,7 +49,8 @@ _log = get_logger(__name__)
 NOTE_KIND = "weight_plan_inventory"
 #: Default standard uncertainty (V) of one predicted LVDT reading.
 DEFAULT_U_VOLTS = 0.001
-#: Default wire diameter (m) shown to the operator (32 AWG copper); they should measure and replace it.
+#: Default wire diameter (m) shown to the operator (32 AWG copper); they should measure and replace
+#: it.
 DEFAULT_DIAMETER_M = 0.000202
 
 
@@ -161,7 +162,8 @@ def _problem(kind: str, title: str, detail: str, hint: str, status: int = 422) -
 
 
 def session_slope(svc: SessionService) -> float | None:
-    """LVDT volts per metre fitted to the open session's calibration points; None if not derivable."""
+    """LVDT volts per metre fitted to the open session's calibration points; None if not
+    derivable."""
     pts = svc.points()
     if pts.is_err:
         return None
@@ -342,7 +344,8 @@ def make_weight_plan_router(svc: SessionService) -> APIRouter:
 
     @r.post("/weight-plan")
     def make_plan(body: WeightPlanBody) -> WeightPlanOut:
-        """Ordered hangs with predicted volts and propagated uncertainty; advisory, writes nothing."""
+        """Ordered hangs with predicted volts and propagated uncertainty; advisory, writes
+        nothing."""
         return _plan_reply(svc, body, ())
 
     @r.get("/weight-plan/inventory")

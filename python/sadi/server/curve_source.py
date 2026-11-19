@@ -148,7 +148,8 @@ def load_curve(
 def load_session_curve(
     sdir: Path, cache: dict[Path, IncrementalReplay] | None = None
 ) -> Result[Sequence[CurvePoint], RefitError]:
-    """Build the active (non-excluded, elastic or unphased) stress-strain curve from `sdir`'s events.
+    """Build the active (non-excluded, elastic or unphased) stress-strain curve from `sdir`'s
+    events.
 
     `cache` (session dir -> IncrementalReplay) makes repeat calls read only newly appended frames.
     """
@@ -218,7 +219,8 @@ class SessionReplayCache:
             self._verified_at.pop(old, None)
 
     def _replayer(self, sdir: Path, verify: bool) -> IncrementalReplay:
-        """Return the replayer for `sdir`; cold or forced gets a fresh one, stale re-verifies async."""
+        """Return the replayer for `sdir`; cold or forced gets a fresh one, stale re-verifies
+        async."""
         now = self._clock()
         have = self._cache.get(sdir)
         stale = have is not None and now - self._verified_at.get(sdir, 0.0) >= self._interval

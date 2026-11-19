@@ -1,4 +1,5 @@
-"""REST routes for exporting the open session, and read-only export of closed sessions, through the lab export formats."""
+"""REST routes for exporting the open session, and read-only export of closed sessions, through the
+lab export formats."""
 
 # frob:ticket 01M6WWMSA41S7Y91W4RE16P75D
 # frob:ticket 01M6WTCA3WJA26T204SWR6VW70
@@ -24,8 +25,8 @@ from sadi.server.routes.problem import ApiProblem, ProblemError, from_sadi, not_
 from sadi.server.schemas import PointView
 from sadi.server.service import ClosedSession, SessionService
 from sadi.server.session_points import active_points, analyze, to_captured
-from sadi.store.manifest import read_manifest
 from sadi.store.exports import ExportError, write_export
+from sadi.store.manifest import read_manifest
 from sadi.synthetic.provenance import (
     EXPORT_PREFIX,
     PROVENANCE_HEADER,
@@ -80,7 +81,9 @@ def _header_meta(sdir: Path) -> dict[str, str]:
         _log.warning("export header: no readable manifest in %s; operator/description blank", sdir)
         return {}
     spec = mf.danger_ok.specimen
-    desc = spec.get("description") or " ".join(v for k in ("name", "material") if (v := spec.get(k)))
+    desc = spec.get("description") or " ".join(
+        v for k in ("name", "material") if (v := spec.get(k))
+    )
     meta = {"operator": spec.get("operator", ""), "description": desc}
     _log.debug("export header meta from %s: %s", sdir.name, meta)
     return meta
@@ -150,7 +153,8 @@ def render_closed_export(
     format_id: str,
     cache: SessionReplayCache | None = None,
 ) -> Result[tuple[ExportFormat, ClosedSession, bytes], ApiProblem]:
-    """Render `format_id` for closed session `name` read-only: no writer, lock, version or device."""
+    """Render `format_id` for closed session `name` read-only: no writer, lock, version or
+    device."""
     closed = svc.read_closed(name).unwrap()
     fmt, _, body = _render(closed.lab, name, closed.path, closed.views, format_id, cache).unwrap()
     return Ok((fmt, closed, body))
@@ -161,7 +165,8 @@ SAVED_HEADER = "X-SADI-Saved"
 #: Response header set to "segment/offset" when a closed export holds only the verified WAL prefix.
 # frob:ticket 01M727965F98C8FB295P7A7FRS
 TORN_TAIL_HEADER = "X-SADI-Torn-Tail"
-#: Filename prefix on exports of a session whose torn tail was dropped (only the verified prefix was read).
+#: Filename prefix on exports of a session whose torn tail was dropped (only the verified prefix was
+#: read).
 RECOVERED_PREFIX = "RECOVERED-"
 
 
@@ -192,7 +197,8 @@ _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 def _save_copy(  # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
     svc: SessionService, kind: str, basename: str, ext: str, body: bytes
 ) -> str:
-    """Keep an atomic, never-overwritten copy in the session's exports/ folder; return its path or ''."""
+    """Keep an atomic, never-overwritten copy in the session's exports/ folder; return its path or
+    ''."""
     path = svc.session_path()
     info = svc.info()
     if path.is_err or info.is_err:
@@ -262,7 +268,8 @@ def make_export_router(
     # frob:ticket 01M724AKTJNNRY06637VBQ0A3E
     @r.get("/sessions/{name}/export/{format_id}")
     def export_closed(name: str, format_id: str) -> Response:
-        """Download one export of a closed session; read-only, so no copy is kept and nothing is written."""
+        """Download one export of a closed session; read-only, so no copy is kept and nothing is
+        written."""
         fmt, closed, body = unwrap(render_closed_export(svc, name, format_id, replays))
         headers = {PROVENANCE_HEADER: "real"}
         if closed.provenance.source != "real":  # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
@@ -284,7 +291,8 @@ def make_export_router(
 
     @r.post("/export/figure/{figure_id}")
     async def save_figure(figure_id: str, request: Request) -> dict[str, str]:
-        """Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never overwrites)."""
+        """Keep a browser-rendered PNG/SVG figure in the session's exports/ folder (never
+        overwrites)."""
         # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
         name, _ = unwrap(_open_lab(svc, labs))  # 409 when no session is open
         data = await request.body()

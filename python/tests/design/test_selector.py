@@ -160,7 +160,8 @@ def test_elastic_never_suggests_current_or_lower_load() -> None:
 # frob:ticket 01M72YKEYW6QFR5YTFSV2YBKMJ
 # frob:tests python/sadi/design/selector.py::select_next
 def test_cold_start_alternatives_exclude_zero_and_why_names_the_unit() -> None:
-    """Cold-start alternatives are never 0 kg, and the why text names the gauge height for metres."""
+    """Cold-start alternatives are never 0 kg, and the why text names the gauge height for
+    metres."""
     cands = [Candidate(candidate_id=f"m{i}", x=3.0 * i / 24) for i in range(25)]
     adv = select_next(DesignPhase.ELASTIC, [], cands, TARGET, unit="kg").unwrap()
     assert adv.suggestion is not None

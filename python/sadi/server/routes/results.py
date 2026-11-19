@@ -201,7 +201,8 @@ def _guidance_problem(err: ErrorSet) -> ApiProblem:
 
 
 def live_results(svc: SessionService, labs: LabRegistry) -> Result[ResultsView, ApiProblem]:
-    """Recompute the open session's results and their provenance, with pending/notes when a value is unavailable."""
+    """Recompute the open session's results and their provenance, with pending/notes when a value is
+    unavailable."""
     info = svc.info()
     pts = svc.points()
     if info.is_err or pts.is_err:
@@ -365,7 +366,9 @@ def make_results_router(
         # A faulted or errored device is not "attached" in the healthy sense the UI reads.
         attached = status not in (DISCONNECTED, "error") and fault is None
         if not attached:
-            _log.info("device status %s fault=%s: reporting attached=false", status, fault is not None)
+            _log.info(
+                "device status %s fault=%s: reporting attached=false", status, fault is not None
+            )
         return DeviceView(
             status=status,
             attached=attached,

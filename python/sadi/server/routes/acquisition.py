@@ -1,4 +1,5 @@
-"""REST route for live-run operator commands: POST /api/session/load-change and POST /api/acquisition/resume."""
+"""REST route for live-run operator commands: POST /api/session/load-change and POST
+/api/acquisition/resume."""
 
 # frob:ticket 01M6X1GGD923K25M13JM84ZB2J
 

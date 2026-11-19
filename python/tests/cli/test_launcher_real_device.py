@@ -28,8 +28,16 @@ class FakeBoard:
 
 
 def _argv(tmp_path: Path, *extra: str) -> list[str]:
-    return ["serve", "--skip-preflight", "--no-browser", "--port", "0", "--data-root",
-            str(tmp_path), *extra]
+    return [
+        "serve",
+        "--skip-preflight",
+        "--no-browser",
+        "--port",
+        "0",
+        "--data-root",
+        str(tmp_path),
+        *extra,
+    ]
 
 
 # frob:tests python/sadi/server/device_open.py::resolve_device_port
@@ -72,8 +80,10 @@ def test_missing_board_warns_and_serves_without_device(
     err = DeviceError(code=DeviceCode.NOT_FOUND, detail="no such port")
     monkeypatch.setattr("sadi.core.device.open_serial", lambda _p, _c: Err(err))
     served: list[object] = []
-    code = launcher.main(_argv(tmp_path, "--device-port", "/dev/ttyNOPE"),
-                         lambda app, _h, _p: served.append(app.state.settings.device))
+    code = launcher.main(
+        _argv(tmp_path, "--device-port", "/dev/ttyNOPE"),
+        lambda app, _h, _p: served.append(app.state.settings.device),
+    )
     assert code == 0
     assert len(served) == 1 and isinstance(served[0], DeviceService)  # unopened, Reconnect-able
     out = capsys.readouterr().err

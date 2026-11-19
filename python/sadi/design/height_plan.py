@@ -16,7 +16,15 @@ from sadi.design.selector import select_next
 from sadi.labs.lctt.saturation import DEFAULT_SATURATION_V
 from sadi.logging_setup import get_logger
 
-__all__ = ["Height", "HeightPlan", "HeightPlanError", "HeightStep", "parse_heights", "plan_heights", "stack_heights"]
+__all__ = [
+    "Height",
+    "HeightPlan",
+    "HeightPlanError",
+    "HeightStep",
+    "parse_heights",
+    "plan_heights",
+    "stack_heights",
+]
 
 _log = get_logger(__name__)
 
@@ -84,7 +92,8 @@ class HeightPlan(BaseModel):
 
 
 def parse_heights(text: str, default_u_m: float = DEFAULT_U_HEIGHT_M) -> Result[list[Height], str]:
-    """Parse 'h:u,h:u' (metres; u optional, default_u_m when blank) into h1, h2, ...; duplicates stay distinct."""
+    """Parse 'h:u,h:u' (metres; u optional, default_u_m when blank) into h1, h2, ...; duplicates
+    stay distinct."""
     out: list[Height] = []
     parts = [t.strip() for t in text.replace(";", ",").replace("\n", ",").split(",")]
     for i, part in enumerate(p for p in parts if p):
@@ -103,7 +112,8 @@ def parse_heights(text: str, default_u_m: float = DEFAULT_U_HEIGHT_M) -> Result[
 
 
 def stack_heights(heights: list[Height], max_stack: int = MAX_STACK) -> list[Height]:
-    """All stackings of up to max_stack heights as 'h1+h2' candidates; u adds in quadrature, equal totals keep the lowest ids."""
+    """All stackings of up to max_stack heights as 'h1+h2' candidates; u adds in quadrature, equal
+    totals keep the lowest ids."""
     seen: dict[float, Height] = {}
     for k in range(1, min(max_stack, len(heights)) + 1):
         for combo in itertools.combinations(heights, k):
@@ -169,7 +179,8 @@ def plan_heights(  # noqa: PLR0913
         return nominal_offset_v + slope * h.height_m
 
     stacks = [
-        h for h in stack_heights(heights)
+        h
+        for h in stack_heights(heights)
         if (min_m is None or h.height_m >= min_m) and (max_m is None or h.height_m <= max_m)
     ]
     usable = [h for h in stacks if abs(volts(h)) <= sat] if known else stacks
@@ -202,7 +213,11 @@ def plan_heights(  # noqa: PLR0913
         # Need two distinct heights before stopping so a slope exists.
         if n_points is not None and len(chosen) >= n_points:
             break
-        if n_points is None and len({o.x for o in obs}) >= 2 and adv.indicator.state is GpState.ENOUGH:
+        if (
+            n_points is None
+            and len({o.x for o in obs}) >= 2
+            and adv.indicator.state is GpState.ENOUGH
+        ):
             break
         sug = adv.suggestion
         if sug is None:  # range exhausted: no remaining height is beyond the last one used

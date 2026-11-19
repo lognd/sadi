@@ -779,7 +779,9 @@ def import_all_spills(
     temp_dir: Path | None = None,
     *,
     synthetic: bool = False,  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
-) -> list[tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]]:
+) -> list[
+    tuple[Path, Result[ImportReport | FragmentFailedSkip | SyntheticSkip | None, SpillError]]
+]:
     """Discover, verify and import every spill at start; Ok(None) means already imported.
 
     With synthetic=True, spills without a synthetic parent in this root are left untouched
@@ -797,7 +799,9 @@ def import_all_spills(
             outcomes.append((spill, Err(scanned.danger_err)))
             continue
         scan = scanned.danger_ok
-        if synthetic and _foreign_to_synthetic_root(data_root, scan):  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
+        if synthetic and _foreign_to_synthetic_root(
+            data_root, scan
+        ):  # frob:ticket 01M72YKF17B4F194NR6WSGEKR2
             _log.info("spill %s skipped: synthetic root, no synthetic parent session here", spill)
             outcomes.append((spill, Ok(SyntheticSkip(spill=spill))))
             continue

@@ -74,7 +74,11 @@ def _cal(inputs):  # type: ignore[no-untyped-def]
     from sadi.server.schemas import CaptureBody
 
     return CaptureBody.model_validate(
-        {"phase": "calibration", "inputs": inputs, "window": {"first_raw_seq": 1, "last_raw_seq": 5}}
+        {
+            "phase": "calibration",
+            "inputs": inputs,
+            "window": {"first_raw_seq": 1, "last_raw_seq": 5},
+        }
     )
 
 

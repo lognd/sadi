@@ -353,8 +353,10 @@ def _group_options(  # frob:ticket 01M72Y13R6WWH4G55AMHQEPVZH
     """Loading options for `phase`: its specimen's kind and L0 (operator override wins)."""
     role = _ROLE_BY_PHASE.get(phase)
     if role is None:
-        return cfg.loading if l0_override is None else cfg.loading.model_copy(
-            update={"l0": l0_override}
+        return (
+            cfg.loading
+            if l0_override is None
+            else cfg.loading.model_copy(update={"l0": l0_override})
         )
     spec = SpecimenSpec(role=role, l0=l0_override)
     return cfg.loading.model_copy(update={"specimen": spec.kind, "l0": spec.l0_m})

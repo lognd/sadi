@@ -138,7 +138,9 @@ def session_is_synthetic(session_dir: Path) -> bool:
         _log.warning("session %s: manifest unreadable while checking provenance", session_dir.name)
         return False
     if mf.danger_ok is not None and mf.danger_ok.synthetic:
-        _log.warning("session %s: SYNTHETIC marker missing but manifest says synthetic", session_dir.name)
+        _log.warning(
+            "session %s: SYNTHETIC marker missing but manifest says synthetic", session_dir.name
+        )
         return True
     return False
 
@@ -316,8 +318,11 @@ class SessionHandle:
         """Last verified WAL seq for the closing manifest, or the old value if unreadable."""
         scan = WalReader.scan(self.path / "wal") if (self.path / "wal").is_dir() else None
         if scan is None or scan.is_err:
-            _log.warning("close of %s: WAL not scannable; last_seq left as %s", self.path.name,
-                         self.manifest.last_seq)
+            _log.warning(
+                "close of %s: WAL not scannable; last_seq left as %s",
+                self.path.name,
+                self.manifest.last_seq,
+            )
             return self.manifest.last_seq
         return scan.danger_ok.last_seq
 
@@ -380,6 +385,7 @@ def _take_version(
 
 def _free_family(sessions: Path, base: str) -> str:
     """Return `base`, or `base-2`, `base-3`... so a new session never joins another family."""
+
     # frob:ticket 01M71XGK2GSEZ1GM3N3ES7916A
     def used(fam: str) -> bool:
         """True if any version dir of `fam` exists (case-insensitive for portable roots)."""
@@ -595,7 +601,9 @@ def _resume_locked(
         specimen=pmf.specimen if pmf is not None else {},
         plugins=tuple(plugins) if plugins is not None else (pmf.plugins if pmf is not None else ()),
         synthetic=parent_synth,
-        provenance_unknown=pmf.provenance_unknown if pmf is not None else False,  # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
+        provenance_unknown=pmf.provenance_unknown
+        if pmf is not None
+        else False,  # frob:ticket 01M72TJ0CQPCRKAW2EWSFP9Y8Z
     )
     _log.info("resuming %s as %s (parent_last_seq=%s)", parent_dir.name, path.name, report.last_seq)
     return _init_dir(path, manifest)

@@ -52,7 +52,9 @@ def test_duplicates_distinct_and_too_few_errors() -> None:
     assert res == Err(HeightPlanError.TooFew)
     sat = parse_heights("0.001,0.002,1.0").unwrap()
     plan = plan_heights(sat, nominal_slope_v_per_m=-100.0, saturation_v=1.0).unwrap()
-    assert plan.dropped_saturation == 4 and plan.n_usable == 3  # stacks with the 1.0 m height saturate
+    assert (
+        plan.dropped_saturation == 4 and plan.n_usable == 3
+    )  # stacks with the 1.0 m height saturate
     assert plan_heights(sat, nominal_slope_v_per_m=0.0) == Err(HeightPlanError.ZeroSlope)
     three = parse_heights("0.001,0.002,0.003").unwrap()
     assert isinstance(plan_heights(three, nominal_slope_v_per_m=float("nan")), Err)

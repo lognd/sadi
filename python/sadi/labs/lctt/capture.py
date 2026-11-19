@@ -75,7 +75,9 @@ class BlockStats(BaseModel):
         return math.hypot(self.sd / math.sqrt(self.n), accuracy)
 
 
-def block_stats(volts: Iterable[float], min_n: int = MIN_BLOCK_N_DEFAULT) -> Result[BlockStats, BlockError]:
+def block_stats(
+    volts: Iterable[float], min_n: int = MIN_BLOCK_N_DEFAULT
+) -> Result[BlockStats, BlockError]:
     """Mean, sample sd and n of `volts`; Err(TooFew) below `min_n` samples."""
     ys = list(volts)
     n = len(ys)

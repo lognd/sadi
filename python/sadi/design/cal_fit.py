@@ -1,4 +1,5 @@
-"""Planner calibration: derive volts = slope*height + offset from entered points (or an explicit override)."""
+"""Planner calibration: derive volts = slope*height + offset from entered points (or an explicit
+override)."""
 
 # frob:ticket 01M7301MDWNXK9Z0D8TBDBNP4G
 
@@ -20,7 +21,8 @@ _MAX_REWEIGHT = 50
 
 
 class Calibration(BaseModel):
-    """LVDT calibration volts = slope*height + offset with uncertainty; source says where it came from."""
+    """LVDT calibration volts = slope*height + offset with uncertainty; source says where it came
+    from."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -53,7 +55,9 @@ CalPoint = tuple[float, float, float | None]
 def parse_cal_points(text: str) -> Result[list[CalPoint], str]:
     """Parse 'height_m:volts[:u_height_m],...' into (height, volts, u_height or None) triples."""
     out: list[CalPoint] = []
-    for part in filter(None, (t.strip() for t in text.replace(";", ",").replace("\n", ",").split(","))):
+    for part in filter(
+        None, (t.strip() for t in text.replace(";", ",").replace("\n", ",").split(","))
+    ):
         try:
             fields = part.split(":")
             if len(fields) not in (2, 3):
@@ -62,18 +66,25 @@ def parse_cal_points(text: str) -> Result[list[CalPoint], str]:
             out.append((float(fields[0]), float(fields[1]), u))
         except ValueError as exc:
             _log.warning("bad calibration point %r: %s", part, exc)
-            return Err(f"Could not read calibration point {part!r} (use height_m:volts or height_m:volts:u_height_m): {exc}")
+            return Err(
+                f"Could not read calibration point {part!r} "
+                f"(use height_m:volts or height_m:volts:u_height_m): {exc}"
+            )
     return Ok(out)
 
 
 def _fit(points: list[CalPoint]) -> Result[Calibration, str]:
     """Fit volts against height (weighted by height uncertainty when every point has one).
 
-    Errors, never defaults, on degenerate data; without per-point uncertainties it is unweighted OLS.
+    Errors, never defaults, on degenerate data; without per-point uncertainties it is unweighted
+    OLS.
     """
     if len({h for h, _, _ in points}) < 2:
         _log.error("calibration needs >= 2 distinct heights, got %d points", len(points))
-        return Err("Calibration needs at least 2 distinct heights (height m / volts rows); no default is assumed")
+        return Err(
+            "Calibration needs at least 2 distinct heights (height m / volts rows); "
+            "no default is assumed"
+        )
     # lctt fit is generic y = slope*x + intercept: x = height, y = volts here.
     us = [u for _, _, u in points]
     weighted = all(u is not None for u in us)
@@ -82,11 +93,16 @@ def _fit(points: list[CalPoint]) -> Result[Calibration, str]:
     xs, ys = [h for h, _, _ in points], [v for _, v, _ in points]
     res = fit_calibration(xs, ys)
     if weighted and not isinstance(res, Err):
-        # Effective variance: a height error u_h acts as |slope|*u_h on volts; re-weight until settled.
+        # Effective variance: a height error u_h acts as |slope|*u_h on volts; re-weight until
+        # settled.
         for _ in range(_MAX_REWEIGHT):
             slope = res.value.slope.value
-            res = fit_calibration(xs, ys, u_heights=[abs(slope) * float(u) for u in us if u is not None])
-            if isinstance(res, Err) or abs(res.value.slope.value - slope) <= 1e-12 * max(1.0, abs(slope)):
+            res = fit_calibration(
+                xs, ys, u_heights=[abs(slope) * float(u) for u in us if u is not None]
+            )
+            if isinstance(res, Err) or abs(res.value.slope.value - slope) <= 1e-12 * max(
+                1.0, abs(slope)
+            ):
                 break
     if isinstance(res, Err):
         _log.error("calibration fit failed: %s", res.error.name)
@@ -94,8 +110,14 @@ def _fit(points: list[CalPoint]) -> Result[Calibration, str]:
     f = res.value
     return Ok(
         Calibration(
-            slope_v_per_m=f.slope.value, offset_v=f.intercept.value, se_slope=f.se_slope,
-            se_offset=f.se_intercept, cov=f.cov_slope_intercept, r2=f.r2, n=f.n, source="fit",
+            slope_v_per_m=f.slope.value,
+            offset_v=f.intercept.value,
+            se_slope=f.se_slope,
+            se_offset=f.se_intercept,
+            cov=f.cov_slope_intercept,
+            r2=f.r2,
+            n=f.n,
+            source="fit",
         )
     )
 
@@ -114,7 +136,10 @@ def resolve_calibration(
         except ValidationError as exc:  # pragma: no cover - floats always validate
             return Err(str(exc))
     if not has_points:
-        return Err("Enter calibration points (height m / volts) to fit the LVDT calibration; nothing is assumed")
+        return Err(
+            "Enter calibration points (height m / volts) to fit the LVDT calibration; "
+            "nothing is assumed"
+        )
     pts = parse_cal_points(cal_points)
     if isinstance(pts, Err):
         return pts
